@@ -35,7 +35,7 @@ if [[ `uname -n` == *"21-school"* ]]; then
   alias init_docker=". ${HOME}/42toolbox/init_docker.sh"
   alias settings_init=". ${HOME}/Documents/Github/dotfiles/school/init_school_settings.sh"
   alias init_minikube=". ${HOME}/Documents/Github/dotfiles/school/init_minikube.sh"
-elif [[ `uname -n` == "pc-home" ]]; then
+elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
   os=`uname`
   if [[ `uname` == "Linux" ]]; then
     # Home Manjaro
