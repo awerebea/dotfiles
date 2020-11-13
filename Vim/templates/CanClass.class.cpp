@@ -2,6 +2,8 @@
 
 CanClass::CanClass() : _member(0) {}
 
+CanClass::CanClass(std::string name) : _member(0), _name(name) {}
+
 CanClass::~CanClass() {}
 
 CanClass::CanClass(const CanClass &a)
@@ -23,4 +25,9 @@ CanClass &			CanClass::operator=(const CanClass &a)
 int					CanClass::getMember(void) const
 {
 	return (this->_member);
+}
+
+std::string			CanClass::getName(void) const
+{
+	return (this->_name);
 }
