@@ -1,0 +1,90 @@
+# launch command: conky -q -c /home/andrei/.conky/conkyrc2
+conky.config = {
+  alignment = 'bottom_right',
+  background = false,
+  border_width = 0.5,
+  cpu_avg_samples = 4,
+  default_color = 'white',
+  default_outline_color = 'grey',
+  default_shade_color = 'black',
+  draw_borders = true,
+  draw_graph_borders = true,
+  draw_outline = false,
+  draw_shades = false,
+  use_xft = true,
+  font = 'Open Sans:size=10',
+  gap_x = 273,
+  gap_y = 0,
+  maximum_width = 180,
+  minimum_height = 5,
+  minimum_width = 200,
+  net_avg_samples = 2,
+  double_buffer = true,
+  out_to_console = false,
+  out_to_stderr = false,
+  extra_newline = false,
+  own_window = true,
+  own_window_colour = '000000',
+  own_window_class = 'Conky',
+  own_window_argb_visual = true,
+  own_window_type = 'normal',
+  own_window_transparent = true,
+  own_window_hints = 'undecorated,below,sticky,skip_taskbar,skip_pager',
+  stippled_borders = 0,
+  update_interval = 2,
+  uppercase = false,
+  use_spacer = 'none',
+  show_graph_scale = false,
+  show_graph_range = false
+}
+
+conky.text = [[
+# SSD SiliconPower 120 Gb
+  ${font Open Sans:Bold:size=10}${color 4C7523}SSD SiliconPower 120 Gb ${hr 2}$color${font}
+  ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sda}°C
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}/ (root) (${fs_type /}) $color${fs_bar 5 /}
+  ${font Open Sans:size=9}${offset 5}Total: ${fs_size /}
+  ${font Open Sans:size=9}${offset 5}Used: ${fs_used /} (${fs_used_perc /}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /} (${fs_free_perc /}%)
+  ${voffset -6}
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}home (${fs_type /home}) $color${fs_bar 5 /home/}
+  ${font Open Sans:size=9}${offset 5}Total: ${fs_size /home/}
+  ${font Open Sans:size=9}${offset 5}Used: ${fs_used /home/} (${fs_used_perc /home/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /home/} (${fs_free_perc /home/}%)
+  ${voffset -6}
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}awerebea (exfat) $color${fs_bar 5 /run/media/andrei/awerebea/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/awerebea/} (${fs_used_perc /run/media/andrei/awerebea/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/awerebea/} (${fs_free_perc /run/media/andrei/awerebea/}%)
+  ${voffset -4}
+# HDD WD10PURZ-85U8XY0 1 Tb
+  ${font Open Sans:Bold:size=10}${color 4C7523}HDD WD 1 Tb ${hr 2}$color${font}
+  ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sdd}°C
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}Data (ntfs) $color${fs_bar 5 /run/media/andrei/Data/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/Data/} (${fs_used_perc /run/media/andrei/Data/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/Data/} (${fs_free_perc /run/media/andrei/Data/}%)
+  ${voffset -6}
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}Backup (${fs_type /run/media/andrei/bckp/}) $color${fs_bar 5 /run/media/andrei/bckp/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/bckp/} (${fs_used_perc /run/media/andrei/bckp/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/bckp/} (${fs_free_perc /run/media/andrei/bckp/}%)
+  ${voffset -4}
+# HDD ST2000DL003-9VT166 1.8 (1.2) Tb
+  ${font Open Sans:Bold:size=10}${color 4C7523}HDD Seagate 1.2 Tb ${hr 2}$color${font}
+  ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sdb}°C
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}Data_2 (ntfs) $color${fs_bar 5 /run/media/andrei/Data_2/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/Data_2/} (${fs_used_perc /run/media/andrei/Data_2/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/Data_2/} (${fs_free_perc /run/media/andrei/Data_2/}%)
+  ${voffset -4}
+# # SSD Kingston 120 Gb
+#   ${font Open Sans:Bold:size=10}${color 4C7523}SSD Kingston 120 Gb ${hr 2}$color${font}
+#   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sdc}°C
+#   ${voffset -4}
+# # SSD M.2 128 Gb
+#   ${font Open Sans:Bold:size=10}${color 4C7523}SSD M.2 Hynix 128 Gb ${hr 2}$color${font}
+#   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sde}°C
+#   ${voffset -4}
+# Mediaserver/disk_1
+  ${font Open Sans:Bold:size=10}${color 4C7523}Mediaserver/disk_1 ${hr 2}$color${font}
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}disk_1 (ext3) $color${fs_bar 5 /shares/mediaserver/disk_1/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /shares/mediaserver/disk_1/} (${fs_used_perc /shares/mediaserver/disk_1/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /shares/mediaserver/disk_1/} (${fs_free_perc /shares/mediaserver/disk_1/}%)
+]]

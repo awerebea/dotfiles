@@ -1,0 +1,43 @@
+[user]
+	name = awerebea (pc-home)
+	email = awerebea.21@gmail.com
+[core]
+	excludesfile = /home/andrei/.gitignore
+	pager = less -x1,5
+[merge]
+	tool = extMerge
+[mergetool "extMerge"]
+	cmd = extMerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+	trustExitCode = false
+[pager]
+	diff = delta | menos -iFMRSX --pattern='^(commit|diff)'
+	log = delta | menos -iFMRSX --pattern='^(commit|diff)'
+	show = delta | menos -iFMRSX --pattern='^(commit|diff)'
+	whatchanged = delta | menos -iFMRSX --pattern='^(commit|diff)'
+	show-branch = true
+	status = true
+
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	features = line-numbers decorations
+	whitespace-error-style = 22 reverse
+	navigate = true
+	tabs = 4
+	syntax-theme = zenburn
+	plus-style = syntax "#004000"
+	minus-style = syntax "#5c0809"
+
+[delta "decorations"]
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
+	hunk-header-decoration-style = cyan box ul
+
+[delta "line-numbers"]
+	line-numbers-left-style = cyan
+	line-numbers-right-style = cyan
+	line-numbers-zero-style = 244
+	line-numbers-minus-style = 196
+	line-numbers-plus-style = 34
