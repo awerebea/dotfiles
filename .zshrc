@@ -41,7 +41,7 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     # Home Manjaro
     export ZSH="/home/andrei/.oh-my-zsh"
     export DOCKER_CMD_FOR_ALIAS="sudo docker"
-    export GIT_WORKSPACE="/run/media/andrei/Data/Documents/Github/workspace"
+    export GIT_WORKSPACE="/run/media/andrei/awerebea/Github/workspace"
     alias norminette='/home/andrei/.config/.scripts/colorised_norm.sh'
     alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
     google() {
@@ -62,7 +62,7 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     # Home macOS
     export ZSH="/Users/andrei/.oh-my-zsh"
     export DOCKER_CMD_FOR_ALIAS="docker"
-    export GIT_WORKSPACE="/Volumes/Data/Documents/Github/workspace/"
+    export GIT_WORKSPACE="/Volumes/awerebea/Github/workspace/"
     alias norminette='/Users/andrei/.scripts/colorised_norm.sh'
     alias o='a -e open' # quick opening files with open
     google() {
@@ -273,8 +273,8 @@ function trr() {
   documents_pc_home_linux="\/run\/media\/andrei\/Data\/Documents"
   documents_pc_home_mac="\/Volumes\/Data\/Documents"
   github_school="\/Users\/awerebea\/Documents\/Github"
-  github_pc_home_linux="\/run\/media\/andrei\/Data\/Documents\/Github"
-  github_pc_home_mac="\/Volumes\/Data\/Documents\/Github\/"
+  github_pc_home_linux="\/run\/media\/andrei\/awerebea\/Github"
+  github_pc_home_mac="\/Volumes\/awerebea\/Github\/"
   rm -f ~/.tmux/resurrect/last
   if [[ `uname -n` == *"21-school"* ]]; then
     sed -i '' "s/$github_pc_home_linux/$github_school/" $tmp_file
