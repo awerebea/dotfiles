@@ -31,7 +31,7 @@ RUN apt-get update \
 	ruby \
 	unifont \
 	valgrind \
-	vim \
+	vim-nox \
 	wget \
 	xdg-utils \
 	zsh
