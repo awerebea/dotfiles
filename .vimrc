@@ -824,7 +824,7 @@ let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
   let g:clang_library_path='/Library/Developer/CommandLineTools/usr/lib/'
-elseif !v:shell_error && s:uname == "Linux" && s:uname_host == "pc-home"
+elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home" || s:uname_host == "laptop-acer")
   let g:clang_library_path='/usr/lib/'
 endif
 let g:clang_snippets=1
