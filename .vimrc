@@ -826,6 +826,8 @@ if !v:shell_error && s:uname_host =~ "21-school"
   let g:clang_library_path='/Library/Developer/CommandLineTools/usr/lib/'
 elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home" || s:uname_host == "laptop-acer")
   let g:clang_library_path='/usr/lib/'
+elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"") == "root"
+  let g:clang_library_path='/usr/lib/clang/'
 endif
 let g:clang_snippets=1
 let g:clang_trailing_placeholder=1
