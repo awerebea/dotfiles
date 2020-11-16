@@ -894,3 +894,119 @@ function! CanClassCPP()
   r~/.vim/templates/CanClass.class.cpp
 endfunction
 command CanClassCPP call CanClassCPP()
+
+" " Highlight TODO, FIXME, NOTE, etc.
+" if has('autocmd') && v:version > 701
+"   augroup todo
+"     autocmd!
+"     autocmd Syntax * call matchadd(
+"       \ 'Debug',
+"       \ '\v\W\zs<(NOTE|INFO|IDEA|TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
+"       \ )
+"   augroup END
+" endif
+
+let g:my_todo_highlight_config = {
+\  'FIXME': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#bd1314',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '204'
+\  },
+\  'BUG': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#bd1314',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '204'
+\  },
+\  'XXX': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#bd1314',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '204'
+\  },
+\  'TODO': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#ff6524',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'INFO': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#ff6524',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'NOTE': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#1791c2',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'CHANGED': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#1791c2',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'IDEA': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#59932b',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'HACK': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#59932b',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'TRICKY': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#59932b',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\ }
+" creates annotation group and highlight it according to the config
+function! s:MyCreateAnnotationGroup(annotation, config)
+  " set group name -> my_annotation
+  let l:group_name = 'my_' . tolower(a:annotation)
+
+  " make group for annotation where its pattern matches and is inside comment
+  execute 'augroup ' . l:group_name
+    autocmd!
+    execute 'autocmd Syntax * syntax match ' . l:group_name .
+      \ ' /\v\C\_.<' . a:annotation . '(:|>)/hs=s+1 containedin=.*Comment.*'
+  augroup END
+
+  " highlight the group according to the config
+  if has('termguicolors')
+    execute 'hi ' l:group_name .
+      \ ' guifg = ' . get(a:config, 'gui_fg_color', '#ffffff') .
+      \ ' guibg = ' . get(a:config, 'gui_bg_color', '#ef9c3f') .
+      \ ' cterm = ' . get(a:config, 'cterm', '')
+  else
+    execute 'hi ' l:group_name .
+      \ ' ctermfg = ' . get(a:config, 'cterm_fg_color', 'white') .
+      \ ' ctermbg = ' . get(a:config, 'cterm_bg_color', '214')
+      \ ' cterm = ' . get(a:config, 'cterm', '')
+  endif
+endfunction
+
+" highlights the user specified custom annotation groups
+if exists("g:my_todo_highlight_config")
+  for [annotation, config] in items(g:my_todo_highlight_config)
+    call s:MyCreateAnnotationGroup(annotation, config)
+  endfor
+endif
