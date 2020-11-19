@@ -58,6 +58,8 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'shinchu/lightline-gruvbox.vim'
 Plugin 'vim-scripts/restore_view.vim'
 Plugin 'xavierd/clang_complete'
+Plugin 'chrisbra/Colorizer'
+" Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
 " Plugin 'git://git.wincent.com/command-t.git'
@@ -1010,3 +1012,10 @@ if exists("g:my_todo_highlight_config")
     call s:MyCreateAnnotationGroup(annotation, config)
   endfor
 endif
+
+" Colors highlighting
+" au BufEnter * :ColorHighlight<CR> " auto highlight colors on startup for all files
+" :let g:colorizer_auto_color = 1 " auto highlight colors on startup (not works)
+:let g:colorizer_auto_filetype='css,html,cpp,vim,python'
+" highlight colors toggle
+noremap <leader>ct :ColorToggle<CR>
