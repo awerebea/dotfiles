@@ -5,18 +5,16 @@
 
 class			CanClass
 {
-	int			_member;
-	std::string	_name;
+	std::string		_name;
 public:
 	CanClass();
-	CanClass(std::string name);
+	CanClass(std::string const &name);
 	CanClass(const CanClass &a);
 	~CanClass();
 
-	CanClass &	operator = (const CanClass &a);
+	CanClass &		operator = (const CanClass &a);
 
-	int			getMember(void) const;
-	std::string	getName(void) const;
+	std::string		getName() const;
 };
 
 #endif
