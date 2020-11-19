@@ -835,6 +835,12 @@ let g:clang_snippets=1
 let g:clang_trailing_placeholder=1
 let g:clang_complete_optional_args_in_snippets=1
 let g:clang_auto_select=1
+" unset the default keymappings to provide compatibility with ctags
+" let g:clang_make_default_keymappings=0
+let g:clang_jumpto_declaration_key="<leader><leader><C-]>"
+" let g:clang_jumpto_declaration_in_preview_key=""
+" let g:clang_jumpto_back_key=""
+let g:clang_complete_auto=1
 
 " backup and swap files settings
 " Save your backup files to a less annoying place than the current directory.
