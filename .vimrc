@@ -673,19 +673,18 @@ call yankstack#setup() " fix to vim-surround 'S' keybin works with yankstack plu
 :noremap <silent> <Space> :<C-u>nohlsearch<CR><C-l>
 
 " list buffers keybinds
-nnoremap [b :bprevious
-nnoremap ]b :bnext
-nnoremap [B :bfirst
-nnoremap ]B :blast
-map <F6> :bprevious<cr>
-vmap <F6> <esc>:bprevious<cr>i
-imap <F6> <esc>:bprevious<cr>i
-map <F7> :bnext<cr>
-vmap <F7> <esc>:bnext<cr>i
-imap <F7> <esc>:bnext<cr>i
+nnoremap [b :bprevious<CR>
+nnoremap ]b :bnext<CR>
+nnoremap [B :bfirst<CR>
+nnoremap ]B :blast<CR>
+map <F6> :bprevious<CR>
+imap <F6> <ESC>:bprevious<CR>i
+map <F7> :bnext<CR>
+imap <F7> <ESC>:bnext<CR>i
 " F5 - просмотр списка буферов
 " nmap <F5> :BufExplorerVerticalSplit<CR>
 nmap <F5> :BufExplorer<CR>
+nnoremap <silent> <Leader><Leader><Enter> :BufExplorer<CR>
 
 " past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
