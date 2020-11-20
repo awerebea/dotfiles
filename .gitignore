@@ -1,5 +1,7 @@
-.DS_store
+!.vimprj/
+!.vimprj/*
 *.log
 *.pyc
+.DS_store
 __init__.py
 __init__.pyc

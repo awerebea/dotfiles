@@ -59,6 +59,9 @@ Plugin 'shinchu/lightline-gruvbox.vim'
 Plugin 'vim-scripts/restore_view.vim'
 Plugin 'xavierd/clang_complete'
 Plugin 'chrisbra/Colorizer'
+Plugin 'vim-scripts/indexer.tar.gz'
+Plugin 'vim-scripts/vimprj'
+Plugin 'vim-scripts/DfrankUtil'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -1025,3 +1028,6 @@ endif
 :let g:colorizer_auto_filetype='css,html,cpp,vim,python'
 " highlight colors toggle
 noremap <leader>ct :ColorToggle<CR>
+
+" Indexer settings
+let g:indexer_disableCtagsWarning=1
