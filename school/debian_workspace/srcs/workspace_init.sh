@@ -27,6 +27,7 @@ ln -s ~/Github/dotfiles/.vimrc ~/
 ln -s ~/Github/dotfiles/.tmux.conf ~/
 ln -s ~/Github/dotfiles/.tmux.conf.local ~/
 ln -s ~/Github/dotfiles/ranger ~/.config/ranger
+ln -s ~/Github/dotfiles/.highlight ~/.highlight
 cd / && find ~/ -type f -name *.sh -exec chmod +x {} \;
 cp ~/Github/dotfiles/Git/.gitconfig ~/
 
