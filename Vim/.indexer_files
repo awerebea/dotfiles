@@ -1,0 +1,4 @@
+[PROJECTS_PARENT]
+option:ctags_params="--langmap=c:.c,c++:.cpp,python:.py,java:.java.jar --languages=c++,c,python,java"
+
+/run/media/andrei/awerebea/school-21/projects/github

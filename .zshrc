@@ -16,6 +16,7 @@ if [[ `uname -n` == *"21-school"* ]]; then
   # School
   export ZSH="/Users/awerebea/.oh-my-zsh"
   export DOCKER_CMD_FOR_ALIAS="docker"
+  export GIT_DOTFILES="/Users/awerebea/Documents/Github/dotfiles"
   export GIT_WORKSPACE="/Users/awerebea/Documents/Github/workspace"
   alias norminette='/Users/awerebea/.scripts/colorised_norm.sh'
   alias o='a -e open' # quick opening files with open
@@ -41,6 +42,7 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     # Home Manjaro
     export ZSH="/home/andrei/.oh-my-zsh"
     export DOCKER_CMD_FOR_ALIAS="sudo docker"
+    export GIT_DOTFILES="/run/media/andrei/awerebea/Github/dotfiles"
     export GIT_WORKSPACE="/run/media/andrei/awerebea/Github/workspace"
     alias norminette='/home/andrei/.config/.scripts/colorised_norm.sh'
     alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
@@ -62,7 +64,8 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     # Home macOS
     export ZSH="/Users/andrei/.oh-my-zsh"
     export DOCKER_CMD_FOR_ALIAS="docker"
-    export GIT_WORKSPACE="/Volumes/awerebea/Github/workspace/"
+    export GIT_DOTFILES="/Volumes/awerebea/Github/dotfiles"
+    export GIT_WORKSPACE="/Volumes/awerebea/Github/workspace"
     alias norminette='/Users/andrei/.scripts/colorised_norm.sh'
     alias o='a -e open' # quick opening files with open
     google() {
@@ -78,7 +81,8 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
   fi
 else
   export ZSH="$HOME/.oh-my-zsh"
-  export GIT_WORKSPACE="$HOME/Github/workspace/"
+  export GIT_DOTFILES="$HOME/Github/dotfiles"
+  export GIT_WORKSPACE="$HOME/Github/workspace"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   google() {
     search=""
@@ -186,6 +190,11 @@ alias dcksa="${DOCKER_CMD_FOR_ALIAS} stop \$(${DOCKER_CMD_FOR_ALIAS} ps -qa)"
 alias dckrc="${DOCKER_CMD_FOR_ALIAS} rm \$(${DOCKER_CMD_FOR_ALIAS} container ls -qa)"
 alias dckri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)"
 alias dckreset="dcksa && dckrc && dckri"
+
+# Copy vim tags plugins (indexer, vimprj) config dir to project root
+function vimprj() {
+  mkdir -p .vimprj && for f in `ls -A ${GIT_DOTFILES}/Vim/.vimprj | grep -v '.indexer_files_tags'`; do cp -- ${GIT_DOTFILES}/Vim/.vimprj/$f .vimprj/$f; done
+}
 
 # fix oh-my-zsh history-sync plugin
 function zhistsyncplugfix() {

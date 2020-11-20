@@ -15,8 +15,15 @@ cat <<EOT >> ~/.gitignore
 .ctagsignore
 .fuse_hidden*
 .idea
+.indexer_files_tags/
+.indexer_files_tags/*
+.vimprj/
+.vimprj/*
 .vscode
 CMakeLists.txt
+__init__.py
+__pycache__/
+__pycache__/*
 cmake-build-debug/
 cmake-build-debug/*
 compile_commands.json

@@ -1,0 +1,4 @@
+[%dir_name(..)%]
+option:ctags_params="--langmap=c:.c,c++:.cpp,python:.py,java:.java.jar --languages=c++,c,python,java"
+
+$VIMPRJ_PROJECT_ROOT
