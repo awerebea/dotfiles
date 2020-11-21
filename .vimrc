@@ -1130,3 +1130,6 @@ command! -bang -nargs=* Ag
 " Quickly edit/reload this configuration file
 nnoremap <leader>ve :edit $MYVIMRC<CR>
 nnoremap <leader>vs :source $MYVIMRC<CR>
+
+" autoclose preview window after autocompletion is done
+autocmd CompleteDone * pclose
