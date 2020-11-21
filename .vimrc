@@ -923,6 +923,13 @@ let g:my_todo_highlight_config = {
 \    'cterm_fg_color': 'white',
 \    'cterm_bg_color': '204'
 \  },
+\  'WARN': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#bd1314',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '204'
+\  },
 \  'XXX': {
 \    'gui_fg_color': '#ffffff',
 \    'gui_bg_color': '#bd1314',
