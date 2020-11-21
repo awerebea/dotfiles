@@ -459,3 +459,6 @@ next () {
   echo 'No next directory.' >&2
   return 1
 }
+
+# Set Bat theme
+export BAT_THEME="gruvbox"
