@@ -62,6 +62,8 @@ Plugin 'chrisbra/Colorizer'
 Plugin 'vim-scripts/indexer.tar.gz'
 Plugin 'vim-scripts/vimprj'
 Plugin 'vim-scripts/DfrankUtil'
+Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plugin 'junegunn/fzf.vim'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -71,8 +73,6 @@ Plugin 'vim-scripts/DfrankUtil'
 " Plugin 'jiangmiao/auto-pairs'
 " Plugin 'Raimondi/delimitMate'
 " Plugin 'brookhong/cscope.vim'
-" Plugin 'ctrlpvim/ctrlp.vim'
-" Plugin 'tacahiroy/ctrlp-funky'
 " Plugin 'junegunn/vim-easy-align'
 
 " All of your Plugins must be added before the following line
@@ -571,14 +571,6 @@ imap <F10> <esc>:TlistToggle<cr>
 " let g:cscope_silent = 1
 " set cscopetag
 
-" " CtrlP
-" nnoremap <Leader>fu :CtrlPFunky<Cr>
-" " narrow the list down with a word under cursor
-" nnoremap <Leader>fU :execute 'CtrlPFunky ' . expand('<cword>')<Cr>
-" let g:ctrlp_show_hidden = 1
-" set wildignore+=*.a,*.o,*.bmp,*.gif,*.jpg,*.jpeg,*.ico,*.png,*.DS_Store,.git,.hg,.svn,*.swp,*.tmp
-" nnoremap <leader>. :CtrlPTag<cr>
-
 " vim-syntastic
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -1030,3 +1022,111 @@ noremap <leader>ct :ColorToggle<CR>
 
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
+
+" ============================================================================
+" FZF
+" ============================================================================
+
+let $FZF_DEFAULT_OPTS .= ' --inline-info'
+" let g:fzf_preview_window = ['right:50%', 'ctrl-/']
+" let g:fzf_preview_window = ['up:40%:hidden', 'ctrl-/']
+let g:fzf_preview_window = ['up:50%', 'ctrl-/']
+" let g:fzf_preview_window = []
+
+" if exists('$TMUX')
+"   let g:fzf_layout = { 'tmux': '-p90%,60%' }
+" else
+"   let g:fzf_layout = { 'window': { 'width': 0.9, 'height': 0.6 } }
+" endif
+let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
+
+" All files
+command! -nargs=? -complete=dir AF
+  \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
+  \   'source': 'fd --type f --hidden --follow --exclude .git --no-ignore . '.expand(<q-args>)
+  \ })))
+
+let g:fzf_colors =
+\ { 'fg':      ['fg', 'Normal'],
+  \ 'bg':      ['bg', 'Normal'],
+  \ 'hl':      ['fg', 'Comment'],
+  \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
+  \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
+  \ 'hl+':     ['fg', 'Statement'],
+  \ 'info':    ['fg', 'PreProc'],
+  \ 'border':  ['fg', 'Ignore'],
+  \ 'prompt':  ['fg', 'Conditional'],
+  \ 'pointer': ['fg', 'Exception'],
+  \ 'marker':  ['fg', 'Keyword'],
+  \ 'spinner': ['fg', 'Label'],
+  \ 'header':  ['fg', 'Comment'] }
+
+" Terminal buffer options for fzf
+autocmd! FileType fzf
+autocmd  FileType fzf set noshowmode noruler nonu
+
+" nnoremap <silent> <Leader>f :Files<CR>
+nnoremap <silent> <expr> <Leader>f (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
+nnoremap <silent> <Leader>C        :Colors<CR>
+nnoremap <silent> <Leader><Enter>  :Buffers<CR>
+nnoremap <silent> <Leader>l        :Lines<CR>
+nnoremap <silent> <Leader>ag       :Ag <C-R><C-W><CR>
+nnoremap <silent> <Leader>AG       :Ag <C-R><C-A><CR>
+xnoremap <silent> <Leader>ag       y:Ag <C-R>"<CR>
+nnoremap <silent> <Leader>rg       :Rg<CR>
+nnoremap <silent> <Leader>RG       :Rg <C-R><C-A><CR>
+xnoremap <silent> <Leader>rg       y:Rg <C-R>"<CR>
+nnoremap <silent> <Leader>`        :Marks<CR>
+" nnoremap <silent> q: :History:<CR>
+" nnoremap <silent> q/ :History/<CR>
+
+inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll 500 --min 5')
+imap <c-x><c-k> <plug>(fzf-complete-word)
+imap <c-x><c-f> <plug>(fzf-complete-path)
+inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
+imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+imap <c-x><c-l> <plug>(fzf-complete-line)
+
+" nmap <leader><tab> <plug>(fzf-maps-n)
+" xmap <leader><tab> <plug>(fzf-maps-x)
+" omap <leader><tab> <plug>(fzf-maps-o)
+
+function! s:plug_help_sink(line)
+  let dir = g:plugs[a:line].dir
+  for pat in ['doc/*.txt', 'README.md']
+    let match = get(split(globpath(dir, pat), "\n"), 0, '')
+    if len(match)
+      execute 'tabedit' match
+      return
+    endif
+  endfor
+  tabnew
+  execute 'Explore' dir
+endfunction
+
+command! PlugHelp call fzf#run(fzf#wrap({
+  \ 'source': sort(keys(g:plugs)),
+  \ 'sink':   function('s:plug_help_sink')}))
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let options = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  let options = fzf#vim#with_preview(options, 'right', 'ctrl-/')
+  call fzf#vim#grep(initial_command, 1, options, a:fullscreen)
+endfunction
+
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+command! -bang -nargs=* Rg
+  \ call fzf#vim#grep(
+  \   "rg --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:cyan' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold' --column --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>), 1,
+  \   fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+
+command! -bang -nargs=* Ag
+  \ call fzf#vim#ag(<q-args>, '--column --numbers --smart-case --color --color-path "36;1" --color-match "30;43" --color-line-number "33;1"', fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+
+" Quickly edit/reload this configuration file
+nnoremap <leader>ve :edit $MYVIMRC<CR>
+nnoremap <leader>vs :source $MYVIMRC<CR>
