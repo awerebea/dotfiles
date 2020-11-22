@@ -64,6 +64,7 @@ Plugin 'vim-scripts/vimprj'
 Plugin 'vim-scripts/DfrankUtil'
 Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plugin 'junegunn/fzf.vim'
+Plugin 'francoiscabrol/ranger.vim'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -806,11 +807,24 @@ let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '.DS_Store']
 " Close nerdtree and vim on close file
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
 map <F2> :NERDTreeToggle<CR>
-" autoopen NERDTree when vim starts up and no files were specified
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-autocmd StdinReadPre * let s:std_in=1
+" " autoopen NERDTree when vim starts up and no files were specified
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" autocmd StdinReadPre * let s:std_in=1
 " close Vim if NerdTree is last opened buffer
 " autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" Ranger integration
+let g:ranger_map_keys = 0
+let g:NERDTreeHijackNetrw = 0 " add this line if you use NERDTree
+let g:ranger_replace_netrw = 1 " open ranger when vim open a directory
+map <leader>rr :Ranger<CR>
+map <leader>rt :RangerCurrentFileExistingOrNewTab<CR>
+map <leader>rw :RangerWorkingDirectory<CR>
+map <leader>re :RangerWorkingDirectoryExistingOrNewTab<CR>
+let s:uname_host = system("echo -n \"$(uname -n)\"")
+if !v:shell_error && s:uname_host =~ "21-school"
+  let g:ranger_choice_file = '/Users/awerebea/.ranger_choice_file'
+endif
 
 " Avoid unintentional switches to Ex mode.
 nmap Q q
