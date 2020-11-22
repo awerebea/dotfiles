@@ -5,3 +5,7 @@
 .DS_store
 __init__.py
 __init__.pyc
+ranger/bookmarks
+ranger/copy_buffer
+ranger/history
+ranger/tagged
