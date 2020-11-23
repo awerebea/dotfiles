@@ -580,7 +580,18 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-nnoremap <Leader>e :Errors<Cr>
+" nnoremap <Leader>e :Errors<Cr>
+function! ToggleSyntastic()
+  for i in range(1, winnr('$'))
+    let bnum = winbufnr(i)
+    if getbufvar(bnum, '&buftype') == 'quickfix'
+      lclose
+      return
+    endif
+  endfor
+  Errors
+endfunction
+nnoremap <leader>e :call ToggleSyntastic()<CR>
 
 " Unite
 "nnoremap <Leader>p :Unite file_rec/async<cr>
