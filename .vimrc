@@ -716,7 +716,7 @@ map z? <Plug>(incsearch-easymotion-?)
 map zg/ <Plug>(incsearch-easymotion-stay)
 
 set autoindent
-set pastetoggle=<f4>
+set pastetoggle=<F4>
 
 " autopairing
 " inoremap " ""<left>
@@ -1059,6 +1059,7 @@ let g:indexer_disableCtagsWarning=1
 " FZF
 " ============================================================================
 
+let $FZF_DEFAULT_COMMAND = 'ag -g ""' " ignore files, ignored in .gitignore
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
 " let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 " let g:fzf_preview_window = ['up:40%:hidden', 'ctrl-/']
@@ -1165,3 +1166,9 @@ nnoremap <leader>vs :source $MYVIMRC<CR>
 
 " autoclose preview window after autocompletion is done
 autocmd CompleteDone * pclose
+
+" autoclose location list before window change
+map <c-h> :lclose<CR><C-w>h
+map <c-j> :lclose<CR><C-w>j
+map <c-k> :lclose<CR><C-w>k
+map <c-l> :lclose<CR><C-w>l
