@@ -5,8 +5,10 @@
 # commands when upgrading ranger.
 
 # You always need to import ranger.api.commands here to get the Command class:
+from functools import partial
 from ranger.api.commands import *
 from ranger.core.loader import CommandLoader
+from ranger.ext.get_executables import get_executables
 
 # A simple command for demonstration purposes follows.
 #------------------------------------------------------------------------------
@@ -14,6 +16,7 @@ from ranger.core.loader import CommandLoader
 # You can import any python module as needed.
 import os
 import re
+import subprocess
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
 # command.  Try typing ":my_edit<ENTER>" in ranger!
@@ -60,8 +63,6 @@ class my_edit(Command):
         return self._tab_directory_content()
 
 
-# https://github.com/ranger/ranger/wiki/Integrating-File-Search-with-fzf
-# Now, simply bind this function to a key, by adding this to your ~/.config/ranger/rc.conf: map <C-f> fzf_select
 class fzf_select(Command):
     """
     :fzf_select
@@ -74,45 +75,11 @@ class fzf_select(Command):
     """
     def execute(self):
         import subprocess
-        if self.quantifier:
-            # match only directories
-            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
-            -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
-        else:
-            # match files and directories
-            command="find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
-            -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
-        fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
+        import os.path
+        fzf = self.fm.execute_command("fzf +m", universal_newlines=True, stdout=subprocess.PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
-            if os.path.isdir(fzf_file):
-                self.fm.cd(fzf_file)
-            else:
-                self.fm.select_file(fzf_file)
-
-
-# fzf_locate
-class fzf_locate(Command):
-    """
-    :fzf_locate
-
-    Find a file using fzf.
-
-    With a prefix argument select only directories.
-
-    See: https://github.com/junegunn/fzf
-    """
-    def execute(self):
-        import subprocess
-        if self.quantifier:
-            command="locate home media | fzf -e -i"
-        else:
-            command="locate home media | fzf -e -i"
-        fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
-        stdout, stderr = fzf.communicate()
-        if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
+            fzf_file = os.path.abspath(stdout.rstrip('\n'))
             if os.path.isdir(fzf_file):
                 self.fm.cd(fzf_file)
             else:
@@ -267,16 +234,6 @@ class paste_as_root(Command):
         else:
             self.fm.execute_console('shell sudo cp -r %c .')
 
-class show_files_in_finder(Command):
-    """
-    :show_files_in_finder
-
-    Present selected files in finder
-    """
-
-    def execute(self):
-        self.fm.run('open .', flags='f')
-
 class ag(Command):
     """:ag 'regex'
     Looks for a string in all marked paths or current dir
@@ -395,3 +352,79 @@ class ag(Command):
         if flg[0] == '-' and flg[1] in 'flvgprw':
             cmd += ' ' + flg
         return ['{} {}'.format(cmd, p) for p in reversed(ag.patterns)]
+
+#  class show_files_in_finder(Command):
+#      """
+#      :show_files_in_finder
+
+#      Present selected files in finder
+#      """
+
+#      def execute(self):
+#          self.fm.run('open .', flags='f')
+
+class show_files_in_finder(Command):
+    """Present selected files in finder."""
+
+    def execute(self):
+        """Execute the command."""
+        if sys.platform != 'darwin':
+            return
+        files = ",".join(
+            [
+                '"{0}" as POSIX file'.format(file.path)
+                for file in self.fm.thistab.get_selection()
+            ]
+        )
+        reveal_script = "tell application \"Finder\" to reveal {{{0}}}".format(files)
+        activate_script = "tell application \"Finder\" to set frontmost to true"
+        script = "osascript -e '{0}' -e '{1}'".format(reveal_script, activate_script)
+        self.fm.notify(script)
+        subprocess.check_output(
+            ["osascript", "-e", reveal_script, "-e", activate_script]
+        )
+
+class trash_with_confirmation(Command):
+    """Send to trash asking for confirmation first."""
+
+    def execute(self):
+        """Execute the command."""
+        trash_cmd = 'trash-put'
+        if trash_cmd not in get_executables():
+            self.fm.notify("Couldn't find {trash_cmd} on the PATH.".format(trash_cmd=trash_cmd), bad=True)
+            return
+
+        files = [f.relative_path for f in self.fm.thistab.get_selection()]
+        if not files:
+            self.fm.notify("No file selected for deletion", bad=True)
+            return
+        self.fm.ui.console.ask(
+            "Confirm deletion of: {files} (y/N)".format(files=files),
+            partial(self._question_callback, files),
+            ('n', 'N', 'y', 'Y'),
+        )
+
+    def _question_callback(self, files, answer):
+        if answer == 'y' or answer == 'Y':
+            for f in files:
+                file = re.escape(f)
+                cmd = 'trash-put {file}'.format(file=file)
+                trash_cli = self.fm.execute_command(cmd, stdout=subprocess.PIPE)
+                trash_cli.communicate()
+
+class toggle_flat(Command):
+    """
+    :toggle_flat
+
+    Flattens or unflattens the directory view.
+    """
+
+    def execute(self):
+        if self.fm.thisdir.flat == 0:
+            self.fm.thisdir.unload()
+            self.fm.thisdir.flat = -1
+            self.fm.thisdir.load_content()
+        else:
+            self.fm.thisdir.unload()
+            self.fm.thisdir.flat = 0
+            self.fm.thisdir.load_content()
