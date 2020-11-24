@@ -166,3 +166,20 @@ export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu
 
 # Set Bat theme
 export BAT_THEME="gruvbox"
+
+# FZF settings
+# Set fzf to find hidden files but ignore .gitignored
+export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+# Set fzf preview options
+export FZF_DEFAULT_OPTS='--height=100% --preview "bat --style=numbers --color=always --line-range :500 {}" --preview-window=up:60%:wrap --bind=ctrl-/:toggle-preview,alt-j:preview-down,alt-k:preview-up --bind=ctrl-space:toggle+up,ctrl-d:half-page-down,ctrl-u:half-page-up'
+export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
+if [ -f ~/.fzf/completion.zsh ]; then
+    source ~/.fzf/completion.zsh
+else
+    print "404: ~/.fzf/completion.zsh not found."
+fi
+if [ -f ~/.fzf/key-bindings.zsh ]; then
+    source ~/.fzf/key-bindings.zsh
+else
+    print "404: ~/.fzf/key-bindings.zsh."
+fi
