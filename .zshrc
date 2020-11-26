@@ -84,6 +84,7 @@ alias zhistclr="cat -n ${HOME}/${ZSH_HISTORY_FILE_NAME} | LC_ALL=C sort -hr | LC
 # alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 alias ranger='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR" > /dev/null 2>&1'
 alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR" > /dev/null 2>&1'
+alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
 
 alias cls="clear"
 alias -g G='| grep -i'
