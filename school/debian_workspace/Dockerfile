@@ -15,6 +15,7 @@ RUN apt-get update \
 	ctags \
 	curl \
 	fasd \
+	fzf \
 	gcc \
 	git \
 	gpg \

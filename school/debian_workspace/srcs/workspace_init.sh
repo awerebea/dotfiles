@@ -22,12 +22,14 @@ cd ~/Github/dotfiles && git remote set-url origin git@github.com:awerebea/dotfil
 rm -f ~/.zshrc
 mkdir ~/.config
 ln -s ~/Github/dotfiles/.zshrc ~/
+ln -s ~/Github/dotfiles/.zshscripts ~/
 ln -s ~/Github/dotfiles/.p10k.zsh ~/
 ln -s ~/Github/dotfiles/.vimrc ~/
 ln -s ~/Github/dotfiles/.tmux.conf ~/
 ln -s ~/Github/dotfiles/.tmux.conf.local ~/
 ln -s ~/Github/dotfiles/ranger ~/.config/ranger
 ln -s ~/Github/dotfiles/.highlight ~/.highlight
+ln -s ~/Github/dotfiles/templates ~/.vim/templates
 cd / && find ~/ -type f -name *.sh -exec chmod +x {} \;
 cp ~/Github/dotfiles/Git/.gitconfig ~/
 
