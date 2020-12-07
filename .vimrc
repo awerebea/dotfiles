@@ -1179,3 +1179,8 @@ map <c-h> :lclose<CR><C-w>h
 map <c-j> :lclose<CR><C-w>j
 map <c-k> :lclose<CR><C-w>k
 map <c-l> :lclose<CR><C-w>l
+
+" set tmux.conf.local filetype 'tmux'
+augroup filetypedetect
+  au BufRead,BufNewFile .tmux.conf.local setfiletype tmux
+augroup END
