@@ -86,9 +86,11 @@ filetype plugin indent on    " required
 
 " Brief help
 " :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" installs plugins; append `!` to update or just :PluginUpdate
+" :PluginInstall
 " :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+" confirms removal of unused plugins; append `!` to auto-approve removal
+" :PluginClean
 "
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
@@ -116,7 +118,7 @@ set wildignore+=.hg,.git,.svn                    " Version control
 set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
 set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
 set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
-set wildignore+=*.spl                            " compiled spelling word lists
+set wildignore+=*.spl                            " compiled spelling word list
 set wildignore+=*.sw?                            " Vim swap files
 set wildignore+=*.DS_Store                       " OSX bullshit
 set wildignore+=*.luac                           " Lua byte code
@@ -172,7 +174,7 @@ set ttymouse=xterm2
 set mouse=a
 set mousehide
 set showcmd
-set number norelativenumber
+set number
 
 " relativenumber toggle
 nmap <leader>rn :set relativenumber!<CR>
@@ -187,7 +189,6 @@ cnoremap kj <C-C>
 set encoding=utf-8	" default file encoding
 set fileencodings=utf8,cp1251
 set t_Co=256
-set smartcase		" Do smart case matching
 set autowrite		" Automatically save before commands like :next and :make
 set updatetime=2000	" gitgutter update delay
 
@@ -215,8 +216,8 @@ endfunction
 set splitbelow
 set splitright
 
-" We can use different key mappings for easy navigation between splits to save a
-" keystroke. So instead of ctrl-w then j, it’s just ctrl-j:
+" Easy navigation between splits to save a keystroke.
+" So instead of ctrl-w then j, use just ctrl-j:
 nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
@@ -235,12 +236,16 @@ elseif has('unix')
 endif
 
 set autoread " перечитывать изменённые файлы автоматически
-autocmd! bufwritepost $MYVIMRC source $MYVIMRC " Автоматически перечитывать конфигурацию VIM после сохранения
+" Автоматически перечитывать конфигурацию VIM после сохранения
+autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 
 set backspace=indent,eol,start " backspace обрабатывает отступы, концы строк
-set sessionoptions=curdir,buffers,tabpages " опции сессий - перейти в текущую директорию, использовать буферы и табы
+" опции сессий - перейти в текущую директорию, использовать буферы и табы
+set sessionoptions=curdir,buffers,tabpages
 set undolevels=2048 " хранить историю изменений числом N
-set whichwrap=b,<,>,[,],l,h " перемещать курсор на следующую строку при нажатии на клавиши вправо-влево и пр.
+" перемещать курсор на следующую строку при нажатии на клавиши вправо-влево
+" и пр.
+set whichwrap=b,<,>,[,],l,h
 set pastetoggle= " при вставке фрагмента сохраняет отступ
 
 " text selection highlighting
@@ -261,8 +266,10 @@ nmap <leader>ll :set list!<CR>
 " highlight trailing spaces
 au BufNewFile,BufRead * let b:mtrailingws=matchadd('ErrorMsg', '\s\+$', -1)
 " highlight tabs between spaces
-au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg', '\v(\t+)\ze( +)', -1)
-au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg', '\v( +)\zs(\t+)', -1)
+au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
+  \ '\v(\t+)\ze( +)', -1)
+au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
+  \ '\v( +)\zs(\t+)', -1)
 
 "colorscheme sublimemonokai
 "color molokai
@@ -286,7 +293,8 @@ let g:NERDSpaceDelims = 1
 " custom formats or override the defaults
 let g:NERDCustomDelimiters = { 'c': { 'left': '/*','right': '*/' } }
 " let g:NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
-" Align line-wise comment delimiters flush left instead of following code indentation (left/both)
+" Align line-wise comment delimiters flush left instead of following code
+" indentation (left/both)
 let g:NERDDefaultAlign = 'both'
 " Allow commenting and inverting empty lines (useful when commenting a region)
 "let g:NERDCommentEmptyLines = 1
@@ -298,128 +306,108 @@ let g:NERDTrimTrailingWhitespace = 1
 " Tagbar
 " JS
 let g:tagbar_type_javascript = {
-    \ 'ctagsbin' : '/path/to/jsctags'
-	\ }
+  \   'ctagsbin' : '/path/to/jsctags'
+  \ }
 
 " CSS
 let g:tagbar_type_css = {
-			\ 'ctagstype' : 'Css',
-    \ 'kinds'     : [
-        \ 'c:classes',
-        \ 's:selectors',
-        \ 'i:identities'
-    \ ]
-	\ }
+  \ 'ctagstype' : 'Css',
+  \ 'kinds'     : [
+  \   'c:classes',
+  \   's:selectors',
+  \   'i:identities'
+  \   ]
+  \ }
 
 " Google Go
 let g:tagbar_type_go = {
-    \ 'ctagstype': 'go',
-    \ 'kinds' : [
-        \'p:package',
-        \'f:function',
-        \'v:variables',
-        \'t:type',
-        \'c:const'
-    \]
-	\}
+  \ 'ctagstype': 'go',
+  \ 'kinds' : [
+  \   'p:package',
+  \   'f:function',
+  \   'v:variables',
+  \   't:type',
+  \   'c:const'
+  \   ]
+  \ }
 
 " Rainbow brackets settings
 let g:rainbow_active = 1
 let g:rainbow_conf = {
-\   'guifgs': ['darkorange', 'lightblue', 'lightyellow', 'lightcyan', 'lightmagenta', 'seagreen3', 'firebrick'],
-\   'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
-\   'guis': [''],
-\   'cterms': [''],
-\   'operators': '_,_',
-\   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
-\   'separately': {
-\       '*': {},
-\       'markdown': {
-\           'parentheses_options': 'containedin=markdownCode contained',
-\       },
-\       'lisp': {
-\           'guifgs': ['royalblue3', 'darkorange3', 'seagreen3', 'firebrick', 'darkorchid3'],
-\       },
-\       'haskell': {
-\           'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'],
-\       },
-\       'vim': {
-\           'parentheses_options': 'containedin=vimFuncBody',
-\       },
-\       'perl': {
-\           'syn_name_prefix': 'perlBlockFoldRainbow',
-\       },
-\       'stylus': {
-\           'parentheses': ['start=/{/ end=/}/ fold contains=@colorableGroup'],
-\       },
-\       'css': 0,
-\   }
-\}
+  \   'guifgs': ['darkorange', 'lightblue', 'lightyellow', 'lightcyan',
+  \ 'lightmagenta', 'seagreen3', 'firebrick'],
+  \   'ctermfgs': ['lightblue', 'lightyellow', 'lightcyan', 'lightmagenta'],
+  \   'guis': [''],
+  \   'cterms': [''],
+  \   'operators': '_,_',
+  \   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold',
+  \ 'start=/{/ end=/}/ fold'],
+  \   'separately': {
+  \       '*': {},
+  \       'markdown': {
+  \           'parentheses_options': 'containedin=markdownCode contained',
+  \       },
+  \       'lisp': {
+  \           'guifgs': ['royalblue3', 'darkorange3', 'seagreen3',
+  \ 'firebrick', 'darkorchid3'],
+  \       },
+  \       'haskell': {
+  \           'parentheses': ['start=/(/ end=/)/ fold',
+  \ 'start=/\[/ end=/\]/ fold', 'start=/\v\{\ze[^-]/ end=/}/ fold'],
+  \       },
+  \       'vim': {
+  \           'parentheses_options': 'containedin=vimFuncBody',
+  \       },
+  \       'perl': {
+  \           'syn_name_prefix': 'perlBlockFoldRainbow',
+  \       },
+  \       'stylus': {
+  \           'parentheses': ['start=/{/ end=/}/
+  \ fold contains=@colorableGroup'],
+  \       },
+  \       'css': 0,
+  \   }
+  \ }
 
 "lightline
 let g:lightline = {
-\ 'colorscheme': 'default',
-\ 'active': {
-\   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
-\   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype', 'fileencoding', 'charvaluehex', 'spell', 'indent']]
-\ },
-\ 'mode_map' : {
-\   'n' : 'N',
-\   'i' : 'I',
-\   'R' : 'R',
-\   'v' : 'V',
-\   'V' : 'VL',
-\   "\<C-v>": 'VB',
-\   'c' : 'C',
-\   's' : 'S',
-\   'S' : 'SL',
-\   "\<C-s>": 'SB',
-\   't' : 'T',
-\ },
-\ 'tab_component_function': {
-\   'filename': 'LightlineTabname',
-\ },
-\ 'component_function': {
-\   'filename': 'LightlineFileName',
-\   'gitbranch': 'LightlineGitbranch',
-\   'fileformat': 'LightlineFileformat',
-\   'filetype': 'LightlineFiletype',
-\   'fileencoding': 'LightlineFileencoding',
-\   'charvaluehex': 'LightlineCharvaluehex',
-\   'indent': 'LightlineIndent',
-\   'lineinfo': 'LightlineLineinfo',
-\   'percent': 'LightlinePercent',
-\ },
-\ 'component_type': {
-\   'readonly': 'error',
-\ },
-\ }
-
-" let g:lightline.component = {
-"         \ 'mode': '%{lightline#mode()}',
-"         \ 'absolutepath': '%F',
-"         \ 'relativepath': '%f',
-"         \ 'filename': '%t',
-"         \ 'modified': '%M',
-"         \ 'bufnum': '%n',
-"         \ 'paste': '%{&paste?"PASTE":""}',
-"         \ 'readonly': '%R',
-"         \ 'charvalue': '%b',
-"         \ 'charvaluehex': '%B',
-"         \ 'fileencoding': '%{&fenc!=#""?&fenc:&enc}',
-"         \ 'fileformat': '%{&ff}',
-"         \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
-"         \ 'percent': '%3p%%',
-"         \ 'percentwin': '%P',
-"         \ 'spell': '%{&spell?&spelllang:""}',
-"         \ 'lineinfo': '%3l:%-2c',
-"         \ 'line': '%l',
-"         \ 'column': '%c',
-"         \ 'close': '%999X X ',
-"         \ 'winnr': '%{winnr()}' }
-
-" \ 'lineinfo': '%2.(%l%)/%-2.(%L%) %3.(%c%)/%-2.(%v%)%<' }
-" \   'lineinfo': 'LightlineLineInfo',
+  \ 'colorscheme': 'default',
+  \ 'active': {
+  \   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
+  \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
+  \ 'fileencoding', 'charvaluehex', 'spell', 'indent']]
+  \ },
+  \ 'mode_map' : {
+  \   'n' : 'N',
+  \   'i' : 'I',
+  \   'R' : 'R',
+  \   'v' : 'V',
+  \   'V' : 'VL',
+  \   "\<C-v>": 'VB',
+  \   'c' : 'C',
+  \   's' : 'S',
+  \   'S' : 'SL',
+  \   "\<C-s>": 'SB',
+  \   't' : 'T',
+  \ },
+  \ 'tab_component_function': {
+  \   'filename': 'LightlineTabname',
+  \ },
+  \ 'component_function': {
+  \   'filename': 'LightlineFileName',
+  \   'gitbranch': 'LightlineGitbranch',
+  \   'fileformat': 'LightlineFileformat',
+  \   'filetype': 'LightlineFiletype',
+  \   'fileencoding': 'LightlineFileencoding',
+  \   'charvaluehex': 'LightlineCharvaluehex',
+  \   'indent': 'LightlineIndent',
+  \   'lineinfo': 'LightlineLineinfo',
+  \   'percent': 'LightlinePercent',
+  \ },
+  \ 'component_type': {
+  \   'readonly': 'error',
+  \ },
+  \ }
 
 function! LightlineFileName()
   let filename = expand('%:p:h:t') . '/' . expand('%:t')
@@ -453,7 +441,8 @@ function! LightlineLineinfo() abort
       let l:max_line = printf('%-2s', line('$'))
       let l:current_col = printf('%3s', col('.'))
       let l:virt_col = printf('%-2s', virtcol('.'))
-      let l:lineinfo = l:current_line . '/' . l:max_line . ' ' . l:current_col . '/' . l:virt_col
+      let l:lineinfo = l:current_line . '/' . l:max_line . ' '
+  \ . l:current_col . '/' . l:virt_col
       return l:lineinfo
     else
       return ''
@@ -461,7 +450,7 @@ endfunction
 
 augroup lightline_update
   autocmd!
-  if has('patch-7.4.786') " 17 Jul 2015 with fixes in 7.4.888, 8.0.0736, 8.0.0974
+  if has('patch-7.4.786') " 17 Jul 2015 with fixes in 7.4.888, 8.0.0974
     autocmd OptionSet tabstop,shiftwidth,expandtab :call lightline#update()
   endif
   autocmd Filetype * :call lightline#update()
@@ -482,11 +471,13 @@ function! LightlineIndent()
       return '⇆'.&tabstop."↹"
     elseif &tabstop && !&softtabstop && !&shiftwidth && !&expandtab
       return '⇆'.&tabstop."↹"
-    elseif &tabstop && !&softtabstop && &tabstop == &shiftwidth && !&expandtab
+    elseif &tabstop && !&softtabstop && &tabstop == &shiftwidth
+  \ && !&expandtab
       return '⇆'.&tabstop."↹"
     elseif &tabstop && !&softtabstop && !&shiftwidth && &expandtab
       return '⇆'.&tabstop."␣"
-    elseif &tabstop == &softtabstop && &shiftwidth == &softtabstop && &expandtab
+    elseif &tabstop == &softtabstop && &shiftwidth == &softtabstop
+  \ && &expandtab
       return '⇆'.&tabstop."␣"
     elseif &tabstop != &softtabstop && &shiftwidth && &expandtab
       return '⇆'.&shiftwidth."␣"
@@ -556,10 +547,12 @@ map <Leader>vl :VimuxRunLastCommand<CR>
 "работа тегами (ctags, ctrlP, tagbar, vim-tags)
 " vim-tags
 let g:vim_tags_auto_generate = 0
-let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore', '.ctagsignore']
+let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore',
+  \ '.ctagsignore']
 "let vim_tags_ctags_binary = /usr/local/bin/ctags "for macOS only
 nnoremap <f8> :TagsGenerate!<cr>
-" :nnoremap <F8> :!ctags -R --fields=+l --tag-relative=yes --exclude=.git --exclude=.gitignore -f .git/tags 2>/dev/null<CR>
+" :nnoremap <F8> :!ctags -R --fields=+l --tag-relative=yes --exclude=.git
+"  \ --exclude=.gitignore -f .git/tags 2>/dev/null<CR>
 nnoremap <silent> <Leader>tb :TagbarToggle<CR>
 " nnoremap <leader>l :call ToggleLocationList()<CR>
 
@@ -649,20 +642,17 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-"НАСТРОЙКИ ПОИСКА ТЕКСТА В ОТКРЫТЫХ ФАЙЛАХ
-
 set ignorecase " ics - поиск без учёта регистра символов
-set smartcase " - если искомое выражения содержит символы в верхнем регистре - ищет с учётом регистра, иначе - без учёта
+set smartcase		" Do smart case matching
 set hlsearch " подсветка результатов поиска
 set incsearch " поиск фрагмента по мере его набора
 " поиск выделенного текста (начинать искать фрагмент при его выделении)
 vnoremap <silent>* <ESC>:call VisualSearch()<CR>/<C-R>/<CR>
 vnoremap <silent># <ESC>:call VisualSearch()<CR>?<C-R>/<CR>
 
-"НАСТРОЙКИ ГОРЯЧИХ КЛАВИШ
-" <leader> F3 - рекурсивный поиск по файлам (плагин grep.vim)
+" <leader> F3 - recursive search with grep.vim
 nnoremap <leader><F3> :Rgrep<cr>
-" <F3> - поиск в открытых буферах
+" <F3> - search in all opened buffers
 nnoremap <F3> :GrepBuffer<cr>
 
 " Enable true color
@@ -672,10 +662,10 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-call yankstack#setup() " fix to vim-surround 'S' keybin works with yankstack plug
+" fix to vim-surround 'S' keybin works with yankstack plug
+call yankstack#setup()
 
 " turn off search highlight by presing space
-" :noremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 :noremap <silent> <Space> :<C-u>nohlsearch<CR><C-l>
 
 " list buffers keybinds
@@ -771,7 +761,9 @@ nnoremap c "_c
 " Save file as sudo on files that require root permission
 cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
 
-" Turns off highlighting on the bits of code that are changed, so the line that is changed is highlighted but the actual text that has changed stands out on the line and is readable.
+" Turns off highlighting on the bits of code that are changed, so the line
+" that is changed is highlighted but the actual text that has changed stands
+" out on the line and is readable.
 if &diff
     highlight! link DiffText MatchParen
 endif
@@ -800,7 +792,8 @@ function! DeleteInactiveBufs()
   let nWipeouts = 0
   for i in range(1, bufnr('$'))
     if bufexists(i) && !getbufvar(i,"&mod") && index(tablist, i) == -1
-      "bufno exists AND isn't modified AND isn't in the list of buffers open in windows and tabs
+      " bufno exists AND isn't modified AND isn't in the list of buffers open
+      " in windows and tabs
       silent exec 'bwipeout' i
       let nWipeouts = nWipeouts + 1
     endif
@@ -818,13 +811,15 @@ command! Ball :call DeleteInactiveBufs()
 let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '.DS_Store']
 " Close nerdtree and vim on close file
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType")
+  \ && b:NERDTreeType == "primary") | q | endif
 map <F2> :NERDTreeToggle<CR>
 " " autoopen NERDTree when vim starts up and no files were specified
 " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " autocmd StdinReadPre * let s:std_in=1
-" close Vim if NerdTree is last opened buffer
-" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+" " close Vim if NerdTree is last opened buffer
+" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree")
+"  \ && b:NERDTree.isTabTree()) | q | endif
 
 " Ranger integration
 let g:ranger_map_keys = 0
@@ -847,9 +842,11 @@ let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
   let g:clang_library_path='/Library/Developer/CommandLineTools/usr/lib/'
-elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home" || s:uname_host == "laptop-acer")
+elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
+  \ || s:uname_host == "laptop-acer")
   let g:clang_library_path='/usr/lib/'
-elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"") == "root"
+elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
+  \ == "root"
   let g:clang_library_path='/usr/lib/clang/'
 endif
 let g:clang_snippets=1
@@ -1055,8 +1052,7 @@ if exists("g:my_todo_highlight_config")
 endif
 
 " Colors highlighting
-" au BufEnter * :ColorHighlight<CR> " auto highlight colors on startup for all files
-" :let g:colorizer_auto_color = 1 " auto highlight colors on startup (not works)
+"au BufEnter * :ColorHighlight<CR> " highlight colors on startup for all files
 :let g:colorizer_auto_filetype='css,html,cpp,vim,python'
 " highlight colors toggle
 noremap <leader>ct :ColorToggle<CR>
@@ -1085,7 +1081,8 @@ let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 " All files
 command! -nargs=? -complete=dir AF
   \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
-  \   'source': 'fd --type f --hidden --follow --exclude .git --no-ignore . '.expand(<q-args>)
+  \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore .
+  \ '.expand(<q-args>)
   \ })))
 
 let g:fzf_colors =
@@ -1108,7 +1105,8 @@ autocmd! FileType fzf
 autocmd  FileType fzf set noshowmode noruler nonu
 
 " nnoremap <silent> <Leader>f :Files<CR>
-nnoremap <silent> <expr> <Leader>f (expand('%') =~ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
+nnoremap <silent> <expr> <Leader>f (expand('%') =~
+  \ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
 nnoremap <silent> <Leader>C        :Colors<CR>
 nnoremap <silent> <Leader><Enter>  :Buffers<CR>
 nnoremap <silent> <Leader>l        :Lines<CR>
@@ -1122,7 +1120,8 @@ nnoremap <silent> <Leader>`        :Marks<CR>
 " nnoremap <silent> q: :History:<CR>
 " nnoremap <silent> q/ :History/<CR>
 
-inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current --scroll 500 --min 5')
+inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
+  \ --scroll 498 --min 5')
 imap <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
@@ -1151,10 +1150,12 @@ command! PlugHelp call fzf#run(fzf#wrap({
   \ 'sink':   function('s:plug_help_sink')}))
 
 function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case %s || true'
+  let command_fmt = 'rg --column --line-number --no-heading
+  \ --color=always --smart-case %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
-  let options = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  let options = {'options': ['--phony', '--query', a:query, '--bind',
+  \ 'change:reload:'.reload_command]}
   let options = fzf#vim#with_preview(options, 'right', 'ctrl-/')
   call fzf#vim#grep(initial_command, 1, options, a:fullscreen)
 endfunction
@@ -1163,11 +1164,17 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -bang -nargs=* Rg
   \ call fzf#vim#grep(
-  \   "rg --colors 'match:bg:yellow' --colors 'match:fg:black' --colors 'match:style:nobold' --colors 'path:fg:cyan' --colors 'path:style:bold' --colors 'line:fg:yellow' --colors 'line:style:bold' --column --line-number --no-heading --color=always --smart-case -- ".shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+  \ "rg --colors 'match:bg:yellow' --colors 'match:fg:black'
+  \ --colors 'match:style:nobold' --colors 'path:fg:cyan'
+  \ --colors 'path:style:bold' --colors 'line:fg:yellow'
+  \ --colors 'line:style:bold' --column --line-number --no-heading
+  \ --color=always --smart-case -- ".shellescape(<q-args>), 1,
+  \ fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
 
 command! -bang -nargs=* Ag
-  \ call fzf#vim#ag(<q-args>, '--column --numbers --smart-case --color --color-path "36;1" --color-match "30;43" --color-line-number "33;1"', fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+  \ call fzf#vim#ag(<q-args>, '--column --numbers --smart-case --color
+  \ --color-path "36;1" --color-match "30;43" --color-line-number "33;1"',
+  \ fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
 
 " Quickly edit/reload this configuration file
 nnoremap <leader>ve :edit $MYVIMRC<CR>
@@ -1192,7 +1199,8 @@ augroup END
 function s:Kwbd(kwbdStage)
   if(a:kwbdStage == 1)
     if(&modified)
-      let answer = confirm("This buffer has been modified.  Are you sure you want to delete it?", "&Yes\n&No", 2)
+      let answer = confirm("This buffer has been modified.
+  \ Are you sure you want to delete it?", "&Yes\n&No", 2)
       if(answer != 1)
         return
       endif
@@ -1223,7 +1231,8 @@ function s:Kwbd(kwbdStage)
     endwhile
     if(!s:buflistedLeft)
       if(s:bufFinalJump)
-        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump | endif
+        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump
+  \ | endif
       else
         enew
         let l:newBuf = bufnr("%")
@@ -1243,7 +1252,8 @@ function s:Kwbd(kwbdStage)
   else
     if(bufnr("%") == s:kwbdBufNum)
       let prevbufvar = bufnr("#")
-      if(prevbufvar > 0 && buflisted(prevbufvar) && prevbufvar != s:kwbdBufNum)
+      if(prevbufvar > 0 && buflisted(prevbufvar)
+  \ && prevbufvar != s:kwbdBufNum)
         b #
       else
         bn
