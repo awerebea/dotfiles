@@ -159,6 +159,7 @@ if has("autocmd")
   autocmd FileType sh         setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType zsh        setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType tmux       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType conf       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType c          setlocal ts=4 sts=4 sw=4 noet
