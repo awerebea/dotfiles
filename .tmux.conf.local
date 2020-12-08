@@ -324,6 +324,10 @@ set -g history-limit 10000
 # start with mouse mode enabled
 set -g mouse on
 
+# set Allow multiple commands to be entered without pressing the prefix-key again
+# in the specified time milliseconds (the default is 500).
+set repeat-time 750
+
 # ！！！importent！！！ enabling 24 bit color
 set -ga terminal-overrides ",*256col*:Tc"
 
