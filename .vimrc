@@ -375,6 +375,9 @@ let g:lightline = {
   \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
   \ 'fileencoding', 'charvaluehex', 'spell', 'indent']]
   \ },
+  \ 'inactive': {
+  \   'left': [ [ 'filename', 'modified' ] ],
+  \ },
   \ 'mode_map' : {
   \   'n' : 'N',
   \   'i' : 'I',
