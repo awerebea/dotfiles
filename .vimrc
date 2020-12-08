@@ -65,6 +65,8 @@ Plugin 'vim-scripts/DfrankUtil'
 Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plugin 'junegunn/fzf.vim'
 Plugin 'francoiscabrol/ranger.vim'
+Plugin 'tomtom/tinykeymap_vim'
+Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -175,12 +177,7 @@ set ttymouse=xterm2
 set mouse=a
 set mousehide
 set showcmd
-set number
-
-" relativenumber toggle
-nmap <leader>rn :set relativenumber!<CR>
-autocmd InsertEnter * :set norelativenumber
-autocmd InsertLeave * :set relativenumber 
+set number relativenumber
 
 " esc button remap
 inoremap kj <esc>
@@ -1266,3 +1263,10 @@ endfunction
 command! Kwbd call s:Kwbd(1)
 nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
 nmap gz <Plug>Kwbd
+
+" Maps Alt-[s.v] to horizontal and vertical split respectively
+map <silent> <leader>s :split<CR>
+map <silent> <leader>v :vsplit<CR>
+
+" tinykeymap settings (faster win resize)
+call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
