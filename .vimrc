@@ -1065,7 +1065,8 @@ let g:indexer_disableCtagsWarning=1
 " FZF
 " ============================================================================
 
-let $FZF_DEFAULT_COMMAND = 'ag -g ""' " ignore files, ignored in .gitignore
+" ignore files ignored in .gitignore but show hidden
+let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
 " let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 " let g:fzf_preview_window = ['up:40%:hidden', 'ctrl-/']
