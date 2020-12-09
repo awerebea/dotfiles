@@ -370,11 +370,11 @@ set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.t
 set -g mode-keys vi
 
 # replace C-b by C-a instead of using both prefixes
-# set -gu prefix2
-# unbind C-a
-# unbind C-b
-# set -g prefix C-a
-# bind C-a send-prefix
+set -gu prefix2
+unbind C-a
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
 
 # move status line to top/bottom
 # set -g status-position top
@@ -519,3 +519,6 @@ set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
 set -g @sysstat_mem_color_low "#87d75f default default"
 set -g @sysstat_mem_color_medium "#d7af5f default default"
 set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
+
+# Copy-mode keybinds
+bind Escape copy-mode
