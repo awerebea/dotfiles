@@ -67,6 +67,8 @@ Plugin 'junegunn/fzf.vim'
 Plugin 'francoiscabrol/ranger.vim'
 Plugin 'tomtom/tinykeymap_vim'
 Plugin 'jeffkreeftmeijer/vim-numbertoggle'
+Plugin 'jamessan/vim-gnupg'
+Plugin 'neomutt/neomutt.vim'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -1274,3 +1276,45 @@ map <silent> <leader>v :vsplit<CR>
 
 " tinykeymap settings (faster win resize)
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
+
+" GPG settings
+if has("autocmd")
+  " Tell the GnuPG plugin to armor new files.
+  let g:GPGPreferArmor=1
+
+  " Tell the GnuPG plugin to sign new files.
+  let g:GPGPreferSign=1
+
+  " Use gpg(2) to take advantage of the agent.
+  let g:GPGExecutable="/usr/bin/gpg2"
+
+  " Take advantage of the running agent
+  let g:GPGUseAgent=1
+
+  " Override default set of file patterns
+  let g:GPGFilePattern='*.\(gpg\|asc\|pgp\|pw\)'
+
+  augroup GnuPGExtra
+    " Set extra file options.
+    autocmd BufReadCmd,FileReadCmd *.\(pw\) call SetGPGOptions()
+
+    " Automatically close unmodified files after inactivity.
+    autocmd CursorHold *.\(pw\) quit
+  augroup END
+  function SetGPGOptions()
+    " Set the filetype for syntax highlighting.
+    set filetype=gpgpass
+
+    " Set updatetime to 5 minutes.
+    set updatetime=300000
+
+    " Fold at markers.
+    set foldmethod=marker
+
+    " Automatically close all folds.
+    set foldclose=all
+
+    " Only open folds with insert commands.
+    set foldopen=insert
+  endfunction
+endif " has ("autocmd")

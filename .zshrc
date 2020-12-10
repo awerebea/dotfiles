@@ -184,3 +184,9 @@ if [ -f ~/.fzf/key-bindings.zsh ]; then
 else
     print "404: ~/.fzf/key-bindings.zsh."
 fi
+
+# Pass storage path
+export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
+
+# fix GPG plugin support int Vim
+export TERM=xterm-256color

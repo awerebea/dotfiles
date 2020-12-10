@@ -41,3 +41,6 @@
 	line-numbers-zero-style = 244
 	line-numbers-minus-style = 196
 	line-numbers-plus-style = 34
+
+[diff "gpg"]
+	textconv = gpg -qd --no-tty
