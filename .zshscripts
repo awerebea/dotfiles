@@ -495,9 +495,36 @@ function rangerrest() {
 }
 
 # Move Slack cache dir to goinfre
+# CacheStorage
 if [[ `uname -n` == *"21-school"* ]]; then
   OLDDIR="/Users/awerebea/Library/Application Support/Slack/Service Worker/CacheStorage"
   NEWDIR="/goinfre/awerebea/Slack/CacheStorage"
+  if [ ! -d "$NEWDIR" ]; then
+    mkdir -p $NEWDIR
+  fi
+  if [ -d "$OLDDIR" ]; then
+    if [ ! -L $OLDDIR ] ; then
+      cp -r $OLDDIR/* $NEWDIR/ >/dev/null 2>&1
+      rm -rf $OLDDIR
+      ln -s $NEWDIR $OLDDIR
+    fi
+  elif [ -L $OLDDIR ] ; then
+     if [ ! -e $OLDDIR ] ; then
+        rm -f $OLDDIR
+        ln -s $NEWDIR $OLDDIR
+     fi
+  elif [ -e $OLDDIR ] ; then
+    rm -rf $OLDDIR
+    ln -s $NEWDIR $OLDDIR
+  else
+    ln -s $NEWDIR $OLDDIR
+  fi
+fi
+
+# Cache
+if [[ `uname -n` == *"21-school"* ]]; then
+  OLDDIR="/Users/awerebea/Library/Application Support/Slack/Cache"
+  NEWDIR="/goinfre/awerebea/Slack/Cache"
   if [ ! -d "$NEWDIR" ]; then
     mkdir -p $NEWDIR
   fi
