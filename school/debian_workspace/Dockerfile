@@ -49,8 +49,6 @@ RUN	locale-gen "en_US.UTF-8" \
 &&	sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
 &&	locale-gen \
 &&	chsh -s $(which zsh) \
-&&	git clone https://github.com/tmux/tmux.git \
-&&	cd tmux && ./autogen.sh && ./configure && make && make install \
 &&	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
 &&	git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
 &&	cd /root/.vim && mkdir -p undo swap backup bundle \
