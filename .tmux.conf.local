@@ -326,7 +326,7 @@ set -g mouse on
 
 # set Allow multiple commands to be entered without pressing the prefix-key again
 # in the specified time milliseconds (the default is 500).
-set repeat-time 750
+set repeat-time 1500
 
 # ！！！importent！！！ enabling 24 bit color
 set -ga terminal-overrides ",*256col*:Tc"
