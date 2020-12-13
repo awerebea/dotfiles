@@ -337,18 +337,20 @@ set -g status-interval 1      # redraw status line every 1 second
 bind | split-window -h
 
 # swap windows
-bind S-Left swap-window -t -1
-bind S-Right swap-window -t +1
+bind S-Left swap-window -t -1 \; previous-window
+bind S-Right swap-window -t +1 \; next-window
 
-# List of plugins
-set -g @plugin 'tmux-plugins/tpm'
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'tmux-plugins/tmux-resurrect'
-set -g @plugin 'tmux-plugins/tmux-continuum'
-set -g @plugin 'tmux-plugins/tmux-copycat'
-set -g @plugin 'tmux-plugins/tmux-open'
-set -g @plugin 'tmux-plugins/tmux-sidebar'
-set -g @plugin 'samoshkin/tmux-plugin-sysstat'
+# List of installed plugins
+set -g @tpm_plugins '                 \
+  tmux-plugins/tpm                    \
+  tmux-plugins/tmux-sensible          \
+  tmux-plugins/tmux-resurrect         \
+  tmux-plugins/tmux-continuum         \
+  tmux-plugins/tmux-copycat           \
+  tmux-plugins/tmux-open              \
+  tmux-plugins/tmux-sidebar           \
+  samoshkin/tmux-plugin-sysstat       \
+'
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run -b '~/.tmux/plugins/tpm/tpm'
@@ -402,7 +404,7 @@ bind -n C-k run "($is_vim && tmux send-keys C-k) || \
 bind -n C-l run  "($is_vim && tmux send-keys C-l) || \
                           tmux select-pane -R"
 
-bind -n C-\\ if-shell "$is_vim" "send-keys 'C-\\'" "select-pane -l"
+bind -n 'C-\' if-shell "$is_vim" "send-keys 'C-\\'" "select-pane -l"
 
 bind l send-keys 'C-l'
 
@@ -526,3 +528,10 @@ bind C-q pipe-pane -o "mkdir -p ~/.tmux/logs && cat >>~/.tmux/logs/#W-#P.log" \;
 set -g @sidebar-tree-focus 'F2'
 # Colorize the tree directory listing in the sidebar
 set -g @sidebar-tree-command 'tree -C'
+
+# Prefix ! will split the current pane into it's own window.  To join use
+# Prefix W then give the window number at the prompt
+bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
+
+# toggle synchronize-panes
+bind C-x setw synchronize-panes
