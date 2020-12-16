@@ -5,13 +5,13 @@ build:
 
 init_awerebea:
 	mkdir -p ${HOME}/projects
-	docker run -it -e TZ=Europe/Moscow -v ${HOME}/projects:/root/projects --name debian_workspace -d debian:workspace
+	docker run -it -p 80:80 -p 443:443 -e TZ=Europe/Moscow -v ${HOME}/projects:/root/projects --name debian_workspace -d debian:workspace
 	docker cp srcs/. debian_workspace:/
 	docker exec -it debian_workspace bash workspace_init.sh
 
 run:
 	mkdir -p ${HOME}/projects
-	docker run -it -e TZ=Europe/Moscow -v ${HOME}/projects:/root/projects --name debian_workspace -d debian:workspace
+	docker run -it -p 80:80 -p 443:443 -e TZ=Europe/Moscow -v ${HOME}/projects:/root/projects --name debian_workspace -d debian:workspace
 	docker exec -it debian_workspace zsh
 
 start:
