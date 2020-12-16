@@ -26,6 +26,7 @@ RUN apt-get update \
 	locales-all \
 	make \
 	ncurses-dev \
+	nginx \
 	openssh-server \
 	pkg-config \
 	ranger \

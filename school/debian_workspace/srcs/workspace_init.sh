@@ -36,24 +36,22 @@ cp ~/Github/dotfiles/Git/.gitconfig ~/
 git config --global user.email "awerebea.21@gmail.com"
 git config --global user.name "awerebea (debian_workspace)"
 
-git clone https://github.com/tmux/tmux.git ~/tmux
-cd ~/tmux && ./autogen.sh && ./configure && make && make install
-rm -rf ~/tmux
+git clone https://github.com/tmux/tmux.git ~/tmux_install
+cd ~/tmux_install && ./autogen.sh && ./configure && make && make install
+cd ~
+rm -rf ~/tmux_install
 
 export TMUX_PLUGIN_MANAGER_PATH=~/.tmux/plugins/
-~/.tmux/plugins/tpm/scripts/install_plugins.sh
-mkdir -p ~/.tmux/resurrect
-mv tmux_resurrect.txt ~/.tmux/resurrect
-ln -s ~/.tmux/resurrect/tmux_resurrect.txt ~/.tmux/resurrect/last
+bash ~/.tmux/plugins/tpm/scripts/install_plugins.sh
 
-wget https://github.com/dandavison/delta/releases/download/0.4.4/delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
-tar xvfz delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
-mv delta-0.4.4-x86_64-unknown-linux-musl/delta /usr/local/bin/
-rm -rf delta-0.4.4-x86_64-unknown-linux-musl delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
+wget --directory-prefix=$HOME https://github.com/dandavison/delta/releases/download/0.4.4/delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
+tar xvfz ~/delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
+mv ~/delta-0.4.4-x86_64-unknown-linux-musl/delta /usr/local/bin/
+rm -rf ~/delta-0.4.4-x86_64-unknown-linux-musl ~/delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
 ln -s ~/Github/dotfiles/Git/menos /usr/local/bin/
 
 ln -s /usr/lib/x86_64-linux-gnu/libclang-7.so.1 /usr/lib/clang/libclang.so
-~/Github/dotfiles/global_gitignore.sh
+bash ~/Github/dotfiles/global_gitignore.sh
 echo "Vim plugins installing... Don't worry, it may take up to 10 minutes."
 vim -E -u NONE -S ~/.vimrc +PluginInstall +qall > /dev/null
 zsh
