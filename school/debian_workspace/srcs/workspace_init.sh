@@ -36,10 +36,10 @@ cp ~/Github/dotfiles/Git/.gitconfig ~/
 git config --global user.email "awerebea.21@gmail.com"
 git config --global user.name "awerebea (debian_workspace)"
 
-git clone https://github.com/tmux/tmux.git ~/tmux_install
-cd ~/tmux_install && ./autogen.sh && ./configure && make && make install
-cd ~
-rm -rf ~/tmux_install
+# git clone https://github.com/tmux/tmux.git ~/tmux_install
+# cd ~/tmux_install && ./autogen.sh && ./configure && make && make install
+# cd ~
+# rm -rf ~/tmux_install
 
 export TMUX_PLUGIN_MANAGER_PATH=~/.tmux/plugins/
 bash ~/.tmux/plugins/tpm/scripts/install_plugins.sh

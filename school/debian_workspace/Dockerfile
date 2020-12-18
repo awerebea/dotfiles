@@ -14,11 +14,7 @@ RUN apt-get update \
 	clang \
 	ctags \
 	curl \
-	fasd \
-	fzf \
 	gcc \
-	git \
-	gpg \
 	highlight \
 	htop \
 	libevent-dev \
@@ -32,11 +28,20 @@ RUN apt-get update \
 	ranger \
 	ruby \
 	unifont \
-	valgrind \
-	vim-nox \
 	wget \
 	xdg-utils \
-	zsh
+	zsh \
+&&	echo "deb http://ftp.de.debian.org/debian sid main" >> /etc/apt/sources.list \
+&&	apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates \
+&&	apt-get update \
+&&	apt-get install -y \
+	fasd \
+	fzf \
+	git \
+	gpg \
+	tmux \
+	valgrind \
+	vim-nox
 
 RUN	locale-gen "en_US.UTF-8" \
 &&	rm -rf /var/lib/apt/lists/* \
