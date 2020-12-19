@@ -11,10 +11,8 @@ RUN apt-get update \
 &&	apt-get install -y \
 	automake \
 	bison \
-	clang \
 	ctags \
 	curl \
-	gcc \
 	highlight \
 	htop \
 	libevent-dev \
@@ -35,10 +33,14 @@ RUN apt-get update \
 &&	apt -y install software-properties-common dirmngr apt-transport-https lsb-release ca-certificates \
 &&	apt-get update \
 &&	apt-get install -y \
+	clang \
 	fasd \
 	fzf \
+	gcc \
 	git \
 	gpg \
+	ripgrep \
+	silversearcher-ag \
 	tmux \
 	valgrind \
 	vim-nox
