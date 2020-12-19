@@ -54,4 +54,6 @@ ln -s /usr/lib/x86_64-linux-gnu/libclang-7.so.1 /usr/lib/clang/libclang.so
 bash ~/Github/dotfiles/global_gitignore.sh
 echo "Vim plugins installing... Don't worry, it may take up to 10 minutes."
 vim -E -u NONE -S ~/.vimrc +PluginInstall +qall > /dev/null
+cd ~/.vim/bundle/vimproc.vim && make
+cd ~/projects
 zsh
