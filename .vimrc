@@ -69,6 +69,8 @@ Plugin 'tomtom/tinykeymap_vim'
 Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 Plugin 'jamessan/vim-gnupg'
 Plugin 'neomutt/neomutt.vim'
+Plugin 'vim-scripts/c.vim'
+Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -282,10 +284,6 @@ let g:gruvbox_bold = '0' "default '1'
 let g:gruvbox_contrast_dark = 'hard' "default 'medium'
 set background=dark
 colorscheme gruvbox
-
-" выключить подсветку поиска
-" map <leader>nh :nohlsearch<CR>
-map <leader>nh :<C-u>nohlsearch<CR><C-l>
 
 " NERDCommenter
 " Add spaces after comment delimiters
@@ -543,9 +541,9 @@ nmap <leader>llu :Goyo<CR>:Goyo<CR>
 
 "vimux
 " Prompt for a command to run
-map <Leader>vp :VimuxPromptCommand<CR>
+map <leader>vp :VimuxPromptCommand<CR>
 " Run last command executed by VimuxRunCommand
-map <Leader>vl :VimuxRunLastCommand<CR>
+map <leader>vl :VimuxRunLastCommand<CR>
 
 "работа тегами (ctags, ctrlP, tagbar, vim-tags)
 " vim-tags
@@ -556,19 +554,12 @@ let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore',
 nnoremap <f8> :TagsGenerate!<cr>
 " :nnoremap <F8> :!ctags -R --fields=+l --tag-relative=yes --exclude=.git
 "  \ --exclude=.gitignore -f .git/tags 2>/dev/null<CR>
-nnoremap <silent> <Leader>tb :TagbarToggle<CR>
-" nnoremap <leader>l :call ToggleLocationList()<CR>
+nnoremap <silent> <leader>tb :TagbarToggle<CR>
 
 " TagList
 map <F10> :TlistToggle<cr>
 vmap <F10> <esc>:TlistToggle<cr>
 imap <F10> <esc>:TlistToggle<cr>
-
-" " CScope
-" set csto=0
-" nnoremap <leader>fa :call CscopeFindInteractive(expand('<cword>'))<CR>
-" let g:cscope_silent = 1
-" set cscopetag
 
 " vim-syntastic
 set statusline+=%#warningmsg#
@@ -578,7 +569,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 0
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
-" nnoremap <Leader>e :Errors<Cr>
+" nnoremap <leader>e :Errors<Cr>
 function! ToggleSyntastic()
   for i in range(1, winnr('$'))
     let bnum = winbufnr(i)
@@ -592,7 +583,7 @@ endfunction
 nnoremap <leader>e :call ToggleSyntastic()<CR>
 
 " Unite
-"nnoremap <Leader>p :Unite file_rec/async<cr>
+"nnoremap <leader>p :Unite file_rec/async<cr>
 nnoremap <space>/ :Unite grep:.<cr>
 "let g:unite_source_history_yank_enable = 1
 "nnoremap <space>y :Unite history/yank<cr>
@@ -683,23 +674,19 @@ imap <F7> <ESC>:bnext<CR>i
 " F5 - просмотр списка буферов
 " nmap <F5> :BufExplorerVerticalSplit<CR>
 nmap <F5> :BufExplorer<CR>
-nnoremap <silent> <Leader><Leader><Enter> :BufExplorer<CR>
+nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 
 " past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" jump to next/previous search match and center current line on screen
-noremap <Leader>n nzz
-noremap <Leader>N Nzz
-
 " easymotion TEST!!!!!!!
 let g:bufExplorerDisableDefaultKeyMapping = 1
-map <Leader><Leader>w <Plug>(easymotion-bd-w)
-nmap <Leader><Leader>w <Plug>(easymotion-overwin-w)
-nmap <Leader>w <Plug>(easymotion-w)
-nmap <Leader>b <Plug>(easymotion-b)
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
+map <leader><leader>w <Plug>(easymotion-bd-w)
+nmap <leader><leader>w <Plug>(easymotion-overwin-w)
+nmap <leader>w <Plug>(easymotion-w)
+nmap <leader>b <Plug>(easymotion-b)
+map <leader>j <Plug>(easymotion-j)
+map <leader>k <Plug>(easymotion-k)
 let g:EasyMotion_startofline = 0 " keep cursor column when JK motion"
 let g:EasyMotion_smartcase = 1
 " incsearch
@@ -724,7 +711,7 @@ inoremap {;<CR> {<CR>};<ESC>O
 
 " tabs navigation
 " nnoremap gz :bdelete<CR>
-nnoremap <Leader>o :tab sball<CR>
+nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
 " switch to last tab
 if !exists('g:lasttab')
@@ -807,16 +794,13 @@ endfunction
 command! Ball :call DeleteInactiveBufs()
 
 " NERDTree
-" For toggling
-" nmap <C-n> :NERDTreeToggle<CR>
-" noremap <Leader>n :NERDTreeToggle<cr>
-" noremap <Leader>f :NERDTreeFind<cr>
 let NERDTreeShowHidden=1
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '.DS_Store']
 " Close nerdtree and vim on close file
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType")
   \ && b:NERDTreeType == "primary") | q | endif
-map <F2> :NERDTreeToggle<CR>
+noremap <F2> :NERDTreeToggle<CR>
+noremap <leader><F2> :NERDTreeFind<cr>
 " " autoopen NERDTree when vim starts up and no files were specified
 " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 " autocmd StdinReadPre * let s:std_in=1
@@ -858,8 +842,8 @@ let g:clang_complete_optional_args_in_snippets=1
 let g:clang_auto_select=1
 " unset the default keymappings to provide compatibility with ctags
 " let g:clang_make_default_keymappings=0
-let g:clang_jumpto_declaration_key="<leader><leader><C-]>"
-" let g:clang_jumpto_declaration_in_preview_key=""
+let g:clang_jumpto_declaration_key="<leader><C-]>"
+let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
 " let g:clang_jumpto_back_key=""
 let g:clang_complete_auto=1
 
@@ -1058,7 +1042,7 @@ endif
 "au BufEnter * :ColorHighlight<CR> " highlight colors on startup for all files
 :let g:colorizer_auto_filetype='css,html,cpp,vim,python'
 " highlight colors toggle
-noremap <leader>ct :ColorToggle<CR>
+" noremap <leader>ct :ColorToggle<CR> " conflict with c.vim keybinds
 
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
@@ -1108,19 +1092,19 @@ let g:fzf_colors =
 autocmd! FileType fzf
 autocmd  FileType fzf set noshowmode noruler nonu
 
-" nnoremap <silent> <Leader>f :Files<CR>
-nnoremap <silent> <expr> <Leader>f (expand('%') =~
+" nnoremap <silent> <leader>f :Files<CR>
+nnoremap <silent> <expr> <leader>f (expand('%') =~
   \ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
-nnoremap <silent> <Leader>C        :Colors<CR>
-nnoremap <silent> <Leader><Enter>  :Buffers<CR>
-nnoremap <silent> <Leader>l        :Lines<CR>
-nnoremap <silent> <Leader>ag       :Ag <C-R><C-W><CR>
-nnoremap <silent> <Leader>AG       :Ag <C-R><C-A><CR>
-xnoremap <silent> <Leader>ag       y:Ag <C-R>"<CR>
-nnoremap <silent> <Leader>rg       :Rg<CR>
-nnoremap <silent> <Leader>RG       :Rg <C-R><C-A><CR>
-xnoremap <silent> <Leader>rg       y:Rg <C-R>"<CR>
-nnoremap <silent> <Leader>`        :Marks<CR>
+nnoremap <silent> <leader>C        :Colors<CR>
+nnoremap <silent> <leader><Enter>  :Buffers<CR>
+nnoremap <silent> <leader>l        :Lines<CR>
+nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
+nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
+xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
+nnoremap <silent> <leader>rg       :Rg<CR>
+nnoremap <silent> <leader>RG       :Rg <C-R><C-A><CR>
+xnoremap <silent> <leader>rg       y:Rg <C-R>"<CR>
+nnoremap <silent> <leader>`        :Marks<CR>
 " nnoremap <silent> q: :History:<CR>
 " nnoremap <silent> q/ :History/<CR>
 
@@ -1271,8 +1255,8 @@ nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
 nmap gz <Plug>Kwbd
 
 " Maps Alt-[s.v] to horizontal and vertical split respectively
-map <silent> <leader>s :split<CR>
-map <silent> <leader>v :vsplit<CR>
+map <silent> <leader><leader>s :split<CR>
+map <silent> <leader><leader>v :vsplit<CR>
 
 " tinykeymap settings (faster win resize)
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
@@ -1318,3 +1302,29 @@ if has("autocmd")
     set foldopen=insert
   endfunction
 endif " has ("autocmd")
+
+" Close quickfix window
+noremap <leader>zc :cclose<CR><C-l>
+" Close location window
+noremap <leader>zl :lclose<CR><C-l>
+" Close preview window
+noremap <leader>zp :pclose<CR><C-l>
+
+" Pymode settings
+let g:pymode_run_bind = '<leader>r'
+let g:pymode_breakpoint_bind = '<leader>b'
+
+let g:pymode_rope = 1
+let g:pymode_rope_show_doc_bind = '<leader>pd'
+let g:pymode_rope_goto_definition_bind = '<leader>pg'
+let g:pymode_rope_goto_definition_cmd = 'new'
+let g:pymode_rope_rename_bind = '<leader>pr'
+let g:pymode_rope_module_to_package_bind = '<leader>p1p'
+let g:pymode_rope_extract_method_bind = '<leader>pm'
+let g:pymode_rope_extract_variable_bind = '<leader>pl'
+let g:pymode_rope_use_function_bind = '<leader>pu'
+let g:pymode_rope_move_bind = '<leader>pv'
+let g:pymode_rope_change_signature_bind = '<leader>ps'
+
+let g:pymode_options_max_line_length = 80
+let g:pymode_options_colorcolumn = 1
