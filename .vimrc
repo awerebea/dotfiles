@@ -619,25 +619,25 @@ let g:multi_cursor_next_key            = '<C-n>'
 " let g:multi_cursor_skip_key            = '<C-x>'
 let g:multi_cursor_quit_key            = '<Esc>'
 
-"НАСТРОЙКИ СВОРАЧИВАНИЯ БЛОКОВ ТЕКСТА (фолдинг)
-"zc                        свернуть блок
-"zo                        развернуть блок
-"zM                        закрыть все блоки
-"zR                        открыть все блоки
-"za                        инвертирование
-"zf                        см :set foldmethod=manual
-" set foldenable            "включить свoрачивание
-:set foldenable!           " turn off folding
-" set foldmethod=syntax     "сворачивание на основе синтаксиса
-:set foldmethod=indent    "сворачивание на основе отступов
-":set foldmethod=manual    "выделяем участок с помощью v и говорим zf
-":set foldmethod=marker    "сворачивание на основе маркеров в тексте
-":set foldmarker=bigin,end "задаем маркеры начала и конца блока
-set foldcolumn=2 " показать полосу для управления сворачиванием
-" set foldlevel=5 " кол-во открытых уровней вложенности при открытии файла
+" НАСТРОЙКИ СВОРАЧИВАНИЯ БЛОКОВ ТЕКСТА (фолдинг)
+" zc                          свернуть блок
+" zo                          развернуть блок
+" zM                          закрыть все блоки
+" zR                          открыть все блоки
+" za                          инвертирование
+" zf                          см :set foldmethod=manual
+" set foldenable            " включить свoрачивание
+set nofoldenable           " turn off folding
+" set foldmethod=syntax     " сворачивание на основе синтаксиса
+set foldmethod=indent      " сворачивание на основе отступов
+" set foldmethod=manual     " выделяем участок с помощью v и говорим zf
+" set foldmethod=marker     " сворачивание на основе маркеров в тексте
+" set foldmarker=bigin,end  " задаем маркеры начала и конца блока
+set foldcolumn=3            " показать полосу для управления сворачиванием
+set foldlevel=2             " кол-во открытых уровней при открытии файла
 set foldlevelstart=99
-" set foldopen=all " автоматическое открытие сверток при заходе в них
-set foldnestmax=1
+" set foldopen=all          " автоматическое открытие сверток при заходе в них
+set foldnestmax=5           " max level of fold
 
 " Easy Align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
