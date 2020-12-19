@@ -44,3 +44,5 @@
 
 [diff "gpg"]
 	textconv = gpg -qd --no-tty
+[diff]
+	tool = vimdiff
