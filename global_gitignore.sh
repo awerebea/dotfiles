@@ -17,6 +17,8 @@ cat <<EOT >> ~/.gitignore
 .idea
 .indexer_files_tags/
 .indexer_files_tags/*
+.ropeproject/
+.ropeproject/*
 .vimprj/
 .vimprj/*
 .vscode
