@@ -5,6 +5,7 @@ set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
 " let Vundle manage Vundle, required
+" {{{
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'preservim/nerdtree'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -81,6 +82,7 @@ Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Plugin 'Raimondi/delimitMate'
 " Plugin 'brookhong/cscope.vim'
 " Plugin 'junegunn/vim-easy-align'
+" }}}
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -117,6 +119,7 @@ set t_vb=
 set nrformats=
 
 " Wildmenu completion
+" {{{
 set wildmenu
 set wildmode=full
 
@@ -134,8 +137,10 @@ set wildignore+=go/bin                           " Go bin files
 set wildignore+=go/bin-vagrant                   " Go bin-vagrant files
 set wildignore+=*.pyc                            " Python byte code
 set wildignore+=*.orig                           " Merge resolution files
+" }}}
 
 " tabs settings
+" {{{
 function! TabsNoExpandByFourSpaces()
   setlocal tabstop=4
   setlocal shiftwidth=4
@@ -176,6 +181,7 @@ if has("autocmd")
   autocmd FileType gitignore  setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitconfig  setlocal ts=4 sts=4 sw=4 noet
 endif
+" }}}
 
 set ttymouse=xterm2
 set mouse=a
@@ -195,6 +201,7 @@ set autowrite		" Automatically save before commands like :next and :make
 set updatetime=2000	" gitgutter update delay
 
 " word wrap
+" {{{
 set wrapmargin=0
 set colorcolumn=+1
 highlight ColorColumn ctermbg=235 guibg=#262626
@@ -213,6 +220,7 @@ function! AutoWrapToggle()
     setlocal colorcolumn=+1
   endif
 endfunction
+" }}}
 
 " More natural split opening. Open new split panes to right and bottom.
 set splitbelow
@@ -302,6 +310,7 @@ let g:NERDCompactSexyComs = 0
 let g:NERDTrimTrailingWhitespace = 1
 
 " Tagbar
+" {{{
 " JS
 let g:tagbar_type_javascript = {
   \   'ctagsbin' : '/path/to/jsctags'
@@ -328,8 +337,10 @@ let g:tagbar_type_go = {
   \   'c:const'
   \   ]
   \ }
+" }}}
 
 " Rainbow brackets settings
+" {{{
 let g:rainbow_active = 1
 let g:rainbow_conf = {
   \   'guifgs': ['darkorange', 'lightblue', 'lightyellow', 'lightcyan',
@@ -366,8 +377,10 @@ let g:rainbow_conf = {
   \       'css': 0,
   \   }
   \ }
+" }}}
 
 "lightline
+" {{{
 let g:lightline = {
   \ 'colorscheme': 'default',
   \ 'active': {
@@ -526,6 +539,7 @@ autocmd User ALELint call s:MaybeUpdateLightline()
 "   end
 " endfunction
 nmap <leader>llu :Goyo<CR>:Goyo<CR>
+" }}}
 
 "... для изменения курсора в разных режимах используйте это:
 "set ttimeoutlen=10 "Понижаем задержку ввода escape последовательностей
@@ -562,6 +576,7 @@ vmap <F10> <esc>:TlistToggle<cr>
 imap <F10> <esc>:TlistToggle<cr>
 
 " vim-syntastic
+" {{{
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -581,6 +596,7 @@ function! ToggleSyntastic()
   Errors
 endfunction
 nnoremap <leader>e :call ToggleSyntastic()<CR>
+" }}}
 
 " Unite
 "nnoremap <leader>p :Unite file_rec/async<cr>
@@ -599,6 +615,7 @@ nmap <leader>P <Plug>yankstack_substitute_newer_paste
 " let g:indent_guides_enable_on_vim_startup = 1
 
 " Multi cursors
+" {{{
 let g:multi_cursor_use_default_mapping=0
 " default mapping
 let g:multi_cursor_start_word_key      = '<C-n>'
@@ -609,26 +626,48 @@ let g:multi_cursor_next_key            = '<C-n>'
 " let g:multi_cursor_prev_key            = '<C-p>'
 " let g:multi_cursor_skip_key            = '<C-x>'
 let g:multi_cursor_quit_key            = '<Esc>'
+" }}}
 
-" НАСТРОЙКИ СВОРАЧИВАНИЯ БЛОКОВ ТЕКСТА (фолдинг)
-" zc                          свернуть блок
-" zo                          развернуть блок
-" zM                          закрыть все блоки
-" zR                          открыть все блоки
-" za                          инвертирование
-" zf                          см :set foldmethod=manual
-" set foldenable            " включить свoрачивание
+" Folding settings
+" {{{
+" zc                          fold block
+" zo                          unfold block
+" zM                          fold all blocks
+" zR                          unfold all blocks
+" za                          toggle folding
+" zf                          check :set foldmethod=manual
+" set foldenable            " turn on folding
 set nofoldenable           " turn off folding
-" set foldmethod=syntax     " сворачивание на основе синтаксиса
-set foldmethod=indent      " сворачивание на основе отступов
-" set foldmethod=manual     " выделяем участок с помощью v и говорим zf
-" set foldmethod=marker     " сворачивание на основе маркеров в тексте
-" set foldmarker=bigin,end  " задаем маркеры начала и конца блока
-set foldcolumn=3            " показать полосу для управления сворачиванием
-set foldlevel=2             " кол-во открытых уровней при открытии файла
+" set foldmethod=syntax     " fold based on syntax
+set foldmethod=indent      " fold based on indent
+" set foldmethod=manual     " manual folding
+" set foldmethod=marker     " fold based on markers
+" set foldmarker=bigin,end  " set markers of start and end of the block
+set foldcolumn=3            " show fold column left on the screen
+set foldlevel=2             " fold levels opened at file opens
 set foldlevelstart=99
-" set foldopen=all          " автоматическое открытие сверток при заходе в них
+" set foldopen=all          " autoopen fold when enter it
 set foldnestmax=5           " max level of fold
+
+if has("autocmd")
+  autocmd FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
+  autocmd FileType javascript setlocal foldmethod=expr
+  autocmd FileType javascript setlocal foldexpr=JSFolds()
+endif
+
+function! JSFolds()
+  let thisline = getline(v:lnum)
+  if thisline =~? '\v^\s*$'
+    return '-1'
+  endif
+
+  if thisline =~ '^import.*$'
+    return 1
+  else
+    return indent(v:lnum) / &shiftwidth
+  endif
+endfunction
+" }}}
 
 " Easy Align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
@@ -663,6 +702,7 @@ call yankstack#setup()
 :noremap <silent> <Space> :<C-u>nohlsearch<CR><C-l>
 
 " list buffers keybinds
+" {{{
 nnoremap [b :bprevious<CR>
 nnoremap ]b :bnext<CR>
 nnoremap [B :bfirst<CR>
@@ -675,11 +715,13 @@ imap <F7> <ESC>:bnext<CR>i
 " nmap <F5> :BufExplorerVerticalSplit<CR>
 nmap <F5> :BufExplorer<CR>
 nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
+" }}}
 
 " past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " easymotion TEST!!!!!!!
+" {{{
 let g:bufExplorerDisableDefaultKeyMapping = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 nmap <leader><leader>w <Plug>(easymotion-overwin-w)
@@ -696,6 +738,7 @@ map g/ <Plug>(incsearch-stay)
 map z/ <Plug>(incsearch-easymotion-/)
 map z? <Plug>(incsearch-easymotion-?)
 map zg/ <Plug>(incsearch-easymotion-stay)
+" }}}
 
 set autoindent
 set pastetoggle=<F4>
@@ -710,6 +753,7 @@ inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 
 " tabs navigation
+" {{{
 " nnoremap gz :bdelete<CR>
 nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
@@ -730,6 +774,7 @@ nnoremap tt :tabedit<Space>
 nnoremap tn :tabnext<Space>
 nnoremap tm :tabm<Space>
 nnoremap td :tabclose<CR>
+" }}}
 
 " Search for the Current Selection
 xnoremap * :<C-u>call <SID>VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
@@ -760,6 +805,7 @@ endif
 
 " Convenient command to see the difference between the current buffer and the
 " file it was loaded from, thus the changes you made.
+" {{{
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
@@ -790,6 +836,7 @@ function! DeleteInactiveBufs()
   endfor
   echomsg nWipeouts . ' buffer(s) wiped out'
 endfunction
+" }}}
 
 command! Ball :call DeleteInactiveBufs()
 
@@ -825,6 +872,7 @@ endif
 nmap Q q
 
 " clang_complete
+" {{{
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
@@ -846,8 +894,10 @@ let g:clang_jumpto_declaration_key="<leader><C-]>"
 let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
 " let g:clang_jumpto_back_key=""
 let g:clang_complete_auto=1
+" }}}
 
 " backup and swap files settings
+" {{{
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/backup or .
@@ -896,6 +946,7 @@ if isdirectory($HOME . '/.vim/view') == 0
   :silent !mkdir -p ~/.vim/view >/dev/null 2>&1
 endif
 set viewdir=~/.vim/view
+" }}}
 
 " templates
 function! CanClassHPP()
@@ -909,6 +960,7 @@ endfunction
 command CanClassCPP call CanClassCPP()
 
 " " Highlight TODO, FIXME, NOTE, etc.
+" {{{
 " if has('autocmd') && v:version > 701
 "   augroup todo
 "     autocmd!
@@ -963,6 +1015,13 @@ let g:my_todo_highlight_config = {
 \    'cterm_bg_color': '214'
 \  },
 \  'DEBUG': {
+\    'gui_fg_color': '#ffffff',
+\    'gui_bg_color': '#ff6524',
+\    'cterm': 'bold',
+\    'cterm_fg_color': 'white',
+\    'cterm_bg_color': '214'
+\  },
+\  'QUESTION': {
 \    'gui_fg_color': '#ffffff',
 \    'gui_bg_color': '#ff6524',
 \    'cterm': 'bold',
@@ -1037,10 +1096,12 @@ if exists("g:my_todo_highlight_config")
     call s:MyCreateAnnotationGroup(annotation, config)
   endfor
 endif
+" }}}
 
 " Colors highlighting
 "au BufEnter * :ColorHighlight<CR> " highlight colors on startup for all files
-:let g:colorizer_auto_filetype='css,html,cpp,vim,python'
+" :let g:colorizer_auto_filetype='css,html,cpp,vim,python'
+:let g:colorizer_auto_color=0
 " highlight colors toggle
 " noremap <leader>ct :ColorToggle<CR> " conflict with c.vim keybinds
 
@@ -1050,7 +1111,7 @@ let g:indexer_disableCtagsWarning=1
 " ============================================================================
 " FZF
 " ============================================================================
-
+" {{{
 " ignore files ignored in .gitignore but show hidden
 let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
@@ -1163,6 +1224,7 @@ command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>, '--column --numbers --smart-case --color
   \ --color-path "36;1" --color-match "30;43" --color-line-number "33;1"',
   \ fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+" }}}
 
 " Quickly edit/reload this configuration file
 nnoremap <leader>ve :edit $MYVIMRC<CR>
@@ -1184,6 +1246,7 @@ augroup END
 
 " Delete a buffer without closing the window,
 " create a scratch buffer if no buffers left
+" {{{
 function s:Kwbd(kwbdStage)
   if(a:kwbdStage == 1)
     if(&modified)
@@ -1253,6 +1316,7 @@ endfunction
 command! Kwbd call s:Kwbd(1)
 nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
 nmap gz <Plug>Kwbd
+" }}}
 
 " Maps Alt-[s.v] to horizontal and vertical split respectively
 map <silent> <leader><leader>s :split<CR>
@@ -1262,6 +1326,7 @@ map <silent> <leader><leader>v :vsplit<CR>
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
 
 " GPG settings
+" {{{
 if has("autocmd")
   " Tell the GnuPG plugin to armor new files.
   let g:GPGPreferArmor=1
@@ -1302,6 +1367,7 @@ if has("autocmd")
     set foldopen=insert
   endfunction
 endif " has ("autocmd")
+" }}}
 
 " Close quickfix window
 noremap <leader>zc :cclose<CR><C-l>
@@ -1311,6 +1377,7 @@ noremap <leader>zl :lclose<CR><C-l>
 noremap <leader>zp :pclose<CR><C-l>
 
 " Pymode settings
+" {{{
 let g:pymode_run_bind = '<leader>r'
 let g:pymode_breakpoint_bind = '<leader>b'
 
@@ -1328,3 +1395,4 @@ let g:pymode_rope_change_signature_bind = '<leader>ps'
 
 let g:pymode_options_max_line_length = 80
 let g:pymode_options_colorcolumn = 1
+" }}}
