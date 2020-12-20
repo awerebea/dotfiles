@@ -70,6 +70,7 @@ Plugin 'tomtom/tinykeymap_vim'
 Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 Plugin 'jamessan/vim-gnupg'
 Plugin 'neomutt/neomutt.vim'
+Plugin 'vim-scripts/a.vim'
 Plugin 'vim-scripts/c.vim'
 Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " Plugin 'ap/vim-css-color'
@@ -842,6 +843,7 @@ command! Ball :call DeleteInactiveBufs()
 
 " NERDTree
 let NERDTreeShowHidden=1
+let NERDTreeShowBookmarks=1
 let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '.DS_Store']
 " Close nerdtree and vim on close file
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType")
@@ -1320,7 +1322,7 @@ nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
 nmap gz <Plug>Kwbd
 " }}}
 
-" Maps Alt-[s.v] to horizontal and vertical split respectively
+" Keymaps to create horizontal and vertical window splits
 map <silent> <leader><leader>s :split<CR>
 map <silent> <leader><leader>v :vsplit<CR>
 
@@ -1398,3 +1400,26 @@ let g:pymode_rope_change_signature_bind = '<leader>ps'
 let g:pymode_options_max_line_length = 80
 let g:pymode_options_colorcolumn = 1
 " }}}
+
+" C-support plugin (c.vim) settings
+" change <leader> key for all keybinds to <leader><leader>
+let g:C_MapLeader = '\\'
+" Alternate file (a.vim) plugin settings
+" Suppress the creation of a new header file if it's not exist
+let g:alternateNoDefaultAlternate = 1
+" :A switches to the header file corresponding to the current file being
+" edited (or vise versa)
+noremap <leader>a :A<CR>
+inoremap <leader>a <C-C>:A<CR>
+" :AS splits and switches
+noremap <leader>as :AS<CR>
+inoremap <leader>as <C-C>:AS<CR>
+" :AV vertical splits and switches
+noremap <leader>av :AV<CR>
+inoremap <leader>av <C-C>:AV<CR>
+" :AT new tab and switches
+noremap <leader>at :AT<CR>
+inoremap <leader>at <C-C>:AT<CR>
+" :AN cycles through matches
+noremap <leader>an :AN<CR>
+inoremap <leader>an <C-C>:AN<CR>
