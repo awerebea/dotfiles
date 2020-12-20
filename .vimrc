@@ -1239,9 +1239,11 @@ map <c-j> :lclose<CR><C-w>j
 map <c-k> :lclose<CR><C-w>k
 map <c-l> :lclose<CR><C-w>l
 
-" set tmux.conf.local filetype 'tmux'
+" Set the file type for files that are in use on the system but do not yet
+" have a type.
 augroup filetypedetect
   au BufRead,BufNewFile .tmux.conf.local setfiletype tmux
+  au BufRead,BufNewFile conkyrc* setfiletype conf
 augroup END
 
 " Delete a buffer without closing the window,
