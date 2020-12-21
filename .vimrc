@@ -1404,6 +1404,7 @@ let g:pymode_options_colorcolumn = 1
 " C-support plugin (c.vim) settings
 " change <leader> key for all keybinds to <leader><leader>
 let g:C_MapLeader = '\\'
+let g:C_Ctrl_j = 'off'
 " Alternate file (a.vim) plugin settings
 " Suppress the creation of a new header file if it's not exist
 let g:alternateNoDefaultAlternate = 1
