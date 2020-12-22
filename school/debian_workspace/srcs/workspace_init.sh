@@ -50,10 +50,9 @@ mv ~/delta-0.4.4-x86_64-unknown-linux-musl/delta /usr/local/bin/
 rm -rf ~/delta-0.4.4-x86_64-unknown-linux-musl ~/delta-0.4.4-x86_64-unknown-linux-musl.tar.gz
 ln -s ~/Github/dotfiles/Git/menos /usr/local/bin/
 
-ln -s /usr/lib/x86_64-linux-gnu/libclang-7.so.1 /usr/lib/clang/libclang.so
+ln -s /usr/lib/x86_64-linux-gnu/libclang-11.so.1 /usr/lib/clang/libclang.so
 bash ~/Github/dotfiles/global_gitignore.sh
 echo "Vim plugins installing... Don't worry, it may take up to 10 minutes."
 vim -E -u NONE -S ~/.vimrc +PluginInstall +qall > /dev/null
 cd ~/.vim/bundle/vimproc.vim && make
-cd ~/projects
 zsh
