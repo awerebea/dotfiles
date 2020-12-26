@@ -73,6 +73,8 @@ Plugin 'neomutt/neomutt.vim'
 Plugin 'vim-scripts/a.vim'
 Plugin 'vim-scripts/c.vim'
 Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+Plugin 'tpope/vim-obsession'
+Plugin 'dhruvasagar/vim-prosession'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
