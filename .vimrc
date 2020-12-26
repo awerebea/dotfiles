@@ -1018,7 +1018,7 @@ let g:my_todo_highlight_config = {
 \  },
 \  'DEBUG': {
 \    'gui_fg_color': '#ffffff',
-\    'gui_bg_color': '#ff6524',
+\    'gui_bg_color': '#a048ff',
 \    'cterm': 'bold',
 \    'cterm_fg_color': 'white',
 \    'cterm_bg_color': '214'
