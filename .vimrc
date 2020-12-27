@@ -21,9 +21,7 @@ Plugin 'chrisbra/NrrwRgn'
 Plugin 'simeji/winresizer'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'tpope/vim-fugitive'
-" Plugin 'tomasr/molokai'
 Plugin 'morhetz/gruvbox'
-" Plugin 'ErichDonGubler/vim-sublime-monokai'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'benmills/vimux'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
@@ -43,7 +41,6 @@ Plugin 'haya14busa/incsearch.vim'
 Plugin 'haya14busa/incsearch-easymotion.vim'
 Plugin 'nathanaelkane/vim-indent-guides'
 Plugin 'vim-scripts/taglist.vim'
-Plugin 'terryma/vim-multiple-cursors'
 Plugin 'tpope/vim-eunuch'
 Plugin 'yegappan/grep'
 Plugin 'jlanzarotta/bufexplorer'
@@ -67,7 +64,6 @@ Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plugin 'junegunn/fzf.vim'
 Plugin 'francoiscabrol/ranger.vim'
 Plugin 'tomtom/tinykeymap_vim'
-Plugin 'jeffkreeftmeijer/vim-numbertoggle'
 Plugin 'jamessan/vim-gnupg'
 Plugin 'neomutt/neomutt.vim'
 Plugin 'vim-scripts/a.vim'
@@ -75,6 +71,10 @@ Plugin 'vim-scripts/c.vim'
 Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
+" Plugin 'tomasr/molokai'
+" Plugin 'ErichDonGubler/vim-sublime-monokai'
+" Plugin 'jeffkreeftmeijer/vim-numbertoggle'
+" Plugin 'terryma/vim-multiple-cursors'
 " Plugin 'ap/vim-css-color'
 " Plugin 'Shougo/deoplete.nvim'
 " Plugin 'ryanoasis/vim-devicons'
@@ -191,6 +191,31 @@ set mouse=a
 set mousehide
 set showcmd
 set number relativenumber
+
+" toggle relativenumber
+augroup SmartRelativenumbers
+  autocmd!
+  autocmd InsertEnter * :set norelativenumber
+  autocmd InsertLeave * :set relativenumber
+augroup END
+
+function! ToggleSmartRelativenumbers()
+  if !exists('#SmartRelativenumbers#InsertEnter')
+    set relativenumber
+    augroup SmartRelativenumbers
+      autocmd!
+      autocmd InsertEnter * :set norelativenumber
+      autocmd InsertLeave * :set relativenumber
+    augroup END
+else
+    set relativenumber!
+    augroup SmartRelativenumbers
+      autocmd!
+    augroup END
+  endif
+endfunction
+
+nnoremap <leader>rn :call ToggleSmartRelativenumbers()<CR>
 
 " esc button remap
 inoremap kj <esc>
