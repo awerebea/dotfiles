@@ -1451,3 +1451,12 @@ inoremap <leader>at <C-C>:AT<CR>
 " :AN cycles through matches
 noremap <leader>an :AN<CR>
 inoremap <leader>an <C-C>:AN<CR>
+
+" prosession settings
+let g:prosession_tmux_title = 1
+let g:prosession_tmux_title_format = "vim - @@@"
+
+" Terminal in vim buffer settings
+" make terminal window in vim buffer inactive
+nnoremap T :term<CR>
+tnoremap <C-t> <C-w>N
