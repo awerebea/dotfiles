@@ -1460,3 +1460,7 @@ let g:prosession_tmux_title_format = "vim - @@@"
 " make terminal window in vim buffer inactive
 nnoremap T :term<CR>
 tnoremap <C-t> <C-w>N
+
+" indexer settings (fix ctags generation for vimprj plugin)
+let g:indexer_ctagsCommandLineOptions =
+  \ '-R --fields=+iaSl --c++-kinds=+p --extra=+q'
