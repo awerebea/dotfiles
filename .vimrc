@@ -1453,7 +1453,7 @@ noremap <leader>an :AN<CR>
 inoremap <leader>an <C-C>:AN<CR>
 
 " prosession settings
-let g:prosession_tmux_title = 1
+let g:prosession_tmux_title = 0
 let g:prosession_tmux_title_format = "vim - @@@"
 
 " Terminal in vim buffer settings
