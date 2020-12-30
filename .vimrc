@@ -71,6 +71,7 @@ Plugin 'vim-scripts/c.vim'
 Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
+Plugin 'samoshkin/vim-mergetool'
 " Plugin 'tomasr/molokai'
 " Plugin 'ErichDonGubler/vim-sublime-monokai'
 " Plugin 'jeffkreeftmeijer/vim-numbertoggle'
@@ -197,6 +198,8 @@ augroup SmartRelativenumbers
   autocmd!
   autocmd InsertEnter * :set norelativenumber
   autocmd InsertLeave * :set relativenumber
+  autocmd BufLeave * :set norelativenumber
+  autocmd BufEnter * :set relativenumber
 augroup END
 
 function! ToggleSmartRelativenumbers()
@@ -206,6 +209,8 @@ function! ToggleSmartRelativenumbers()
       autocmd!
       autocmd InsertEnter * :set norelativenumber
       autocmd InsertLeave * :set relativenumber
+      autocmd BufLeave * :set norelativenumber
+      autocmd BufEnter * :set relativenumber
     augroup END
 else
     set relativenumber!
@@ -1464,3 +1469,104 @@ tnoremap <C-t> <C-w>N
 " indexer settings (fix ctags generation for vimprj plugin)
 let g:indexer_ctagsCommandLineOptions =
   \ '-R --fields=+iaSl --c++-kinds=+p --extra=+q'
+
+" vim-mergetool settings
+" {{{
+nmap <leader>mt <plug>(MergetoolToggle)
+
+nmap <expr> <S-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<S-Left>'
+nmap <expr> <S-Right> &diff? '<Plug>(MergetoolDiffExchangeRight)' :'<S-Right>'
+nmap <expr> <S-Down> &diff? '<Plug>(MergetoolDiffExchangeDown)' : '<S-Down>'
+nmap <expr> <S-Up> &diff? '<Plug>(MergetoolDiffExchangeUp)' : '<S-Up>'
+nmap <expr> <Up> &diff ? '[c' : '<Up>'
+nmap <expr> <Down> &diff ? ']c' : '<Down>'
+
+" (m) - for working tree version of MERGED file
+" (r) - for 'remote' revision
+" (b) - for 'base', common ancestor of two branches
+" (R) - for REMOTE
+" (L) - for LOCAL
+" (B) - BASE (what diffirence with 'b' - ?)
+" (,) - make split horisontal instead vertical (default)
+let g:mergetool_layout = 'mr'
+
+" possible values: 'local' (default), 'remote', 'base', 'unmodified'
+let g:mergetool_prefer_revision = 'local'
+
+" turn off syntax and spell checking highlighting for all splits
+function s:on_mergetool_set_layout(split)
+  set wrap
+  set syntax=off
+  set nospell
+  if a:split["layout"] ==# 'mr,b' && a:split["split"] ==# 'b'
+    set nodiff
+    set syntax=on
+    resize 15
+  endif
+endfunction
+let g:MergetoolSetLayoutCallback = function('s:on_mergetool_set_layout')
+
+" smart quit window in merge mode
+function s:QuitWindow()
+  " If we're in merge mode, exit
+  if get(g:, 'mergetool_in_merge_mode', 0)
+    call mergetool#stop()
+    return
+  endif
+  if &diff
+    " Quit diff mode intelligently...
+  endif
+  quit
+endfunction
+command QuitWindow call s:QuitWindow()
+nnoremap <silent> <leader>q :QuitWindow<CR>
+
+" remap native commands '(q)uit' and '(w)rite(q)uit' to 'MergetoolStop'
+" in diff mode only
+" cnoremap <expr> q (mergetool_in_merge_mode ? 'MergetoolStop' : 'q')
+" cnoremap <expr> wq (mergetool_in_merge_mode ? 'MergetoolStop' : 'q')
+" }}}
+
+" restore_view settings
+" views of some files not to be saved
+" let g:loaded_restore_view = ['*/.vimrc']
+
+" diff mode toggle (with SmartRelativenumbers support)
+function ToggleDiff ()
+  if (&diff)
+    if get(g:, 'SmartRelativenumbersBckp', 0)
+      call ToggleSmartRelativenumbers()
+      let g:SmartRelativenumbersBckp = 0
+    endif
+    set nodiff noscrollbind
+    if get(g:, 'WrapBckp', 0)
+      set wrap
+    endif
+    if get(g:, 'RltvNumberBckp', 0)
+      set relativenumber
+    endif
+    wincmd w
+    if get(g:, 'WrapBckp', 0)
+      set wrap
+    endif
+    if get(g:, 'RltvNumberBckp', 0)
+      set relativenumber
+    endif
+    wincmd w
+  else
+    " enable diff options in both windows; balance the sizes, too
+    if exists('#SmartRelativenumbers#InsertEnter')
+      let g:SmartRelativenumbersBckp = 1
+      call ToggleSmartRelativenumbers()
+    endif
+    let g:WrapBckp = (&wrap)
+    let g:RltvNumberBckp = (&relativenumber)
+    wincmd =
+    set diff scrollbind number norelativenumber nowrap
+    wincmd w
+    set diff scrollbind number norelativenumber nowrap
+    wincmd w
+  endif
+endfunction
+nnoremap <silent> <F9> :call ToggleDiff()<CR>
+inoremap <silent> <F9> <C-O>:call ToggleDiff()<CR>
