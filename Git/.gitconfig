@@ -1,14 +1,30 @@
 [user]
 	name = awerebea (pc-home)
 	email = awerebea.21@gmail.com
+
 [core]
 	excludesfile = /home/andrei/.gitignore
 	pager = less -x1,5
+
 [merge]
-	tool = extMerge
-[mergetool "extMerge"]
-	cmd = extMerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
-	trustExitCode = false
+tool = vim_mergetool
+conflictstyle = diff3
+[mergetool]
+	keepBackup = false
+[mergetool "vim_mergetool"]
+cmd = vim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE"
+trustExitCode = true
+; [merge]
+;     tool = extMerge
+; [mergetool "extMerge"]
+;     cmd = extMerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+;     trustExitCode = false
+
+[diff "gpg"]
+	textconv = gpg -qd --no-tty
+[diff]
+	tool = vimdiff
+
 [pager]
 	diff = delta | menos -iFMRSX --pattern='^(commit|diff)'
 	log = delta | menos -iFMRSX --pattern='^(commit|diff)'
@@ -41,8 +57,3 @@
 	line-numbers-zero-style = 244
 	line-numbers-minus-style = 196
 	line-numbers-plus-style = 34
-
-[diff "gpg"]
-	textconv = gpg -qd --no-tty
-[diff]
-	tool = vimdiff
