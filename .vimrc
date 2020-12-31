@@ -1193,9 +1193,9 @@ nnoremap <silent> <expr> <leader>f (expand('%') =~
 nnoremap <silent> <leader>C        :Colors<CR>
 nnoremap <silent> <leader><Enter>  :Buffers<CR>
 nnoremap <silent> <leader>l        :Lines<CR>
-nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
-nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
-xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
+" nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
+" nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
+" xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
 nnoremap <silent> <leader>rg       :Rg<CR>
 nnoremap <silent> <leader>RG       :Rg <C-R><C-A><CR>
 xnoremap <silent> <leader>rg       y:Rg <C-R>"<CR>
@@ -1205,7 +1205,7 @@ nnoremap <silent> <leader>`        :Marks<CR>
 
 inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
   \ --scroll 498 --min 5')
-imap <c-x><c-k> <plug>(fzf-complete-word)
+" map <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
 imap <c-x><c-j> <plug>(fzf-complete-file-ag)
@@ -1570,3 +1570,36 @@ function ToggleDiff ()
 endfunction
 nnoremap <silent> <F9> :call ToggleDiff()<CR>
 inoremap <silent> <F9> <C-O>:call ToggleDiff()<CR>
+
+" dictionary settings
+set complete=.,k,w,b,u,t,i
+
+" Toggle spell checking
+map <leader>sse :setlocal spell! spelllang=en_us<cr>
+map <leader>ssr :setlocal spell! spelllang=ru_ru<cr>
+
+" Colors for words that failed spell check
+" Word not recognized
+hi clear SpellBad
+hi SpellBad cterm=underline ctermfg=blue
+" Word not capitalized
+hi clear SpellCap
+hi SpellCap cterm=underline ctermfg=red
+" Word is rare
+hi clear SpellRare
+hi SpellRare cterm=underline ctermfg=green
+" Wrong spelling for selected region
+hi clear SpellLocal
+hi SpellLocal cterm=underline ctermfg=yellow
+
+inoremap <expr> <c-x><c-k> SpellCheck("\<c-x>\<c-k>")
+nnoremap z= :<c-u>call SpellCheck()<cr>z=
+function! SpellCheck(...)
+  let s:spell_restore = &spell
+  set spell
+  augroup restore_spell_option
+    autocmd!
+    autocmd CursorMoved,CompleteDone <buffer> let &spell = s:spell_restore | autocmd! restore_spell_option
+  augroup END
+  return a:0 ? a:1 : ''
+endfunction
