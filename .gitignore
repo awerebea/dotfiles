@@ -3,6 +3,7 @@
 *.log
 *.pyc
 .DS_store
+.ignore
 __init__.py
 __init__.pyc
 ranger/bookmarks
