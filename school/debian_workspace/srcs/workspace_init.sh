@@ -29,7 +29,10 @@ ln -s ~/Github/dotfiles/.tmux.conf ~/
 ln -s ~/Github/dotfiles/.tmux.conf.local ~/
 ln -s ~/Github/dotfiles/ranger ~/.config/ranger
 ln -s ~/Github/dotfiles/.highlight ~/.highlight
-ln -s ~/Github/dotfiles/templates ~/.vim/templates
+mkdir -p ~/.vim/spell
+ln -s ~/Github/workspace/vim/spell/en.utf-8.add ~/.vim/spell/
+ln -s ~/Github/workspace/vim/spell/ru.utf-8.add ~/.vim/spell/
+ln -s ~/Github/workspace/vim/UltiSnips ~/.vim/UltiSnips
 cd / && find ~/ -type f -name *.sh -exec chmod +x {} \;
 cp ~/Github/dotfiles/Git/.gitconfig ~/
 
