@@ -72,6 +72,12 @@ Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
 Plugin 'samoshkin/vim-mergetool'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+Plugin 'MarcWeber/vim-addon-mw-utils'
+Plugin 'tomtom/tlib_vim'
+Plugin 'garbas/vim-snipmate'
+Plugin 'lyokha/vim-xkbswitch'
 " Plugin 'tomasr/molokai'
 " Plugin 'ErichDonGubler/vim-sublime-monokai'
 " Plugin 'jeffkreeftmeijer/vim-numbertoggle'
@@ -181,6 +187,8 @@ if has("autocmd")
   autocmd FileType dockerfile setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType make       setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
+  autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
+  autocmd BufEnter **/cpp.snippets setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitcommit  setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitignore  setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitconfig  setlocal ts=4 sts=4 sw=4 noet
@@ -223,8 +231,8 @@ endfunction
 nnoremap <leader>rn :call ToggleSmartRelativenumbers()<CR>
 
 " esc button remap
-inoremap kj <esc>
-cnoremap kj <C-C>
+" inoremap kj <esc>
+" cnoremap kj <C-C>
 " Note: In command mode Ctrl-C
 
 set encoding=utf-8	" default file encoding
@@ -450,6 +458,7 @@ let g:lightline = {
   \   'indent': 'LightlineIndent',
   \   'lineinfo': 'LightlineLineinfo',
   \   'percent': 'LightlinePercent',
+  \   'spell': 'LightlineSpell',
   \ },
   \ 'component_type': {
   \   'readonly': 'error',
@@ -552,6 +561,20 @@ function! LightlineGitbranch()
     return fugitive#head()
   endif
   return ''
+endfunction
+
+function! LightlineSpell()
+  if &spelllang == 'ru_yo,en_us' || &spelllang == 'ru_ru,en_us'
+    return 'ru,en'
+  elseif &spelllang == 'en_us,ru_yo' || &spelllang == 'en_us,ru_ru'
+    return 'en,ru'
+  elseif &spelllang == 'en_us' || &spelllang == 'en_uk'
+  \ || &spelllang == 'en_en'
+    return 'en'
+  elseif &spelllang == 'ru_yo' || &spelllang == 'ru_ru'
+    return 'ru'
+  endif
+    return &spelllang
 endfunction
 
 function! LightlineCharvaluehex()
@@ -981,17 +1004,6 @@ if isdirectory($HOME . '/.vim/view') == 0
 endif
 set viewdir=~/.vim/view
 " }}}
-
-" templates
-function! CanClassHPP()
-  r~/.vim/templates/CanClass.class.hpp
-endfunction
-command CanClassHPP call CanClassHPP()
-
-function! CanClassCPP()
-  r~/.vim/templates/CanClass.class.cpp
-endfunction
-command CanClassCPP call CanClassCPP()
 
 " " Highlight TODO, FIXME, NOTE, etc.
 " {{{
@@ -1440,6 +1452,8 @@ let g:C_Ctrl_j = 'off'
 " Alternate file (a.vim) plugin settings
 " Suppress the creation of a new header file if it's not exist
 let g:alternateNoDefaultAlternate = 1
+let g:C_UseTool_cmake = 'yes'
+" let g:C_UseTool_doxygen = 'yes'
 " :A switches to the header file corresponding to the current file being
 " edited (or vise versa)
 noremap <leader>a :A<CR>
@@ -1571,12 +1585,59 @@ endfunction
 nnoremap <silent> <F9> :call ToggleDiff()<CR>
 inoremap <silent> <F9> <C-O>:call ToggleDiff()<CR>
 
-" dictionary settings
-set complete=.,k,w,b,u,t,i
+" dictionary and completion settings
+" {{{
+set complete=.,k,w,b,u,t,i,kspell
+set shortmess+=c
+set shortmess-=S
+set completeopt=menuone,longest,preview
+" set dictionary+=$GIT_WORKSPACE/vim/vimdict
+
+" autocomplpop settings
+let g:acp_enableAtStartup = 1
+let g:acp_mappingDriven = 0
+let g:acp_ignorecaseOption = 1
+let g:acp_behaviorSnipmateLength = 1
+let g:acp_completeOption = '.,k,w,b,u,t,i,kspell'
+
+" Navigate the complete menu items like CTRL+n / CTRL+p would.
+inoremap <expr> <Down> pumvisible() ? "<C-n>" :"<Down>"
+inoremap <expr> <Up> pumvisible() ? "<C-p>" : "<Up>"
+" Select the complete menu item like CTRL+y would.
+inoremap <expr> <Right> pumvisible() ? "<C-y>" : "<Right>"
+inoremap <expr> <CR> pumvisible() ? "<C-y>" :"<CR>"
+" Cancel the complete menu item like CTRL+e would.
+inoremap <expr> <Left> pumvisible() ? "<C-e>" : "<Left>"
+
+" re-create spl files for additional vocabularies
+for d in glob('~/.vim/spell/*.add', 1, 1)
+  if filereadable(d) && (!filereadable(d . '.spl') || getftime(d) >
+  \ getftime(d . '.spl'))
+    exec 'mkspell! ' . fnameescape(d)
+  endif
+endfor
 
 " Toggle spell checking
 map <leader>sse :setlocal spell! spelllang=en_us<cr>
-map <leader>ssr :setlocal spell! spelllang=ru_ru<cr>
+map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
+
+"enable spell checking by default
+set spell spelllang=en_us,ru_yo
+
+" vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
+" Command mode
+let g:XkbSwitchEnabled = 1
+let s:uname = system("echo -n \"$(uname)\"")
+let s:uname_host = system("echo -n \"$(uname -n)\"")
+if !v:shell_error && s:uname_host =~ "21-school"
+  let g:XkbSwitchLib = "/Users/awerebea/.local/lib/libxkbswitch.so"
+elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
+  \ || s:uname_host == "laptop-acer")
+  let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
+elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
+  \ == "root"
+  let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
+endif
 
 " Colors for words that failed spell check
 " Word not recognized
@@ -1603,3 +1664,16 @@ function! SpellCheck(...)
   augroup END
   return a:0 ? a:1 : ''
 endfunction
+" }}}
+
+" ultisnips settings
+" Trigger configuration. You need to change this to something other than <tab>
+" if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+let g:UltiSnipsEditSplit="vertical"
+let g:UltiSnipsSnippetsDir="~/.vim/UltiSnips"
+nnoremap <leader>sne :UltiSnipsEdit<cr>
