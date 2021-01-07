@@ -564,17 +564,21 @@ function! LightlineGitbranch()
 endfunction
 
 function! LightlineSpell()
-  if &spelllang == 'ru_yo,en_us' || &spelllang == 'ru_ru,en_us'
-    return 'ru,en'
-  elseif &spelllang == 'en_us,ru_yo' || &spelllang == 'en_us,ru_ru'
-    return 'en,ru'
-  elseif &spelllang == 'en_us' || &spelllang == 'en_uk'
-  \ || &spelllang == 'en_en'
-    return 'en'
-  elseif &spelllang == 'ru_yo' || &spelllang == 'ru_ru'
-    return 'ru'
+  if &spell
+    if &spelllang == 'ru_yo,en_us' || &spelllang == 'ru_ru,en_us'
+      return 'ru,en'
+    elseif &spelllang == 'en_us,ru_yo' || &spelllang == 'en_us,ru_ru'
+      return 'en,ru'
+    elseif &spelllang == 'en_us' || &spelllang == 'en_uk'
+    \ || &spelllang == 'en_en'
+      return 'en'
+    elseif &spelllang == 'ru_yo' || &spelllang == 'ru_ru'
+      return 'ru'
+    endif
+      return &spelllang
+  else
+    return ''
   endif
-    return &spelllang
 endfunction
 
 function! LightlineCharvaluehex()
@@ -1618,11 +1622,12 @@ for d in glob('~/.vim/spell/*.add', 1, 1)
 endfor
 
 " Toggle spell checking
+map <leader>ssa :setlocal spell! spelllang=en_us,ru_yo<cr>
 map <leader>sse :setlocal spell! spelllang=en_us<cr>
 map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
 
 "enable spell checking by default
-set spell spelllang=en_us,ru_yo
+" set spell spelllang=en_us,ru_yo
 
 " vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
 " Command mode
