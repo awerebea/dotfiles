@@ -1601,7 +1601,7 @@ set completeopt=menuone,longest,preview
 let g:acp_enableAtStartup = 1
 let g:acp_mappingDriven = 0
 let g:acp_ignorecaseOption = 1
-let g:acp_behaviorSnipmateLength = 1
+" let g:acp_behaviorSnipmateLength = 3
 let g:acp_completeOption = '.,k,w,b,u,t,i,kspell'
 
 " Navigate the complete menu items like CTRL+n / CTRL+p would.
