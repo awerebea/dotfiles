@@ -1212,9 +1212,9 @@ nnoremap <silent> <leader>l        :Lines<CR>
 " nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
 " nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
 " xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
-nnoremap <silent> <leader>rg       :Rg<CR>
-nnoremap <silent> <leader>RG       :Rg <C-R><C-A><CR>
-xnoremap <silent> <leader>rg       y:Rg <C-R>"<CR>
+nnoremap <silent> <leader>rg       :FZFRg<CR>
+nnoremap <silent> <leader>RG       :FZFRg <C-R><C-A><CR>
+xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
 nnoremap <silent> <leader>`        :Marks<CR>
 " nnoremap <silent> q: :History:<CR>
 " nnoremap <silent> q/ :History/<CR>
@@ -1259,9 +1259,9 @@ function! RipgrepFzf(query, fullscreen)
   call fzf#vim#grep(initial_command, 1, options, a:fullscreen)
 endfunction
 
-command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+command! -nargs=* -bang FZFRG call RipgrepFzf(<q-args>, <bang>0)
 
-command! -bang -nargs=* Rg
+command! -bang -nargs=* FZFRg
   \ call fzf#vim#grep(
   \ "rg --colors 'match:bg:yellow' --colors 'match:fg:black'
   \ --colors 'match:style:nobold' --colors 'path:fg:cyan'
