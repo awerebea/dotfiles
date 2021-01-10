@@ -25,6 +25,7 @@ RUN apt-get update \
 	pkg-config \
 	ranger \
 	ruby \
+	telnet \
 	unifont \
 	wget \
 	xdg-utils \
