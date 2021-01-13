@@ -281,6 +281,8 @@ vmap <C-c> "+y
 
 if has('mac')
   set clipboard=unnamed
+elseif has('windows')
+  set clipboard=unnamed
 elseif has('unix')
   " language en_US.utf8
   set clipboard=unnamedplus
@@ -1683,3 +1685,5 @@ let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetsDir="~/.vim/UltiSnips"
 nnoremap <leader>sne :UltiSnipsEdit<cr>
+let g:snipMate = {}
+let g:snipMate.snippet_version = 1
