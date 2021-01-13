@@ -3,12 +3,13 @@
 git clone https://awerebea@github.com/awerebea/workspace.git ~/Github/workspace
 cd ~/Github/workspace && git remote set-url origin git@github.com:awerebea/workspace.git
 cp -r ~/Github/workspace/.ssh ~/
-chown -R root:root /root/.ssh
-chmod 600 /root/.ssh/config
-chmod 600 /root/.ssh/id_github
-chmod 644 /root/.ssh/id_github.pub
-chmod 600 /root/.ssh/id_vogsphere
-chmod 644 /root/.ssh/id_vogsphere.pub
+ugroup=$(id -gn)
+chown -R $USER:$ugroup ~/.ssh
+chmod 600 ~/.ssh/config
+chmod 600 ~/.ssh/id_github
+chmod 644 ~/.ssh/id_github.pub
+chmod 600 ~/.ssh/id_vogsphere
+chmod 644 ~/.ssh/id_vogsphere.pub
 gpg --import ~/Github/workspace/gpg_keys/gpg_pub_key
 gpg --import ~/Github/workspace/gpg_keys/gpg_sec_key
 gpg --import ~/Github/workspace/gpg_keys/gpg_sec_sub_key
