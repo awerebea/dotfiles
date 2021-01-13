@@ -60,5 +60,5 @@ RUN	locale-gen "en_US.UTF-8" \
 &&	chsh -s $(which zsh) \
 &&	git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm \
 &&	git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim \
-&&	cd /root/.vim && mkdir -p undo swap backup bundle \
+&&	cd ~/.vim && mkdir -p undo swap backup bundle \
 &&	echo "export ZSH=$HOME/.oh-my-zsh" >> ~/.bashrc
