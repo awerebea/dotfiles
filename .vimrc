@@ -1589,8 +1589,8 @@ function ToggleDiff ()
     wincmd w
   endif
 endfunction
-nnoremap <silent> <F9> :call ToggleDiff()<CR>
-inoremap <silent> <F9> <C-O>:call ToggleDiff()<CR>
+nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
+inoremap <silent> <leader><F9> <C-O>:call ToggleDiff()<CR>
 
 " dictionary and completion settings
 " {{{
@@ -1687,3 +1687,13 @@ let g:UltiSnipsSnippetsDir="~/.vim/UltiSnips"
 nnoremap <leader>sne :UltiSnipsEdit<cr>
 let g:snipMate = {}
 let g:snipMate.snippet_version = 1
+
+" run/compile from vim
+if has("autocmd")
+  autocmd FileType python map <buffer> <F9> :w<CR>
+  \ :exec '!clear; python3' shellescape(@%, 1)<CR>
+  autocmd FileType python imap <buffer> <F9> <esc>:w<CR>
+  \ :exec '!clear; python3' shellescape(@%, 1)<CR>
+  autocmd FileType cpp map <buffer> <F9> :make<CR>
+  autocmd FileType c map <buffer> <F9> :make<CR>
+endif
