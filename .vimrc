@@ -1437,6 +1437,7 @@ let g:pymode_run_bind = '<leader>r'
 let g:pymode_breakpoint_bind = '<leader>b'
 
 let g:pymode_rope = 1
+let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_show_doc_bind = '<leader>pd'
 let g:pymode_rope_goto_definition_bind = '<leader>pg'
 let g:pymode_rope_goto_definition_cmd = 'new'
