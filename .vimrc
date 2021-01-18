@@ -1698,3 +1698,11 @@ if has("autocmd")
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
+
+" syntastic settings
+let s:uname = system("echo -n \"$(uname)\"")
+let s:uname_host = system("echo -n \"$(uname -n)\"")
+if !v:shell_error && s:uname_host =~ "21-school"
+  let g:syntastic_python_python_exec = 'python3'
+  let g:syntastic_python_checkers = ['python']
+endif
