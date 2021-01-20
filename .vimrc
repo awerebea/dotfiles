@@ -14,7 +14,8 @@ Plugin 'szw/vim-tags'
 Plugin 'majutsushi/tagbar'
 Plugin 'plasticboy/vim-markdown.git'
 Plugin 'Shougo/neocomplcache.vim'
-Plugin 'vim-syntastic/syntastic'
+Plugin 'dense-analysis/ale'
+" Plugin 'vim-syntastic/syntastic'
 Plugin 'pbondoer/vim-42header'
 Plugin 'luochen1990/rainbow'
 Plugin 'chrisbra/NrrwRgn'
@@ -22,6 +23,7 @@ Plugin 'simeji/winresizer'
 Plugin 'airblade/vim-gitgutter'
 Plugin 'tpope/vim-fugitive'
 Plugin 'morhetz/gruvbox'
+Plugin 'joshdick/onedark.vim'
 Plugin 'christoomey/vim-tmux-navigator'
 Plugin 'benmills/vimux'
 Plugin 'tmux-plugins/vim-tmux-focus-events'
@@ -329,12 +331,20 @@ au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
 "let g:molokai_original = 1
 
 " original gruvbox colorcheme
-let g:gruvbox_number_column = 'bg0' "default 'bg0'
-let g:gruvbox_sign_column = 'bg0' "default 'bg1'
-let g:gruvbox_bold = '0' "default '1'
-let g:gruvbox_contrast_dark = 'hard' "default 'medium'
-set background=dark
-colorscheme gruvbox
+" let g:gruvbox_number_column = 'bg0' "default 'bg0'
+" let g:gruvbox_sign_column = 'bg0' "default 'bg1'
+" let g:gruvbox_bold = '0' "default '1'
+" let g:gruvbox_contrast_dark = 'hard' "default 'medium'
+" set background=dark
+" colorscheme gruvbox
+
+" onedark theme settings
+let g:onedark_hide_endofbuffer=0
+let g:onedark_color_overrides = {
+  \ "black": {"gui": "#1D2229", "cterm": "234", "cterm16": "0" },
+  \}
+let g:onedark_termcolors=256
+colorscheme onedark
 
 " NERDCommenter
 " Add spaces after comment delimiters
@@ -424,8 +434,9 @@ let g:rainbow_conf = {
 
 "lightline
 " {{{
+  " \ 'colorscheme': 'default',
 let g:lightline = {
-  \ 'colorscheme': 'default',
+  \ 'colorscheme': 'onedark',
   \ 'active': {
   \   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
@@ -639,26 +650,35 @@ imap <F10> <esc>:TlistToggle<cr>
 
 " vim-syntastic
 " {{{
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 0
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-" nnoremap <leader>e :Errors<Cr>
-function! ToggleSyntastic()
-  for i in range(1, winnr('$'))
-    let bnum = winbufnr(i)
-    if getbufvar(bnum, '&buftype') == 'quickfix'
-      lclose
-      return
-    endif
-  endfor
-  Errors
-endfunction
-nnoremap <leader>e :call ToggleSyntastic()<CR>
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 0
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" function! ToggleSyntastic()
+  " for i in range(1, winnr('$'))
+    " let bnum = winbufnr(i)
+    " if getbufvar(bnum, '&buftype') == 'quickfix'
+      " lclose
+      " return
+    " endif
+  " endfor
+  " Errors
+" endfunction
+" nnoremap <leader>e :call ToggleSyntastic()<CR>
+
+" let s:uname = system("echo -n \"$(uname)\"")
+" let s:uname_host = system("echo -n \"$(uname -n)\"")
+" if !v:shell_error && s:uname_host =~ "21-school"
+"   let g:syntastic_python_python_exec = 'python3'
+"   let g:syntastic_python_checkers = ['python']
+" endif
 " }}}
+
+" 'ale' syntax error checker
+let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc']}
 
 " Unite
 "nnoremap <leader>p :Unite file_rec/async<cr>
@@ -1436,7 +1456,9 @@ noremap <leader>zp :pclose<CR><C-l>
 let g:pymode_run_bind = '<leader>r'
 let g:pymode_breakpoint_bind = '<leader>b'
 
+let g:pymode_syntax = 0
 let g:pymode_rope = 1
+let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
 let g:pymode_rope_show_doc_bind = '<leader>pd'
 let g:pymode_rope_goto_definition_bind = '<leader>pg'
@@ -1449,14 +1471,18 @@ let g:pymode_rope_use_function_bind = '<leader>pu'
 let g:pymode_rope_move_bind = '<leader>pv'
 let g:pymode_rope_change_signature_bind = '<leader>ps'
 
-let g:pymode_options_max_line_length = 80
-let g:pymode_options_colorcolumn = 1
+" let g:pymode_options_max_line_length = 79
+" let g:pymode_options_colorcolumn = 1
+let g:pymode_python = 'python3'
+
+" let g:jedi#force_py_version = 3
 " }}}
 
 " C-support plugin (c.vim) settings
 " change <leader> key for all keybinds to <leader><leader>
 let g:C_MapLeader = '\\'
 let g:C_Ctrl_j = 'off'
+
 " Alternate file (a.vim) plugin settings
 " Suppress the creation of a new header file if it's not exist
 let g:alternateNoDefaultAlternate = 1
@@ -1697,12 +1723,4 @@ if has("autocmd")
   \ :exec '!clear; python3' shellescape(@%, 1)<CR>
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
-endif
-
-" syntastic settings
-let s:uname = system("echo -n \"$(uname)\"")
-let s:uname_host = system("echo -n \"$(uname -n)\"")
-if !v:shell_error && s:uname_host =~ "21-school"
-  let g:syntastic_python_python_exec = 'python3'
-  let g:syntastic_python_checkers = ['python']
 endif
