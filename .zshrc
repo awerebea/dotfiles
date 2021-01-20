@@ -166,7 +166,8 @@ export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu
 # tabs -4
 
 # Set Bat theme
-export BAT_THEME="gruvbox"
+# export BAT_THEME="gruvbox"
+export BAT_THEME="TwoDark"
 
 # FZF settings
 # Set fzf to find hidden files but ignore .gitignored
