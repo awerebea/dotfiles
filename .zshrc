@@ -191,3 +191,9 @@ export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
 
 # fix GPG plugin support int Vim
 export TERM=xterm-256color
+
+# create and launch python VENV
+alias activate="python3 -m venv .venv && source .venv/bin/activate"
+
+# generate '.clang_complete' for VIM and C/CPP projects
+alias genclangcompl='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'

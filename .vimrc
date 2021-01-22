@@ -15,6 +15,7 @@ Plugin 'majutsushi/tagbar'
 Plugin 'plasticboy/vim-markdown.git'
 Plugin 'Shougo/neocomplcache.vim'
 Plugin 'dense-analysis/ale'
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
 " Plugin 'vim-syntastic/syntastic'
 Plugin 'pbondoer/vim-42header'
 Plugin 'luochen1990/rainbow'
@@ -249,7 +250,6 @@ set wrapmargin=0
 set colorcolumn=+1
 highlight ColorColumn ctermbg=235 guibg=#262626
 set wrap linebreak
-" set cursorline " А так мы можем подсвечивать строку с курсором
 " wrap toggle
 nmap <leader>aw :call AutoWrapToggle()<CR>
 function! AutoWrapToggle()
@@ -258,7 +258,11 @@ function! AutoWrapToggle()
     setlocal fo-=t
     setlocal colorcolumn=
   else
-    setlocal textwidth=80
+    if (&filetype=='python')
+      setlocal textwidth=79
+    else
+      setlocal textwidth=80
+    endif
     setlocal fo+=t
     setlocal colorcolumn=+1
   endif
@@ -351,6 +355,7 @@ colorscheme onedark
 let g:NERDSpaceDelims = 1
 " custom formats or override the defaults
 let g:NERDCustomDelimiters = { 'c': { 'left': '/*','right': '*/' } }
+let g:NERDCustomDelimiters = { 'vim': { 'left': '"','right': '' } }
 " let g:NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
 " Align line-wise comment delimiters flush left instead of following code
 " indentation (left/both)
@@ -1474,8 +1479,6 @@ let g:pymode_rope_change_signature_bind = '<leader>ps'
 " let g:pymode_options_max_line_length = 79
 " let g:pymode_options_colorcolumn = 1
 let g:pymode_python = 'python3'
-
-" let g:jedi#force_py_version = 3
 " }}}
 
 " C-support plugin (c.vim) settings
@@ -1724,3 +1727,13 @@ if has("autocmd")
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
+
+" COC settingc
+" :CocInstall coc-pyright
+" if has("autocmd")
+"   autocmd FileType c let b:coc_suggest_disable = 1
+"   autocmd FileType cpp let b:coc_suggest_disable = 1
+" endif
+
+" jedi-vim settings
+" let g:jedi#force_py_version = 3
