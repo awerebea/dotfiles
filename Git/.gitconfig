@@ -57,3 +57,5 @@ trustExitCode = true
 	line-numbers-zero-style = 244
 	line-numbers-minus-style = 196
 	line-numbers-plus-style = 34
+[init]
+	defaultBranch = main
