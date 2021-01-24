@@ -70,7 +70,7 @@ Plugin 'tomtom/tinykeymap_vim'
 Plugin 'jamessan/vim-gnupg'
 Plugin 'neomutt/neomutt.vim'
 Plugin 'vim-scripts/a.vim'
-Plugin 'vim-scripts/c.vim'
+" Plugin 'vim-scripts/c.vim'
 Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
@@ -189,7 +189,7 @@ if has("autocmd")
   autocmd FileType c          setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType dockerfile setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType make       setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
+  autocmd FileType cmake      setlocal ts=4 sts=4 sw=4 expandtab
   autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
   autocmd BufEnter **/cpp.snippets setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitcommit  setlocal ts=4 sts=4 sw=4 noet
@@ -611,11 +611,11 @@ endfunction
 autocmd User ALELint call s:MaybeUpdateLightline()
 
 " " Update and show lightline but only if it's visible (e.g., not in Goyo)
-" function! s:MaybeUpdateLightline()
-"   if exists('#lightline')
-"     call lightline#update()
-"   end
-" endfunction
+function! s:MaybeUpdateLightline()
+  if exists('#lightline')
+    call lightline#update()
+  end
+endfunction
 nmap <leader>llu :Goyo<CR>:Goyo<CR>
 " }}}
 
@@ -683,7 +683,9 @@ imap <F10> <esc>:TlistToggle<cr>
 " }}}
 
 " 'ale' syntax error checker
-let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc']}
+let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc'],
+  \ 'python': ['flake8', 'mypy', 'pylint', 'pyright'],
+  \ }
 
 " Unite
 "nnoremap <leader>p :Unite file_rec/async<cr>
@@ -1465,16 +1467,17 @@ let g:pymode_syntax = 0
 let g:pymode_rope = 1
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
-let g:pymode_rope_show_doc_bind = '<leader>pd'
-let g:pymode_rope_goto_definition_bind = '<leader>pg'
+" let g:pymode_rope_show_doc_bind = '<leader>pd'
+" let g:pymode_rope_rename_bind = '<leader>pr'
+" let g:pymode_rope_rename_module_bind = '<leader>p1r'
+" let g:pymode_rope_module_to_package_bind = '<leader>p1p'
+" let g:pymode_rope_extract_method_bind = '<leader>pm'
+" let g:pymode_rope_extract_variable_bind = '<leader>pl'
+" let g:pymode_rope_use_function_bind = '<leader>pu'
+" let g:pymode_rope_move_bind = '<leader>pv'
+" let g:pymode_rope_change_signature_bind = '<leader>ps'
+" let g:pymode_rope_goto_definition_bind = '<leader>pg'
 let g:pymode_rope_goto_definition_cmd = 'new'
-let g:pymode_rope_rename_bind = '<leader>pr'
-let g:pymode_rope_module_to_package_bind = '<leader>p1p'
-let g:pymode_rope_extract_method_bind = '<leader>pm'
-let g:pymode_rope_extract_variable_bind = '<leader>pl'
-let g:pymode_rope_use_function_bind = '<leader>pu'
-let g:pymode_rope_move_bind = '<leader>pv'
-let g:pymode_rope_change_signature_bind = '<leader>ps'
 
 " let g:pymode_options_max_line_length = 79
 " let g:pymode_options_colorcolumn = 1
@@ -1485,12 +1488,13 @@ let g:pymode_python = 'python3'
 " change <leader> key for all keybinds to <leader><leader>
 let g:C_MapLeader = '\\'
 let g:C_Ctrl_j = 'off'
+let g:C_InsertFileHeader = 'no'
+let g:C_UseTool_cmake = 'yes'
+" let g:C_UseTool_doxygen = 'yes'
 
 " Alternate file (a.vim) plugin settings
 " Suppress the creation of a new header file if it's not exist
 let g:alternateNoDefaultAlternate = 1
-let g:C_UseTool_cmake = 'yes'
-" let g:C_UseTool_doxygen = 'yes'
 " :A switches to the header file corresponding to the current file being
 " edited (or vise versa)
 noremap <leader>a :A<CR>
