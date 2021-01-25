@@ -36,7 +36,6 @@ Plugin 'vim-scripts/L9'
 Plugin 'sheerun/vim-polyglot'
 Plugin 'kshenoy/vim-signature'
 Plugin 'junegunn/goyo.vim'
-Plugin 'Shougo/unite.vim'
 Plugin 'Shougo/vimproc.vim'
 Plugin 'maxbrunsfeld/vim-yankstack'
 Plugin 'easymotion/vim-easymotion'
@@ -81,6 +80,7 @@ Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'garbas/vim-snipmate'
 Plugin 'lyokha/vim-xkbswitch'
+" Plugin 'Shougo/unite.vim'
 " Plugin 'tomasr/molokai'
 " Plugin 'ErichDonGubler/vim-sublime-monokai'
 " Plugin 'jeffkreeftmeijer/vim-numbertoggle'
@@ -366,6 +366,7 @@ let g:NERDDefaultAlign = 'both'
 let g:NERDCompactSexyComs = 0
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
+let g:NERDDisableTabsInBlockComm = 1
 
 " Tagbar
 " {{{
@@ -687,13 +688,6 @@ let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc'],
   \ 'python': ['flake8', 'mypy', 'pylint', 'pyright'],
   \ }
 
-" Unite
-"nnoremap <leader>p :Unite file_rec/async<cr>
-nnoremap <space>/ :Unite grep:.<cr>
-"let g:unite_source_history_yank_enable = 1
-"nnoremap <space>y :Unite history/yank<cr>
-nnoremap <space>s :Unite -auto-preview -quick-match buffer<cr>
-
 " yankstack
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
@@ -756,6 +750,17 @@ function! JSFolds()
     return indent(v:lnum) / &shiftwidth
   endif
 endfunction
+
+" Define folds automatically by indent level, but folds may be also created
+" manually
+augroup vimrc
+  au BufReadPre * setlocal foldmethod=indent
+  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+augroup END
+
+" Toggle folds with <space>
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
 " }}}
 
 " Easy Align
@@ -788,7 +793,7 @@ endif
 call yankstack#setup()
 
 " turn off search highlight by presing space
-:noremap <silent> <Space> :<C-u>nohlsearch<CR><C-l>
+:noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
 
 " list buffers keybinds
 " {{{
