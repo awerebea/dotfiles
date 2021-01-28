@@ -15,6 +15,7 @@ cat <<EOT >> ~/.gitignore
 .ctagsignore
 .fuse_hidden*
 .idea
+.ignore
 .indexer_files_tags/
 .indexer_files_tags/*
 .ropeproject/
