@@ -736,6 +736,8 @@ if has("autocmd")
   autocmd FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
   autocmd FileType javascript setlocal foldmethod=expr
   autocmd FileType javascript setlocal foldexpr=JSFolds()
+  autocmd FileType c setlocal foldmethod=manual
+  autocmd FileType cpp setlocal foldmethod=manual
 endif
 
 function! JSFolds()
