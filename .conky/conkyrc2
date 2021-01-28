@@ -14,7 +14,7 @@ conky.config = {
   use_xft = true,
   font = 'Open Sans:size=10',
   gap_x = 273,
-  gap_y = 0,
+  gap_y = 130,
   maximum_width = 180,
   minimum_height = 5,
   minimum_width = 200,
@@ -82,9 +82,9 @@ conky.text = [[
 #   ${font Open Sans:Bold:size=10}${color 4C7523}SSD M.2 Hynix 128 Gb ${hr 2}$color${font}
 #   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sde}°C
 #   ${voffset -4}
-# Mediaserver/disk_1
-  ${font Open Sans:Bold:size=10}${color 4C7523}Mediaserver/disk_1 ${hr 2}$color${font}
-  ${font Open Sans:size=9}${offset 5}${color FFFDE2}disk_1 (ext3) $color${fs_bar 5 /shares/mediaserver/disk_1/}
-  ${font Open Sans:size=9}${offset 5}Used ${fs_used /shares/mediaserver/disk_1/} (${fs_used_perc /shares/mediaserver/disk_1/}%)
-  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /shares/mediaserver/disk_1/} (${fs_free_perc /shares/mediaserver/disk_1/}%)
+# Router
+  ${font Open Sans:Bold:size=10}${color 4C7523}Router/AiDisk_b1 ${hr 2}$color${font}
+  ${font Open Sans:size=9}${offset 5}${color FFFDE2}AiDisk_b1 (ntfs) $color${fs_bar 5 /shares/router/AiDisk_b1/}
+  ${font Open Sans:size=9}${offset 5}Used ${fs_used /shares/router/AiDisk_b1/} (${fs_used_perc /shares/router/AiDisk_b1/}%)
+  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /shares/router/AiDisk_b1/} (${fs_free_perc /shares/router/AiDisk_b1/}%)
 ]]
