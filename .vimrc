@@ -1748,3 +1748,6 @@ endif
 
 " jedi-vim settings
 " let g:jedi#force_py_version = 3
+
+" quick launch last used macros
+nnoremap <leader>2 @@
