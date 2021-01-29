@@ -1,4 +1,11 @@
-set ignorecase
-set smartcase
-set hlsearch
-set incsearch
+set ignorecase " ics - поиск без учёта регистра символов
+set smartcase " Do smart case matching
+set hlsearch " подсветка результатов поиска
+set incsearch " поиск фрагмента по мере его набора
+
+" turn off search highlight by presing space
+:noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
+
+set number
+set relativenumber
+nnoremap <leader>rn rnu!
