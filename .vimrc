@@ -4,8 +4,7 @@ set nocompatible              " be iMproved, required
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-" let Vundle manage Vundle, required
-" {{{
+" let Vundle manage Vundle, required " {{{
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'preservim/nerdtree'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -80,6 +79,9 @@ Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'garbas/vim-snipmate'
 Plugin 'lyokha/vim-xkbswitch'
+Plugin 'Houl/repmo-vim'
+Plugin 'landock/vim-expand-region'
+Plugin 'pseewald/vim-anyfold'
 " Plugin 'Shougo/unite.vim'
 " Plugin 'tomasr/molokai'
 " Plugin 'ErichDonGubler/vim-sublime-monokai'
@@ -91,7 +93,6 @@ Plugin 'lyokha/vim-xkbswitch'
 " Plugin 'git://git.wincent.com/command-t.git'
 " Plugin 'tomtom/tcomment_vim'
 " Plugin 'myusuf3/numbers.vim'
-" Plugin 'jiangmiao/auto-pairs'
 " Plugin 'Raimondi/delimitMate'
 " Plugin 'brookhong/cscope.vim'
 " Plugin 'junegunn/vim-easy-align'
@@ -127,12 +128,12 @@ set list
 set noerrorbells
 set visualbell
 set t_vb=
+set scrolloff=2 " always show minimum n lines after current line
 
 " always use 10-base numbers
 set nrformats=
 
-" Wildmenu completion
-" {{{
+" Wildmenu completion " {{{
 set wildmenu
 set wildmode=full
 
@@ -152,8 +153,7 @@ set wildignore+=*.pyc                            " Python byte code
 set wildignore+=*.orig                           " Merge resolution files
 " }}}
 
-" tabs settings
-" {{{
+" tabs settings " {{{
 function! TabsNoExpandByFourSpaces()
   setlocal tabstop=4
   setlocal shiftwidth=4
@@ -185,6 +185,7 @@ if has("autocmd")
   autocmd FileType zsh        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType tmux       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType conf       setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType json       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType c          setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType dockerfile setlocal ts=4 sts=4 sw=4 noet
@@ -244,8 +245,7 @@ set t_Co=256
 set autowrite		" Automatically save before commands like :next and :make
 set updatetime=2000	" gitgutter update delay
 
-" word wrap
-" {{{
+" word wrap " {{{
 set wrapmargin=0
 set colorcolumn=+1
 highlight ColorColumn ctermbg=235 guibg=#262626
@@ -279,6 +279,10 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+
+" always move by screen lines instead of virtual lines with 'j' and 'k'
+nnoremap j gj
+nnoremap k gk
 
 :set viminfo='1000,<1000,s200,h		" Increasing the buffer size
 
@@ -368,8 +372,7 @@ let g:NERDCompactSexyComs = 0
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDDisableTabsInBlockComm = 1
 
-" Tagbar
-" {{{
+" Tagbar " {{{
 " JS
 let g:tagbar_type_javascript = {
   \   'ctagsbin' : '/path/to/jsctags'
@@ -398,8 +401,7 @@ let g:tagbar_type_go = {
   \ }
 " }}}
 
-" Rainbow brackets settings
-" {{{
+" Rainbow brackets settings " {{{
 let g:rainbow_active = 1
 let g:rainbow_conf = {
   \   'guifgs': ['darkorange', 'lightblue', 'lightyellow', 'lightcyan',
@@ -438,8 +440,7 @@ let g:rainbow_conf = {
   \ }
 " }}}
 
-"lightline
-" {{{
+"lightline " {{{
   " \ 'colorscheme': 'default',
 let g:lightline = {
   \ 'colorscheme': 'onedark',
@@ -654,8 +655,7 @@ map <F10> :TlistToggle<cr>
 vmap <F10> <esc>:TlistToggle<cr>
 imap <F10> <esc>:TlistToggle<cr>
 
-" vim-syntastic
-" {{{
+" vim-syntastic " {{{
 " set statusline+=%#warningmsg#
 " set statusline+=%{SyntasticStatuslineFlag()}
 " set statusline+=%*
@@ -697,8 +697,7 @@ nmap <leader>P <Plug>yankstack_substitute_newer_paste
 " let g:indent_guides_color_change_percent = 3
 " let g:indent_guides_enable_on_vim_startup = 1
 
-" Multi cursors
-" {{{
+" Multi cursors " {{{
 let g:multi_cursor_use_default_mapping=0
 " default mapping
 let g:multi_cursor_start_word_key      = '<C-n>'
@@ -711,8 +710,7 @@ let g:multi_cursor_next_key            = '<C-n>'
 let g:multi_cursor_quit_key            = '<Esc>'
 " }}}
 
-" Folding settings
-" {{{
+" Folding settings " {{{
 " zc                          fold block
 " zo                          unfold block
 " zM                          fold all blocks
@@ -722,8 +720,8 @@ let g:multi_cursor_quit_key            = '<Esc>'
 " set foldenable            " turn on folding
 set nofoldenable           " turn off folding
 " set foldmethod=syntax     " fold based on syntax
-set foldmethod=indent      " fold based on indent
-" set foldmethod=manual     " manual folding
+" set foldmethod=indent      " fold based on indent
+set foldmethod=manual     " manual folding
 " set foldmethod=marker     " fold based on markers
 " set foldmarker=bigin,end  " set markers of start and end of the block
 set foldcolumn=3            " show fold column left on the screen
@@ -732,12 +730,19 @@ set foldlevelstart=99
 " set foldopen=all          " autoopen fold when enter it
 set foldnestmax=5           " max level of fold
 
+let g:anyfold_fold_display=1
+let g:anyfold_fold_toplevel=1
+hi Folded guibg=#272c33
+hi Folded guifg=#707784
+
 if has("autocmd")
-  autocmd FileType vim setlocal foldmethod=marker foldmarker={{{,}}}
+  autocmd BufEnter * if &filetype ==# 'vim' | setlocal foldmethod=marker
+  \ foldmarker={{{,}}} | endif
   autocmd FileType javascript setlocal foldmethod=expr
   autocmd FileType javascript setlocal foldexpr=JSFolds()
-  autocmd FileType c setlocal foldmethod=manual
-  autocmd FileType cpp setlocal foldmethod=manual
+  autocmd Filetype c          AnyFoldActivate
+  autocmd Filetype cpp        AnyFoldActivate
+  autocmd Filetype python     AnyFoldActivate
 endif
 
 function! JSFolds()
@@ -797,8 +802,7 @@ call yankstack#setup()
 " turn off search highlight by presing space
 :noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
 
-" list buffers keybinds
-" {{{
+" list buffers keybinds " {{{
 nnoremap [b :bprevious<CR>
 nnoremap ]b :bnext<CR>
 nnoremap [B :bfirst<CR>
@@ -816,8 +820,7 @@ nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 " past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" easymotion TEST!!!!!!!
-" {{{
+" easymotion TEST!!!!!!! " {{{
 let g:bufExplorerDisableDefaultKeyMapping = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 nmap <leader><leader>w <Plug>(easymotion-overwin-w)
@@ -839,7 +842,7 @@ map zg/ <Plug>(incsearch-easymotion-stay)
 set autoindent
 set pastetoggle=<F4>
 
-" autopairing
+" autopairing " {{{
 " inoremap " ""<left>
 " inoremap ' ''<left>
 " inoremap ( ()<left>
@@ -847,9 +850,12 @@ set pastetoggle=<F4>
 " inoremap { {}<left>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
+" }}}
 
-" tabs navigation
-" {{{
+" INFO Enable <ALT + p> keymap in the terminal
+" execute "set <M-p>=\ep"
+
+" tabs navigation " {{{
 " nnoremap gz :bdelete<CR>
 nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
@@ -900,8 +906,7 @@ if &diff
 endif
 
 " Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made.
-" {{{
+" file it was loaded from, thus the changes you made. " {{{
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
@@ -968,8 +973,7 @@ endif
 " Avoid unintentional switches to Ex mode.
 nmap Q q
 
-" clang_complete
-" {{{
+" clang_complete " {{{
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
@@ -993,8 +997,7 @@ let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
 let g:clang_complete_auto=1
 " }}}
 
-" backup and swap files settings
-" {{{
+" backup and swap files settings " {{{
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/backup or .
@@ -1045,8 +1048,7 @@ endif
 set viewdir=~/.vim/view
 " }}}
 
-" " Highlight TODO, FIXME, NOTE, etc.
-" {{{
+" Highlight TODO, FIXME, NOTE, etc. " {{{
 " if has('autocmd') && v:version > 701
 "   augroup todo
 "     autocmd!
@@ -1194,10 +1196,7 @@ endif
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
 
-" ============================================================================
-" FZF
-" ============================================================================
-" {{{
+" FZF settings " {{{
 " ignore files ignored in .gitignore but show hidden
 let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
@@ -1334,8 +1333,7 @@ augroup filetypedetect
 augroup END
 
 " Delete a buffer without closing the window,
-" create a scratch buffer if no buffers left
-" {{{
+" create a scratch buffer if no buffers left " {{{
 function s:Kwbd(kwbdStage)
   if(a:kwbdStage == 1)
     if(&modified)
@@ -1414,8 +1412,7 @@ map <silent> <leader><leader>v :vsplit<CR>
 " tinykeymap settings (faster win resize)
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
 
-" GPG settings
-" {{{
+" GPG settings " {{{
 if has("autocmd")
   " Tell the GnuPG plugin to armor new files.
   let g:GPGPreferArmor=1
@@ -1465,8 +1462,7 @@ noremap <leader>zl :lclose<CR><C-l>
 " Close preview window
 noremap <leader>zp :pclose<CR><C-l>
 
-" Pymode settings
-" {{{
+" Pymode settings " {{{
 let g:pymode_run_bind = '<leader>r'
 let g:pymode_breakpoint_bind = '<leader>b'
 
@@ -1532,8 +1528,7 @@ tnoremap <C-t> <C-w>N
 let g:indexer_ctagsCommandLineOptions =
   \ '-R --fields=+iaSl --c++-kinds=+p --extra=+q'
 
-" vim-mergetool settings
-" {{{
+" vim-mergetool settings " {{{
 nmap <leader>mt <plug>(MergetoolToggle)
 
 nmap <expr> <S-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<S-Left>'
@@ -1633,8 +1628,7 @@ endfunction
 nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
 inoremap <silent> <leader><F9> <C-O>:call ToggleDiff()<CR>
 
-" dictionary and completion settings
-" {{{
+" dictionary and completion settings " {{{
 set complete=.,k,w,b,u,t,i,kspell
 set shortmess+=c
 set shortmess-=S
@@ -1721,13 +1715,14 @@ endfunction
 " - https://github.com/Valloric/YouCompleteMe
 " - https://github.com/nvim-lua/completion-nvim
 let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+" let g:UltiSnipsJumpForwardTrigger="<tab>"
+" let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetsDir="~/.vim/UltiSnips"
 nnoremap <leader>sne :UltiSnipsEdit<cr>
 let g:snipMate = {}
 let g:snipMate.snippet_version = 1
+imap <s-tab> <Plug>snipMateShow
 
 " run/compile from vim
 if has("autocmd")
@@ -1739,15 +1734,35 @@ if has("autocmd")
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
 
-" COC settingc
+" COC settingc " {{{
 " :CocInstall coc-pyright
-" if has("autocmd")
-"   autocmd FileType c let b:coc_suggest_disable = 1
-"   autocmd FileType cpp let b:coc_suggest_disable = 1
-" endif
+
+" Map <c-space> to trigger completion (some terminals may send <NUL> when you
+" press <c-space>, so you could instead):
+inoremap <silent><expr> <NUL> coc#refresh()
+" }}}
 
 " jedi-vim settings
 " let g:jedi#force_py_version = 3
 
 " quick launch last used macros
 nnoremap <leader>2 @@
+
+" repmo settings " {{{
+" map a motion and its reverse motion:
+noremap <expr> h repmo#SelfKey('h', 'l')|sunmap h
+noremap <expr> l repmo#SelfKey('l', 'h')|sunmap l
+" if you like `:noremap j gj', you can keep that:
+map <expr> j repmo#Key('gj', 'gk')|sunmap j
+map <expr> k repmo#Key('gk', 'gj')|sunmap k
+" repeat the last [count]motion or the last zap-key:
+map <expr> ; repmo#LastKey(';')|sunmap ;
+map <expr> , repmo#LastRevKey(',')|sunmap ,
+" add these mappings when repeating with `;' or `,':
+noremap <expr> f repmo#ZapKey('f')|sunmap f
+noremap <expr> F repmo#ZapKey('F')|sunmap F
+noremap <expr> t repmo#ZapKey('t')|sunmap t
+noremap <expr> T repmo#ZapKey('T')|sunmap T
+" 1 to use repmo only with counted moves, 0 - to use it always
+let g:repmo_require_count = 1
+" }}}
