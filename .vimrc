@@ -985,7 +985,7 @@ elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
   \ == "root"
   let g:clang_library_path='/usr/lib/clang/'
 endif
-let g:clang_snippets=1
+let g:clang_snippets=0
 let g:clang_trailing_placeholder=1
 let g:clang_complete_optional_args_in_snippets=1
 let g:clang_auto_select=1
