@@ -79,9 +79,10 @@ Plugin 'MarcWeber/vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'garbas/vim-snipmate'
 Plugin 'lyokha/vim-xkbswitch'
-Plugin 'Houl/repmo-vim'
 Plugin 'landock/vim-expand-region'
 Plugin 'pseewald/vim-anyfold'
+Plugin 'tommcdo/vim-exchange'
+Plugin 'kurkale6ka/vim-swap'
 " Plugin 'Shougo/unite.vim'
 " Plugin 'tomasr/molokai'
 " Plugin 'ErichDonGubler/vim-sublime-monokai'
@@ -995,6 +996,7 @@ let g:clang_jumpto_declaration_key="<leader><C-]>"
 let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
 " let g:clang_jumpto_back_key=""
 let g:clang_complete_auto=1
+let g:clang_complete_copen=0
 " }}}
 
 " backup and swap files settings " {{{
@@ -1747,22 +1749,3 @@ inoremap <silent><expr> <NUL> coc#refresh()
 
 " quick launch last used macros
 nnoremap <leader>2 @@
-
-" repmo settings " {{{
-" map a motion and its reverse motion:
-noremap <expr> h repmo#SelfKey('h', 'l')|sunmap h
-noremap <expr> l repmo#SelfKey('l', 'h')|sunmap l
-" if you like `:noremap j gj', you can keep that:
-map <expr> j repmo#Key('gj', 'gk')|sunmap j
-map <expr> k repmo#Key('gk', 'gj')|sunmap k
-" repeat the last [count]motion or the last zap-key:
-map <expr> ; repmo#LastKey(';')|sunmap ;
-map <expr> , repmo#LastRevKey(',')|sunmap ,
-" add these mappings when repeating with `;' or `,':
-noremap <expr> f repmo#ZapKey('f')|sunmap f
-noremap <expr> F repmo#ZapKey('F')|sunmap F
-noremap <expr> t repmo#ZapKey('t')|sunmap t
-noremap <expr> T repmo#ZapKey('T')|sunmap T
-" 1 to use repmo only with counted moves, 0 - to use it always
-let g:repmo_require_count = 1
-" }}}
