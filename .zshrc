@@ -196,4 +196,4 @@ export TERM=xterm-256color
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
 
 # generate '.clang_complete' for VIM and C/CPP projects
-alias genclangcompl='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'
+alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'

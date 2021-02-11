@@ -57,6 +57,7 @@ Plugin 'itchyny/lightline.vim'
 Plugin 'shinchu/lightline-gruvbox.vim'
 Plugin 'vim-scripts/restore_view.vim'
 Plugin 'xavierd/clang_complete'
+" Plugin 'justmao945/vim-clang'
 Plugin 'chrisbra/Colorizer'
 Plugin 'vim-scripts/indexer.tar.gz'
 Plugin 'vim-scripts/vimprj'
@@ -997,6 +998,11 @@ let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
 " let g:clang_jumpto_back_key=""
 let g:clang_complete_auto=1
 let g:clang_complete_copen=0
+" }}}
+
+" vim-clang " {{{
+" use the same file as clang_complete.
+let g:clang_dotfile='.clang_complete'
 " }}}
 
 " backup and swap files settings " {{{
