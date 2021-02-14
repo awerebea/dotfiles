@@ -84,6 +84,13 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
 
     alias keesync="cp -f /Volumes/Data/Distrib/_Personal\ Software/KeePass/keepass_Andrei.kdbx ~/Google\ Drive/Mobile/Keepass/"
     alias sudoedit="sudo vim"
+
+    export PATH="$PATH:/Users/andrei/Library/Python/3.7/bin"
+    export PATH="$PATH:/Users/andrei/.local/bin"
+    if [ -x '/Users/andrei/.local/bin/vim' ]; then
+      alias vim='/Users/andrei/.local/bin/vim'
+      export EDITOR='/Users/andrei/.local/bin/vim'
+    fi
   fi
 else
   export ZSH="$HOME/.oh-my-zsh"
