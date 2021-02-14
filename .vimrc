@@ -1685,6 +1685,8 @@ if !v:shell_error && s:uname_host =~ "21-school"
 elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
   \ || s:uname_host == "laptop-acer")
   let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
+elseif !v:shell_error && s:uname == "Darwin" && s:uname_host == "pc-home"
+  let g:XkbSwitchLib = "/Users/awerebea/.local/lib/libxkbswitch.dylib"
 elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
   \ == "root"
   let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
