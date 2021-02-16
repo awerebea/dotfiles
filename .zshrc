@@ -61,7 +61,7 @@ source $ZSH/oh-my-zsh.sh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # blinking block
-printf '\e[1 q'
+# printf '\e[1 q' # INFO comment in in debian VM
 # steady block
 # printf '\e[2 q'
 # blinking underscore
@@ -204,3 +204,5 @@ alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$
 
 # enable vim-mode
 # set -o vi
+
+# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
