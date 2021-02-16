@@ -535,3 +535,6 @@ bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
 
 # toggle synchronize-panes
 bind C-x setw synchronize-panes
+
+# set zsh as default shell
+set-option -g default-shell /usr/bin/zsh
