@@ -7,7 +7,7 @@ call vundle#begin()
 " let Vundle manage Vundle, required " {{{
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'preservim/nerdtree'
-Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'davidhalter/jedi-vim'
 Plugin 'szw/vim-tags'
 Plugin 'majutsushi/tagbar'
