@@ -43,7 +43,8 @@ plugins=(\
           zsh-autosuggestions \
           zsh-completions \
           zsh-syntax-highlighting \
-          zsh-vi-mode \
+          vi-mode \
+          zsh-vimode-visual \
   )
 
 source $ZSH/oh-my-zsh.sh
@@ -203,8 +204,3 @@ alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$
 
 # enable vim-mode
 # set -o vi
-
-zvm_after_init_commands+=('[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh')
-
-export ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BLOCK
-export ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLOCK
