@@ -630,3 +630,5 @@ if [[ `uname -n` == *"21-school"* ]]; then
     ln -s $NEWDIR $OLDDIR
   fi
 fi
+
+alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
