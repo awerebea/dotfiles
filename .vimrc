@@ -196,7 +196,7 @@ if has("autocmd")
   autocmd FileType cmake      setlocal ts=4 sts=4 sw=4 expandtab
   autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
   autocmd BufEnter **/cpp.snippets setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType gitcommit  setlocal ts=4 sts=4 sw=4 noet
+  autocmd FileType gitcommit  setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType gitignore  setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType gitconfig  setlocal ts=4 sts=4 sw=4 noet
 endif
