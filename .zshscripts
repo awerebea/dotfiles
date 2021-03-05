@@ -80,6 +80,7 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     export GIT_WORKSPACE="/Volumes/awerebea/Github/workspace"
     alias norminette='/Users/andrei/.scripts/colorised_norm.sh'
     alias o='a -e open' # quick opening files with open
+    alias sudo='sudo '
     google() {
       search=""
       for term in $@; do
