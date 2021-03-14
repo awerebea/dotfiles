@@ -6,98 +6,143 @@ call vundle#begin()
 
 " let Vundle manage Vundle, required " {{{
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'preservim/nerdtree'
-" Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-Plugin 'davidhalter/jedi-vim'
-Plugin 'szw/vim-tags'
-Plugin 'majutsushi/tagbar'
-Plugin 'plasticboy/vim-markdown.git'
-Plugin 'Shougo/neocomplcache.vim'
-Plugin 'dense-analysis/ale'
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
-" Plugin 'vim-syntastic/syntastic'
-Plugin 'pbondoer/vim-42header'
-Plugin 'luochen1990/rainbow'
-Plugin 'chrisbra/NrrwRgn'
-Plugin 'simeji/winresizer'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'tpope/vim-fugitive'
-Plugin 'morhetz/gruvbox'
-Plugin 'joshdick/onedark.vim'
-Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'benmills/vimux'
-Plugin 'tmux-plugins/vim-tmux-focus-events'
-Plugin 'roxma/vim-tmux-clipboard'
-Plugin 'preservim/nerdcommenter'
-Plugin 'tpope/vim-surround'
-Plugin 'othree/vim-autocomplpop'
-Plugin 'vim-scripts/L9'
-Plugin 'sheerun/vim-polyglot'
-Plugin 'kshenoy/vim-signature'
-Plugin 'junegunn/goyo.vim'
-Plugin 'Shougo/vimproc.vim'
-Plugin 'maxbrunsfeld/vim-yankstack'
-Plugin 'easymotion/vim-easymotion'
+" Improved incremental searching
 Plugin 'haya14busa/incsearch.vim'
+" Vim motions on speed!
+Plugin 'easymotion/vim-easymotion'
+" Integration between 'haya14busa/incsearch.vim' 'easymotion/vim-easymotion'
 Plugin 'haya14busa/incsearch-easymotion.vim'
-Plugin 'nathanaelkane/vim-indent-guides'
-Plugin 'vim-scripts/taglist.vim'
-Plugin 'tpope/vim-eunuch'
-Plugin 'yegappan/grep'
-Plugin 'jlanzarotta/bufexplorer'
-Plugin 'tpope/vim-repeat'
-Plugin 'tpope/vim-git'
-Plugin 'kana/vim-textobj-user'
-Plugin 'kana/vim-textobj-lastpat'
-Plugin 'tpope/vim-abolish'
+" Plugin to toggle, display and navigate marks
+Plugin 'kshenoy/vim-signature'
+" Easy swapping of text in Vim
+Plugin 'kurkale6ka/vim-swap'
+" Increase/decrease visually selected regions of text using key combinations
+Plugin 'landock/vim-expand-region'
+" Turns default register into a stack, and lets cycle through the items in the
+" stack after doing a paste
+Plugin 'maxbrunsfeld/vim-yankstack'
+" A Vim plugin that adds a :Qargs utility command, for populating the argument
+" list from the files in the quickfix list
 Plugin 'nelstrom/vim-qargs'
-Plugin 'liuchengxu/vista.vim'
-Plugin 'tpope/vim-unimpaired'
-Plugin 'itchyny/lightline.vim'
-Plugin 'shinchu/lightline-gruvbox.vim'
-Plugin 'vim-scripts/restore_view.vim'
-Plugin 'xavierd/clang_complete'
-" Plugin 'justmao945/vim-clang'
-Plugin 'chrisbra/Colorizer'
-Plugin 'vim-scripts/indexer.tar.gz'
-Plugin 'vim-scripts/vimprj'
-Plugin 'vim-scripts/DfrankUtil'
-Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plugin 'junegunn/fzf.vim'
-Plugin 'francoiscabrol/ranger.vim'
+" Automatic trigger complete popup menu
+Plugin 'othree/vim-autocomplpop'
+" Easy comment/uncomment lines
+Plugin 'preservim/nerdcommenter'
+" Efficient way of using Vim as a Git mergetool
+Plugin 'samoshkin/vim-mergetool'
+" Make terminal vim and tmux work better together
+Plugin 'benmills/vimux'
+Plugin 'christoomey/vim-tmux-navigator'
+Plugin 'roxma/vim-tmux-clipboard'
+Plugin 'tmux-plugins/vim-tmux-focus-events'
+" Easy text exchange operator
+Plugin 'tommcdo/vim-exchange'
+" This plugin lets users define 'temporary keymaps', with the function
 Plugin 'tomtom/tinykeymap_vim'
-Plugin 'jamessan/vim-gnupg'
-Plugin 'neomutt/neomutt.vim'
-Plugin 'vim-scripts/a.vim'
-" Plugin 'vim-scripts/c.vim'
-Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+" Easy move and resize windows
+Plugin 'simeji/winresizer'
+" Interpret a file by function and cache file automatically
+Plugin 'MarcWeber/vim-addon-mw-utils'
+" Libraries provides some utility functions
+Plugin 'tomtom/tlib_vim'
+Plugin 'vim-scripts/L9'
+" Smart substitution and easy change case styles
+" (fooBar, foo_bar, foo-bar, boo.bar, foo bar, Foo Bar)
+Plugin 'tpope/vim-abolish'
+" Vim sugar for the UNIX shell commands that need it the most
+Plugin 'tpope/vim-eunuch'
+" Enable repeating supported plugin maps with '.'
+Plugin 'tpope/vim-repeat'
+" Easy 'surroundings': parentheses, brackets, quotes, XML tags, and more
+Plugin 'tpope/vim-surround'
+" Pairs of handy bracket mappings.
+Plugin 'tpope/vim-unimpaired'
+" File system explorers
+Plugin 'preservim/nerdtree'
+Plugin 'francoiscabrol/ranger.vim'
+" Explore buffers
+Plugin 'jlanzarotta/bufexplorer'
+" Plugin to integrate various grep like search tools with Vim
+Plugin 'yegappan/grep'
+" Run Git commands from Vim
+Plugin 'tpope/vim-fugitive'
+" Vim Git runtime files
+Plugin 'tpope/vim-git'
+" A Vim plugin which shows a git diff in the sign column
+Plugin 'airblade/vim-gitgutter'
+" A light and configurable statusline/tabline plugin for Vim
+Plugin 'itchyny/lightline.vim'
+" Automatically save/restore current state of Vim
 Plugin 'tpope/vim-obsession'
 Plugin 'dhruvasagar/vim-prosession'
-Plugin 'samoshkin/vim-mergetool'
+Plugin 'vim-scripts/restore_view.vim'
+" Colorschemes
+Plugin 'joshdick/onedark.vim'
+Plugin 'morhetz/gruvbox'
+Plugin 'shinchu/lightline-gruvbox.vim'
+" A solid language pack for Vim syntax highlighting
+Plugin 'sheerun/vim-polyglot'
+" Syntax highlighting, matching rules and mappings for Markdown
+Plugin 'plasticboy/vim-markdown.git'
+" Text objects for the last searched pattern
+Plugin 'kana/vim-textobj-lastpat'
+" Create your own text objects
+Plugin 'kana/vim-textobj-user'
+" Rainbow Parentheses
+Plugin 'luochen1990/rainbow'
+" A Narrow Region Plugin for vim
+Plugin 'chrisbra/NrrwRgn'
+" Color hex codes and color names
+Plugin 'chrisbra/Colorizer'
+" Distraction-free writing in Vim
+Plugin 'junegunn/goyo.vim'
+" This script implements transparent editing of gpg encrypted files
+Plugin 'jamessan/vim-gnupg'
+" A command-line fuzzy finder in Vim
+Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plugin 'junegunn/fzf.vim'
+" Interactive command execution in Vim
+Plugin 'Shougo/vimproc.vim'
+" Automatic keyboard layout switching in insert mode
+Plugin 'lyokha/vim-xkbswitch'
+
+" Programming stuff
+
+" Add and update the School-42 comment header at the top of files
+Plugin 'pbondoer/vim-42header'
+" Syntax checker
+Plugin 'dense-analysis/ale'
+" Code completion server
+Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+" C/C++ auto completion
+Plugin 'xavierd/clang_complete'
+" The Ctags generator for Vim
+Plugin 'szw/vim-tags'
+" A class outline viewer for Vim
+Plugin 'majutsushi/tagbar'
+" Plugin provides an overview of the structure of source code files
+Plugin 'vim-scripts/taglist.vim'
+" Viewer & Finder for LSP symbols and tags
+Plugin 'liuchengxu/vista.vim'
+" Vimprj is a Vim plugin that helps you manage options for multiple projects.
+" Useful for automatically tags generation and update in projects.
+Plugin 'vim-scripts/DfrankUtil'
+Plugin 'vim-scripts/indexer.tar.gz'
+Plugin 'vim-scripts/vimprj'
+" Commands to swtich between source files and header files quickly
+Plugin 'vim-scripts/a.vim'
+" Snippets (code blocks) handling
+Plugin 'garbas/vim-snipmate'
 Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
-Plugin 'MarcWeber/vim-addon-mw-utils'
-Plugin 'tomtom/tlib_vim'
-Plugin 'garbas/vim-snipmate'
-Plugin 'lyokha/vim-xkbswitch'
-Plugin 'landock/vim-expand-region'
+" Automatically folding
 Plugin 'pseewald/vim-anyfold'
-Plugin 'tommcdo/vim-exchange'
-Plugin 'kurkale6ka/vim-swap'
-" Plugin 'Shougo/unite.vim'
-" Plugin 'tomasr/molokai'
-" Plugin 'ErichDonGubler/vim-sublime-monokai'
-" Plugin 'jeffkreeftmeijer/vim-numbertoggle'
-" Plugin 'terryma/vim-multiple-cursors'
-" Plugin 'ap/vim-css-color'
-" Plugin 'Shougo/deoplete.nvim'
-" Plugin 'ryanoasis/vim-devicons'
-" Plugin 'git://git.wincent.com/command-t.git'
-" Plugin 'tomtom/tcomment_vim'
-" Plugin 'myusuf3/numbers.vim'
-" Plugin 'Raimondi/delimitMate'
-" Plugin 'brookhong/cscope.vim'
-" Plugin 'junegunn/vim-easy-align'
+" Python auto completion
+Plugin 'davidhalter/jedi-vim'
+" Python 'IDE'
+Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+" A Vim plugin for visually displaying indent levels in code
+Plugin 'nathanaelkane/vim-indent-guides'
 " }}}
 
 " All of your Plugins must be added before the following line
@@ -105,18 +150,7 @@ call vundle#end()            " required
 set hidden
 runtime macros/matchit.vim
 filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
 
-" Brief help
-" :PluginList       - lists configured plugins
-" installs plugins; append `!` to update or just :PluginUpdate
-" :PluginInstall
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" confirms removal of unused plugins; append `!` to auto-approve removal
-" :PluginClean
-"
-" see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
 
 let $USER = 'awerebea'
@@ -237,23 +271,22 @@ endfunction
 
 nnoremap <leader>rn :call ToggleSmartRelativenumbers()<CR>
 
-" esc button remap
+" ESC button remap
 " inoremap kj <esc>
 " cnoremap kj <C-C>
-" Note: In command mode Ctrl-C
 
-set encoding=utf-8	" default file encoding
+set encoding=utf-8      " default file encoding
 set fileencodings=utf8,cp1251
 set t_Co=256
-set autowrite		" Automatically save before commands like :next and :make
-set updatetime=2000	" gitgutter update delay
+set autowrite           " Automatically save before commands :next and :make
+set updatetime=2000     " gitgutter update delay
 
-" word wrap " {{{
+" Word wrap " {{{
 set wrapmargin=0
 set colorcolumn=+1
 highlight ColorColumn ctermbg=235 guibg=#262626
 set wrap linebreak
-" wrap toggle
+" Wrap toggle
 nmap <leader>aw :call AutoWrapToggle()<CR>
 function! AutoWrapToggle()
   if &formatoptions =~ 't'
@@ -272,7 +305,7 @@ function! AutoWrapToggle()
 endfunction
 " }}}
 
-" More natural split opening. Open new split panes to right and bottom.
+" More natural split opening. Open new split panes to right and bottom
 set splitbelow
 set splitright
 
@@ -283,7 +316,7 @@ nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
 
-" always move by screen lines instead of virtual lines with 'j' and 'k'
+" Always move by screen lines instead of virtual lines with 'j' and 'k'
 nnoremap j gj
 nnoremap k gk
 
@@ -301,46 +334,46 @@ elseif has('unix')
   set clipboard=unnamedplus
 endif
 
-set autoread " перечитывать изменённые файлы автоматически
-" Автоматически перечитывать конфигурацию VIM после сохранения
+set autoread " reread modified files automatically
+" reread modified .vimrc automatically
 autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 
-set backspace=indent,eol,start " backspace обрабатывает отступы, концы строк
-" опции сессий - перейти в текущую директорию, использовать буферы и табы
+set backspace=indent,eol,start
 set sessionoptions=curdir,buffers,tabpages
-set undolevels=2048 " хранить историю изменений числом N
-" перемещать курсор на следующую строку при нажатии на клавиши вправо-влево
-" и пр.
+set undolevels=2048
+" move cursor to the next line when move with keystrokes below
 set whichwrap=b,<,>,[,],l,h
-set pastetoggle= " при вставке фрагмента сохраняет отступ
+set pastetoggle= " keep indent when pasting test
 
-" text selection highlighting
+" Text selection highlighting
 highlight Visual cterm=BOLD ctermbg=238 ctermfg=NONE
 " set syntax=c
-" Syntax highlighting enables.
+" Enable syntax highlighting
 if has("syntax")
   syntax on
 endif
 
-" Быстрый вызов команды `set GitGutterSingsToggle`
+" Toggle GitGutter signs
 nmap <leader>gg :GitGutterSignsToggle<CR>
-" убрать элементы интерфейса vim
+" Launch 'Goyo' style
 nmap <leader>go :Goyo<CR>
 let g:goyo_width = 86
-" toggle show non-visible white spaces
+" Toggle show non-visible white spaces
 nmap <leader>ll :set list!<CR>
-" highlight trailing spaces
+" Highlight trailing spaces
 au BufNewFile,BufRead * let b:mtrailingws=matchadd('ErrorMsg', '\s\+$', -1)
-" highlight tabs between spaces
+" Highlight tabs between spaces
 au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
   \ '\v(\t+)\ze( +)', -1)
 au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
+" " molokai theme settings
 "colorscheme sublimemonokai
 "color molokai
 "let g:molokai_original = 1
 
+" " gruvbox theme settings
 " original gruvbox colorcheme
 " let g:gruvbox_number_column = 'bg0' "default 'bg0'
 " let g:gruvbox_sign_column = 'bg0' "default 'bg1'
@@ -368,7 +401,7 @@ let g:NERDCustomDelimiters = { 'vim': { 'left': '"','right': '' } }
 " indentation (left/both)
 let g:NERDDefaultAlign = 'both'
 " Allow commenting and inverting empty lines (useful when commenting a region)
-"let g:NERDCommentEmptyLines = 1
+" let g:NERDCommentEmptyLines = 1
 " Use compact syntax for prettified multi-line comments
 let g:NERDCompactSexyComs = 0
 " Enable trimming of trailing whitespace when uncommenting
@@ -624,25 +657,25 @@ endfunction
 nmap <leader>llu :Goyo<CR>:Goyo<CR>
 " }}}
 
-"... для изменения курсора в разных режимах используйте это:
-"set ttimeoutlen=10 "Понижаем задержку ввода escape последовательностей
-"let &t_SI.="\e[5 q" "SI = режим вставки
-"let &t_SR.="\e[3 q" "SR = режим замены
-"let &t_EI.="\e[1 q" "EI = нормальный режим
-"Где 1 - это мигающий прямоугольник
-"2 - обычный прямоугольник
-"3 - мигающее подчёркивание
-"4 - просто подчёркивание
-"5 - мигающая вертикальная черта
-"6 - просто вертикальная черта
+" Change cursor view:
+"set ttimeoutlen=10       " Keystrokes timeout
+"let &t_SI.="\e[5 q"      " SI = Insert mode
+"let &t_SR.="\e[3 q"      " SR = Replace mode
+"let &t_EI.="\e[1 q"      " EI = Normal mode
+" 1 - blink block
+" 2 - block
+" 3 - blink underscore
+" 4 - underscore
+" 5 - blink vertical line
+" 6 - vertical line
 
-"vimux
+" Vimux
 " Prompt for a command to run
 map <leader>vp :VimuxPromptCommand<CR>
 " Run last command executed by VimuxRunCommand
 map <leader>vl :VimuxRunLastCommand<CR>
 
-"работа тегами (ctags, ctrlP, tagbar, vim-tags)
+" Tags handling (ctags, ctrlP, tagbar, vim-tags)
 " vim-tags
 let g:vim_tags_auto_generate = 0
 let g:vim_tags_ignore_files = ['.gitignore', '.svnignore', '.cvsignore',
@@ -658,51 +691,23 @@ map <F10> :TlistToggle<cr>
 vmap <F10> <esc>:TlistToggle<cr>
 imap <F10> <esc>:TlistToggle<cr>
 
-" vim-syntastic " {{{
-" set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}
-" set statusline+=%*
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_auto_loc_list = 0
-" let g:syntastic_check_on_open = 1
-" let g:syntastic_check_on_wq = 0
-" function! ToggleSyntastic()
-  " for i in range(1, winnr('$'))
-    " let bnum = winbufnr(i)
-    " if getbufvar(bnum, '&buftype') == 'quickfix'
-      " lclose
-      " return
-    " endif
-  " endfor
-  " Errors
-" endfunction
-" nnoremap <leader>e :call ToggleSyntastic()<CR>
-
-" let s:uname = system("echo -n \"$(uname)\"")
-" let s:uname_host = system("echo -n \"$(uname -n)\"")
-" if !v:shell_error && s:uname_host =~ "21-school"
-"   let g:syntastic_python_python_exec = 'python3'
-"   let g:syntastic_python_checkers = ['python']
-" endif
-" }}}
-
 " 'ale' syntax error checker
 let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc'],
   \ 'python': ['flake8', 'mypy', 'pylint', 'pyright'],
   \ }
 
-" yankstack
+" Yankstack
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
 
-" vim-indent-guides
-" let g:indent_guides_guide_size = 1
-" let g:indent_guides_color_change_percent = 3
-" let g:indent_guides_enable_on_vim_startup = 1
+" Vim-indent-guides
+let g:indent_guides_guide_size = 1
+let g:indent_guides_color_change_percent = 3
+let g:indent_guides_enable_on_vim_startup = 0
 
 " Multi cursors " {{{
 let g:multi_cursor_use_default_mapping=0
-" default mapping
+" Default mapping
 let g:multi_cursor_start_word_key      = '<C-n>'
 " let g:multi_cursor_select_all_word_key = '<A-n>'
 " let g:multi_cursor_start_key           = 'g<C-n>'
@@ -720,17 +725,17 @@ let g:multi_cursor_quit_key            = '<Esc>'
 " zR                          unfold all blocks
 " za                          toggle folding
 " zf                          check :set foldmethod=manual
-" set foldenable            " turn on folding
-set nofoldenable           " turn off folding
+" set foldenable              " turn on folding
+set nofoldenable            " turn off folding
 " set foldmethod=syntax     " fold based on syntax
-" set foldmethod=indent      " fold based on indent
-set foldmethod=manual     " manual folding
+" set foldmethod=indent       " fold based on indent
+set foldmethod=manual       " manual folding
 " set foldmethod=marker     " fold based on markers
 " set foldmarker=bigin,end  " set markers of start and end of the block
 set foldcolumn=3            " show fold column left on the screen
 set foldlevel=2             " fold levels opened at file opens
 set foldlevelstart=99
-" set foldopen=all          " autoopen fold when enter it
+" set foldopen=all            " autoopen fold when enter it
 set foldnestmax=5           " max level of fold
 
 let g:anyfold_fold_display=1
@@ -779,11 +784,11 @@ xmap ga <Plug>(EasyAlign)
 " Start interactive EasyAlign for a motion/text object (e.g. gaip)
 nmap ga <Plug>(EasyAlign)
 
-set ignorecase " ics - поиск без учёта регистра символов
-set smartcase		" Do smart case matching
-set hlsearch " подсветка результатов поиска
-set incsearch " поиск фрагмента по мере его набора
-" поиск выделенного текста (начинать искать фрагмент при его выделении)
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+" Search visually selected text
 vnoremap <silent>* <ESC>:call VisualSearch()<CR>/<C-R>/<CR>
 vnoremap <silent># <ESC>:call VisualSearch()<CR>?<C-R>/<CR>
 
@@ -799,31 +804,21 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-" fix to vim-surround 'S' keybin works with yankstack plug
+" Fix to vim-surround 'S' keybin works with yankstack plug
 call yankstack#setup()
 
-" turn off search highlight by presing space
-:noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
+" Turn off search highlight by presing space
+noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
 
-" list buffers keybinds " {{{
-nnoremap [b :bprevious<CR>
-nnoremap ]b :bnext<CR>
-nnoremap [B :bfirst<CR>
-nnoremap ]B :blast<CR>
-map <F6> :bprevious<CR>
-imap <F6> <ESC>:bprevious<CR>i
-map <F7> :bnext<CR>
-imap <F7> <ESC>:bnext<CR>i
-" F5 - просмотр списка буферов
-" nmap <F5> :BufExplorerVerticalSplit<CR>
+" List buffers keybinds " {{{
 nmap <F5> :BufExplorer<CR>
 nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 " }}}
 
-" past current buffer path instead %% in Ex editor line
+" Past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" easymotion TEST!!!!!!! " {{{
+" Easymotion TEST!!!!!!! " {{{
 let g:bufExplorerDisableDefaultKeyMapping = 1
 map <leader><leader>w <Plug>(easymotion-bd-w)
 nmap <leader><leader>w <Plug>(easymotion-overwin-w)
@@ -846,11 +841,6 @@ set autoindent
 set pastetoggle=<F4>
 
 " autopairing " {{{
-" inoremap " ""<left>
-" inoremap ' ''<left>
-" inoremap ( ()<left>
-" inoremap [ []<left>
-" inoremap { {}<left>
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 " }}}
@@ -858,17 +848,17 @@ inoremap {;<CR> {<CR>};<ESC>O
 " INFO Enable <ALT + p> keymap in the terminal
 " execute "set <M-p>=\ep"
 
-" tabs navigation " {{{
+" Tabs navigation " {{{
 " nnoremap gz :bdelete<CR>
 nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
-" switch to last tab
+" Switch to last tab
 if !exists('g:lasttab')
 	let g:lasttab = 1
 endif
 nmap <leader>tt :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
-" Переключение табов (вкладок) (rxvt-style)
+" Switch tab
 nmap <leader><Left> :tabprevious<cr>
 nmap <leader><Right> :tabnext<cr>
 nnoremap th :tabfirst<CR>
@@ -891,11 +881,11 @@ let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
 let @s = temp
 endfunction
 
-" repeat the last substitution with preserved flags
+" Repeat the last substitution with preserved flags
 nnoremap & :&&<CR>
 xnoremap & :&&<CR>
 
-" send changed text segment to blackhole
+" Send changed text segment to blackhole
 nnoremap c "_c
 
 " Save file as sudo on files that require root permission
@@ -953,12 +943,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType")
   \ && b:NERDTreeType == "primary") | q | endif
 noremap <F2> :NERDTreeToggle<CR>
 noremap <leader><F2> :NERDTreeFind<cr>
-" " autoopen NERDTree when vim starts up and no files were specified
-" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-" autocmd StdinReadPre * let s:std_in=1
-" " close Vim if NerdTree is last opened buffer
-" autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree")
-"  \ && b:NERDTree.isTabTree()) | q | endif
 
 " Ranger integration
 let g:ranger_map_keys = 0
@@ -976,7 +960,7 @@ endif
 " Avoid unintentional switches to Ex mode.
 nmap Q q
 
-" clang_complete " {{{
+" Clang_complete " {{{
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
@@ -1001,12 +985,7 @@ let g:clang_complete_auto=1
 let g:clang_complete_copen=0
 " }}}
 
-" vim-clang " {{{
-" use the same file as clang_complete.
-let g:clang_dotfile='.clang_complete'
-" }}}
-
-" backup and swap files settings " {{{
+" Backup and Swap files settings " {{{
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/backup or .
@@ -1034,11 +1013,11 @@ set directory+=~/.vim/swap//
 set directory+=~/tmp//
 set directory+=.
 
-" viminfo stores the the state of your previous editing session
+" Viminfo stores the the state of your previous editing session
 set viminfo+=n~/.vim/viminfo
 
 if exists("+undofile")
-  " undofile - This allows you to use undos after exiting and restarting
+  " Undofile - This allows you to use undos after exiting and restarting
   " This, like swap and backup files, uses .vim-undo first, then ~/.vim/undo
   " :help undo-persistence
   " This is only present in 7.3+
@@ -1050,7 +1029,7 @@ if exists("+undofile")
   set undodir+=~/.vim/undo//
 endif
 
-" viewdir
+" Viewdir
 if isdirectory($HOME . '/.vim/view') == 0
   :silent !mkdir -p ~/.vim/view >/dev/null 2>&1
 endif
@@ -1058,16 +1037,6 @@ set viewdir=~/.vim/view
 " }}}
 
 " Highlight TODO, FIXME, NOTE, etc. " {{{
-" if has('autocmd') && v:version > 701
-"   augroup todo
-"     autocmd!
-"     autocmd Syntax * call matchadd(
-"       \ 'Debug',
-"       \ '\v\W\zs<(NOTE|INFO|IDEA|TODO|FIXME|CHANGED|XXX|BUG|HACK|TRICKY)>'
-"       \ )
-"   augroup END
-" endif
-
 let g:my_todo_highlight_config = {
 \  'FIXME': {
 \    'gui_fg_color': '#ffffff',
@@ -1161,19 +1130,19 @@ let g:my_todo_highlight_config = {
 \    'cterm_bg_color': '214'
 \  },
 \ }
-" creates annotation group and highlight it according to the config
+" Creates annotation group and highlight it according to the config
 function! s:MyCreateAnnotationGroup(annotation, config)
-  " set group name -> my_annotation
+  " Set group name -> my_annotation
   let l:group_name = 'my_' . tolower(a:annotation)
 
-  " make group for annotation where its pattern matches and is inside comment
+  " Make group for annotation where its pattern matches and is inside comment
   execute 'augroup ' . l:group_name
     autocmd!
     execute 'autocmd Syntax * syntax match ' . l:group_name .
       \ ' /\v\C\_.<' . a:annotation . '(:|>)/hs=s+1 containedin=.*Comment.*'
   augroup END
 
-  " highlight the group according to the config
+  " Highlight the group according to the config
   if has('termguicolors')
     execute 'hi ' l:group_name .
       \ ' guifg = ' . get(a:config, 'gui_fg_color', '#ffffff') .
@@ -1187,7 +1156,7 @@ function! s:MyCreateAnnotationGroup(annotation, config)
   endif
 endfunction
 
-" highlights the user specified custom annotation groups
+" Highlights the user specified custom annotation groups
 if exists("g:my_todo_highlight_config")
   for [annotation, config] in items(g:my_todo_highlight_config)
     call s:MyCreateAnnotationGroup(annotation, config)
@@ -1196,17 +1165,15 @@ endif
 " }}}
 
 " Colors highlighting
-"au BufEnter * :ColorHighlight<CR> " highlight colors on startup for all files
-" :let g:colorizer_auto_filetype='css,html,cpp,vim,python'
-:let g:colorizer_auto_color=0
-" highlight colors toggle
-" noremap <leader>ct :ColorToggle<CR> " conflict with c.vim keybinds
+let g:colorizer_auto_color=0
+" Highlight colors toggle
+noremap <leader>ct :ColorToggle<CR> " conflict with c.vim keybinds
 
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
 
 " FZF settings " {{{
-" ignore files ignored in .gitignore but show hidden
+" Ignore files ignored in .gitignore but show hidden
 let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
 " let g:fzf_preview_window = ['right:50%', 'ctrl-/']
@@ -1260,8 +1227,8 @@ nnoremap <silent> <leader>rg       :FZFRg<CR>
 nnoremap <silent> <leader>RG       :FZFRg <C-R><C-A><CR>
 xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
 nnoremap <silent> <leader>`        :Marks<CR>
-" nnoremap <silent> q: :History:<CR>
-" nnoremap <silent> q/ :History/<CR>
+nnoremap <silent> q: :History:<CR>
+nnoremap <silent> q/ :History/<CR>
 
 inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
   \ --scroll 498 --min 5')
@@ -1324,10 +1291,10 @@ command! -bang -nargs=* Ag
 nnoremap <leader>ve :edit $MYVIMRC<CR>
 nnoremap <leader>vs :source $MYVIMRC<CR>
 
-" autoclose preview window after autocompletion is done
+" Autoclose preview window after autocompletion is done
 autocmd CompleteDone * pclose
 
-" autoclose location list before window change
+" Autoclose location list before window change
 map <c-h> :lclose<CR><C-w>h
 map <c-j> :lclose<CR><C-w>j
 map <c-k> :lclose<CR><C-w>k
@@ -1341,8 +1308,8 @@ augroup filetypedetect
   au BufRead,BufNewFile webserv.conf*     setlocal ft=nginx
 augroup END
 
-" Delete a buffer without closing the window,
-" create a scratch buffer if no buffers left " {{{
+" Delete a buffer without closing the window, create a scratch buffer if no
+" buffers left " {{{
 function s:Kwbd(kwbdStage)
   if(a:kwbdStage == 1)
     if(&modified)
@@ -1418,7 +1385,7 @@ nmap gz <Plug>Kwbd
 map <silent> <leader><leader>s :split<CR>
 map <silent> <leader><leader>v :vsplit<CR>
 
-" tinykeymap settings (faster win resize)
+" Tinykeymap settings (faster win resize)
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
 
 " GPG settings " {{{
@@ -1479,22 +1446,13 @@ let g:pymode_syntax = 0
 let g:pymode_rope = 1
 let g:pymode_rope_completion = 0
 let g:pymode_rope_complete_on_dot = 0
-" let g:pymode_rope_show_doc_bind = '<leader>pd'
-" let g:pymode_rope_rename_bind = '<leader>pr'
-" let g:pymode_rope_rename_module_bind = '<leader>p1r'
-" let g:pymode_rope_module_to_package_bind = '<leader>p1p'
-" let g:pymode_rope_extract_method_bind = '<leader>pm'
-" let g:pymode_rope_extract_variable_bind = '<leader>pl'
-" let g:pymode_rope_use_function_bind = '<leader>pu'
-" let g:pymode_rope_move_bind = '<leader>pv'
-" let g:pymode_rope_change_signature_bind = '<leader>ps'
-" let g:pymode_rope_goto_definition_bind = '<leader>pg'
 let g:pymode_rope_goto_definition_cmd = 'new'
 
-" let g:pymode_options_max_line_length = 79
-" let g:pymode_options_colorcolumn = 1
 let g:pymode_python = 'python3'
 " }}}
+
+" Jedi-vim settings
+" let g:jedi#force_py_version = 3
 
 " C-support plugin (c.vim) settings
 " change <leader> key for all keybinds to <leader><leader>
@@ -1524,7 +1482,7 @@ inoremap <leader>at <C-C>:AT<CR>
 noremap <leader>an :AN<CR>
 inoremap <leader>an <C-C>:AN<CR>
 
-" prosession settings
+" Prosession settings
 let g:prosession_tmux_title = 0
 let g:prosession_tmux_title_format = "vim - @@@"
 
@@ -1533,11 +1491,11 @@ let g:prosession_tmux_title_format = "vim - @@@"
 nnoremap T :term<CR>
 tnoremap <C-t> <C-w>N
 
-" indexer settings (fix ctags generation for vimprj plugin)
+" Indexer settings (fix ctags generation for vimprj plugin)
 let g:indexer_ctagsCommandLineOptions =
   \ '-R --fields=+iaSl --c++-kinds=+p --extra=+q'
 
-" vim-mergetool settings " {{{
+" Vim-mergetool settings " {{{
 nmap <leader>mt <plug>(MergetoolToggle)
 
 nmap <expr> <S-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<S-Left>'
@@ -1556,10 +1514,10 @@ nmap <expr> <Down> &diff ? ']c' : '<Down>'
 " (,) - make split horisontal instead vertical (default)
 let g:mergetool_layout = 'mr'
 
-" possible values: 'local' (default), 'remote', 'base', 'unmodified'
+" Possible values: 'local' (default), 'remote', 'base', 'unmodified'
 let g:mergetool_prefer_revision = 'local'
 
-" turn off syntax and spell checking highlighting for all splits
+" Turn off syntax and spell checking highlighting for all splits
 function s:on_mergetool_set_layout(split)
   set wrap
   set syntax=off
@@ -1572,7 +1530,7 @@ function s:on_mergetool_set_layout(split)
 endfunction
 let g:MergetoolSetLayoutCallback = function('s:on_mergetool_set_layout')
 
-" smart quit window in merge mode
+" Smart quit window in merge mode
 function s:QuitWindow()
   " If we're in merge mode, exit
   if get(g:, 'mergetool_in_merge_mode', 0)
@@ -1586,18 +1544,13 @@ function s:QuitWindow()
 endfunction
 command QuitWindow call s:QuitWindow()
 nnoremap <silent> <leader>q :QuitWindow<CR>
-
-" remap native commands '(q)uit' and '(w)rite(q)uit' to 'MergetoolStop'
-" in diff mode only
-" cnoremap <expr> q (mergetool_in_merge_mode ? 'MergetoolStop' : 'q')
-" cnoremap <expr> wq (mergetool_in_merge_mode ? 'MergetoolStop' : 'q')
 " }}}
 
-" restore_view settings
-" views of some files not to be saved
+" Restore_view settings
+" Views of some files not to be saved
 " let g:loaded_restore_view = ['*/.vimrc']
 
-" diff mode toggle (with SmartRelativenumbers support)
+" Diff mode toggle (with SmartRelativenumbers support) {{{
 function ToggleDiff ()
   if (&diff)
     if get(g:, 'SmartRelativenumbersBckp', 0)
@@ -1620,7 +1573,7 @@ function ToggleDiff ()
     endif
     wincmd w
   else
-    " enable diff options in both windows; balance the sizes, too
+    " Enable diff options in both windows; balance the sizes, too
     if exists('#SmartRelativenumbers#InsertEnter')
       let g:SmartRelativenumbersBckp = 1
       call ToggleSmartRelativenumbers()
@@ -1636,15 +1589,16 @@ function ToggleDiff ()
 endfunction
 nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
 inoremap <silent> <leader><F9> <C-O>:call ToggleDiff()<CR>
+" }}}
 
-" dictionary and completion settings " {{{
+" Dictionary and completion settings " {{{
 set complete=.,k,w,b,u,t,i,kspell
 set shortmess+=c
 set shortmess-=S
 set completeopt=menuone,longest,preview
 " set dictionary+=$GIT_WORKSPACE/vim/vimdict
 
-" autocomplpop settings
+" Autocomplpop settings
 let g:acp_enableAtStartup = 1
 let g:acp_mappingDriven = 0
 let g:acp_ignorecaseOption = 1
@@ -1660,7 +1614,7 @@ inoremap <expr> <CR> pumvisible() ? "<C-y>" :"<CR>"
 " Cancel the complete menu item like CTRL+e would.
 inoremap <expr> <Left> pumvisible() ? "<C-e>" : "<Left>"
 
-" re-create spl files for additional vocabularies
+" Re-create spl files for additional vocabularies
 for d in glob('~/.vim/spell/*.add', 1, 1)
   if filereadable(d) && (!filereadable(d . '.spl') || getftime(d) >
   \ getftime(d . '.spl'))
@@ -1673,11 +1627,11 @@ map <leader>ssa :setlocal spell! spelllang=en_us,ru_yo<cr>
 map <leader>sse :setlocal spell! spelllang=en_us<cr>
 map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
 
-"enable spell checking by default
+" Enable spell checking by default
 " set spell spelllang=en_us,ru_yo
 
-" vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
-" Command mode
+" Vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
+" command mode {{{
 let g:XkbSwitchEnabled = 1
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
@@ -1692,8 +1646,9 @@ elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
   \ == "root"
   let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
 endif
+" }}}
 
-" Colors for words that failed spell check
+" Colors for words that failed spell check {{{
 " Word not recognized
 hi clear SpellBad
 hi SpellBad cterm=underline ctermfg=blue
@@ -1706,6 +1661,7 @@ hi SpellRare cterm=underline ctermfg=green
 " Wrong spelling for selected region
 hi clear SpellLocal
 hi SpellLocal cterm=underline ctermfg=yellow
+" }}}
 
 inoremap <expr> <c-x><c-k> SpellCheck("\<c-x>\<c-k>")
 nnoremap z= :<c-u>call SpellCheck()<cr>z=
@@ -1720,7 +1676,7 @@ function! SpellCheck(...)
 endfunction
 " }}}
 
-" ultisnips settings
+" settings (Ultisnips, SnipMate) {{{
 " Trigger configuration. You need to change this to something other than <tab>
 " if you use one of the following:
 " - https://github.com/Valloric/YouCompleteMe
@@ -1734,8 +1690,9 @@ nnoremap <leader>sne :UltiSnipsEdit<cr>
 let g:snipMate = {}
 let g:snipMate.snippet_version = 1
 imap <s-tab> <Plug>snipMateShow
+" }}}
 
-" run/compile from vim
+" Run/compile from vim {{{
 if has("autocmd")
   autocmd FileType python map <buffer> <F9> :w<CR>
   \ :exec '!clear; python3' shellescape(@%, 1)<CR>
@@ -1744,6 +1701,7 @@ if has("autocmd")
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
+" }}}
 
 " COC settingc " {{{
 " :CocInstall coc-pyright
@@ -1752,9 +1710,6 @@ endif
 " press <c-space>, so you could instead):
 inoremap <silent><expr> <NUL> coc#refresh()
 " }}}
-
-" jedi-vim settings
-" let g:jedi#force_py_version = 3
 
 " quick launch last used macros
 nnoremap <leader>2 @@
