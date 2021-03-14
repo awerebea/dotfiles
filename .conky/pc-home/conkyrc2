@@ -14,7 +14,7 @@ conky.config = {
   use_xft = true,
   font = 'Open Sans:size=10',
   gap_x = 273,
-  gap_y = 130,
+  gap_y = 0,
   maximum_width = 180,
   minimum_height = 5,
   minimum_width = 200,
@@ -67,24 +67,4 @@ conky.text = [[
   ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/bckp/} (${fs_used_perc /run/media/andrei/bckp/}%)
   ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/bckp/} (${fs_free_perc /run/media/andrei/bckp/}%)
   ${voffset -4}
-# # HDD ST2000DL003-9VT166 1.8 (1.2) Tb
-#   ${font Open Sans:Bold:size=10}${color 4C7523}HDD Seagate 1.2 Tb ${hr 2}$color${font}
-#   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sdb}°C
-#   ${font Open Sans:size=9}${offset 5}${color FFFDE2}Data_2 (ntfs) $color${fs_bar 5 /run/media/andrei/Data_2/}
-#   ${font Open Sans:size=9}${offset 5}Used ${fs_used /run/media/andrei/Data_2/} (${fs_used_perc /run/media/andrei/Data_2/}%)
-#   ${font Open Sans:size=9}${offset 5}Free: ${fs_free /run/media/andrei/Data_2/} (${fs_free_perc /run/media/andrei/Data_2/}%)
-#   ${voffset -4}
-# # SSD Kingston 120 Gb
-#   ${font Open Sans:Bold:size=10}${color 4C7523}SSD Kingston 120 Gb ${hr 2}$color${font}
-#   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sdc}°C
-#   ${voffset -4}
-# # SSD M.2 128 Gb
-#   ${font Open Sans:Bold:size=10}${color 4C7523}SSD M.2 Hynix 128 Gb ${hr 2}$color${font}
-#   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sde}°C
-#   ${voffset -4}
-# Router
-  ${font Open Sans:Bold:size=10}${color 4C7523}Router/AiDisk_b1 ${hr 2}$color${font}
-  ${font Open Sans:size=9}${offset 5}${color FFFDE2}AiDisk_b1 (ntfs) $color${fs_bar 5 /shares/router/AiDisk_b1/}
-  ${font Open Sans:size=9}${offset 5}Used ${fs_used /shares/router/AiDisk_b1/} (${fs_used_perc /shares/router/AiDisk_b1/}%)
-  ${font Open Sans:size=9}${offset 5}Free: ${fs_free /shares/router/AiDisk_b1/} (${fs_free_perc /shares/router/AiDisk_b1/}%)
 ]]
