@@ -78,6 +78,7 @@ Plugin 'dhruvasagar/vim-prosession'
 Plugin 'vim-scripts/restore_view.vim'
 " Colorschemes
 Plugin 'joshdick/onedark.vim'
+Plugin 'crusoexia/vim-monokai'
 Plugin 'morhetz/gruvbox'
 Plugin 'shinchu/lightline-gruvbox.vim'
 " A solid language pack for Vim syntax highlighting
@@ -160,7 +161,7 @@ set noshowmode
 " show non-visible white spaces
 set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
 set list
-" Отключение звукового сигнала
+" Turn off sound bell
 set noerrorbells
 set visualbell
 set t_vb=
@@ -284,7 +285,6 @@ set updatetime=2000     " gitgutter update delay
 " Word wrap " {{{
 set wrapmargin=0
 set colorcolumn=+1
-highlight ColorColumn ctermbg=235 guibg=#262626
 set wrap linebreak
 " Wrap toggle
 nmap <leader>aw :call AutoWrapToggle()<CR>
@@ -368,11 +368,6 @@ au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
 au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
-" " molokai theme settings
-"colorscheme sublimemonokai
-"color molokai
-"let g:molokai_original = 1
-
 " " gruvbox theme settings
 " original gruvbox colorcheme
 " let g:gruvbox_number_column = 'bg0' "default 'bg0'
@@ -382,13 +377,33 @@ au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
 " set background=dark
 " colorscheme gruvbox
 
-" onedark theme settings
-let g:onedark_hide_endofbuffer=0
-let g:onedark_color_overrides = {
-  \ "black": {"gui": "#1D2229", "cterm": "234", "cterm16": "0" },
-  \}
-let g:onedark_termcolors=256
-colorscheme onedark
+" " onedark theme settings
+" let g:onedark_hide_endofbuffer=0
+" let g:onedark_color_overrides = {
+"   \ "black": {"gui": "#1D2229", "cterm": "234", "cterm16": "0" },
+"   \}
+" let g:onedark_termcolors=256
+" colorscheme onedark
+" highlight ColorColumn ctermbg=235 guibg=#262626
+
+" monokai theme settings
+colorscheme monokai
+" Transparent background
+highlight Normal          guibg=NONE ctermbg=NONE
+" Transparent line number column
+highlight LineNr          guibg=NONE ctermbg=NONE
+" Transparent sign (Git/mark) column
+highlight SignColumn      guibg=NONE ctermbg=NONE
+" Transparent sign fold column
+highlight FoldColumn      guibg=NONE ctermbg=NONE
+" Color of word-wrap column
+highlight ColorColumn     ctermbg=238 guibg=#444444
+" Color of non-printable white spaces, with transparent background
+highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
+                          \ ctermbg=NONE guibg=NONE
+
+" Use italic font for comments
+highlight Comment cterm=italic
 
 " NERDCommenter
 " Add spaces after comment delimiters
@@ -478,8 +493,10 @@ let g:rainbow_conf = {
 
 "lightline " {{{
   " \ 'colorscheme': 'default',
+  " \ 'colorscheme': 'wombat',
+  " \ 'colorscheme': 'onedark',
 let g:lightline = {
-  \ 'colorscheme': 'onedark',
+  \ 'colorscheme': 'wombat',
   \ 'active': {
   \   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
@@ -740,8 +757,10 @@ set foldnestmax=5           " max level of fold
 
 let g:anyfold_fold_display=1
 let g:anyfold_fold_toplevel=1
-hi Folded guibg=#272c33
-hi Folded guifg=#707784
+" hi Folded guibg=#272c33
+" hi Folded guifg=#707784
+hi Folded guibg=NONE
+hi Folded guifg=#726e5c
 
 if has("autocmd")
   autocmd BufEnter * if &filetype ==# 'vim' | setlocal foldmethod=marker
