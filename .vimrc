@@ -1730,5 +1730,8 @@ endif
 inoremap <silent><expr> <NUL> coc#refresh()
 " }}}
 
-" quick launch last used macros
+" Quick launch last used macros
 nnoremap <leader>2 @@
+
+" Write read only-file trick
+cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
