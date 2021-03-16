@@ -1,0 +1,155 @@
+{
+  // Interface settings
+  // Font settings
+  "terminal.integrated.fontFamily": "MesloLGS NF",
+  "terminal.integrated.fontSize": 12,
+  "terminal.integrated.lineHeight":1,
+  "editor.fontFamily": "MesloLGS NF",
+  "editor.fontSize": 13,
+  "editor.renderControlCharacters": true,
+
+  // Colorscheme
+  "workbench.colorTheme": "Monokai Pro",
+
+  // Icons settings
+  "workbench.iconTheme": "vscode-icons",
+
+  // Wrap long lines at 80th column
+  "editor.rulers": [80],
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wrappingIndent": "same",
+  "editor.wordWrapColumn": 80,
+  "[markdown]": {
+      "editor.wordWrap": "wordWrapColumn",
+      "editor.quickSuggestions": false
+  },
+
+  // Show whitespace characters
+  "editor.renderWhitespace": "all", 
+
+  // Files associations
+  "files.associations": {
+      "*.ctmpl": "hcl",
+      "*.tf": "terraform",
+      "*.tfvars": "terraform"
+  },
+  "workbench.editorAssociations": [
+    {
+      "viewType": "jupyter.notebook.ipynb",
+      "filenamePattern": "*.ipynb"
+    }
+  ],
+
+
+  // Plugins and extentions settings
+  // Vim plugin settings
+  "vim.easymotion": true,
+  "vim.incsearch": true,
+  "vim.useSystemClipboard": true,
+  "vim.useCtrlKeys": true,
+  "vim.hlsearch": true,
+  "vim.insertModeKeyBindings": [
+  ],
+  "vim.normalModeKeyBindings": [
+    {
+        "before": ["<leader>", "m"],
+        "commands": [
+            "bookmarks.toggle"
+        ]
+    },
+    {
+        "before": ["<leader>", "b"],
+        "commands": [
+            "bookmarks.list"
+        ]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "d"],
+      "after": ["d", "d"]
+    },
+    // Turn off search highlighting
+    {
+      "before": ["<C-n>"],
+      "commands": [":nohl"]
+    },
+    {
+      "before": ["<Leader>", "/"],
+      "commands": [":nohl"]
+    },
+    // Show commands panel
+    {
+      "before": ["<Leader>", "p"],
+      "commands": ["workbench.action.showCommands"]
+    },
+    // Show symbols in file
+    {
+      "before": ["<Leader>", "t"],
+      "commands": ["workbench.action.gotoSymbol"]
+    },
+    // Show symbols in workspace
+    {
+      "before": ["<Leader>", "a", "t"],
+      "commands": ["workbench.action.showAllSymbols"]
+    },
+    // Easier Tab Handling
+    {
+      "before": ["<Leader>", "t", "t"],
+      "commands": [":tabedit"]
+    },
+    {
+      "before": ["<Leader>", "t", "h"],
+      "commands": [":tabfirst"]
+    },
+    {
+      "before": ["<Leader>", "t", "n"],
+      "commands": [":tabnext"]
+    },
+    {
+      "before": ["<Leader>", "t", "p"],
+      "commands": [":tabprev"]
+    },
+    {
+      "before": ["<Leader>", "t", "l"],
+      "commands": [":tablast"]
+    },
+    {
+      "before": ["<Leader>", "t", "d"],
+      "commands": [":tabclose"]
+    },
+    {
+      "before": ["<Leader>", "t", "o"],
+      "commands": [":tabonly"]
+    }
+  ],
+  "vim.visualModeKeyBindingsNonRecursive": [
+    // Paste without overriding the current register
+    {
+      "before": ["p"],
+      "after": ["p", "g", "v", "y"]
+    },
+  ],
+  // leader key is '\' (back slash) by default
+  "vim.leader": "<space>",
+  "vim.handleKeys": {
+    "<C-a>": false,
+    "<C-f>": false,
+  },
+  "vim.textwidth": 80,
+
+  // Kubernetes plugin settings
+  "vs-kubernetes": {
+    "vscode-kubernetes.minikube-path.linux": "/home/andrei/.vs-kubernetes/tools/minikube/linux-amd64/minikube",
+    "vscode-kubernetes.helm-path.linux": "/home/andrei/.vs-kubernetes/tools/helm/linux-amd64/helm"
+  },
+
+  // Terraform settings
+  "[terraform]": {
+    // Format on file saving
+    "editor.formatOnSave": true
+  },
+
+  "C_Cpp.updateChannel": "Insiders",
+  "terminal.external.linuxExec": "/usr/bin/konsole",
+}
