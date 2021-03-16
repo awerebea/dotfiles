@@ -158,7 +158,7 @@ let $USER = 'awerebea'
 let $MAIL = 'awerebea@student.21-school.ru'
 set laststatus=2
 set noshowmode
-" show non-visible white spaces
+" Show non-visible white spaces
 set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
 set list
 " Turn off sound bell
@@ -167,7 +167,11 @@ set visualbell
 set t_vb=
 set scrolloff=2 " always show minimum n lines after current line
 
-" always use 10-base numbers
+" Set <space> as leader key
+nnoremap <SPACE> <Nop>
+let mapleader=" "
+
+" Always use 10-base numbers
 set nrformats=
 
 " Wildmenu completion " {{{
@@ -791,10 +795,6 @@ augroup vimrc
   au BufReadPre * setlocal foldmethod=indent
   au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
 augroup END
-
-" Toggle folds with <space>
-nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
-vnoremap <Space> zf
 " }}}
 
 " Easy Align
@@ -827,7 +827,7 @@ endif
 call yankstack#setup()
 
 " Turn off search highlight by presing space
-noremap <silent> <leader><Space> :<C-u>nohlsearch<CR><C-l>
+noremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
 
 " List buffers keybinds " {{{
 nmap <F5> :BufExplorer<CR>
@@ -880,14 +880,15 @@ au TabLeave * let g:lasttab = tabpagenr()
 " Switch tab
 nmap <leader><Left> :tabprevious<cr>
 nmap <leader><Right> :tabnext<cr>
-nnoremap th :tabfirst<CR>
-nnoremap tj :tabnext<CR>
-nnoremap tk :tabprev<CR>
-nnoremap tl :tablast<CR>
-nnoremap tt :tabedit<Space>
-nnoremap tn :tabnext<Space>
-nnoremap tm :tabm<Space>
-nnoremap td :tabclose<CR>
+nnoremap <leader>th :tabfirst<CR>
+nnoremap <leader>tn :tabnext<CR>
+nnoremap <leader>tp :tabprev<CR>
+nnoremap <leader>tl :tablast<CR>
+nnoremap <leader>tt :tabedit<Space>
+nnoremap <leader>tn :tabnext<Space>
+nnoremap <leader>tm :tabmove<Space>
+nnoremap <leader>td :tabclose<CR>
+nnoremap <leader>to :tabonly<CR>
 " }}}
 
 " Search for the Current Selection
