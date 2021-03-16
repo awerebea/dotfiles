@@ -1,153 +1,153 @@
 set nocompatible              " be iMproved, required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-
-" let Vundle manage Vundle, required " {{{
-Plugin 'VundleVim/Vundle.vim'
+" Specify a directory for plugins {{{
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
 " Improved incremental searching
-Plugin 'haya14busa/incsearch.vim'
+Plug 'haya14busa/incsearch.vim'
 " Vim motions on speed!
-Plugin 'easymotion/vim-easymotion'
+Plug 'easymotion/vim-easymotion'
 " Integration between 'haya14busa/incsearch.vim' 'easymotion/vim-easymotion'
-Plugin 'haya14busa/incsearch-easymotion.vim'
+Plug 'haya14busa/incsearch-easymotion.vim'
 " Plugin to toggle, display and navigate marks
-Plugin 'kshenoy/vim-signature'
+Plug 'kshenoy/vim-signature'
 " Easy swapping of text in Vim
-Plugin 'kurkale6ka/vim-swap'
+Plug 'kurkale6ka/vim-swap'
 " Increase/decrease visually selected regions of text using key combinations
-Plugin 'landock/vim-expand-region'
+Plug 'landock/vim-expand-region'
 " Turns default register into a stack, and lets cycle through the items in the
 " stack after doing a paste
-Plugin 'maxbrunsfeld/vim-yankstack'
+Plug 'maxbrunsfeld/vim-yankstack'
 " A Vim plugin that adds a :Qargs utility command, for populating the argument
 " list from the files in the quickfix list
-Plugin 'nelstrom/vim-qargs'
+Plug 'nelstrom/vim-qargs'
 " Automatic trigger complete popup menu
-Plugin 'othree/vim-autocomplpop'
+Plug 'othree/vim-autocomplpop'
 " Easy comment/uncomment lines
-Plugin 'preservim/nerdcommenter'
+Plug 'preservim/nerdcommenter'
 " Efficient way of using Vim as a Git mergetool
-Plugin 'samoshkin/vim-mergetool'
+Plug 'samoshkin/vim-mergetool'
 " Make terminal vim and tmux work better together
-Plugin 'benmills/vimux'
-Plugin 'christoomey/vim-tmux-navigator'
-Plugin 'roxma/vim-tmux-clipboard'
-Plugin 'tmux-plugins/vim-tmux-focus-events'
+Plug 'benmills/vimux'
+Plug 'christoomey/vim-tmux-navigator'
+Plug 'roxma/vim-tmux-clipboard'
+Plug 'tmux-plugins/vim-tmux-focus-events'
 " Easy text exchange operator
-Plugin 'tommcdo/vim-exchange'
+Plug 'tommcdo/vim-exchange'
 " This plugin lets users define 'temporary keymaps', with the function
-Plugin 'tomtom/tinykeymap_vim'
+Plug 'tomtom/tinykeymap_vim'
 " Easy move and resize windows
-Plugin 'simeji/winresizer'
+Plug 'simeji/winresizer'
 " Interpret a file by function and cache file automatically
-Plugin 'MarcWeber/vim-addon-mw-utils'
+Plug 'MarcWeber/vim-addon-mw-utils'
 " Libraries provides some utility functions
-Plugin 'tomtom/tlib_vim'
-Plugin 'vim-scripts/L9'
+Plug 'tomtom/tlib_vim'
+Plug 'vim-scripts/L9'
 " Smart substitution and easy change case styles
 " (fooBar, foo_bar, foo-bar, boo.bar, foo bar, Foo Bar)
-Plugin 'tpope/vim-abolish'
+Plug 'tpope/vim-abolish'
 " Vim sugar for the UNIX shell commands that need it the most
-Plugin 'tpope/vim-eunuch'
+Plug 'tpope/vim-eunuch'
 " Enable repeating supported plugin maps with '.'
-Plugin 'tpope/vim-repeat'
+Plug 'tpope/vim-repeat'
 " Easy 'surroundings': parentheses, brackets, quotes, XML tags, and more
-Plugin 'tpope/vim-surround'
+Plug 'tpope/vim-surround'
 " Pairs of handy bracket mappings.
-Plugin 'tpope/vim-unimpaired'
+Plug 'tpope/vim-unimpaired'
 " File system explorers
-Plugin 'preservim/nerdtree'
-Plugin 'francoiscabrol/ranger.vim'
+Plug 'preservim/nerdtree'
+Plug 'francoiscabrol/ranger.vim'
 " Explore buffers
-Plugin 'jlanzarotta/bufexplorer'
+Plug 'jlanzarotta/bufexplorer'
 " Plugin to integrate various grep like search tools with Vim
-Plugin 'yegappan/grep'
+Plug 'yegappan/grep'
 " Run Git commands from Vim
-Plugin 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 " Vim Git runtime files
-Plugin 'tpope/vim-git'
+Plug 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the sign column
-Plugin 'airblade/vim-gitgutter'
+Plug 'airblade/vim-gitgutter'
 " A light and configurable statusline/tabline plugin for Vim
-Plugin 'itchyny/lightline.vim'
+Plug 'itchyny/lightline.vim'
 " Automatically save/restore current state of Vim
-Plugin 'tpope/vim-obsession'
-Plugin 'dhruvasagar/vim-prosession'
-Plugin 'vim-scripts/restore_view.vim'
+Plug 'tpope/vim-obsession'
+Plug 'dhruvasagar/vim-prosession'
+Plug 'vim-scripts/restore_view.vim'
 " Colorschemes
-Plugin 'joshdick/onedark.vim'
-Plugin 'crusoexia/vim-monokai'
-Plugin 'morhetz/gruvbox'
-Plugin 'shinchu/lightline-gruvbox.vim'
+Plug 'joshdick/onedark.vim'
+Plug 'crusoexia/vim-monokai'
+Plug 'morhetz/gruvbox'
+Plug 'shinchu/lightline-gruvbox.vim'
 " A solid language pack for Vim syntax highlighting
-Plugin 'sheerun/vim-polyglot'
+Plug 'sheerun/vim-polyglot'
 " Syntax highlighting, matching rules and mappings for Markdown
-Plugin 'plasticboy/vim-markdown.git'
+Plug 'godlygeek/tabular'
+Plug 'plasticboy/vim-markdown'
 " Text objects for the last searched pattern
-Plugin 'kana/vim-textobj-lastpat'
+Plug 'kana/vim-textobj-lastpat'
 " Create your own text objects
-Plugin 'kana/vim-textobj-user'
+Plug 'kana/vim-textobj-user'
 " Rainbow Parentheses
-Plugin 'luochen1990/rainbow'
+Plug 'luochen1990/rainbow'
 " A Narrow Region Plugin for vim
-Plugin 'chrisbra/NrrwRgn'
+Plug 'chrisbra/NrrwRgn'
 " Color hex codes and color names
-Plugin 'chrisbra/Colorizer'
+Plug 'chrisbra/Colorizer'
 " Distraction-free writing in Vim
-Plugin 'junegunn/goyo.vim'
+Plug 'junegunn/goyo.vim'
 " This script implements transparent editing of gpg encrypted files
-Plugin 'jamessan/vim-gnupg'
+Plug 'jamessan/vim-gnupg'
 " A command-line fuzzy finder in Vim
-Plugin 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plugin 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 " Interactive command execution in Vim
-Plugin 'Shougo/vimproc.vim'
+Plug 'Shougo/vimproc.vim'
 " Automatic keyboard layout switching in insert mode
-Plugin 'lyokha/vim-xkbswitch'
+Plug 'lyokha/vim-xkbswitch'
 
 " Programming stuff
 
 " Add and update the School-42 comment header at the top of files
-Plugin 'pbondoer/vim-42header'
+Plug 'pbondoer/vim-42header'
 " Syntax checker
-Plugin 'dense-analysis/ale'
+Plug 'dense-analysis/ale'
 " Code completion server
-Plugin 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 " C/C++ auto completion
-Plugin 'xavierd/clang_complete'
+Plug 'xavierd/clang_complete'
 " The Ctags generator for Vim
-Plugin 'szw/vim-tags'
+Plug 'szw/vim-tags'
 " A class outline viewer for Vim
-Plugin 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'
 " Plugin provides an overview of the structure of source code files
-Plugin 'vim-scripts/taglist.vim'
+Plug 'vim-scripts/taglist.vim'
 " Viewer & Finder for LSP symbols and tags
-Plugin 'liuchengxu/vista.vim'
+Plug 'liuchengxu/vista.vim'
 " Vimprj is a Vim plugin that helps you manage options for multiple projects.
 " Useful for automatically tags generation and update in projects.
-Plugin 'vim-scripts/DfrankUtil'
-Plugin 'vim-scripts/indexer.tar.gz'
-Plugin 'vim-scripts/vimprj'
+Plug 'vim-scripts/DfrankUtil'
+Plug 'vim-scripts/indexer.tar.gz'
+Plug 'vim-scripts/vimprj'
 " Commands to swtich between source files and header files quickly
-Plugin 'vim-scripts/a.vim'
+Plug 'vim-scripts/a.vim'
 " Snippets (code blocks) handling
-Plugin 'garbas/vim-snipmate'
-Plugin 'SirVer/ultisnips'
-Plugin 'honza/vim-snippets'
+Plug 'garbas/vim-snipmate'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 " Automatically folding
-Plugin 'pseewald/vim-anyfold'
+Plug 'pseewald/vim-anyfold'
 " Python auto completion
-Plugin 'davidhalter/jedi-vim'
+Plug 'davidhalter/jedi-vim'
 " Python 'IDE'
-Plugin 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
+Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " A Vim plugin for visually displaying indent levels in code
-Plugin 'nathanaelkane/vim-indent-guides'
+Plug 'nathanaelkane/vim-indent-guides'
+
+" Initialize plugin system
+call plug#end()
 " }}}
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
 set hidden
 runtime macros/matchit.vim
 filetype plugin indent on    " required
@@ -1723,7 +1723,7 @@ endif
 " }}}
 
 " COC settingc " {{{
-" :CocInstall coc-pyright
+" :CocInstall coc-pyright coc-clangd coc-sh coc-yaml coc-json
 
 " Map <c-space> to trigger completion (some terminals may send <NUL> when you
 " press <c-space>, so you could instead):
