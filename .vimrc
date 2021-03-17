@@ -837,15 +837,7 @@ nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 " Past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" Easymotion TEST!!!!!!! " {{{
-let g:bufExplorerDisableDefaultKeyMapping = 1
-map <leader><leader>w <Plug>(easymotion-bd-w)
-nmap <leader><leader>w <Plug>(easymotion-overwin-w)
-nmap <leader>w <Plug>(easymotion-w)
-nmap <leader>b <Plug>(easymotion-b)
-map <leader>j <Plug>(easymotion-j)
-map <leader>k <Plug>(easymotion-k)
-let g:EasyMotion_startofline = 0 " keep cursor column when JK motion"
+" Easymotion {{{
 let g:EasyMotion_smartcase = 1
 " incsearch
 map /  <Plug>(incsearch-forward)
@@ -1400,10 +1392,6 @@ command! Kwbd call s:Kwbd(1)
 nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
 nmap gz <Plug>Kwbd
 " }}}
-
-" Keymaps to create horizontal and vertical window splits
-map <silent> <leader><leader>s :split<CR>
-map <silent> <leader><leader>v :vsplit<CR>
 
 " Tinykeymap settings (faster win resize)
 call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
