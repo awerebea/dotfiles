@@ -11,6 +11,12 @@
   // Colorscheme
   "workbench.colorTheme": "Monokai Pro",
 
+  // Terminal colors
+  "workbench.colorCustomizations" : {
+      "terminal.foreground" : "#f8f8f0",
+      "terminal.background" : "#2d2a2e"
+  },
+
   // Icons settings
   "workbench.iconTheme": "vscode-icons",
 
@@ -40,6 +46,16 @@
     }
   ],
 
+  // Open in Vim fullscreen
+  "multiCommand.commands": [
+    {
+        "command": "multiCommand.openInVimFullscreen",
+        "sequence": [
+            "open-in-vim.open",
+            "workbench.action.toggleMaximizedPanel",
+        ]
+    },
+  ],
 
   // Plugins and extentions settings
   // Vim plugin settings
@@ -121,7 +137,44 @@
     {
       "before": ["<Leader>", "t", "o"],
       "commands": [":tabonly"]
-    }
+    },
+    // Show project files list filter
+    {
+      "before": ["<Leader>", "f"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    // Show all editors by most recently used
+    {
+      "before": ["<Leader>", "<enter>"],
+      "commands": ["workbench.action.showAllEditorsByMostRecentlyUsed"]
+    },
+    // Show all editors by appearance
+    {
+      "before": ["<Leader>", "<Leader>", "<enter>"],
+      "commands": ["workbench.action.showAllEditors"]
+    },
+    // Find[and Replace] text in all files of project
+    {
+      "before": ["<Leader>", "r", "g"],
+      "commands": ["workbench.action.findInFiles"]
+    },
+    // Open file in Vim (fullscreen)
+    {
+      "before": ["<Leader>", "v", "v"],
+      // "commands": ["open-in-vim.open"]
+      "commands": ["multiCommand.openInVimFullscreen"]
+    },
+    // Toggle auto hard-wrap long lines
+    {
+      "before": ["<Leader>", "a", "w"],
+      "commands": ["rewrap.toggleAutoWrap"]
+    },
+    // Spell checking
+    // Toggle for current workspace
+    {
+      "before": ["<Leader>", "s", "s", "a"],
+      "commands": ["cSpell.toggleEnableSpellChecker"]
+    },
   ],
   "vim.visualModeKeyBindingsNonRecursive": [
     // Paste without overriding the current register
@@ -152,4 +205,14 @@
 
   "C_Cpp.updateChannel": "Insiders",
   "terminal.external.linuxExec": "/usr/bin/konsole",
+
+  // MSSQL db connections
+  "mssql.connections": [
+    {
+      "server": "{{put-server-name-here}}",
+      "database": "{{put-database-name-here}}",
+      "user": "{{put-username-here}}",
+      "password": ""
+    }
+  ],
 }
