@@ -14,7 +14,7 @@ conky.config = {
   use_xft = true,
   font = 'Open Sans:size=10',
   gap_x = 273,
-  gap_y = 0,
+  gap_y = 137,
   maximum_width = 180,
   minimum_height = 5,
   minimum_width = 200,
