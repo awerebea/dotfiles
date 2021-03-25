@@ -1,3 +1,4 @@
+// vim: ft=jsonc
 // Place your key bindings in this file to override the defaultsauto[]
 [
     // Use CapsLock as Esc
@@ -61,7 +62,7 @@
     {
         "key": "f2",
         "command": "workbench.action.toggleSidebarVisibility",
-        "when": "!sideBarFocus",
+        "when": "!sideBarFocus"
     },
     {
         "key": "ctrl+b",
@@ -120,19 +121,17 @@
     },
     // Move between editors
     {
-        "key": "] b",
-        "command": "workbench.action.nextEditor",
-    },
-    {
-        "key": "[ b",
-        "command": "workbench.action.previousEditor",
-    },
-    {
         "key": "ctrl+alt+l",
-        "command": "workbench.action.nextEditor",
+        "command": "workbench.action.nextEditor"
     },
     {
         "key": "ctrl+alt+h",
-        "command": "workbench.action.previousEditor",
+        "command": "workbench.action.previousEditor"
     },
+    {
+    "key": "ctrl+alt+v tab",
+    "command": "type",
+    "args": { "text": "\t" },
+    "when": "editorTextFocus"
+    }
 ]

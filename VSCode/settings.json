@@ -1,5 +1,8 @@
+// vim: ft=jsonc
 {
   // Interface settings
+  // Scale window (use 1.7 on laptop screen)
+  "window.zoomLevel": 1.7,
   // Font settings
   "terminal.integrated.fontFamily": "MesloLGS NF",
   "terminal.integrated.fontSize": 12,
@@ -56,6 +59,7 @@
       "filenamePattern": "*.ipynb"
     }
   ],
+  "python.defaultInterpreterPath": "/bin/python",
 
   // Open in Vim fullscreen
   "multiCommand.commands": [
@@ -63,9 +67,9 @@
         "command": "multiCommand.openInVimFullscreen",
         "sequence": [
             "open-in-vim.open",
-            "workbench.action.toggleMaximizedPanel",
+            "workbench.action.toggleMaximizedPanel"
         ]
-    },
+    }
   ],
 
   // Plugins and extentions settings
@@ -75,6 +79,7 @@
   "vim.useSystemClipboard": true,
   "vim.useCtrlKeys": true,
   "vim.hlsearch": true,
+  "vim.surround": true,
   // Disable VSCodeVim extension
   "vim.disableExtension": false, 
   // In visual mode, start a search with * or # using the current selection
@@ -197,8 +202,8 @@
     // Open quickfix list as top menu
     {
       "before": ["z", "="],
-      "commands": ["keyboard-quickfix.openQuickFix"],
-    },
+      "commands": ["keyboard-quickfix.openQuickFix"]
+    }
   ],
   // Keybinds in Visual mode
   "vim.visualModeKeyBindingsNonRecursive": [
@@ -206,13 +211,13 @@
     {
       "before": ["p"],
       "after": ["p", "g", "v", "y"]
-    },
+    }
   ],
   // Leader key is '\' (back slash) by default
   "vim.leader": "<space>",
   "vim.handleKeys": {
     "<C-a>": true,
-    "<C-f>": true,
+    "<C-f>": true
   },
   // Set a limit on the length of a string 
   "vim.textwidth": 80,
@@ -289,4 +294,24 @@
   // Custom user words list
   "cSpell.userWords": [
   ],
+
+  // Editor startup
+  "workbench.startupEditor": "newUntitledFile",
+
+  // Indentation settings
+  "[typescript]": {
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 2
+  },
+  "[c]": {
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  },
+  "[cpp]": {
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": false,
+    "editor.tabSize": 4
+  }
 }
