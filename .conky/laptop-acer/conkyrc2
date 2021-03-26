@@ -1,6 +1,6 @@
 # launch command: conky -q -c /home/andrei/.conky/conkyrc2
 conky.config = {
-  alignment = 'bottom_right',
+  alignment = 'top_right',
   background = false,
   border_width = 0.5,
   cpu_avg_samples = 4,
@@ -14,10 +14,10 @@ conky.config = {
   use_xft = true,
   font = 'Open Sans:size=10',
   gap_x = 273,
-  gap_y = 137,
-  maximum_width = 180,
+  gap_y = 195,
+  maximum_width = 265,
   minimum_height = 5,
-  minimum_width = 200,
+  minimum_width = 265,
   net_avg_samples = 2,
   double_buffer = true,
   out_to_console = false,
@@ -39,6 +39,15 @@ conky.config = {
 }
 
 conky.text = [[
+# RAM
+  ${font Open Sans:Bold:size=10}${color 4C7523}RAM ${hr 2}$color${font}${offset 1}
+  Total $alignr $memmax  
+  In use $alignr $mem  
+  Free $alignr $memeasyfree  
+  Buffers $alignr $buffers  
+  Cache $alignr $cached  
+  ${memgraph 12,142 555555 AAAAAA -l} ${membar 12,98}
+  ${voffset 49}
 # SSD Samsung SSD 860 EVO M.2
   ${font Open Sans:Bold:size=10}${color 4C7523}SSD Samsung SSD 860 EVO M.2 ${hr 2}$color${font}
   ${font Open Sans:size=9}${offset 2}Temperature $alignr${hddtemp /dev/sda}°C

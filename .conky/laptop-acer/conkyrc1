@@ -1,6 +1,6 @@
 # launch command: conky -q -c /home/andrei/.conky/conkyrc1
 conky.config = {
-  alignment = 'bottom_right',
+  alignment = 'top_right',
   background = false,
   border_width = 0.5,
   cpu_avg_samples = 4,
@@ -14,7 +14,7 @@ conky.config = {
   use_xft = true,
   font = 'Open Sans:size=10',
   gap_x = 0,
-  gap_y = 0,
+  gap_y = 30,
   maximum_width = 265,
   minimum_height = 5,
   minimum_width = 265,
@@ -59,35 +59,12 @@ conky.text = [[
   ${offset 6}${font Open Sans:size=9}${cpu cpu7}% ${goto 55}$alignc${freq 7} MHz ${goto 125}${exec sensors | grep 'Core 3' | cut -c '17-18'}°C ${cpugraph cpu7 12,98 555555 AAAAAA -l}
   ${offset 6}${font Open Sans:size=9}${cpu cpu8}% ${goto 55}$alignc${freq 8} MHz ${goto 125}${exec sensors | grep 'Core 3' | cut -c '17-18'}°C ${cpugraph cpu8 12,98 555555 AAAAAA -l}
   ${voffset -13}
-# # AMD Radeon® RX 580 4GB
-#   ${font Open Sans:Bold:size=10}${color 4C7523}GPU ${hr 2}
-#   $color${font}${offset 1}Temperature $alignr ${exec sensors | grep 'edge' | cut -c '16-17'}°C  
-#  Power $alignr ${exec sensors | grep 'power1' | cut -c '15-16'} W  
-  ${voffset -13}
-# RAM
-  ${font Open Sans:Bold:size=10}${color 4C7523}RAM ${hr 2}$color${font}${offset 1}
-  Total $alignr $memmax  
-  In use $alignr $mem  
-  Free $alignr $memeasyfree  
-  Buffers $alignr $buffers  
-  Cache $alignr $cached  
-  ${memgraph 12,142 555555 AAAAAA -l} ${membar 12,98}
-  ${voffset -13}
-# # FANs
-#   ${font Open Sans:Bold:size=10}${color 4C7523}Coolers and fans (RPM) ${hr 2}$color${font}${offset 1}
-#   CPU ${goto 75}${exec sensors | grep 'fan2' | cut -c '27-30'} ${goto 170}GPU $alignr ${exec sensors | grep 'fan1' | grep 'max = 3200 RPM' | cut -c '15-17'}  
-#   Front ${goto 77}${exec sensors | grep 'fan1' | grep 'min =    0 RPM)' | cut -c '27-30'} ${goto 170}Back $alignr ${exec sensors | grep 'fan3' | grep 'min =    0 RPM)' | cut -c '27-30'}  
-#   ${voffset -13}
-# NET
-#  ${font Open Sans:Bold:size=10}${color 4C7523}NETWORK ${hr 2}$color${font}
   ${font Open Sans:Bold:size=10}${color 4C7523}NETWORK ${font :bold:size=8}(${if_empty ${exec cat /proc/net/route | grep tun0}}${color red}VPN DOWN${color}${else}${color green}VPN UP${color}${endif}${color 4C7523})${font :size=10} ${hr 2}$color${font}
   ${offset 4}${font Open Sans:size=9}LAN IP addr: ${alignr}${if_match "${addr enp4s0}"!="No Address"} ${addr enp4s0}${endif}${if_match "${addr wlp0s20f3}"!="No Address"}[WIFI] ${addr wlp0s20f3}${endif}  
   ${offset 4}${font Open Sans:size=9}Public IP addr: ${alignr}${exec curl ipinfo.io/ip}  
-#   ${voffset -5}
   ${offset 4}${font Open Sans:size=9}UP:   ${alignr}${if_match "${addr enp4s0}"!="No Address"} ${upspeed enp4s0} ${upspeedgraph enp4s0 12,100 ADFF2F 32CD32 -t}${endif}${if_match "${addr wlp0s20f3}"!="No Address"} ${upspeed wlp0s20f3} ${upspeedgraph wlp0s20f3 12,100 ADFF2F 32CD32 -t}${endif}  
   ${offset 4}${font Open Sans:size=9}DOWN:   ${alignr}${if_match "${addr enp4s0}"!="No Address"} ${downspeed enp4s0} ${downspeedgraph enp4s0 12,100 FF0000 8B0000 -t}${endif}${if_match "${addr wlp0s20f3}"!="No Address"} ${downspeed wlp0s20f3} ${downspeedgraph wlp0s20f3 12,100 FF0000 8B0000 -t}${endif}  
   ${voffset -13}
-#   ${voffset -5}
   ${offset 4}${font Open Sans:size=9}${color1}TOTAL:
   ${offset 4}UP:${offset 15}${if_match "${addr enp4s0}"!="No Address"} ${totalup enp4s0}${endif}${if_match "${addr wlp0s20f3}"!="No Address"} ${totalup wlp0s20f3}${endif}${offset 20}DOWN:${color}${alignr}${if_match "${addr enp4s0}"!="No Address"} ${totaldown enp4s0}${endif}${if_match "${addr wlp0s20f3}"!="No Address"} ${totaldown wlp0s20f3}${endif}${font}  
   ${voffset -13}
