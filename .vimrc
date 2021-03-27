@@ -407,6 +407,9 @@ highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
                           \ ctermbg=NONE guibg=NONE
 
 " Use italic font for comments
+" iTerm compatibility {{{
+let &t_ZH="\e[3m"
+let &t_ZR="\e[23m" " }}}
 highlight Comment cterm=italic
 
 " NERDCommenter
