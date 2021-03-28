@@ -14,6 +14,9 @@
   "editor.occurrencesHighlight": false,
   // Disable current line highlight
   "editor.renderLineHighlight": "gutter",
+  // Set terminal cursor style
+  "terminal.integrated.cursorStyle": "block",
+  "terminal.integrated.cursorBlinking": true,
 
   // Colorscheme
   "workbench.colorTheme": "Monokai Pro",
@@ -28,7 +31,9 @@
     // Active line number color
     "editorLineNumber.activeForeground": "#666666",
     // Background of Gutter column
-    "editorGutter.background" : "#232024"
+    "editorGutter.background" : "#232024",
+    // StatusBar font color
+    "statusBar.foreground" : "#a8a8a0"
   },
 
   // Icons settings
