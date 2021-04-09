@@ -419,6 +419,7 @@ let g:NERDSpaceDelims = 1
 let g:NERDCustomDelimiters = { 'c': { 'left': '/*','right': '*/' } }
 let g:NERDCustomDelimiters = { 'vim': { 'left': '"','right': '' } }
 " let g:NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
+let g:NERDCustomDelimiters = { 'Jenkinsfile': { 'left': '//','right': '' } }
 " Align line-wise comment delimiters flush left instead of following code
 " indentation (left/both)
 let g:NERDDefaultAlign = 'both'
@@ -1479,19 +1480,14 @@ let g:alternateNoDefaultAlternate = 1
 " :A switches to the header file corresponding to the current file being
 " edited (or vise versa)
 noremap <leader>a :A<CR>
-inoremap <leader>a <C-C>:A<CR>
 " :AS splits and switches
 noremap <leader>as :AS<CR>
-inoremap <leader>as <C-C>:AS<CR>
 " :AV vertical splits and switches
 noremap <leader>av :AV<CR>
-inoremap <leader>av <C-C>:AV<CR>
 " :AT new tab and switches
 noremap <leader>at :AT<CR>
-inoremap <leader>at <C-C>:AT<CR>
 " :AN cycles through matches
 noremap <leader>an :AN<CR>
-inoremap <leader>an <C-C>:AN<CR>
 
 " Prosession settings
 let g:prosession_tmux_title = 0
