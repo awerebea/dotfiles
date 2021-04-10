@@ -32,19 +32,21 @@ fi
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Which plugins to load?
-plugins=(\
-          colored-man-pages \
-          git \
-          history-substring-search \
-          history-sync \
-          k \
-          sudo \
-          tmux \
-          zsh-autosuggestions \
-          zsh-completions \
-          zsh-syntax-highlighting \
-          vi-mode \
-          zsh-vimode-visual \
+plugins=(
+          colored-man-pages
+          git
+          history-substring-search
+          history-sync
+          k
+          kubectl
+          sudo
+          tmux
+          vi-mode
+          zsh-autosuggestions
+          zsh-completions
+          zsh-interactive-cd
+          zsh-syntax-highlighting
+          zsh-vimode-visual
   )
 
 source $ZSH/oh-my-zsh.sh
