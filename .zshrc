@@ -142,8 +142,15 @@ function gacp() {
 
 # zsh_history settings and sync via GitHub
 setopt HIST_FIND_NO_DUPS
+setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_SAVE_NO_DUPS
+
+# setopt INC_APPEND_HISTORY_TIME
+# setopt EXTENDED_HISTORY
 setopt SHARE_HISTORY
+
 export HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 export ZSH_HISTORY_FILE_NAME=".zsh_history"
 export ZSH_HISTORY_FILE="${HOME}/${ZSH_HISTORY_FILE_NAME}"
