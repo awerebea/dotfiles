@@ -1643,7 +1643,8 @@ let g:XkbSwitchEnabled = 1
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
 if !v:shell_error && s:uname_host =~ "21-school"
-  let g:XkbSwitchLib = "/Users/awerebea/.local/lib/libxkbswitch.so"
+  let g:XkbSwitchLib =
+  \ "/Users/awerebea/.local/lib/libInputSourceSwitcher.dylib"
 elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
   \ || s:uname_host == "laptop-acer")
   let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
