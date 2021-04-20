@@ -40,6 +40,7 @@ plugins=(
           k
           kubectl
           sudo
+          terraform
           tmux
           vi-mode
           zsh-autosuggestions
