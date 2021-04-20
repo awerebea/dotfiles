@@ -8,6 +8,7 @@ cat <<EOT >> ~/.gitignore
 *.log
 *.swo
 *.swp
+*.tfstate*
 .DS_Store
 .clang_complete
 .clangd/
@@ -20,6 +21,9 @@ cat <<EOT >> ~/.gitignore
 .indexer_files_tags/*
 .ropeproject/
 .ropeproject/*
+.terraform.lock.hcl
+.terraform/
+.terraform/*
 .venv/
 .venv/*
 .vimprj/
