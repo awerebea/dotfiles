@@ -46,7 +46,7 @@ plugins=(
           zsh-completions
           zsh-interactive-cd
           zsh-syntax-highlighting
-          zsh-vimode-visual
+          # zsh-vimode-visual
   )
 
 source $ZSH/oh-my-zsh.sh
