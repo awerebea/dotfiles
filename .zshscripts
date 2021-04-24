@@ -54,7 +54,7 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     export DOCKER_CMD_FOR_ALIAS="sudo docker"
     export GIT_DOTFILES="/run/media/andrei/awerebea/Github/dotfiles"
     export GIT_WORKSPACE="/run/media/andrei/awerebea/Github/workspace"
-    export PATH="$PATH:/home/andrei/.local/share/gem/ruby/2.7.0/bin"
+    export PATH="$PATH:/home/andrei/.local/share/gem/ruby/3.0.0/bin"
     alias norminette='/home/andrei/.config/.scripts/colorised_norm.sh'
     alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
     google() {
