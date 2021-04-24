@@ -1488,6 +1488,11 @@ noremap <leader>av :AV<CR>
 noremap <leader>at :AT<CR>
 " :AN cycles through matches
 noremap <leader>an :AN<CR>
+" TODO To disable annoying <leader> maps in insert mode
+" comment lines 560, 562, 564 in plugin file ~/.vim/plugged/a.vim/plugin/a.vim
+" imap <Leader>ih <ESC>:IHS<CR>
+" imap <Leader>is <ESC>:IHS<CR>:A<CR>
+" imap <Leader>ihn <ESC>:IHN<CR>
 
 " Prosession settings
 let g:prosession_tmux_title = 0
@@ -1595,7 +1600,6 @@ function ToggleDiff ()
   endif
 endfunction
 nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
-inoremap <silent> <leader><F9> <C-O>:call ToggleDiff()<CR>
 " }}}
 
 " Dictionary and completion settings " {{{
