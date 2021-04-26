@@ -203,17 +203,20 @@ fi
 # Pass storage path
 export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
 
-# fix GPG plugin support int Vim
+# Fix GPG plugin support int Vim
 export TERM=xterm-256color
 # export TERM=xterm-256color-italic
 
-# create and launch python VENV
+# Create and launch python VENV
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
 
-# generate '.clang_complete' for VIM and C/CPP projects
+# Generate '.clang_complete' for VIM and C/CPP projects
 alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'
 
-# enable vim-mode
+# Enable vim-mode
 # set -o vi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Increase keybind timeout from 1 to 50 to fix sudo plugin
+export KEYTIMEOUT=50
