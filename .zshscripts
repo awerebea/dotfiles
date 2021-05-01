@@ -29,7 +29,6 @@ if [[ `uname -n` == *"21-school"* ]]; then
   # set coursor like blinking block
   printf '\e[1 q'
 elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
-  os=`uname`
   if [[ `uname` == "Linux" ]] && [[ `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
     # Home Ubuntu in WSL (Windows)
     export ZSH="/home/andrei/.oh-my-zsh"
@@ -102,6 +101,25 @@ elif [[ `uname -n` == "pc-home" ]] || [[ `uname -n` == "laptop-acer" ]]; then
     # set coursor like blinking block
     printf '\e[1 q'
   fi
+elif [[ `uname` == "Linux" ]] && [[ `uname -n` == "laptop-dell" ]]; then
+  # Work laptop
+  export ZSH="/home/andrei/.oh-my-zsh"
+  export DOCKER_CMD_FOR_ALIAS="sudo docker"
+  export GIT_DOTFILES="/home/andrei/Documents/Github/dotfiles"
+  export GIT_WORKSPACE="/home/andrei/Documents/Github/workspace"
+  alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
+  google() {
+    search=""
+    for term in $@; do
+    search="$search%20$term"
+    done
+    xdg-open "http://www.google.com/search?q=$search" >/dev/null 2>&1
+  }
+  alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
+  printf '\e[1 q'
+  # Fix history-substring-search plugin behaviour
+  bindkey "$terminfo[kcuu1]" history-substring-search-up
+  bindkey "$terminfo[kcud1]" history-substring-search-down
 else
   export ZSH="$HOME/.oh-my-zsh"
   export GIT_DOTFILES="$HOME/Github/dotfiles"
