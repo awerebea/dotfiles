@@ -329,13 +329,15 @@ nnoremap k gk
 " Copy to 'clipboard registry'
 vmap <C-c> "+y
 
-if has('mac')
-  set clipboard=unnamed
-elseif has('windows')
-  set clipboard=unnamed
-elseif has('unix')
-  " language en_US.utf8
+let uname = substitute(system('uname'), '\n', '', '')
+" Example values: Linux, Darwin, MINGW64_NT-10.0, MINGW32_NT-6.1
+
+if uname == 'Linux'
   set clipboard=unnamedplus
+elseif uname == 'Darwin'
+  set clipboard=unnamed
+else " windows
+  set clipboard=unnamed
 endif
 
 set autoread " reread modified files automatically
