@@ -1,26 +1,12 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
-# typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
-# ZSH_DISABLE_COMPFIX="true"
-
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
 export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
+
+export TERM=xterm-256color
 
 if [ -f ~/.zshscripts ]; then
     source ~/.zshscripts
@@ -54,32 +40,8 @@ source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-# You may need to manually set your language environment
-# export LANG=en_US.UTF-8
-
-# Compilation flags
-# export ARCHFLAGS="-arch x86_64"
-
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# blinking block
-# printf '\e[1 q' # INFO comment in in debian VM
-# steady block
-# printf '\e[2 q'
-# blinking underscore
-# printf '\e[3 q'
-# steady underscore
-# printf '\e[4 q'
-# blinking bar
-# printf '\e[5 q'
-# steady bar
-# printf '\e[6 q'
-
-#export WINEPREFIX=/run/media/andrei/Data/Distrib/Linux/Apps/wine/
-#export WINEPREFIX=/home/andrei/.wine/
-#export WINEARCH=win32
-
 
 # Personal aliases
 alias zshconfig="vim ~/.zshrc"
@@ -88,7 +50,6 @@ alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
 alias zhistclr="cat -n ${HOME}/${ZSH_HISTORY_FILE_NAME} | LC_ALL=C sort -hr | LC_ALL=C sort -t ';' -uk2 | LC_ALL=C sort -nk1 | LC_ALL=C cut -f2- > ${HOME}/${ZSH_HISTORY_FILE_NAME}_short && mv ${HOME}/${ZSH_HISTORY_FILE_NAME}_short ${HOME}/${ZSH_HISTORY_FILE_NAME}"
-# alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 alias ranger='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR" > /dev/null 2>&1'
 alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR" > /dev/null 2>&1'
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
@@ -176,11 +137,7 @@ export W3MIMGDISPLAY_PATH="${HOME}/.local/libexec/w3m/w3mimgdisplay"
 # set vim as the default pager for man pages
 export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
 
-# set tab stop 4 for shell commands by default
-# tabs -4
-
 # Set Bat theme
-# export BAT_THEME="gruvbox"
 export BAT_THEME="TwoDark"
 
 # FZF settings
@@ -189,34 +146,16 @@ export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 # Set fzf preview options
 export FZF_DEFAULT_OPTS='--height=100% --preview "bat --style=numbers --color=always --line-range :500 {}" --preview-window=up:60%:wrap --bind=ctrl-/:toggle-preview,alt-j:preview-down,alt-k:preview-up --bind=ctrl-space:toggle+up,ctrl-d:half-page-down,ctrl-u:half-page-up'
 export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
-if [ -f ~/.vim/plugged/fzf/shell/completion.zsh ]; then
-    source ~/.vim/plugged/fzf/shell/completion.zsh
-else
-    print "404: ~/.vim/plugged/fzf/shell/completion.zsh not found."
-fi
-if [ -f ~/.vim/plugged/fzf/shell/key-bindings.zsh ]; then
-    source ~/.vim/plugged/fzf/shell/key-bindings.zsh
-else
-    print "404: ~/.vim/plugged/fzf/shell/key-bindings.zsh not found."
-fi
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Pass storage path
 export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
-
-# Fix GPG plugin support int Vim
-export TERM=xterm-256color
-# export TERM=xterm-256color-italic
 
 # Create and launch python VENV
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
 
 # Generate '.clang_complete' for VIM and C/CPP projects
 alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'
-
-# Enable vim-mode
-# set -o vi
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Increase keybind timeout from 1 to 50 to fix sudo plugin
 export KEYTIMEOUT=50
