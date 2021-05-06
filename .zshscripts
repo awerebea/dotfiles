@@ -103,6 +103,7 @@ elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
   export DOCKER_CMD_FOR_ALIAS="sudo docker"
   export GIT_DOTFILES="/home/andrei/Documents/Github/dotfiles"
   export GIT_WORKSPACE="/home/andrei/Documents/Github/workspace"
+  export PATH="$PATH:/var/lib/gems/2.7.0"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   google() {
     search=""
