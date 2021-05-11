@@ -66,8 +66,8 @@ elif [[ ( `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ) && `uname` ==
   alias tmpunlink="sudo rm -f /var/tmp && sleep 1 && sudo mkdir /var/tmp"
   alias tmprelink="sudo rm -rf /var/tmp && sleep 1 && sudo ln -s /run/media/andrei/Data/Temp-lin/var/tmp/ /var/tmp"
   # The 1st command is to map CAPSLOCK to ESC whereas the 2nd one takes care of CTRL pressed with other keys
-  setxkbmap -option 'caps:ctrl_modifier'
-  xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
+  # setxkbmap -option 'caps:ctrl_modifier'
+  # xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
   # set coursor like blinking block
   printf '\e[1 q'
 
@@ -118,8 +118,8 @@ elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
   bindkey "$terminfo[kcuu1]" history-substring-search-up
   bindkey "$terminfo[kcud1]" history-substring-search-down
   # The 1st command is to map CAPSLOCK to ESC whereas the 2nd one takes care of CTRL pressed with other keys
-  setxkbmap -option 'caps:ctrl_modifier'
-  xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
+  # setxkbmap -option 'caps:ctrl_modifier'
+  # xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
 
 else
   export ZSH="$HOME/.oh-my-zsh"
