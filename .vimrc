@@ -1730,3 +1730,14 @@ nnoremap <leader>2 @@
 
 " Write read only-file trick
 cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
+" Like gJ, but always remove spaces
+fun! s:join_spaceless()
+    execute 'normal! gJ'
+    " Remove character under the cursor if it's whitespace.
+    if matchstr(getline('.'), '\%' . col('.') . 'c.') =~ '\s'
+        execute 'normal! dw'
+    endif
+endfun
+" Map it to a key
+nnoremap <Leader>J :call <SID>join_spaceless()<CR>
