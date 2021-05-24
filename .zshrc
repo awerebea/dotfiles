@@ -78,10 +78,11 @@ alias 18='cd -18'
 alias 19='cd -19'
 
 # docker aliases
-alias dcksa="${DOCKER_CMD_FOR_ALIAS} stop \$(${DOCKER_CMD_FOR_ALIAS} ps -qa)"
-alias dckrc="${DOCKER_CMD_FOR_ALIAS} rm \$(${DOCKER_CMD_FOR_ALIAS} container ls -qa)"
-alias dckri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)"
-alias dckreset="dcksa && dckrc && dckri"
+alias dksa="${DOCKER_CMD_FOR_ALIAS} stop \$(${DOCKER_CMD_FOR_ALIAS} ps -qa)"
+alias dkrc="${DOCKER_CMD_FOR_ALIAS} rm \$(${DOCKER_CMD_FOR_ALIAS} container ls -qa)"
+alias dkri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)"
+alias dkreset="dksa && dkrc && dkri"
+alias dk=docker
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {

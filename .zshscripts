@@ -100,7 +100,7 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
 elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
   # Work laptop
   export ZSH="/home/andrei/.oh-my-zsh"
-  export DOCKER_CMD_FOR_ALIAS="sudo docker"
+  export DOCKER_CMD_FOR_ALIAS="docker"
   export GIT_DOTFILES="/home/andrei/Documents/Github/dotfiles"
   export GIT_WORKSPACE="/home/andrei/Documents/Github/workspace"
   export PATH="$PATH:/var/lib/gems/2.7.0"
