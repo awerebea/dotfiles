@@ -1741,3 +1741,6 @@ fun! s:join_spaceless()
 endfun
 " Map it to a key
 nnoremap <Leader>J :call <SID>join_spaceless()<CR>
+
+" Use underscore as word separator
+set iskeyword-=_
