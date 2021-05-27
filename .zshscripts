@@ -59,6 +59,7 @@ elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
   export PATH="$PATH:/opt/mssql-tools/bin"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
+  # set coursor like blinking block
   printf '\e[1 q'
   # Fix history-substring-search plugin behaviour in Tmux
   bindkey "$terminfo[kcuu1]" history-substring-search-up

@@ -20,19 +20,30 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Which plugins to load?
 plugins=(
           colored-man-pages
+          copydir
+          copyfile
+          docker
+          encode64
+          extract
+          fasd
           git
+          helm
           history-substring-search
           history-sync
           k
           kubectl
+          rsync
           sudo
+          systemd
           terraform
           tmux
           vi-mode
+          web-search
           zsh-autosuggestions
           zsh-completions
           zsh-interactive-cd
           zsh-syntax-highlighting
+          zsh-vi-mode
           # zsh-vimode-visual
   )
 
@@ -91,7 +102,6 @@ function vimprj() {
 
 # enable fasd
 eval "$(fasd --init auto)"
-alias v='f -e vim' # quick opening files with vim
 
 # git add all changed files and commit
 function gac() {
@@ -160,3 +170,15 @@ alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$
 
 # Increase keybind timeout from 1 to 50 to fix sudo plugin
 export KEYTIMEOUT=50
+
+# zsh-vi-mode plugin
+# Change to Zsh's default readkey engine
+ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE
+
+ZVM_KEYTIMEOUT=0.4
+ZVM_ESCAPE_KEYTIMEOUT=0.03
+ZVM_VI_HIGHLIGHT_BACKGROUND=red
+
+# docker plugin
+zstyle ':completion:*:*:docker:*' option-stacking yes
+zstyle ':completion:*:*:docker-*:*' option-stacking yes
