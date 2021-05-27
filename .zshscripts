@@ -379,3 +379,13 @@ if [[ `uname -n` == *"21-school"* ]]; then
 fi
 
 alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
+
+dkremote() {
+  export DOCKER_HOST="tcp://10.10.15.162:2376"
+  export DOCKER_TLS_VERIFY=1
+}
+
+dklocal() {
+  unset DOCKER_HOST
+  unset DOCKER_TLS_VERIFY
+}
