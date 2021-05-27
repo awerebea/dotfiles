@@ -1,47 +1,13 @@
 # awerebea's personal zsh scripts and functions
 
-# Detect and setup current environment (home/school/docker)
-# School-21
-if [[ `uname -n` == *"21-school"* ]]; then
-  export ZSH="/Users/awerebea/.oh-my-zsh"
-  export DOCKER_CMD_FOR_ALIAS="docker"
-  export GIT_DOTFILES="/Users/awerebea/Documents/Github/dotfiles"
-  export GIT_WORKSPACE="/Users/awerebea/Documents/Github/workspace"
-  alias norminette='/Users/awerebea/.scripts/colorised_norm.sh'
-  alias o='a -e open' # quick opening files with open
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
-  PATH=~/.local/bin:$PATH
-  PATH=~/Library/Python/2.7/bin:$PATH
-  source $HOME/.brewconfig.zsh
-  alias ffoxprofile='/Volumes/Firefox/Firefox.app/Contents/MacOS/firefox-bin -P'
-  alias ffox='open -n -a /Volumes/Firefox/Firefox.app --args -P awerebea'
-  alias init_docker=". ${HOME}/42toolbox/init_docker.sh"
-  alias settings_init=". ${HOME}/Documents/Github/dotfiles/school/init_school_settings.sh"
-  alias init_minikube=". ${HOME}/Documents/Github/dotfiles/school/init_minikube.sh"
-  defaults write -g ApplePressAndHoldEnabled -bool false
-  # set coursor like blinking block
-  printf '\e[1 q'
-
-elif [[ `uname -n` == "pc-home" && `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
+# Detect and setup current environment (home/docker)
+if [[ `uname -n` == "pc-home" && `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
   # Home Ubuntu in WSL (Windows)
   export ZSH="/home/andrei/.oh-my-zsh"
   export DOCKER_CMD_FOR_ALIAS="sudo docker"
   export GIT_DOTFILES="/home/andrei/Github/dotfiles"
   export GIT_WORKSPACE="/home/andrei/Github/workspace"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    xdg-open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   # set coursor like blinking block
   printf '\e[1 q'
@@ -55,13 +21,6 @@ elif [[ ( `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ) && `uname` ==
   export PATH="$PATH:/home/andrei/.local/share/gem/ruby/3.0.0/bin"
   alias norminette='/home/andrei/.config/.scripts/colorised_norm.sh'
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    xdg-open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias tmpunlink="sudo rm -f /var/tmp && sleep 1 && sudo mkdir /var/tmp"
   alias tmprelink="sudo rm -rf /var/tmp && sleep 1 && sudo ln -s /run/media/andrei/Data/Temp-lin/var/tmp/ /var/tmp"
@@ -80,13 +39,6 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   alias norminette='/Users/andrei/.scripts/colorised_norm.sh'
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
   alias sudoedit="sudo vim"
   export PATH="$PATH:/Users/andrei/Library/Python/3.7/bin"
   export PATH="$PATH:/Users/andrei/.local/bin"
@@ -106,13 +58,6 @@ elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
   export PATH="$PATH:/var/lib/gems/2.7.0"
   export PATH="$PATH:/opt/mssql-tools/bin"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    xdg-open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   printf '\e[1 q'
   # Fix history-substring-search plugin behaviour in Tmux
@@ -127,13 +72,6 @@ else
   export GIT_DOTFILES="$HOME/Github/dotfiles"
   export GIT_WORKSPACE="$HOME/Github/workspace"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  google() {
-    search=""
-    for term in $@; do
-    search="$search%20$term"
-    done
-    xdg-open "http://www.google.com/search?q=$search" >/dev/null 2>&1
-  }
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
 fi
 
@@ -272,111 +210,6 @@ next () {
   echo 'No next directory.' >&2
   return 1
 }
-
-# Move Slack cache dir to goinfre
-# CacheStorage
-if [[ `uname -n` == *"21-school"* ]]; then
-  OLDDIR="/Users/awerebea/Library/Application Support/Slack/Service Worker/CacheStorage"
-  NEWDIR="/goinfre/awerebea/Slack/CacheStorage"
-  if [ ! -d "$NEWDIR" ]; then
-    mkdir -p $NEWDIR
-  fi
-  if [ -d "$OLDDIR" ]; then
-    if [ ! -L $OLDDIR ] ; then
-      cp -r $OLDDIR/* $NEWDIR/ >/dev/null 2>&1
-      rm -rf $OLDDIR
-      ln -s $NEWDIR $OLDDIR
-    fi
-  elif [ -L $OLDDIR ] ; then
-     if [ ! -e $OLDDIR ] ; then
-        rm -f $OLDDIR
-        ln -s $NEWDIR $OLDDIR
-     fi
-  elif [ -e $OLDDIR ] ; then
-    rm -rf $OLDDIR
-    ln -s $NEWDIR $OLDDIR
-  else
-    ln -s $NEWDIR $OLDDIR
-  fi
-fi
-
-# Cache
-if [[ `uname -n` == *"21-school"* ]]; then
-  OLDDIR="/Users/awerebea/Library/Application Support/Slack/Cache"
-  NEWDIR="/goinfre/awerebea/Slack/Cache"
-  if [ ! -d "$NEWDIR" ]; then
-    mkdir -p $NEWDIR
-  fi
-  if [ -d "$OLDDIR" ]; then
-    if [ ! -L $OLDDIR ] ; then
-      cp -r $OLDDIR/* $NEWDIR/ >/dev/null 2>&1
-      rm -rf $OLDDIR
-      ln -s $NEWDIR $OLDDIR
-    fi
-  elif [ -L $OLDDIR ] ; then
-     if [ ! -e $OLDDIR ] ; then
-        rm -f $OLDDIR
-        ln -s $NEWDIR $OLDDIR
-     fi
-  elif [ -e $OLDDIR ] ; then
-    rm -rf $OLDDIR
-    ln -s $NEWDIR $OLDDIR
-  else
-    ln -s $NEWDIR $OLDDIR
-  fi
-fi
-
-# Move minikube dir to goinfre
-if [[ `uname -n` == *"21-school"* ]]; then
-  OLDDIR="/Users/awerebea/.minikube"
-  NEWDIR="/goinfre/awerebea/.minikube"
-  if [ ! -d "$NEWDIR" ]; then
-    mkdir -p $NEWDIR
-  fi
-  if [ -d "$OLDDIR" ]; then
-    if [ ! -L $OLDDIR ] ; then
-      cp -r $OLDDIR/* $NEWDIR/ >/dev/null 2>&1
-      rm -rf $OLDDIR
-      ln -s $NEWDIR $OLDDIR
-    fi
-  elif [ -L $OLDDIR ] ; then
-     if [ ! -e $OLDDIR ] ; then
-        rm -f $OLDDIR
-        ln -s $NEWDIR $OLDDIR
-     fi
-  elif [ -e $OLDDIR ] ; then
-    rm -rf $OLDDIR
-    ln -s $NEWDIR $OLDDIR
-  else
-    ln -s $NEWDIR $OLDDIR
-  fi
-fi
-
-# Move zoom records dir to goinfre
-if [[ `uname -n` == *"21-school"* ]]; then
-  OLDDIR="/Users/awerebea/Documents/Zoom"
-  NEWDIR="/goinfre/awerebea/Zoom"
-  if [ ! -d "$NEWDIR" ]; then
-    mkdir -p $NEWDIR
-  fi
-  if [ -d "$OLDDIR" ]; then
-    if [ ! -L $OLDDIR ] ; then
-      cp -r $OLDDIR/* $NEWDIR/ >/dev/null 2>&1
-      rm -rf $OLDDIR
-      ln -s $NEWDIR $OLDDIR
-    fi
-  elif [ -L $OLDDIR ] ; then
-     if [ ! -e $OLDDIR ] ; then
-        rm -f $OLDDIR
-        ln -s $NEWDIR $OLDDIR
-     fi
-  elif [ -e $OLDDIR ] ; then
-    rm -rf $OLDDIR
-    ln -s $NEWDIR $OLDDIR
-  else
-    ln -s $NEWDIR $OLDDIR
-  fi
-fi
 
 alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
 
