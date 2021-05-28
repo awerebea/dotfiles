@@ -28,7 +28,6 @@ plugins=(
           fasd
           git
           helm
-          history-substring-search
           history-sync
           k
           kubectl
@@ -44,7 +43,7 @@ plugins=(
           zsh-interactive-cd
           zsh-syntax-highlighting
           zsh-vi-mode
-          # zsh-vimode-visual
+          history-substring-search
   )
 
 source $ZSH/oh-my-zsh.sh
@@ -173,12 +172,29 @@ export KEYTIMEOUT=50
 
 # zsh-vi-mode plugin
 # Change to Zsh's default readkey engine
-ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE
+ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX #NEW
 
 ZVM_KEYTIMEOUT=0.4
 ZVM_ESCAPE_KEYTIMEOUT=0.03
-ZVM_VI_HIGHLIGHT_BACKGROUND=red
+# ZVM_VI_HIGHLIGHT_BACKGROUND=red
+ZVM_VI_HIGHLIGHT_BACKGROUND=#ffd200
+ZVM_VI_HIGHLIGHT_FOREGROUND=#000000
+
+ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BLOCK
+ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BEAM
+ZVM_OPPEND_MODE_CURSOR=$ZVM_CURSOR_BLINKING_UNDERLINE
+
+ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
+
+# The plugin will auto execute this zvm_after_init function
+function zvm_after_init() {
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+}
 
 # docker plugin
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
+
+# history-substring-search plugin
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
