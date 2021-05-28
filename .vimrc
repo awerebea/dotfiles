@@ -686,9 +686,9 @@ nmap <leader>llu :Goyo<CR>:Goyo<CR>
 
 " Change cursor view:
 "set ttimeoutlen=10       " Keystrokes timeout
-"let &t_SI.="\e[5 q"      " SI = Insert mode
-"let &t_SR.="\e[3 q"      " SR = Replace mode
-"let &t_EI.="\e[1 q"      " EI = Normal mode
+let &t_SI.="\e[5 q"      " SI = Insert mode
+let &t_SR.="\e[3 q"      " SR = Replace mode
+let &t_EI.="\e[1 q"      " EI = Normal mode
 " 1 - blink block
 " 2 - block
 " 3 - blink underscore
