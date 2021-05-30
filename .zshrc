@@ -36,6 +36,7 @@ plugins=(
           systemd
           terraform
           tmux
+          ubuntu
           vi-mode
           web-search
           zsh-autosuggestions
