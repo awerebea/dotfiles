@@ -31,8 +31,6 @@ Plug 'samoshkin/vim-mergetool'
 " Make terminal vim and tmux work better together
 Plug 'benmills/vimux'
 Plug 'christoomey/vim-tmux-navigator'
-Plug 'roxma/vim-tmux-clipboard'
-Plug 'tmux-plugins/vim-tmux-focus-events'
 " Easy text exchange operator
 Plug 'tommcdo/vim-exchange'
 " This plugin lets users define 'temporary keymaps', with the function
@@ -1248,8 +1246,8 @@ nnoremap <silent> <leader>`        :Marks<CR>
 nnoremap <silent> q: :History:<CR>
 nnoremap <silent> q/ :History/<CR>
 
-inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
-  \ --scroll 498 --min 5')
+" inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
+"   \ --scroll 498 --min 5')
 " map <c-x><c-k> <plug>(fzf-complete-word)
 imap <c-x><c-f> <plug>(fzf-complete-path)
 inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
