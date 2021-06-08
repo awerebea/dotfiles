@@ -1,0 +1,11 @@
+#! /bin/bash
+
+for file in "$@"; do
+  case "$file" in
+      *.zip) unzip "$file" ;;
+      *.tar.gz) tar -xzvf "$file" ;;
+      *.tar.bz2) tar -xjvf "$file" ;;
+      *.tar) tar -xvf "$file" ;;
+      *) echo "Unsupported format" ;;
+  esac
+done

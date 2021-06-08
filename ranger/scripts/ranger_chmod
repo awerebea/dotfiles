@@ -1,0 +1,8 @@
+#! /bin/bash
+
+printf "Mode Bits: "
+read ans
+for file in "$@"
+do
+  chmod $ans $file
+done

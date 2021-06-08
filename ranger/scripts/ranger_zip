@@ -1,0 +1,24 @@
+#!/bin/bash
+
+suggestion=$(basename $1)
+
+if [ -n "$1" ]; then
+  name=""
+  while [ -z $name ] || [ -e $name ]
+  do
+    read -p "Archive Name: " -e -i $(echo ${suggestion%.*}".zip") name
+    if [ -e "$name" ]; then
+      printf "File already exists, overwrite (y|n): "
+      read -r ans
+
+      if [ "$ans" = "y" ]; then
+        break
+      fi
+    fi
+  done
+
+  # Archive files
+  [ -n "$name" ] && zip -r "$name" "$@" || exit 1
+else
+  exit 1
+fi
