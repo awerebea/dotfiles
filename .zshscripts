@@ -223,3 +223,9 @@ dklocal() {
   unset DOCKER_HOST
   unset DOCKER_TLS_VERIFY
 }
+
+# Source broot shell script
+BR_SCRIPT="$HOME/.config/broot/launcher/bash/br"
+if [ -f "$BR_SCRIPT" ]; then
+  source "$BR_SCRIPT"
+fi
