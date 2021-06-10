@@ -1,12 +1,13 @@
 #!/bin/bash
 
-suggestion=$(basename $1)
+suggestion=$(basename "$1")
+[ -d "$1" ] || suggestion="${suggestion%.*}"
 
 if [ -n "$1" ]; then
   name=""
-  while [ -z $name ] || [ -e $name ]
+  while [ -z "$name" ] || [ -e "$name" ]
   do
-    read -p "Archive Name: " -e -i $(echo ${suggestion%.*}".tar.gz") name
+    read -p "Archive Name: " -e -i "${suggestion}.tar.gz" name
     if [ -e "$name" ]; then
       printf "File already exists, overwrite (y|n): "
       read -r ans
