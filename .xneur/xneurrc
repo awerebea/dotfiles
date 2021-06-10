@@ -1,0 +1,15 @@
+ManualMode Yes
+
+AddBind ChangeWord           Break
+AddBind ChangeSelected       Shift Break
+AddBind ChangecaseSelected   Control Shift Break
+AddBind TranslitSelected     Control Alt Break
+
+AddBind ChangeWord           Insert
+AddBind ChangeSelected       Shift Insert
+AddBind ChangecaseSelected   Control Shift Insert
+AddBind TranslitSelected     Control Alt Insert
+
+ExcludeApp KeePass2
+ExcludeApp Microsoft Teams - Preview
+ExcludeApp google-chrome
