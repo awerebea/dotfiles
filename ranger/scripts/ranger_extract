@@ -2,10 +2,11 @@
 
 for file in "$@"; do
   case "$file" in
-      *.zip) unzip "$file" ;;
-      *.tar.gz) tar -xzvf "$file" ;;
-      *.tar.bz2) tar -xjvf "$file" ;;
+      *.7z) 7z x "$file" ;;
       *.tar) tar -xvf "$file" ;;
+      *.tar.bz2) tar -xjvf "$file" ;;
+      *.tar.gz) tar -xzvf "$file" ;;
+      *.zip) unzip "$file" ;;
       *) echo "Unsupported format" ;;
   esac
 done
