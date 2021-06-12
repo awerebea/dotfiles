@@ -1293,8 +1293,8 @@ command! -bang -nargs=* FZFRg
   \ "rg --colors 'match:bg:yellow' --colors 'match:fg:black'
   \ --colors 'match:style:nobold' --colors 'path:fg:cyan'
   \ --colors 'path:style:bold' --colors 'line:fg:yellow'
-  \ --colors 'line:style:bold' --column --line-number --no-heading
-  \ --color=always --smart-case -- ".shellescape(<q-args>), 1,
+  \ --colors 'line:style:bold' --line-number --no-heading
+  \ --color=always --smart-case --trim -- ".shellescape(<q-args>), 1,
   \ fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
 
 command! -bang -nargs=* Ag
