@@ -30,7 +30,6 @@ cat <<EOT >> ~/.gitignore
 .vimprj/*
 .vscode
 CMakeLists.txt
-__init__.py
 __pycache__/
 __pycache__/*
 cmake-build-debug/
