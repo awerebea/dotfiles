@@ -153,8 +153,28 @@ export BAT_THEME="TwoDark"
 # Set fzf to find hidden files but ignore .gitignored
 export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
 # Set fzf preview options
-export FZF_DEFAULT_OPTS='--height=100% --preview "bat --style=numbers --color=always --line-range :500 {}" --preview-window=up:60%:wrap --bind=ctrl-/:toggle-preview,alt-j:preview-down,alt-k:preview-up --bind=ctrl-space:toggle+up,ctrl-d:half-page-down,ctrl-u:half-page-up'
+export FZF_DEFAULT_OPTS="--height=100% --preview \
+  'bat --style=numbers --color=always --line-range :500 {}' \
+  --preview-window=up:60%:hidden \
+  --bind=ctrl-/:toggle-preview \
+  --bind=alt-j:preview-down,alt-k:preview-up \
+  --bind=alt-b:preview-page-up,alt-f:preview-page-down \
+  --bind=alt-u:preview-half-page-up,alt-d:preview-half-page-down \
+  --bind=alt-up:preview-top,alt-down:preview-bottom \
+  --bind=ctrl-space:toggle+up \
+  --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
+  --bind=ctrl-f:page-down,ctrl-b:page-up"
 export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
+
+# ranger filemanager plugins
+# fzf_marks
+export FZF_MARKS_FILE="${HOME}/.fzf-marks"
+export FZF_MARKS_CMD="fzf"
+export FZF_FZM_OPTS="--cycle +m --ansi --bind=ctrl-o:accept,ctrl-t:toggle --select-1"
+export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
+# ranger_gpg
+export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
+
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Pass storage path
