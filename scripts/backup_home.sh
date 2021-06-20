@@ -17,9 +17,17 @@ SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
 # Just a split of too long line)
 SNAPSHOT_NAME_PATTERN='^20([0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])'
 SNAPSHOT_NAME_PATTERN+='_(0[0-9]|1[0-9]|2[0-3])-([0-5][0-9])-([0-5][0-9])$'
+
+generate_snapshot_list () {
+  ls -A -l -1 -r "${SNAPSHOT_PATH}" | grep ^d | tr -s ' ' | cut -d ' ' -f 9- |
+    grep -P "${SNAPSHOT_NAME_PATTERN}"
+  return
+}
+
 DATA_DIR_NAME="home"
 
 LOG_FILENAME="rsync-log"
+SUCCESS_FILE="completed_successfully"
 
 # Define functions
 exit_err () {
@@ -34,14 +42,28 @@ create_snapshot () {
     --include="/*/.*" --exclude="/.*" \
     "${SOURCE_PATH}/" "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${DATA_DIR_NAME}/" ||
     exit_err
-  touch ${SNAPSHOT_PATH}/${SNAPSHOT_NAME}
+  local MESSAGE=
+  read -r -d '' MESSAGE << __EOM__
+Snapshot creation started:  ${SNAPSHOT_NAME}
+Snapshot creation finished: $(date +%Y-%m-%d_%H-%M-%S)
+
+More info in ${LOG_FILENAME}.
+
+BE CAREFUL!
+If you rename or delete this file,
+the directory in which it is located will also be deleted
+during the next launch.
+__EOM__
+  echo "${MESSAGE}" > "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${SUCCESS_FILE}"
+  touch "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
   return
 }
 
 link_prev_snapshot () {
   echo "Create links from previous snapshot: ${LAST_SNAPSHOT}"
   echo "Please wait..."
-  rsync -a --exclude="/${LOG_FILENAME}" --link-dest="${SNAPSHOT_PATH}/${LAST_SNAPSHOT}" \
+  rsync -a --exclude="/${LOG_FILENAME}" --exclude="/${SUCCESS_FILE}" \
+    --link-dest="${SNAPSHOT_PATH}/${LAST_SNAPSHOT}" \
     "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}/" \
     "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/" || exit_err
   return
@@ -92,10 +114,24 @@ while [[ -n "$1" ]]; do
   shift
 done
 
-# Get the newest directory (by name) with name a name matches the snapshot name
-# pattern
-LAST_SNAPSHOT=$(ls -A -l -1 -r ${SNAPSHOT_PATH} | grep ^d | cut -d ' ' -f 9- |
-  grep -P "${SNAPSHOT_NAME_PATTERN}" | head -n 1)
+# Get the list of directories with a name matches the snapshot name pattern
+SNAPSHOTS_LIST="$(generate_snapshot_list)"
+
+# Clear interrupted snapshots (dirs without SUCCESS_FILE)
+for SNAPSHOT in ${SNAPSHOTS_LIST}
+do
+  # echo "${SNAPSHOT_PATH}/${SNAPSHOT}"
+  if [ ! -f "${SNAPSHOT_PATH}/${SNAPSHOT}/${SUCCESS_FILE}" ]; then
+    echo -n "Deleting a snapshot that was interrupted or marked for deletion: "
+    echo "${SNAPSHOT}"
+    echo "Please wait..."
+    rm -rf "${SNAPSHOT_PATH}/${SNAPSHOT}"
+  fi
+done
+
+# # Get the newest directory (by name) with name a name matches the snapshot name
+# # pattern
+LAST_SNAPSHOT="$(generate_snapshot_list | head -n 1)"
 
 if [ -z ${LAST_SNAPSHOT} ]; then
   # Create first snapshot
@@ -103,8 +139,8 @@ if [ -z ${LAST_SNAPSHOT} ]; then
   create_snapshot
 else
   if [[ -z ${FORCE} ]]; then
-    # Get time of last snapshot and current time for comparsion
-    SNAPSHOT_TIME=$(stat --format='%Y' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
+    # Get time of last snapshot and current time for comparison
+    SNAPSHOT_TIME=$(stat --format='%X' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
     CURRENT_TIME=$(date +%s)
     if (( SNAPSHOT_TIME < ( CURRENT_TIME - SNAPSHOT_TIMEOUT ) )); then
       link_prev_snapshot
