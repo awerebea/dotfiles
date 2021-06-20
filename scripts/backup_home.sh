@@ -118,15 +118,17 @@ done
 SNAPSHOTS_LIST="$(generate_snapshot_list)"
 
 # Clear interrupted snapshots (dirs without SUCCESS_FILE)
-for SNAPSHOT in ${SNAPSHOTS_LIST}
-do
-  # echo "${SNAPSHOT_PATH}/${SNAPSHOT}"
+set -- ${SNAPSHOTS_LIST}
+i=$#
+while [ $i -gt 0 ]; do
+  eval "SNAPSHOT=\${$i}"
   if [ ! -f "${SNAPSHOT_PATH}/${SNAPSHOT}/${SUCCESS_FILE}" ]; then
     echo -n "Deleting a snapshot that was interrupted or marked for deletion: "
     echo "${SNAPSHOT}"
     echo "Please wait..."
     rm -rf "${SNAPSHOT_PATH}/${SNAPSHOT}"
   fi
+  i=$((i-1))
 done
 
 # # Get the newest directory (by name) with name a name matches the snapshot name
