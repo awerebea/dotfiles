@@ -12,4 +12,6 @@ AddBind TranslitSelected     Control Alt Insert
 
 ExcludeApp KeePass2
 ExcludeApp Microsoft Teams - Preview
-ExcludeApp google-chrome
+ExcludeApp Google-chrome
+ExcludeApp Krdc
+ExcludeApp Remmina
