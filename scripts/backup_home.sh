@@ -129,14 +129,22 @@ Create differential backup of "${SOURCE_PATH}" directory into
 Create snapshot only if last snapshot is older than TIMEOUT minutes.
 
 OPTIONS:
-  -f, --force         Ignore timeout
-  -y, --yes           Confirm all warnings automatically
-  -t, --timeout NUM   Minimal timeout in minutes from last SNAPSHOT allowed
-                      (unsigned integer value, default 360)
-  -k, --keep NUM      Number of snapshots to keep
-                      (unsigned integer value, default keep all snapshots)
+  -f, --force
+            Ignore timeout
 
-  -h, --help          print this help message and exit
+  -y, --yes
+            Confirm all warnings automatically
+
+  -t, --timeout=NUM
+            Minimal timeout in minutes from last SNAPSHOT allowed
+            (unsigned integer value, default 360)
+
+  -k, --keep=NUM
+            Number of snapshots to keep
+            (unsigned integer value, default keep all snapshots)
+
+  -h, --help
+            Print this help message and exit
 __EOM__
   echo "${MESSAGE}"
   return
@@ -154,15 +162,29 @@ while [[ -n "$1" ]]; do
   -f | --force)
     FORCE="1"
     ;;
-  -t | --timeout)
-    shift
-    check_if_var_is_num "$1"
-    SNAPSHOT_TIMEOUT=$(( "$1" * 60 ))
+  -t | --timeout=*)
+    if [ "$1" = "-t" ]; then
+      shift
+      SNAPSHOT_TIMEOUT="$1"
+      check_if_var_is_num "${SNAPSHOT_TIMEOUT}"
+      SNAPSHOT_TIMEOUT=$(( "${SNAPSHOT_TIMEOUT}" * 60 ))
+    else
+      SNAPSHOT_TIMEOUT=$(echo "$1" | cut -d '=' -f 2-)
+      check_if_var_is_num "${SNAPSHOT_TIMEOUT}"
+      SNAPSHOT_TIMEOUT=$(( "${SNAPSHOT_TIMEOUT}" * 60 ))
+    fi
     ;;
-  -k | --keep)
-    shift
-    check_if_var_is_num "$1"
-    SNAPSHOTS_TO_KEEP=$(( "$1" + 1 ))
+  -k | --keep=*)
+    if [ "$1" = "-k" ]; then
+      shift
+      SNAPSHOTS_TO_KEEP="$1"
+      check_if_var_is_num "${SNAPSHOTS_TO_KEEP}"
+      SNAPSHOTS_TO_KEEP=$(( "${SNAPSHOTS_TO_KEEP}" + 1 ))
+    else
+      SNAPSHOTS_TO_KEEP=$(echo "$1" | cut -d '=' -f 2-)
+      check_if_var_is_num "${SNAPSHOTS_TO_KEEP}"
+      SNAPSHOTS_TO_KEEP=$(( "${SNAPSHOTS_TO_KEEP}" + 1 ))
+    fi
     ;;
   -y | --yes)
     AUTO_CONFIRM="1"
