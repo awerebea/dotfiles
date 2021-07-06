@@ -13,10 +13,14 @@ SNAPSHOT_PATH="/media/andrei/Data/backup"
 # Minimal timeout in minutes (6 hours)
 SNAPSHOT_TIMEOUT=$(( 60 * 60 * 6 ))
 
+# Num of stapshots to keep (by default keep all)
+SNAPSHOTS_TO_KEEP=
+
 SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
 # Just a split of too long line)
 SNAPSHOT_NAME_PATTERN='^20([0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])'
 SNAPSHOT_NAME_PATTERN+='_(0[0-9]|1[0-9]|2[0-3])-([0-5][0-9])-([0-5][0-9])$'
+
 
 generate_snapshot_list () {
   ls -A -l -1 -r "${SNAPSHOT_PATH}" | grep ^d | tr -s ' ' | cut -d ' ' -f 9- |
@@ -33,6 +37,32 @@ SUCCESS_FILE="completed_successfully"
 exit_err () {
   echo -e "Snapshot ${RED}failed${NC}"
   exit 1
+}
+
+check_if_var_is_num () {
+  local num='^[0-9]+$'
+  if ! [[ "$1" =~ $num ]] ; then
+     usage >&2; exit 1
+  fi
+}
+
+remove_old_snapshots () {
+  if ! [ -z ${SNAPSHOTS_TO_KEEP} ]; then
+    local SNAPSHOTS_TO_DELETE_LIST=$(echo "${SNAPSHOTS_LIST}" |
+      tail -n +"${SNAPSHOTS_TO_KEEP}" | nl | sort -nr | cut -f 2-)
+    if ! [ -z ${SNAPSHOTS_TO_DELETE_LIST} ]; then
+      # List snapshots will be deleted
+      echo "Deleting old snapshot(s):"
+      echo "$SNAPSHOTS_TO_DELETE_LIST"
+      echo "Please wait..."
+      # Delete listed snapshots
+      echo "$SNAPSHOTS_TO_DELETE_LIST" |
+        awk -v prefix="${SNAPSHOT_PATH}/" '{print prefix $0}' |
+        tr '\n' '\0' | xargs -0 rm -rf --
+      echo "Snapshot(s) deletion is complete."
+    fi
+  fi
+  return
 }
 
 create_snapshot () {
@@ -81,7 +111,9 @@ Create snapshot only if last snapshot is older than TIMEOUT minutes.
 OPTIONS:
   -f, --force         Ignore timeout
   -t, --timeout NUM   Minimal timeout in minutes from last SNAPSHOT allowed
-                      (integer value, default 360)
+                      (unsigned integer value, default 360)
+  -k, --keep NUM      Number of snapshots to keep
+                      (unsigned integer value, default keep all snapshots)
 
   -h, --help          print this help message and exit
 __EOM__
@@ -100,7 +132,13 @@ while [[ -n "$1" ]]; do
     ;;
   -t | --timeout)
     shift
+    check_if_var_is_num "$1"
     SNAPSHOT_TIMEOUT=$(( "$1" * 60 ))
+    ;;
+  -k | --keep)
+    shift
+    check_if_var_is_num "$1"
+    SNAPSHOTS_TO_KEEP=$(( "$1" + 1 ))
     ;;
   -h | --help)
     usage
@@ -149,6 +187,7 @@ else
       create_snapshot
     else
       echo -e "Snapshot creation ${BROWN}skipped${NC} by timeout"
+      remove_old_snapshots
       exit 0
     fi
   else
@@ -156,4 +195,5 @@ else
       create_snapshot
   fi
 fi
+remove_old_snapshots
 echo -e "Snapshot completed ${GREEN}successfully${NC}"
