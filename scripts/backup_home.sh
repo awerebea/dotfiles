@@ -52,14 +52,29 @@ remove_old_snapshots () {
       tail -n +"${SNAPSHOTS_TO_KEEP}" | nl | sort -nr | cut -f 2-)
     if ! [ -z ${SNAPSHOTS_TO_DELETE_LIST} ]; then
       # List snapshots will be deleted
-      echo "Deleting old snapshot(s):"
+      echo "This snapshot(s) will be deleted:"
       echo "$SNAPSHOTS_TO_DELETE_LIST"
-      echo "Please wait..."
       # Delete listed snapshots
-      echo "$SNAPSHOTS_TO_DELETE_LIST" |
-        awk -v prefix="${SNAPSHOT_PATH}/" '{print prefix $0}' |
-        tr '\n' '\0' | xargs -0 rm -rf --
-      echo "Snapshot(s) deletion is complete."
+      while true; do
+        read -p "Are you sure (y/n)?" yn
+        case $yn in
+          [Yy]* )
+            echo "Please wait..."
+            echo "$SNAPSHOTS_TO_DELETE_LIST" |
+              awk -v prefix="${SNAPSHOT_PATH}/" '{print prefix $0}' |
+              tr '\n' '\0' | xargs -0 rm -rf --
+            echo "Snapshot(s) deletion is complete."
+            break
+            ;;
+          [Nn]* )
+            echo "Snapshot(s) deletion canceled."
+            break
+            ;;
+          * )
+            echo "Please answer (y)es or (n)o."
+            ;;
+        esac
+      done
     fi
   fi
   return
