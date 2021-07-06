@@ -13,9 +13,6 @@ SNAPSHOT_PATH="/media/andrei/Data/backup"
 # Minimal timeout in minutes (6 hours)
 SNAPSHOT_TIMEOUT=$(( 60 * 60 * 6 ))
 
-# Num of stapshots to keep (by default keep all)
-SNAPSHOTS_TO_KEEP=
-
 SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
 # Just a split of too long line)
 SNAPSHOT_NAME_PATTERN='^20([0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])'
@@ -46,6 +43,14 @@ check_if_var_is_num () {
   fi
 }
 
+delete_snapshots () {
+  echo "Please wait..."
+  echo "$SNAPSHOTS_TO_DELETE_LIST" |
+    awk -v prefix="${SNAPSHOT_PATH}/" '{print prefix $0}' |
+    tr '\n' '\0' | xargs -0 rm -rf --
+  echo "Snapshot(s) deletion is complete."
+}
+
 remove_old_snapshots () {
   if ! [ -z ${SNAPSHOTS_TO_KEEP} ]; then
     local SNAPSHOTS_TO_DELETE_LIST=$(echo "${SNAPSHOTS_LIST}" |
@@ -55,26 +60,26 @@ remove_old_snapshots () {
       echo "This snapshot(s) will be deleted:"
       echo "$SNAPSHOTS_TO_DELETE_LIST"
       # Delete listed snapshots
-      while true; do
-        read -p "Are you sure (y/n)?" yn
-        case $yn in
-          [Yy]* )
-            echo "Please wait..."
-            echo "$SNAPSHOTS_TO_DELETE_LIST" |
-              awk -v prefix="${SNAPSHOT_PATH}/" '{print prefix $0}' |
-              tr '\n' '\0' | xargs -0 rm -rf --
-            echo "Snapshot(s) deletion is complete."
-            break
-            ;;
-          [Nn]* )
-            echo "Snapshot(s) deletion canceled."
-            break
-            ;;
-          * )
-            echo "Please answer (y)es or (n)o."
-            ;;
-        esac
-      done
+      if [ -z ${AUTO_CONFIRM} ]; then
+        while true; do
+          read -p "Are you sure (y/n)?" yn
+          case $yn in
+            [Yy]* )
+              delete_snapshots
+              break
+              ;;
+            [Nn]* )
+              echo "Snapshot(s) deletion canceled."
+              break
+              ;;
+            * )
+              echo "Please answer (y)es or (n)o."
+              ;;
+          esac
+        done
+      else
+        delete_snapshots
+      fi
     fi
   fi
   return
@@ -125,6 +130,7 @@ Create snapshot only if last snapshot is older than TIMEOUT minutes.
 
 OPTIONS:
   -f, --force         Ignore timeout
+  -y, --yes           Confirm all warnings automatically
   -t, --timeout NUM   Minimal timeout in minutes from last SNAPSHOT allowed
                       (unsigned integer value, default 360)
   -k, --keep NUM      Number of snapshots to keep
@@ -138,6 +144,9 @@ __EOM__
 
 # Command line options variables
 FORCE=
+SNAPSHOTS_TO_KEEP=
+AUTO_CONFIRM=
+
 
 # Process command line options
 while [[ -n "$1" ]]; do
@@ -154,6 +163,9 @@ while [[ -n "$1" ]]; do
     shift
     check_if_var_is_num "$1"
     SNAPSHOTS_TO_KEEP=$(( "$1" + 1 ))
+    ;;
+  -y | --yes)
+    AUTO_CONFIRM="1"
     ;;
   -h | --help)
     usage
