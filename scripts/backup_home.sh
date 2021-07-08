@@ -86,12 +86,29 @@ remove_old_snapshots () {
 }
 
 create_snapshot () {
+  # Create exclude list
+  TMP_FILE=$(mktemp)
+
+  cat <<- EOF > ${TMP_FILE}
+	*/.terraform.lock.hcl
+	*/.terraform/
+	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2
+	Timeshift_exclude/.minikube/
+	Timeshift_exclude/.thunderbird/*-release/ImapMail/
+	Timeshift_exclude/.vscode/
+	Timeshift_exclude/_config/Slack/
+	Timeshift_exclude/_config/skypeforlinux/
+	EOF
+
   # Create differential snapshot
   rsync -aii --recursive --verbose --delete --force --stats --sparse \
     --log-file="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${LOG_FILENAME}" \
-    --include="/*/.*" --exclude="/.*" \
+    --exclude-from="${TMP_FILE}" \
+    --include="/*/.*" \
+    --exclude="/.*" \
     "${SOURCE_PATH}/" "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${DATA_DIR_NAME}/" ||
     exit_err
+  rm "${TMP_FILE}"
   local MESSAGE=
   read -r -d '' MESSAGE << __EOM__
 Snapshot creation started:  ${SNAPSHOT_NAME}
