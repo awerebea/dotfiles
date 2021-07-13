@@ -107,8 +107,6 @@ Plug 'lyokha/vim-xkbswitch'
 
 " Programming stuff
 
-" Add and update the School-42 comment header at the top of files
-Plug 'pbondoer/vim-42header'
 " Syntax checker
 Plug 'dense-analysis/ale'
 " Code completion server
@@ -152,9 +150,6 @@ runtime macros/matchit.vim
 filetype plugin indent on    " required
 
 " Put your non-Plugin stuff after this line
-
-let $USER = 'awerebea'
-let $MAIL = 'awerebea@student.21-school.ru'
 
 set laststatus=2
 set noshowmode
@@ -976,9 +971,6 @@ map <leader>rt :RangerCurrentFileExistingOrNewTab<CR>
 map <leader>rw :RangerWorkingDirectory<CR>
 map <leader>re :RangerWorkingDirectoryExistingOrNewTab<CR>
 let s:uname_host = system("echo -n \"$(uname -n)\"")
-if !v:shell_error && s:uname_host =~ "21-school"
-  let g:ranger_choice_file = '/Users/awerebea/.ranger_choice_file'
-endif
 
 " Avoid unintentional switches to Ex mode.
 nmap Q q
@@ -986,9 +978,7 @@ nmap Q q
 " Clang_complete " {{{
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
-if !v:shell_error && s:uname_host =~ "21-school"
-  let g:clang_library_path='/Library/Developer/CommandLineTools/usr/lib/'
-elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
+if !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
   \ || s:uname_host == "laptop-acer")
   let g:clang_library_path='/usr/lib/'
 elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
@@ -1653,10 +1643,7 @@ map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
 let g:XkbSwitchEnabled = 1
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
-if !v:shell_error && s:uname_host =~ "21-school"
-  let g:XkbSwitchLib =
-  \ "/Users/awerebea/.local/lib/libInputSourceSwitcher.dylib"
-elseif !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
+if !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
   \ || s:uname_host == "laptop-acer")
   let g:XkbSwitchLib = "/usr/lib/libxkbswitch.so"
 elseif !v:shell_error && s:uname == "Darwin" && s:uname_host == "pc-home"
