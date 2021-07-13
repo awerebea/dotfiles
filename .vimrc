@@ -73,6 +73,7 @@ Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'vim-scripts/restore_view.vim'
 " Colorschemes
+Plug 'herrbischoff/cobalt2.vim'
 Plug 'joshdick/onedark.vim'
 Plug 'crusoexia/vim-monokai'
 Plug 'morhetz/gruvbox'
@@ -154,6 +155,7 @@ filetype plugin indent on    " required
 
 let $USER = 'awerebea'
 let $MAIL = 'awerebea@student.21-school.ru'
+
 set laststatus=2
 set noshowmode
 " Show non-visible white spaces
@@ -372,6 +374,9 @@ au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
 au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
+" cobalt2 theme settings
+colorscheme cobalt2
+
 " " gruvbox theme settings
 " original gruvbox colorcheme
 " let g:gruvbox_number_column = 'bg0' "default 'bg0'
@@ -390,18 +395,20 @@ au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
 " colorscheme onedark
 " highlight ColorColumn ctermbg=235 guibg=#262626
 
-" monokai theme settings
-colorscheme monokai
-" Transparent background
-highlight Normal          guibg=NONE ctermbg=NONE
-" Transparent line number column
-highlight LineNr          guibg=NONE ctermbg=NONE
+" " monokai theme settings
+" colorscheme monokai
+
+" Common colorschemes settings
+" " Transparent background
+" highlight Normal          guibg=NONE ctermbg=NONE
+" " Transparent line number column
+" highlight LineNr          guibg=NONE ctermbg=NONE
 " Transparent sign (Git/mark) column
 highlight SignColumn      guibg=NONE ctermbg=NONE
 " Transparent sign fold column
 highlight FoldColumn      guibg=NONE ctermbg=NONE
-" Color of word-wrap column
-highlight ColorColumn     ctermbg=238 guibg=#444444
+" " Color of word-wrap column
+" highlight ColorColumn     ctermbg=238 guibg=#444444
 " Color of non-printable white spaces, with transparent background
 highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
                           \ ctermbg=NONE guibg=NONE
