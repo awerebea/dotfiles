@@ -40,7 +40,6 @@ Plug 'simeji/winresizer'
 " Interpret a file by function and cache file automatically
 Plug 'MarcWeber/vim-addon-mw-utils'
 " Libraries provides some utility functions
-Plug 'tomtom/tlib_vim'
 Plug 'vim-scripts/L9'
 " Smart substitution and easy change case styles
 " (fooBar, foo_bar, foo-bar, boo.bar, foo bar, Foo Bar)
@@ -73,11 +72,11 @@ Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'vim-scripts/restore_view.vim'
 " Colorschemes
-Plug 'herrbischoff/cobalt2.vim'
-Plug 'joshdick/onedark.vim'
+" Plug 'herrbischoff/cobalt2.vim'
+" Plug 'joshdick/onedark.vim'
 Plug 'crusoexia/vim-monokai'
-Plug 'morhetz/gruvbox'
-Plug 'shinchu/lightline-gruvbox.vim'
+" Plug 'morhetz/gruvbox'
+" Plug 'shinchu/lightline-gruvbox.vim'
 " A solid language pack for Vim syntax highlighting
 Plug 'sheerun/vim-polyglot'
 " Syntax highlighting, matching rules and mappings for Markdown
@@ -105,14 +104,8 @@ Plug 'Shougo/vimproc.vim'
 " Automatic keyboard layout switching in insert mode
 Plug 'lyokha/vim-xkbswitch'
 
-" Programming stuff
-
 " Syntax checker
 Plug 'dense-analysis/ale'
-" Code completion server
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-" C/C++ auto completion
-Plug 'xavierd/clang_complete'
 " The Ctags generator for Vim
 Plug 'szw/vim-tags'
 " A class outline viewer for Vim
@@ -126,18 +119,12 @@ Plug 'liuchengxu/vista.vim'
 Plug 'vim-scripts/DfrankUtil'
 Plug 'vim-scripts/indexer.tar.gz'
 Plug 'vim-scripts/vimprj'
-" Commands to swtich between source files and header files quickly
-Plug 'vim-scripts/a.vim'
 " Snippets (code blocks) handling
 Plug 'garbas/vim-snipmate'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 " Automatically folding
 Plug 'pseewald/vim-anyfold'
-" Python auto completion
-Plug 'davidhalter/jedi-vim'
-" Python 'IDE'
-Plug 'python-mode/python-mode', { 'for': 'python', 'branch': 'develop' }
 " A Vim plugin for visually displaying indent levels in code
 Plug 'nathanaelkane/vim-indent-guides'
 
@@ -369,8 +356,8 @@ au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
 au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
-" cobalt2 theme settings
-colorscheme cobalt2
+" " cobalt2 theme settings
+" colorscheme cobalt2
 
 " " gruvbox theme settings
 " original gruvbox colorcheme
@@ -390,20 +377,20 @@ colorscheme cobalt2
 " colorscheme onedark
 " highlight ColorColumn ctermbg=235 guibg=#262626
 
-" " monokai theme settings
-" colorscheme monokai
+" monokai theme settings
+colorscheme monokai
 
 " Common colorschemes settings
-" " Transparent background
-" highlight Normal          guibg=NONE ctermbg=NONE
-" " Transparent line number column
-" highlight LineNr          guibg=NONE ctermbg=NONE
+" Transparent background
+highlight Normal          guibg=NONE ctermbg=NONE
+" Transparent line number column
+highlight LineNr          guibg=NONE ctermbg=NONE
 " Transparent sign (Git/mark) column
 highlight SignColumn      guibg=NONE ctermbg=NONE
 " Transparent sign fold column
 highlight FoldColumn      guibg=NONE ctermbg=NONE
-" " Color of word-wrap column
-" highlight ColorColumn     ctermbg=238 guibg=#444444
+" Color of word-wrap column
+highlight ColorColumn     ctermbg=238 guibg=#444444
 " Color of non-printable white spaces, with transparent background
 highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
                           \ ctermbg=NONE guibg=NONE
@@ -975,29 +962,6 @@ let s:uname_host = system("echo -n \"$(uname -n)\"")
 " Avoid unintentional switches to Ex mode.
 nmap Q q
 
-" Clang_complete " {{{
-let s:uname = system("echo -n \"$(uname)\"")
-let s:uname_host = system("echo -n \"$(uname -n)\"")
-if !v:shell_error && s:uname == "Linux" && (s:uname_host == "pc-home"
-  \ || s:uname_host == "laptop-acer")
-  let g:clang_library_path='/usr/lib/'
-elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
-  \ == "root"
-  let g:clang_library_path='/usr/lib/clang/'
-endif
-let g:clang_snippets=0
-let g:clang_trailing_placeholder=1
-let g:clang_complete_optional_args_in_snippets=1
-let g:clang_auto_select=1
-" unset the default keymappings to provide compatibility with ctags
-" let g:clang_make_default_keymappings=0
-let g:clang_jumpto_declaration_key="<leader><C-]>"
-let g:clang_jumpto_declaration_in_preview_key="<leader><leader><C-]>"
-" let g:clang_jumpto_back_key=""
-let g:clang_complete_auto=1
-let g:clang_complete_copen=0
-" }}}
-
 " Backup and Swap files settings " {{{
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
@@ -1180,7 +1144,7 @@ endif
 " Colors highlighting
 let g:colorizer_auto_color=0
 " Highlight colors toggle
-noremap <leader>ct :ColorToggle<CR> " conflict with c.vim keybinds
+noremap <leader>ct :ColorToggle<CR>
 
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
@@ -1447,50 +1411,6 @@ noremap <leader>zl :lclose<CR><C-l>
 " Close preview window
 noremap <leader>zp :pclose<CR><C-l>
 
-" Pymode settings " {{{
-let g:pymode_run_bind = '<leader>r'
-let g:pymode_breakpoint_bind = '<leader>b'
-
-let g:pymode_syntax = 0
-let g:pymode_rope = 1
-let g:pymode_rope_completion = 0
-let g:pymode_rope_complete_on_dot = 0
-let g:pymode_rope_goto_definition_cmd = 'new'
-
-let g:pymode_python = 'python3'
-" }}}
-
-" Jedi-vim settings
-" let g:jedi#force_py_version = 3
-
-" C-support plugin (c.vim) settings
-" change <leader> key for all keybinds to <leader><leader>
-let g:C_MapLeader = '\\'
-let g:C_Ctrl_j = 'off'
-let g:C_InsertFileHeader = 'no'
-let g:C_UseTool_cmake = 'yes'
-" let g:C_UseTool_doxygen = 'yes'
-
-" Alternate file (a.vim) plugin settings
-" Suppress the creation of a new header file if it's not exist
-let g:alternateNoDefaultAlternate = 1
-" :A switches to the header file corresponding to the current file being
-" edited (or vise versa)
-noremap <leader>a :A<CR>
-" :AS splits and switches
-noremap <leader>as :AS<CR>
-" :AV vertical splits and switches
-noremap <leader>av :AV<CR>
-" :AT new tab and switches
-noremap <leader>at :AT<CR>
-" :AN cycles through matches
-noremap <leader>an :AN<CR>
-" TODO To disable annoying <leader> maps in insert mode
-" comment lines 560, 562, 564 in plugin file ~/.vim/plugged/a.vim/plugin/a.vim
-" imap <Leader>ih <ESC>:IHS<CR>
-" imap <Leader>is <ESC>:IHS<CR>:A<CR>
-" imap <Leader>ihn <ESC>:IHN<CR>
-
 " Prosession settings
 let g:prosession_tmux_title = 0
 let g:prosession_tmux_title_format = "vim - @@@"
@@ -1707,14 +1627,6 @@ if has("autocmd")
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
-" }}}
-
-" COC settingc " {{{
-" :CocInstall coc-pyright coc-clangd coc-sh coc-yaml coc-json
-
-" Map <c-space> to trigger completion (some terminals may send <NUL> when you
-" press <c-space>, so you could instead):
-inoremap <silent><expr> <NUL> coc#refresh()
 " }}}
 
 " Quick launch last used macros
