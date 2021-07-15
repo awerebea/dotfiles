@@ -92,6 +92,7 @@ create_snapshot () {
   cat <<- EOF > ${TMP_FILE}
 	*/.terraform.lock.hcl
 	*/.terraform/
+	Documents/Clouds/YandexDisk
 	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2
 	Timeshift_exclude/.minikube/
 	Timeshift_exclude/.thunderbird/*-release/ImapMail/
