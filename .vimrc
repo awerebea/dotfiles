@@ -121,7 +121,6 @@ Plug 'vim-scripts/indexer.tar.gz'
 Plug 'vim-scripts/vimprj'
 " Snippets (code blocks) handling
 Plug 'garbas/vim-snipmate'
-Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 " Automatically folding
 Plug 'pseewald/vim-anyfold'
