@@ -44,6 +44,9 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
     alias vim='/Users/andrei/.local/bin/vim'
     export EDITOR='/Users/andrei/.local/bin/vim'
   fi
+  # Bundle aliases
+  alias fast="bundle exec fastlane"
+  alias be="bundle exec"
   # set coursor like blinking block
   printf '\e[1 q'
 
