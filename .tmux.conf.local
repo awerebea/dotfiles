@@ -535,3 +535,14 @@ bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
 
 # toggle synchronize-panes
 bind C-x setw synchronize-panes
+
+set -g @plugin 'charlietag/tmux-split-statusbar'
+set -g @split-statusbar-mode 'on'                 # [ on | off]
+
+set -g @split-statusbar-bindkey '-n F12'          # [ M-s | -n F11 | ... ]
+                                                  # bindkey for toggle statusbar-mode
+                                                  # define yourself just like bind-key, default: M-s
+
+set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
+                                                  # bindkey for status-left / status-right hiding
+                                                  # define yourself just like bind-key, default: M-d
