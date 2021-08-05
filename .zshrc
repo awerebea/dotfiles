@@ -20,6 +20,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Which plugins to load?
 plugins=(
           colored-man-pages
+          autoupdate
           copydir
           copyfile
           docker
@@ -218,3 +219,7 @@ zstyle ':completion:*:*:docker-*:*' option-stacking yes
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+
+# check daily for plugins updates
+export UPDATE_ZSH_DAYS=1
+ZSH_CUSTOM_AUTOUPDATE_QUIET=true
