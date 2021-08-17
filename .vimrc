@@ -122,6 +122,7 @@ Plug 'vim-scripts/vimprj'
 " Snippets (code blocks) handling
 Plug 'garbas/vim-snipmate'
 Plug 'honza/vim-snippets'
+Plug 'tomtom/tlib_vim'
 " Automatically folding
 Plug 'pseewald/vim-anyfold'
 " A Vim plugin for visually displaying indent levels in code
