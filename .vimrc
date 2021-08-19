@@ -120,9 +120,9 @@ Plug 'vim-scripts/DfrankUtil'
 Plug 'vim-scripts/indexer.tar.gz'
 Plug 'vim-scripts/vimprj'
 " Snippets (code blocks) handling
-Plug 'garbas/vim-snipmate'
-Plug 'honza/vim-snippets'
-Plug 'tomtom/tlib_vim'
+" Plug 'garbas/vim-snipmate'
+" Plug 'honza/vim-snippets'
+" Plug 'tomtom/tlib_vim'
 " Automatically folding
 Plug 'pseewald/vim-anyfold'
 " A Vim plugin for visually displaying indent levels in code
@@ -1607,7 +1607,7 @@ endfunction
 " if you use one of the following:
 " - https://github.com/Valloric/YouCompleteMe
 " - https://github.com/nvim-lua/completion-nvim
-let g:UltiSnipsExpandTrigger="<tab>"
+" let g:UltiSnipsExpandTrigger="<tab>"
 " let g:UltiSnipsJumpForwardTrigger="<tab>"
 " let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
 let g:UltiSnipsEditSplit="vertical"
