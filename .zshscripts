@@ -16,8 +16,8 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
   export ZSH="/Users/andrei/.oh-my-zsh"
   export DOCKER_CMD_FOR_ALIAS="docker"
-  export GIT_DOTFILES="$HOME/Documents/Github/dotfiles"
-  export GIT_WORKSPACE="$HOME/Documents/Github/workspace"
+  export GIT_DOTFILES="$HOME/Github/dotfiles"
+  export GIT_WORKSPACE="$HOME/Github/workspace"
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
   alias sudoedit="sudo vim"
