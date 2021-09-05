@@ -72,9 +72,10 @@ Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'vim-scripts/restore_view.vim'
 " Colorschemes
-" Plug 'herrbischoff/cobalt2.vim'
 " Plug 'joshdick/onedark.vim'
 Plug 'crusoexia/vim-monokai'
+Plug 'GlennLeo/cobalt2'
+Plug 'Rigellute/rigel' " Lightline theme (for cobalt2)
 " Plug 'morhetz/gruvbox'
 " Plug 'shinchu/lightline-gruvbox.vim'
 " A solid language pack for Vim syntax highlighting
@@ -357,7 +358,7 @@ au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
 " " cobalt2 theme settings
-" colorscheme cobalt2
+colorscheme cobalt2
 
 " " gruvbox theme settings
 " original gruvbox colorcheme
@@ -378,7 +379,7 @@ au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
 " highlight ColorColumn ctermbg=235 guibg=#262626
 
 " monokai theme settings
-colorscheme monokai
+" colorscheme monokai
 
 " Common colorschemes settings
 " Transparent background
@@ -495,8 +496,10 @@ let g:rainbow_conf = {
   " \ 'colorscheme': 'default',
   " \ 'colorscheme': 'wombat',
   " \ 'colorscheme': 'onedark',
+  " \ 'colorscheme': 'rigel',
+let g:rigel_lightline = 1
 let g:lightline = {
-  \ 'colorscheme': 'wombat',
+  \ 'colorscheme': 'rigel',
   \ 'active': {
   \   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
