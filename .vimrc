@@ -419,6 +419,9 @@ let g:NERDCompactSexyComs = 0
 " Enable trimming of trailing whitespace when uncommenting
 let g:NERDTrimTrailingWhitespace = 1
 let g:NERDDisableTabsInBlockComm = 1
+" VSCode-like keymaps for comments
+nmap <C-_> <Plug>NERDCommenterToggle
+vmap <C-_> <Plug>NERDCommenterToggle<CR>gv
 
 " Tagbar " {{{
 " JS
