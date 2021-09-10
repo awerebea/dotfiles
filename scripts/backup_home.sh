@@ -8,7 +8,7 @@ NC='\033[0m' # No Color
 
 # Setup variables
 SOURCE_PATH="/home/andrei"
-SNAPSHOT_PATH="/media/andrei/Data/backup"
+SNAPSHOT_PATH="/media/andrei/bckp/backup"
 
 # Minimal timeout in minutes (6 hours)
 SNAPSHOT_TIMEOUT=$(( 60 * 60 * 6 ))
@@ -92,12 +92,22 @@ create_snapshot () {
   cat <<- EOF > ${TMP_FILE}
 	*/.terraform.lock.hcl
 	*/.terraform/
-	Documents/Clouds/YandexDisk
-	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2
+	Documents
+	Downloads
+	Timeshift_exclude/.cache/google-chrome/Default/Cache/
+	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2/
+	Timeshift_exclude/.cache/thumbnails/
+	Timeshift_exclude/.cache/thunderbird/*-release/cache2/
 	Timeshift_exclude/.minikube/
 	Timeshift_exclude/.thunderbird/*-release/ImapMail/
 	Timeshift_exclude/.vscode/
+	Timeshift_exclude/_config/Code/Cache/
+	Timeshift_exclude/_config/Code/CachedData/
+	Timeshift_exclude/_config/Code/CachedExtensionVSIXs/
+	Timeshift_exclude/_config/Code/CachedExtensions/
 	Timeshift_exclude/_config/Slack/
+	Timeshift_exclude/_config/coc/extensions/node_modules/
+	Timeshift_exclude/_config/google-chrome/Default/Service\ Worker/CacheStorage/
 	Timeshift_exclude/_config/skypeforlinux/
 	EOF
 
