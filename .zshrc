@@ -33,6 +33,7 @@ plugins=(
           k
           kubectl
           rsync
+          pass
           sudo
           systemd
           terraform
