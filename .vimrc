@@ -128,6 +128,10 @@ Plug 'vim-scripts/vimprj'
 Plug 'pseewald/vim-anyfold'
 " A Vim plugin for visually displaying indent levels in code
 Plug 'nathanaelkane/vim-indent-guides'
+" Tabs
+Plug 'ap/vim-buftabline'
+" A Vim alignment plugin
+Plug 'junegunn/vim-easy-align'
 
 " Initialize plugin system
 call plug#end()
@@ -795,6 +799,9 @@ augroup vimrc
   au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
 augroup END
 " }}}
+
+" vim-buftabline colors
+hi TabLineSel term=bold ctermfg=0 ctermbg=31 guifg=#000000 guibg=#ffc500
 
 " Easy Align
 " Start interactive EasyAlign in visual mode (e.g. vipga)
