@@ -61,9 +61,23 @@ alias zshscripts="vim ~/.zshscripts"
 alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
-alias zhistclr="cat -n ${HOME}/${ZSH_HISTORY_FILE_NAME} | LC_ALL=C sort -hr | LC_ALL=C sort -t ';' -uk2 | LC_ALL=C sort -nk1 | LC_ALL=C cut -f2- > ${HOME}/${ZSH_HISTORY_FILE_NAME}_short && mv ${HOME}/${ZSH_HISTORY_FILE_NAME}_short ${HOME}/${ZSH_HISTORY_FILE_NAME}"
-alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; cd "$LASTDIR" > /dev/null 2>&1'
+alias zhistclr="cat -n ${HOME}/${ZSH_HISTORY_FILE_NAME} | LC_ALL=C sort -hr | \
+  LC_ALL=C sort -t ';' -uk2 | LC_ALL=C sort -nk1 | \
+  LC_ALL=C cut -f2- > ${HOME}/${ZSH_HISTORY_FILE_NAME}_short && \
+  mv ${HOME}/${ZSH_HISTORY_FILE_NAME}_short ${HOME}/${ZSH_HISTORY_FILE_NAME}"
+alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; \
+  cd "$LASTDIR" > /dev/null 2>&1'
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
+
+# exa aliases
+alias l="exa --long --all --header --links --git --icons \
+  --group-directories-first --color-scale"
+alias lt="exa --long --all --header --links --git --icons \
+  --group-directories-first --color-scale -T"
+alias ll="exa --long --header --links --git --icons --group-directories-first \
+  --color-scale"
+alias llt="exa --long --header --links --git --icons --group-directories-first \
+  --color-scale -T"
 
 alias cls="clear"
 alias -g G='| grep -i'
@@ -95,9 +109,19 @@ alias dkri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)
 alias dkreset="dksa && dkrc && dkri"
 alias dk=docker
 
+# kubectl aliases
+alias kg="kubectl get "
+alias kgw="kubectl get -o wide "
+alias kgl="kubectl get --show-labels "
+alias kgwl="kubectl get -o wide --show-labels "
+alias ke="kubectl edit "
+alias kd="kubectl describe "
+
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
-  mkdir -p .vimprj && for f in `ls -A ${GIT_DOTFILES}/Vim/.vimprj | grep -v '.indexer_files_tags'`; do cp -- ${GIT_DOTFILES}/Vim/.vimprj/$f .vimprj/$f; done
+  mkdir -p .vimprj && for f in `ls -A ${GIT_DOTFILES}/Vim/.vimprj | \
+    grep -v '.indexer_files_tags'`; do \
+    cp -- ${GIT_DOTFILES}/Vim/.vimprj/$f .vimprj/$f; done
 }
 
 # enable fasd
@@ -146,7 +170,8 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 export W3MIMGDISPLAY_PATH="${HOME}/.local/libexec/w3m/w3mimgdisplay"
 
 # set vim as the default pager for man pages
-export MANPAGER="/bin/sh -c \"col -b | vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
+export MANPAGER="/bin/sh -c \"col -b | \
+  vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
 
 # Set Bat theme
 export BAT_THEME="TwoDark"
@@ -186,7 +211,8 @@ export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
 
 # Generate '.clang_complete' for VIM and C/CPP projects
-alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'
+alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | \
+  sed "s:[^/]*$::" | sort -u | sed "s/.*/-I\ &/" > .clang_complete'
 
 # Increase keybind timeout from 1 to 50 to fix sudo plugin
 export KEYTIMEOUT=50
