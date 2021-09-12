@@ -30,7 +30,6 @@ plugins=(
           git
           helm
           history-sync
-          k
           kubectl
           rsync
           pass
