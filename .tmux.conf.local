@@ -350,6 +350,9 @@ set -g @tpm_plugins '                 \
   tmux-plugins/tmux-open              \
   tmux-plugins/tmux-sidebar           \
   samoshkin/tmux-plugin-sysstat       \
+  charlietag/tmux-split-statusbar     \
+  CrispyConductor/tmux-copy-toolkit   \
+  laktak/extrakto                     \
 '
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
@@ -523,11 +526,43 @@ bind Escape copy-mode
 bind C-q pipe-pane -o "mkdir -p ~/.tmux/logs && cat >>~/.tmux/logs/#W-#P.log" \; display " Toggled logging to ~/.tmux/logs/#W-#P.log"
 
 # Prefix-e - toggle sidebar-tree
-# set -g @sidebar-tree 'F2'
+set -g @sidebar-tree off
 # Prefix-e - toggle sidebar-tree and move focus to tree pane
 set -g @sidebar-tree-focus 'F2'
 # Colorize the tree directory listing in the sidebar
 set -g @sidebar-tree-command 'tree -C'
+# The default sidebar width
+set -g @sidebar-tree-width '60'
+
+# extracto
+set -g @extrakto_grab_area recent
+
+# tmux-copy-toolkit
+set -g @copytk-no-default-binds on
+# copytk prefix: easymotion action bindings
+bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T copytk S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T copytk k run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction backward"
+bind-key -T copytk j run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction forward"
+bind-key -T copytk n run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines"
+# copy mode: easymotion action bindings
+bind-key -T copy-mode-vi s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T copy-mode s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+# copytk prefix: easycopy action bindings
+bind-key -T copytk y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+bind-key -T copytk Y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 2"
+# tmux prefix: easycopy action bindings
+bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+# bind-key -T prefix C-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+# tmux prefix: quickcopy action bindings
+bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
+# bind-key -T prefix C-q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
+# tmux prefix: quickopen action bindings
+bind-key -T prefix P run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
+# bind-key -T prefix C-p run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
+# bindings to enter copytk prefix
+bind-key -T copy-mode-vi a switch-client -T copytk
+bind-key -T copy-mode a switch-client -T copytk
 
 # Prefix ! will split the current pane into it's own window.  To join use
 # Prefix W then give the window number at the prompt
