@@ -20,7 +20,6 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Which plugins to load?
 plugins=(
           colored-man-pages
-          autoupdate
           copydir
           copyfile
           docker
