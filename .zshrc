@@ -59,10 +59,6 @@ alias zshscripts="vim ~/.zshscripts"
 alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
-alias zhistclr="cat -n ${HOME}/${ZSH_HISTORY_FILE_NAME} | LC_ALL=C sort -hr | \
-  LC_ALL=C sort -t ';' -uk2 | LC_ALL=C sort -nk1 | \
-  LC_ALL=C cut -f2- > ${HOME}/${ZSH_HISTORY_FILE_NAME}_short && \
-  mv ${HOME}/${ZSH_HISTORY_FILE_NAME}_short ${HOME}/${ZSH_HISTORY_FILE_NAME}"
 alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; \
   cd "$LASTDIR" > /dev/null 2>&1'
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
