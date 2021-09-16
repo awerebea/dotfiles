@@ -59,6 +59,26 @@ alias zshscripts="vim ~/.zshscripts"
 alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
+
+# update oh-my-zsh and all custom plugins
+function omz-update() {
+  omz update
+  # Setup colors
+  GREEN='\033[0;32m'
+  YELLOW_BOLD='\033[1;33m'
+  NC='\033[0m' # No Color
+  local current_pwd="$PWD"
+  echo "${GREEN}Updating OMZ custom plugins:${NC}"
+  cd "$ZSH/custom/plugins"
+    for plugin in *; do
+      if [ -d $plugin/.git ]; then
+        echo "${YELLOW_BOLD}${plugin}${NC}"
+        git -C "$plugin" pull
+      fi
+    done
+    cd "$current_pwd"
+}
+
 alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; \
   cd "$LASTDIR" > /dev/null 2>&1'
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
