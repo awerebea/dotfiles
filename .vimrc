@@ -1293,7 +1293,7 @@ map <c-l> :lclose<CR><C-w>l
 " Set the file type for files that are in use on the system but do not yet
 " have a type.
 augroup filetypedetect
-  au BufRead,BufNewFile .tmux.conf.local  setlocal ft=tmux
+  au BufRead,BufNewFile .tmux.conf*       setlocal ft=tmux
   au BufRead,BufNewFile conkyrc*          setlocal ft=conf
   au BufRead,BufNewFile webserv.conf*     setlocal ft=nginx
 augroup END
