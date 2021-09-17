@@ -134,6 +134,8 @@ tmux_conf_theme_status_attr="none"
 #     - #{circled_session_name}
 #     - #{hostname}
 #     - #{hostname_ssh}
+#     - #{hostname_full}
+#     - #{hostname_full_ssh}
 #     - #{username}
 #     - #{username_ssh}
 tmux_conf_theme_terminal_title="#h ❐ #S ● #I #W"
@@ -144,6 +146,8 @@ tmux_conf_theme_terminal_title="#h ❐ #S ● #I #W"
 #     - #{circled_session_name}
 #     - #{hostname}
 #     - #{hostname_ssh}
+#     - #{hostname_full}
+#     - #{hostname_full_ssh}
 #     - #{username}
 #     - #{username_ssh}
 tmux_conf_theme_window_status_fg="$tmux_conf_theme_colour_3"
@@ -159,6 +163,8 @@ tmux_conf_theme_window_status_format="#I #W"
 #     - #{circled_session_name}
 #     - #{hostname}
 #     - #{hostname_ssh}
+#     - #{hostname_full}
+#     - #{hostname_full_ssh}
 #     - #{username}
 #     - #{username_ssh}
 tmux_conf_theme_window_status_current_fg="$tmux_conf_theme_colour_1"
@@ -188,10 +194,10 @@ tmux_conf_theme_left_separator_main=""
 tmux_conf_theme_left_separator_sub="|"
 tmux_conf_theme_right_separator_main=""
 tmux_conf_theme_right_separator_sub="|"
-#tmux_conf_theme_left_separator_main="\uE0B0"  # /!\ you don't need to install Powerline
-#tmux_conf_theme_left_separator_sub="\uE0B1"   #   you only need fonts patched with
-#tmux_conf_theme_right_separator_main="\uE0B2" #   Powerline symbols or the standalone
-#tmux_conf_theme_right_separator_sub="\uE0B3"  #   PowerlineSymbols.otf font, see README.md
+#tmux_conf_theme_left_separator_main='\uE0B0'  # /!\ you don't need to install Powerline
+#tmux_conf_theme_left_separator_sub='\uE0B1'   #   you only need fonts patched with
+#tmux_conf_theme_right_separator_main='\uE0B2' #   Powerline symbols or the standalone
+#tmux_conf_theme_right_separator_sub='\uE0B3'  #   PowerlineSymbols.otf font, see README.md
 
 # status left/right content:
 #   - separate main sections with "|"
@@ -205,6 +211,8 @@ tmux_conf_theme_right_separator_sub="|"
 #     - #{circled_session_name}
 #     - #{hostname_ssh}
 #     - #{hostname}
+#     - #{hostname_full}
+#     - #{hostname_full_ssh}
 #     - #{loadavg}
 #     - #{mouse}
 #     - #{pairing}
@@ -218,6 +226,8 @@ tmux_conf_theme_right_separator_sub="|"
 #     - #{uptime_s}
 #     - #{username}
 #     - #{username_ssh}
+tmux_conf_theme_status_left=" ❐ #S | ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} "
+tmux_conf_theme_status_right=" #{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} , %R , %d %b | #{username}#{root} | #{hostname} "
 
 # status left style
 tmux_conf_theme_status_left_fg="$tmux_conf_theme_colour_6,$tmux_conf_theme_colour_7,$tmux_conf_theme_colour_8"
@@ -322,9 +332,91 @@ set -g history-limit 10000
 # start with mouse mode enabled
 set -g mouse on
 
+# force Vi mode
+#   really you should export VISUAL or EDITOR environment variable, see manual
+set -g status-keys vi
+set -g mode-keys vi
+
+# replace C-b by C-a instead of using both prefixes
+set -gu prefix2
+unbind C-a
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# move status line to top
+#set -g status-position top
+set -g status-position bottom
+
+
+# -- tpm -----------------------------------------------------------------------
+
+# while I don't use tpm myself, many people requested official support so here
+# is a seamless integration that automatically installs plugins in parallel
+
+# whenever a plugin introduces a variable to be used in 'status-left' or
+# 'status-right', you can use it in 'tmux_conf_theme_status_left' and
+# 'tmux_conf_theme_status_right' variables.
+
+# by default, launching tmux will update tpm and all plugins
+#   - true (default)
+#   - false
+tmux_conf_update_plugins_on_launch=true
+
+# by default, reloading the configuration will update tpm and all plugins
+#   - true (default)
+#   - false
+tmux_conf_update_plugins_on_reload=true
+
+# /!\ do not add set -g @plugin 'tmux-plugins/tpm'
+# /!\ do not add run '~/.tmux/plugins/tpm/tpm'
+
+# to enable a plugin, use the 'set -g @plugin' syntax:
+# visit https://github.com/tmux-plugins for available plugins
+#set -g @plugin 'tmux-plugins/tmux-copycat'
+#set -g @plugin 'tmux-plugins/tmux-cpu'
+#set -g @plugin 'tmux-plugins/tmux-resurrect'
+#set -g @plugin 'tmux-plugins/tmux-continuum'
+#set -g @continuum-restore 'on'
+
+
+# -- custom variables ----------------------------------------------------------
+
+# to define a custom #{foo} variable, define a POSIX shell function between the
+# '# EOF' and the '# "$@"' lines. Please note that the opening brace { character
+# must be on the same line as the function name otherwise the parse won't detect
+# it.
+#
+# then, use #{foo} in e.g. the 'tmux_conf_theme_status_left' or the
+# 'tmux_conf_theme_status_right' variables.
+
+# # /!\ do not remove the following line
+# EOF
+#
+# # /!\ do not "uncomment" the functions: the leading "# " characters are needed
+#
+# weather() {
+#   curl -m 1 wttr.in?format=3 2>/dev/null
+#   sleep 900 # sleep for 15 minutes, throttle network requests whatever the value of status-interval
+# }
+#
+# online() {
+#   ping -c 1 1.1.1.1 >/dev/null 2>&1 && printf '✔' || printf '✘'
+# }
+#
+# "$@"
+# # /!\ do not remove the previous line
+
+# My overrides
+
+# 24-bit color terminal
+# set -g default-terminal "xterm-256color-italic" # colors, italic (linux)
+set -g default-terminal "tmux-256color" # colors, italic (macOS)
+set -as terminal-overrides ',xterm*:sitm=\E[3m' # colors, italic (macOS)
+
 # set Allow multiple commands to be entered without pressing the prefix-key again
 # in the specified time milliseconds (the default is 500).
-set repeat-time 1500
+set repeat-time 500
 
 # ！！！importent！！！ enabling 24 bit color
 set -ga terminal-overrides ",*256col*:Tc"
@@ -333,6 +425,10 @@ set -g status-interval 1      # redraw status line every 1 second
 
 # split current window vertically
 bind | split-window -h
+# split current pane full width into two, left and right
+bind "\\" split-window -fh
+# split current pane full height into two, top and bottom
+bind _ split-window -fv
 
 # swap windows
 bind S-Left swap-window -t -1 \; previous-window
@@ -340,7 +436,6 @@ bind S-Right swap-window -t +1 \; next-window
 
 # List of installed plugins
 set -g @tpm_plugins '                 \
-  tmux-plugins/tpm                    \
   tmux-plugins/tmux-sensible          \
   tmux-plugins/tmux-resurrect         \
   tmux-plugins/tmux-continuum         \
@@ -354,8 +449,8 @@ set -g @tpm_plugins '                 \
   olimorris/tmux-pomodoro-plus        \
 '
 
-# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
-run -b '~/.tmux/plugins/tpm/tpm'
+unbind C-l # conflicts with pane movements
+# bind l send-keys 'C-l' # clear screen (conflicts with nested session)
 
 # continuum
 set -g @continuum-restore 'on'
@@ -364,26 +459,6 @@ set -g @continuum-save-interval '15'
 # save and restore window geometry for most terminals in X11
 set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
 set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.tmux/resurrect/geometry)'
-
-# emacs key bindings in tmux command prompt (prefix + :) are better than
-# vi keys, even for vim users
-# set -g status-keys emacs)
-
-# force Vi mode
-#   really you should export VISUAL or EDITOR environment variable, see manual
-#set -g status-keys vi
-set -g mode-keys vi
-
-# replace C-b by C-a instead of using both prefixes
-set -gu prefix2
-unbind C-a
-unbind C-b
-set -g prefix C-a
-bind C-a send-prefix
-
-# move status line to top/bottom
-# set -g status-position top
-set -g status-position bottom
 
 #vim navigation
 is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
@@ -408,7 +483,8 @@ bind -n C-l run  "($is_vim && tmux send-keys C-l) || \
 
 bind -n 'C-\' if-shell "$is_vim" "send-keys 'C-\\'" "select-pane -l"
 
-# bind l send-keys 'C-l' # clear screen (conflicts with nested session)
+# clear both screen and history
+bind -n M-l send-keys C-l \; run 'sleep 0.1' \; clear-history
 
 # focus events enabled for terminals that support them
 set -g focus-events on
@@ -618,3 +694,16 @@ set -g @pomodoro_complete "#[fg=#00ff00] "
 # Keybindings
 set -g @pomodoro_start 'v'
 set -g @pomodoro_cancel 'V'
+
+# override buffer keybinds
+bind b choose-buffer # choose which buffer to paste from
+
+# copy to X11 clipboard
+if -b 'command -v xsel > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | xsel -i -b && tmux display-message \"Copied tmux buffer to system clipboard\""'
+if -b '! command -v xsel > /dev/null 2>&1 && command -v xclip > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | xclip -i -selection clipboard >/dev/null 2>&1 && tmux display-message \"Copied tmux buffer to system clipboard\""'
+# copy to macOS clipboard
+if -b 'command -v pbcopy > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | pbcopy && tmux display-message \"Copied tmux buffer to system clipboard\""'
+if -b 'command -v reattach-to-user-namespace > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | reattach-to-user-namespace pbcopy && tmux display-message \"Copied tmux buffer to system clipboard\""'
+# copy to Windows clipboard
+if -b 'command -v clip.exe > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | clip.exe && tmux display-message \"Copied tmux buffer to system clipboard\""'
+if -b '[ -c /dev/clipboard ]' 'bind y run -b "tmux save-buffer - > /dev/clipboard && tmux display-message \"Copied tmux buffer to system clipboard\""'
