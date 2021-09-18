@@ -191,8 +191,8 @@ export MANPAGER="/bin/sh -c \"col -b | \
 export BAT_THEME="TwoDark"
 
 # FZF settings
-# Set fzf to find hidden files but ignore .gitignored
-export FZF_DEFAULT_COMMAND='ag --hidden --ignore .git -g ""'
+# Set fzf to find hidden files but ignore .gitignored (search with ripgrep)
+export FZF_DEFAULT_COMMAND='rg --hidden --ignore .git -g ""'
 # Set fzf preview options
 export FZF_DEFAULT_OPTS="--height=100% --preview \
   'bat --style=numbers --color=always --line-range :500 {}' \
