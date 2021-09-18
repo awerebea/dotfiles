@@ -400,8 +400,18 @@ tmux_conf_update_plugins_on_reload=true
 #   sleep 900 # sleep for 15 minutes, throttle network requests whatever the value of status-interval
 # }
 #
-# online() {
-#   ping -c 1 1.1.1.1 >/dev/null 2>&1 && printf '✔' || printf '✘'
+# # online() {
+# #   ping -c 1 1.1.1.1 >/dev/null 2>&1 && printf '✔' || printf '✘'
+# # }
+#
+# online_status() {
+#   if ping -c 1 1.1.1.1 >/dev/null 2>&1; then
+#     printf '✔'
+#     tmux set @is_online true
+#   else
+#     printf '✘'
+#     tmux set -u @is_online
+#   fi
 # }
 #
 # "$@"
@@ -553,7 +563,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
-tmux_conf_theme_status_right='#[fg=#ff9900,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
