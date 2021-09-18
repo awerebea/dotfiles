@@ -443,11 +443,12 @@ set -g @tpm_plugins '                 \
   tmux-plugins/tmux-open              \
   tmux-plugins/tmux-sidebar           \
   samoshkin/tmux-plugin-sysstat       \
-  charlietag/tmux-split-statusbar     \
   CrispyConductor/tmux-copy-toolkit   \
   laktak/extrakto                     \
   olimorris/tmux-pomodoro-plus        \
   tmux-plugins/tmux-yank              \
+  MunifTanjim/tmux-mode-indicator     \
+  charlietag/tmux-split-statusbar     \
 '
 
 unbind C-l # conflicts with pane movements
@@ -550,8 +551,8 @@ tmux_conf_theme_window_status_last_bg='default'
 tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
-tmux_conf_theme_status_left=' ❐ #S '
-tmux_conf_theme_status_right='#[fg=#ff9900,bold]#([ $(tmux show-option -qv key-table) = 'off' ] && echo 'SUSPEND\ LOCAL\ TMUX')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{username}#{root} | #{hostname}'
+tmux_conf_theme_status_left=' ❐ #S |#{tmux_mode_indicator}'
+tmux_conf_theme_status_right='#[fg=#ff9900,bold]#([ $(tmux show-option -qv key-table) = 'off' ] && echo 'SUSPEND\ LOCAL\ TMUX')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#afd7af,#e4e4e4'
@@ -647,17 +648,6 @@ bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
 # toggle synchronize-panes
 bind C-x setw synchronize-panes
 
-set -g @plugin 'charlietag/tmux-split-statusbar'
-set -g @split-statusbar-mode 'on'                 # [ on | off]
-
-set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
-                                                  # bindkey for toggle statusbar-mode
-                                                  # define yourself just like bind-key, default: M-s
-
-set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
-                                                  # bindkey for status-left / status-right hiding
-                                                  # define yourself just like bind-key, default: M-d
-
 # nested tmux sessions {{{
 
 #Variables
@@ -721,3 +711,12 @@ set -g @resurrect-strategy-nvim 'session'
 set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_selection 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_with_mouse on
+
+#  tmux-split-statusbar
+set -g @split-statusbar-mode 'on'                 # [ on | off]
+set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
+                                                  # bindkey for toggle statusbar-mode
+                                                  # define yourself just like bind-key, default: M-s
+set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
+                                                  # bindkey for status-left / status-right hiding
+                                                  # define yourself just like bind-key, default: M-d
