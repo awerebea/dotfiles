@@ -448,6 +448,7 @@ set -g @tpm_plugins '                 \
   olimorris/tmux-pomodoro-plus        \
   tmux-plugins/tmux-yank              \
   MunifTanjim/tmux-mode-indicator     \
+  MunifTanjim/tmux-suspend            \
   charlietag/tmux-split-statusbar     \
 '
 
@@ -551,12 +552,12 @@ tmux_conf_theme_window_status_last_bg='default'
 tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
-tmux_conf_theme_status_left=' ❐ #S |#{tmux_mode_indicator}'
-tmux_conf_theme_status_right='#[fg=#ff9900,bold]#([ $(tmux show-option -qv key-table) = 'off' ] && echo 'SUSPEND\ LOCAL\ TMUX')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
+tmux_conf_theme_status_right='#[fg=#ff9900,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} | #{username}#{root} | #{hostname} '
 
 # status left style
-tmux_conf_theme_status_left_fg='#000000,#afd7af,#e4e4e4'
-tmux_conf_theme_status_left_bg='#87afaf,#4e4e4e,#00afff'
+tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
+tmux_conf_theme_status_left_bg='#87afaf,#87afaf,#4e4e4e,#00afff'
 tmux_conf_theme_status_left_attr='bold,none,none'
 
 # status right style
@@ -648,33 +649,34 @@ bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
 # toggle synchronize-panes
 bind C-x setw synchronize-panes
 
-# nested tmux sessions {{{
-
-#Variables
-color_status_text="colour245"
-color_window_off_status_bg="$tmux_conf_theme_window_status_bg"
-color_light="white" #colour015
-color_red="red"
-color_dark="colour232" # black= colour232
-color_window_off_status_current_bg="colour254"
-
-bind -T root F12  \
-  set prefix None \;\
-  set key-table off \;\
-  set status-style "fg=$color_status_text,bg=$color_window_off_status_bg" \;\
-  set window-status-current-format "#[fg=$color_window_off_status_bg,bg=$color_window_off_status_current_bg] #I #W #[fg=$color_window_off_status_current_bg,bg=$color_window_off_status_bg]" \;\
-  set window-status-current-style "fg=$color_dark,bold,bg=$color_window_off_status_current_bg" \;\
-  if -F '#{pane_in_mode}' 'send-keys -X cancel' \;\
-  refresh-client -S \;\
-
-bind -T off F12 \
-  set -u prefix \;\
-  set -u key-table \;\
-  set -u status-style \;\
-  set -u window-status-current-style \;\
-  set -u window-status-current-format \;\
-  refresh-client -S
-# }}}
+# tmux suspend
+set -g @suspend_key 'F12'
+# # Implementation without plugin {{{
+# #Variables
+# color_status_text="colour245"
+# color_window_off_status_bg="$tmux_conf_theme_window_status_bg"
+# color_light="white" #colour015
+# color_red="red"
+# color_dark="colour232" # black= colour232
+# color_window_off_status_current_bg="colour254"
+# # Turn on keybind
+# bind -T root F12  \
+#   set prefix None \;\
+#   set key-table suspended \;\
+#   set status-style "fg=$color_status_text,bg=$color_window_off_status_bg" \;\
+#   set window-status-current-format "#[fg=$color_window_off_status_bg,bg=$color_window_off_status_current_bg] #I #W #[fg=$color_window_off_status_current_bg,bg=$color_window_off_status_bg]" \;\
+#   set window-status-current-style "fg=$color_dark,bold,bg=$color_window_off_status_current_bg" \;\
+#   if -F '#{pane_in_mode}' 'send-keys -X cancel' \;\
+#   refresh-client -S \;\
+# # Turn off keybind
+# bind -T off F12 \
+#   set -u prefix \;\
+#   set -u key-table \;\
+#   set -u status-style \;\
+#   set -u window-status-current-style \;\
+#   set -u window-status-current-format \;\
+#   refresh-client -S
+# # }}}
 
 # pomodoro
 # Options
