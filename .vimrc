@@ -1235,7 +1235,7 @@ if v:version >= 802
   " nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
   " xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
   nnoremap <silent> <leader>rg       :FZFRg<CR>
-  nnoremap <silent> <leader>RG       :FZFRg <C-R><C-A><CR>
+  nnoremap <silent> <leader>RG       :FZFRg <C-R><C-W><CR>
   xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
   nnoremap <silent> <leader>`        :Marks<CR>
   nnoremap <silent> q: :History:<CR>
