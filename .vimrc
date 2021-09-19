@@ -1,5 +1,17 @@
 set nocompatible              " be iMproved, required
 
+" Install vim-plug if not found
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !export GIT_SSL_NO_VERIFY=true
+  silent !curl --insecure -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+endif
+
+" Run PlugInstall if there are missing plugins
+autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+  \| PlugInstall --sync | source $MYVIMRC
+  \| endif
+
 " Specify a directory for plugins {{{
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
@@ -73,7 +85,7 @@ Plug 'dhruvasagar/vim-prosession'
 Plug 'vim-scripts/restore_view.vim'
 " Colorschemes
 " Plug 'joshdick/onedark.vim'
-Plug 'crusoexia/vim-monokai'
+" Plug 'crusoexia/vim-monokai'
 Plug 'GlennLeo/cobalt2'
 Plug 'Rigellute/rigel' " Lightline theme (for cobalt2)
 " Plug 'morhetz/gruvbox'
@@ -102,24 +114,9 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " Interactive command execution in Vim
 Plug 'Shougo/vimproc.vim'
-" Automatic keyboard layout switching in insert mode
-Plug 'lyokha/vim-xkbswitch'
 
 " Syntax checker
 Plug 'dense-analysis/ale'
-" The Ctags generator for Vim
-Plug 'szw/vim-tags'
-" A class outline viewer for Vim
-Plug 'majutsushi/tagbar'
-" Plugin provides an overview of the structure of source code files
-Plug 'vim-scripts/taglist.vim'
-" Viewer & Finder for LSP symbols and tags
-Plug 'liuchengxu/vista.vim'
-" Vimprj is a Vim plugin that helps you manage options for multiple projects.
-" Useful for automatically tags generation and update in projects.
-Plug 'vim-scripts/DfrankUtil'
-Plug 'vim-scripts/indexer.tar.gz'
-Plug 'vim-scripts/vimprj'
 " Snippets (code blocks) handling
 " Plug 'garbas/vim-snipmate'
 " Plug 'honza/vim-snippets'
@@ -132,6 +129,27 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ap/vim-buftabline'
 " A Vim alignment plugin
 Plug 'junegunn/vim-easy-align'
+"
+if executable('xkb-switch')
+  " Automatic keyboard layout switching in insert mode
+  Plug 'lyokha/vim-xkbswitch'
+endif
+
+if executable('ctags')
+  " The Ctags generator for Vim
+  Plug 'szw/vim-tags'
+  " A class outline viewer for Vim
+  Plug 'majutsushi/tagbar'
+  " Plugin provides an overview of the structure of source code files
+  Plug 'vim-scripts/taglist.vim'
+  " Viewer & Finder for LSP symbols and tags
+  Plug 'liuchengxu/vista.vim'
+  " Vimprj is a Vim plugin that helps you manage options for multiple projects.
+  " Useful for automatically tags generation and update in projects.
+  Plug 'vim-scripts/DfrankUtil'
+  Plug 'vim-scripts/indexer.tar.gz'
+  Plug 'vim-scripts/vimprj'
+endif
 
 " Initialize plugin system
 call plug#end()
@@ -836,8 +854,13 @@ call yankstack#setup()
 noremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
 
 " List buffers keybinds " {{{
+if v:version < 802
+  nnoremap <silent> <leader><Enter> :BufExplorer<CR>
+else
+  nnoremap <silent> <leader><Enter>  :Buffers<CR>
+  nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
+endif
 nmap <F5> :BufExplorer<CR>
-nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 " }}}
 
 " Past current buffer path instead %% in Ex editor line
@@ -1204,33 +1227,32 @@ let g:fzf_colors =
 autocmd! FileType fzf
 autocmd  FileType fzf set noshowmode noruler nonu
 
-" nnoremap <silent> <leader>f :Files<CR>
-nnoremap <silent> <expr> <leader>f (expand('%') =~
-  \ 'NERD_tree' ? "\<c-w>\<c-w>" : '').":Files\<cr>"
-nnoremap <silent> <leader>C        :Colors<CR>
-nnoremap <silent> <leader><Enter>  :Buffers<CR>
-nnoremap <silent> <leader>l        :Lines<CR>
-" nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
-" nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
-" xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
-nnoremap <silent> <leader>rg       :FZFRg<CR>
-nnoremap <silent> <leader>RG       :FZFRg <C-R><C-A><CR>
-xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
-nnoremap <silent> <leader>`        :Marks<CR>
-nnoremap <silent> q: :History:<CR>
-nnoremap <silent> q/ :History/<CR>
+if v:version >= 802
+  nnoremap <silent> <leader>f        :Files<CR>
+  nnoremap <silent> <leader>C        :Colors<CR>
+  nnoremap <silent> <leader>l        :Lines<CR>
+  " nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
+  " nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
+  " xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
+  nnoremap <silent> <leader>rg       :FZFRg<CR>
+  nnoremap <silent> <leader>RG       :FZFRg <C-R><C-A><CR>
+  xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
+  nnoremap <silent> <leader>`        :Marks<CR>
+  nnoremap <silent> q: :History:<CR>
+  nnoremap <silent> q/ :History/<CR>
 
-" inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
-"   \ --scroll 498 --min 5')
-" map <c-x><c-k> <plug>(fzf-complete-word)
-imap <c-x><c-f> <plug>(fzf-complete-path)
-inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
-imap <c-x><c-j> <plug>(fzf-complete-file-ag)
-imap <c-x><c-l> <plug>(fzf-complete-line)
+  " inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
+  "   \ --scroll 498 --min 5')
+  " map <c-x><c-k> <plug>(fzf-complete-word)
+  imap <c-x><c-f> <plug>(fzf-complete-path)
+  inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
+  imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+  imap <c-x><c-l> <plug>(fzf-complete-line)
 
-" nmap <leader><tab> <plug>(fzf-maps-n)
-" xmap <leader><tab> <plug>(fzf-maps-x)
-" omap <leader><tab> <plug>(fzf-maps-o)
+  " nmap <leader><tab> <plug>(fzf-maps-n)
+  " xmap <leader><tab> <plug>(fzf-maps-x)
+  " omap <leader><tab> <plug>(fzf-maps-o)
+endif
 
 function! s:plug_help_sink(line)
   let dir = g:plugs[a:line].dir
