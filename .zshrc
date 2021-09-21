@@ -122,6 +122,7 @@ alias dkrc="${DOCKER_CMD_FOR_ALIAS} rm \$(${DOCKER_CMD_FOR_ALIAS} container ls -
 alias dkri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)"
 alias dkreset="dksa && dkrc && dkri"
 alias dk=docker
+alias dkc=docker-compose
 
 # kubectl aliases
 alias kg="kubectl get "
