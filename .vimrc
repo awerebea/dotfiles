@@ -875,6 +875,10 @@ map g/ <Plug>(incsearch-stay)
 map z/ <Plug>(incsearch-easymotion-/)
 map z? <Plug>(incsearch-easymotion-?)
 map zg/ <Plug>(incsearch-easymotion-stay)
+nmap <leader><leader>S <Plug>(easymotion-s2)
+nmap <leader><leader>T <Plug>(easymotion-t2)
+map  <leader><leader>/ <Plug>(easymotion-sn)
+omap <leader><leader>/ <Plug>(easymotion-tn)
 " }}}
 
 set autoindent
