@@ -9,8 +9,6 @@ if [[ `uname -n` == "pc-home" && `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
   export GIT_WORKSPACE="$HOME/Github/workspace"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  # set coursor like blinking block
-  printf '\e[1 q'
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
@@ -30,32 +28,6 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Bundle aliases
   alias fast="bundle exec fastlane"
   alias be="bundle exec"
-  # set coursor like blinking block
-  printf '\e[1 q'
-
-elif [[ `uname -n` == "laptop-dell" && `uname` == "Linux" ]]; then
-  # Work laptop
-  export ZSH="$HOME/.oh-my-zsh"
-  export DOCKER_CMD_FOR_ALIAS="docker"
-  export GIT_DOTFILES="$HOME/Github/dotfiles"
-  export GIT_WORKSPACE="$HOME/Github/workspace"
-  export PATH="$PATH:/var/lib/gems/2.7.0"
-  export PATH="$PATH:/opt/mssql-tools/bin"
-  # Setup nvm
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-  alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  # set coursor like blinking block
-  printf '\e[1 q'
-  # Fix history-substring-search plugin behaviour in Tmux
-  bindkey "$terminfo[kcuu1]" history-substring-search-up
-  bindkey "$terminfo[kcud1]" history-substring-search-down
-  # The 1st command is to map CAPSLOCK to ESC whereas the 2nd one takes care of CTRL pressed with other keys
-  # setxkbmap -option 'caps:ctrl_modifier'
-  # xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Linux" ]]; then
   # Home linux mint
@@ -72,14 +44,9 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Linux" ]]; then
 
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  # set coursor like blinking block
-  printf '\e[1 q'
   # Fix history-substring-search plugin behaviour in Tmux
   bindkey "$terminfo[kcuu1]" history-substring-search-up
   bindkey "$terminfo[kcud1]" history-substring-search-down
-  # The 1st command is to map CAPSLOCK to ESC whereas the 2nd one takes care of CTRL pressed with other keys
-  # setxkbmap -option 'caps:ctrl_modifier'
-  # xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
 
 elif [[ `uname -n` == "laptop-acer" && `uname` == "Linux" ]]; then
   # laptop-acer
@@ -91,14 +58,9 @@ elif [[ `uname -n` == "laptop-acer" && `uname` == "Linux" ]]; then
   export PATH="$PATH:/opt/mssql-tools/bin"
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
-  # set coursor like blinking block
-  printf '\e[1 q'
   # Fix history-substring-search plugin behaviour in Tmux
   bindkey "$terminfo[kcuu1]" history-substring-search-up
   bindkey "$terminfo[kcud1]" history-substring-search-down
-  # The 1st command is to map CAPSLOCK to ESC whereas the 2nd one takes care of CTRL pressed with other keys
-  # setxkbmap -option 'caps:ctrl_modifier'
-  # xcape -e 'Caps_Lock=Escape;Control_L=Escape;Control_R=Escape'
 
 else
   export ZSH="$HOME/.oh-my-zsh"
@@ -107,13 +69,6 @@ else
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
 fi
-
-# Fix oh-my-zsh history-sync plugin
-function zhistsyncplugfix() {
-  sed -i "s/add\ \*/\"\$ZSH_HISTORY_FILE_ENC_NAME\"/" $ZSH/custom/plugins/history-sync/history-sync.plugin.zsh
-  sed -i "s/GIT_COMMIT_MSG=\"latest \$(date)\"/GIT_COMMIT_MSG=\"Sync\ zsh\ history\"/" $ZSH/custom/plugins/history-sync/history-sync.plugin.zsh
-  export GIT_COMMIT_MSG="Sync zsh history"
-}
 
 # fasd history sync via GitHub
 function fhistsync() {
