@@ -318,3 +318,8 @@ bindkey -M vicmd 'j' history-substring-search-down
 # check daily for plugins updates
 export UPDATE_ZSH_DAYS=1
 ZSH_CUSTOM_AUTOUPDATE_QUIET=true
+
+# Automatically start tmux on remote server when logging in via SSH (and only SSH)
+if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+  tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
+fi
