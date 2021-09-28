@@ -8,6 +8,59 @@ export EDITOR='vim'
 
 export TERM=xterm-256color
 
+# Install oh-my-zsh if it's not there yet.
+if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
+  echo "\033[1;31m!!! ATTENTION !!!\033[0m"
+  echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
+  echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
+  read -t 5 -n 1 -s -r -p "Press any key to continue"
+  # backup ~/.zshrc
+  backup_name=".zshrc_backup_"
+  backup_name+=$(date '+%F_%H-%M-%S')
+  mv ~/.zshrc ~/${backup_name}
+  # install oh-my-zsh
+  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  mv ~/${backup_name} ~/.zshrc
+fi
+
+# Install custom plugins if they aren't there yet.
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync/\
+history-sync.plugin.zsh ]]; then
+  git clone https://github.com/wulfgarpro/history-sync.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync
+fi
+
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions/\
+zsh-autosuggestions.plugin.zsh ]]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+fi
+
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions/\
+zsh-completions.plugin.zsh ]]; then
+  git clone https://github.com/zsh-users/zsh-completions \
+    ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
+fi
+
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/\
+zsh-syntax-highlighting.plugin.zsh ]]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+fi
+
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode/\
+zsh-vi-mode.plugin.zsh ]]; then
+  git clone https://github.com/jeffreytse/zsh-vi-mode \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
+fi
+
+# Install powerlevel10k theme if it's not there yet.
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k/\
+powerlevel10k.zsh-theme ]]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+fi
+
 if [ -f ~/.zshscripts ]; then
     source ~/.zshscripts
 else
