@@ -71,6 +71,7 @@ if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
 fzf-tab.plugin.zsh ]]; then
   # disable sort when completing `git checkout`
   zstyle ':completion:*:git-checkout:*' sort false
+  zstyle ':completion:*:git-branch:*' sort false
   # set descriptions format to enable group support
   zstyle ':completion:*:descriptions' format '[%d]'
   # switch group using `,` and `.`
