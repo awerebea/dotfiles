@@ -216,6 +216,12 @@ alias kgwl="kubectl get -o wide --show-labels "
 alias ke="kubectl edit "
 alias kd="kubectl describe "
 
+alias kctx="kubectx"
+alias kns="kubens"
+
+# Source stern completion if stern exist
+command -v stern &> /dev/null && source <(stern --completion=zsh)
+
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
   mkdir -p .vimprj && for f in `ls -A ${GIT_DOTFILES}/Vim/.vimprj | \
