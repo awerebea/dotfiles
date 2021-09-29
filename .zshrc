@@ -13,7 +13,7 @@ if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
   echo "\033[1;31m!!! ATTENTION !!!\033[0m"
   echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
   echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
-  read -t 5 -n 1 -s -r -p "Press any key to continue"
+  read -t 3 -n 1 -s -r -p "Press any key to continue"
   # backup ~/.zshrc
   backup_name=".zshrc_backup_"
   backup_name+=$(date '+%F_%H-%M-%S')
@@ -54,7 +54,14 @@ zsh-vi-mode.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
 fi
 
-# # fzf-tab
+# fzf-fasd
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
+fzf-fasd.plugin.zsh ]]; then
+  git clone https://github.com/wookayin/fzf-fasd \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd
+fi
+
+# fzf-tab
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
 fzf-tab.plugin.zsh ]]; then
   git clone https://github.com/Aloxaf/fzf-tab \
@@ -101,6 +108,7 @@ plugins=(
           encode64
           extract
           fasd
+          fzf-fasd
           fzf-tab
           git
           helm
