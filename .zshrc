@@ -276,8 +276,18 @@ export MANPAGER="/bin/sh -c \"col -b | \
 export BAT_THEME="TwoDark"
 
 # FZF settings
-# Set fzf to find hidden files but ignore .gitignored (search with ripgrep)
-export FZF_DEFAULT_COMMAND='rg --hidden --ignore .git -g ""'
+if command -v fd &> /dev/null; then
+  FD_BIN_NAME="fd"
+elif command -v fdfind &> /dev/null; then
+  FD_BIN_NAME="fdfind"
+fi
+if [[ ! -z ${FD_BIN_NAME} ]]; then
+  export FZF_DEFAULT_COMMAND="${FD_BIN_NAME} --type file --follow --hidden --exclude .git"
+else
+  export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
+fi
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
 # Set fzf preview options
 export FZF_DEFAULT_OPTS="--height=100% --preview \
   'bat --style=numbers --color=always --line-range :500 {}' \
