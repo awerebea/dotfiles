@@ -54,6 +54,26 @@ zsh-vi-mode.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
 fi
 
+# # fzf-tab
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
+fzf-tab.plugin.zsh ]]; then
+  git clone https://github.com/Aloxaf/fzf-tab \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
+fi
+if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
+fzf-tab.plugin.zsh ]]; then
+  # disable sort when completing `git checkout`
+  zstyle ':completion:*:git-checkout:*' sort false
+  # set descriptions format to enable group support
+  zstyle ':completion:*:descriptions' format '[%d]'
+  # switch group using `,` and `.`
+  zstyle ':fzf-tab:*' switch-group ',' '.'
+  # set list-colors to enable filename colorizing
+  zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+  # preview directory's content with exa when completing cd
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+fi
+
 # Install powerlevel10k theme if it's not there yet.
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k/\
 powerlevel10k.zsh-theme ]]; then
@@ -72,13 +92,16 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Which plugins to load?
 plugins=(
+          aws
           colored-man-pages
           copydir
           copyfile
           docker
+          docker-compose
           encode64
           extract
           fasd
+          fzf-tab
           git
           helm
           history-sync
