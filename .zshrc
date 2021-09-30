@@ -145,6 +145,7 @@ alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
 alias vless="/usr/local/share/vim/vim82/macros/less.sh"
+alias -g L="| less -NR"
 
 # update oh-my-zsh and all custom plugins
 function omz-update() {
@@ -172,12 +173,20 @@ alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
 # exa aliases
 alias l="exa --long --all --header --links --git --icons \
   --group-directories-first --color-scale"
+alias lle="exa --long --all --header --links --git --icons --color=always \
+  --group-directories-first --color-scale | less -NR"
 alias lt="exa --long --all --header --links --git --icons \
   --group-directories-first --color-scale -T"
+alias ltle="exa --long --all --header --links --git --icons --color=always \
+  --group-directories-first --color-scale -T | less -NR"
 alias ll="exa --long --header --links --git --icons --group-directories-first \
   --color-scale"
+alias llle="exa --long --header --links --git --icons --group-directories-first \
+  --color=always --color-scale | less -NR"
 alias llt="exa --long --header --links --git --icons --group-directories-first \
   --color-scale -T"
+alias lltle="exa --long --header --links --git --icons --group-directories-first \
+  --color=always --color-scale -T | less -NR"
 
 alias cls="clear"
 alias -g G='| grep -i'
