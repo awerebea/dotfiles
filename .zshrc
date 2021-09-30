@@ -144,6 +144,7 @@ alias zshscripts="vim ~/.zshscripts"
 alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
+alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 
 # update oh-my-zsh and all custom plugins
 function omz-update() {
