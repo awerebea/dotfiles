@@ -145,7 +145,30 @@ alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
 alias vless="/usr/local/share/vim/vim82/macros/less.sh"
+alias cls="clear"
+alias -g B='| bat -n'
+alias -g G='| grep -i'
 alias -g L="| less -NR"
+alias dir='dirs -v | head -20'
+alias 1='cd -'
+alias 2='cd -2'
+alias 3='cd -3'
+alias 4='cd -4'
+alias 5='cd -5'
+alias 6='cd -6'
+alias 7='cd -7'
+alias 8='cd -8'
+alias 9='cd -9'
+alias 10='cd -10'
+alias 11='cd -11'
+alias 12='cd -12'
+alias 13='cd -13'
+alias 14='cd -14'
+alias 15='cd -15'
+alias 16='cd -16'
+alias 17='cd -17'
+alias 18='cd -18'
+alias 19='cd -19'
 
 # update oh-my-zsh and all custom plugins
 function omz-update() {
@@ -187,29 +210,6 @@ alias llt="exa --long --header --links --git --icons --group-directories-first \
   --color-scale -T"
 alias lltle="exa --long --header --links --git --icons --group-directories-first \
   --color=always --color-scale -T | less -NR"
-
-alias cls="clear"
-alias -g G='| grep -i'
-alias dir='dirs -v | head -20'
-alias 1='cd -'
-alias 2='cd -2'
-alias 3='cd -3'
-alias 4='cd -4'
-alias 5='cd -5'
-alias 6='cd -6'
-alias 7='cd -7'
-alias 8='cd -8'
-alias 9='cd -9'
-alias 10='cd -10'
-alias 11='cd -11'
-alias 12='cd -12'
-alias 13='cd -13'
-alias 14='cd -14'
-alias 15='cd -15'
-alias 16='cd -16'
-alias 17='cd -17'
-alias 18='cd -18'
-alias 19='cd -19'
 
 # docker aliases
 alias dksa="${DOCKER_CMD_FOR_ALIAS} stop \$(${DOCKER_CMD_FOR_ALIAS} ps -qa)"
