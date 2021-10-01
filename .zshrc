@@ -231,7 +231,7 @@ alias kctx="kubectx"
 alias kns="kubens"
 
 # Source stern completion if stern exist
-command -v stern &> /dev/null && source <(stern --completion=zsh)
+[[ $commands[stern] ]] && source <(stern --completion=zsh)
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
@@ -293,9 +293,9 @@ export MANPAGER="/bin/sh -c \"col -b | \
 export BAT_THEME="TwoDark"
 
 # FZF settings
-if command -v fd &> /dev/null; then
+if [[ $commands[fd] ]]; then
   FD_BIN_NAME="fd"
-elif command -v fdfind &> /dev/null; then
+elif [[ $commands[fdfind] ]]; then
   FD_BIN_NAME="fdfind"
 fi
 if [[ ! -z ${FD_BIN_NAME} ]]; then
