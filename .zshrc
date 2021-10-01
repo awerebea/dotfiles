@@ -230,7 +230,10 @@ alias kd="kubectl describe "
 alias kctx="kubectx"
 alias kns="kubens"
 
-# Source stern completion if stern exist
+# Source kubectl completion if exist
+[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
+
+# Source stern completion if exist
 [[ $commands[stern] ]] && source <(stern --completion=zsh)
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
