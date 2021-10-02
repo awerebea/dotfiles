@@ -60,6 +60,12 @@ fzf-marks.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/auto-notify/\
+auto-notify.plugin.zsh ]]; then
+  git clone https://github.com/MichaelAquilina/zsh-auto-notify.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/auto-notify
+fi
+
 # fzf-fasd
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
 fzf-fasd.plugin.zsh ]]; then
@@ -106,6 +112,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Which plugins to load?
 plugins=(
+          auto-notify
           aws
           colored-man-pages
           copydir
