@@ -66,6 +66,12 @@ auto-notify.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/auto-notify
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa/\
+zsh-exa.plugin.zsh ]]; then
+  git clone https://github.com/ptavares/zsh-exa.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa
+fi
+
 # fzf-fasd
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
 fzf-fasd.plugin.zsh ]]; then
@@ -138,6 +144,7 @@ plugins=(
           web-search
           zsh-autosuggestions
           zsh-completions
+          zsh-exa
           zsh-interactive-cd
           zsh-syntax-highlighting
           zsh-vi-mode
@@ -211,17 +218,17 @@ alias l="exa --long --all --header --links --git --icons \
   --group-directories-first --color-scale"
 alias lle="exa --long --all --header --links --git --icons --color=always \
   --group-directories-first --color-scale | less -NR"
-alias lt="exa --long --all --header --links --git --icons \
+alias lT="exa --long --all --header --links --git --icons \
   --group-directories-first --color-scale -T"
-alias ltle="exa --long --all --header --links --git --icons --color=always \
+alias lTle="exa --long --all --header --links --git --icons --color=always \
   --group-directories-first --color-scale -T | less -NR"
 alias ll="exa --long --header --links --git --icons --group-directories-first \
   --color-scale"
 alias llle="exa --long --header --links --git --icons --group-directories-first \
   --color=always --color-scale | less -NR"
-alias llt="exa --long --header --links --git --icons --group-directories-first \
+alias llT="exa --long --header --links --git --icons --group-directories-first \
   --color-scale -T"
-alias lltle="exa --long --header --links --git --icons --group-directories-first \
+alias llTle="exa --long --header --links --git --icons --group-directories-first \
   --color=always --color-scale -T | less -NR"
 
 # docker aliases
