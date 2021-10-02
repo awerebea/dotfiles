@@ -78,6 +78,12 @@ forgit.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/print-alias/\
+print-alias.plugin.zsh ]]; then
+  git clone https://github.com/brymck/print-alias.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/print-alias
+fi
+
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
@@ -185,6 +191,7 @@ plugins=(
           notify
           rsync
           pass
+          print-alias
           sudo
           systemd
           terraform
@@ -518,3 +525,10 @@ pastefinish() {
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
+
+# print-alias plugin
+export PRINT_ALIAS_PREFIX='  ↳ '
+# export PRINT_ALIAS_FORMAT=$'\e[1;36m'
+# export PRINT_NON_ALIAS_FORMAT=$'\e[0m'
+export PRINT_ALIAS_IGNORE_REDEFINED_COMMANDS=true
+# export PRINT_ALIAS_IGNORE_ALIASES=(my_alias my_other_alias)
