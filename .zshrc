@@ -407,3 +407,16 @@ fi
 
 # Activate fzf-marks plugin
 source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/fzf-marks.plugin.zsh
+
+# Emulate <C-o> vim behavior
+vi-cmd () {
+  local REPLY
+  # Read the next keystroke, look it up in the `vicmd` keymap and, if successful,
+  # evalute the widget bound to it in the context of the `vicmd` keymap.
+  zle .read-command -K vicmd && 
+      zle $REPLY -K vicmd
+}
+# Make a keyboard widget out of the function above.
+zle -N vi-cmd
+# Bind the widget to Ctrl-O in the `viins` keymap.
+bindkey -v '^O' vi-cmd
