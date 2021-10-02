@@ -78,6 +78,19 @@ forgit.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 fi
 
+# kubectx
+if [[ ! $commands[kubectx] ]] && \
+  [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
+kubectx.plugin.zsh ]]; then
+  git clone --recursive https://github.com/unixorn/kubectx-zshplugin.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
+  local current_pwd="$PWD"
+  cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
+  git submodule init
+  git submodule update
+  cd "$current_pwd"
+fi
+
 # fzf-fasd
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
 fzf-fasd.plugin.zsh ]]; then
@@ -169,6 +182,7 @@ plugins=(
           helm
           history-sync
           kubectl
+          kubectx
           rsync
           pass
           sudo
