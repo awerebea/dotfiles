@@ -60,10 +60,10 @@ fzf-marks.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/auto-notify/\
-auto-notify.plugin.zsh ]]; then
-  git clone https://github.com/MichaelAquilina/zsh-auto-notify.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/auto-notify
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/notify/\
+notify.plugin.zsh ]]; then
+  git clone https://github.com/marzocchi/zsh-notify.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/notify
 fi
 
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa/\
@@ -165,7 +165,6 @@ export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
 
 # Which plugins to load?
 plugins=(
-          auto-notify
           aws
           colored-man-pages
           copydir
@@ -183,6 +182,7 @@ plugins=(
           history-sync
           kubectl
           kubectx
+          notify
           rsync
           pass
           sudo
@@ -440,6 +440,36 @@ function zvm_after_init() {
 # docker plugin
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
+
+# notify (https://github.com/marzocchi/zsh-notify)
+# custom title for error and success notifications
+zstyle ':notify:*' error-title "Command failed (in #{time_elapsed} seconds)"
+zstyle ':notify:*' success-title "Command finished (in #{time_elapsed} seconds)"
+# set application name in notification
+zstyle ':notify:*' app-name sh
+# set a expire time in notifications
+zstyle ':notify:*' expire-time 2500
+# notifications icons for failure or success,
+# path to an image, or an URL if you are on macOS
+[[ -f /usr/share/icons/Mint-X/status/32/apport.png ]] && \
+  zstyle ':notify:*' error-icon "/usr/share/icons/Mint-X/status/32/apport.png"
+[[ -f /usr/share/icons/Mint-X/actions/32/gtk-ok.png ]] && \
+  zstyle ':notify:*' success-icon "/usr/share/icons/Mint-X/actions/32/gtk-ok.png"
+# have the terminal come back to front when the notification is posted
+# zstyle ':notify:*' activate-terminal yes
+# timeout for notifications for successful commands
+# (notifications for failed commands are always posted)
+zstyle ':notify:*' command-complete-timeout 15
+# use the time elapsed even when the command fails
+# (by default, command failure notifications are always displayed)
+# zstyle ':notify:*' always-notify-on-failure no
+# blacklist of commands that should never trigger notifications,
+# using grep's extended regular expression syntax
+# zstyle ':notify:*' blacklist-regex 'find|git'
+# Enable when connected over SSH, which is disabled by default.
+zstyle ':notify:*' enable-on-ssh yes
+# force checking of the WINDOWID variable on every command
+# zstyle ':notify:*' always-check-active-window yes
 
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
