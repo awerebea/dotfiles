@@ -84,6 +84,12 @@ print-alias.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/print-alias
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub/\
+zsh-sed-sub.plugin.zsh ]]; then
+  git clone https://github.com/MenkeTechnologies/zsh-sed-sub.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub
+fi
+
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
@@ -202,6 +208,7 @@ plugins=(
           zsh-completions
           zsh-exa
           zsh-interactive-cd
+          zsh-sed-sub
           zsh-syntax-highlighting
           zsh-vi-mode
           history-substring-search
@@ -532,3 +539,9 @@ export PRINT_ALIAS_PREFIX='  ↳ '
 # export PRINT_NON_ALIAS_FORMAT=$'\e[0m'
 export PRINT_ALIAS_IGNORE_REDEFINED_COMMANDS=true
 # export PRINT_ALIAS_IGNORE_ALIASES=(my_alias my_other_alias)
+
+# zsh-sed-sub plugin
+# keybindings to do global search and replace on current command line
+# default Ctrl-F Ctrl-P
+bindkey -M viins '^F^P' basicSedSub
+bindkey -M vicmd '^F^P' basicSedSub
