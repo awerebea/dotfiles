@@ -54,6 +54,12 @@ zsh-vi-mode.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/\
+fzf-marks.plugin.zsh ]]; then
+  git clone https://github.com/urbainvaes/fzf-marks \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks
+fi
+
 # fzf-fasd
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
 fzf-fasd.plugin.zsh ]]; then
@@ -391,3 +397,6 @@ fi
 
 # Automatically start tmux on local machine if not running yet
 [[ -z "$SSH_CONNECTION" ]] && tmux info &> /dev/null || tmux
+
+# Activate fzf-marks plugin
+source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/fzf-marks.plugin.zsh
