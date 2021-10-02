@@ -72,6 +72,12 @@ zsh-exa.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit/\
+forgit.plugin.zsh ]]; then
+  git clone https://github.com/wfxr/forgit.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
+fi
+
 # fzf-fasd
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
 fzf-fasd.plugin.zsh ]]; then
@@ -116,6 +122,34 @@ fi
 # Set name of the theme to load
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
+# forgit plugin settings
+# aliases
+forgit_log=GLO
+forgit_diff=GD
+forgit_add=GA
+forgit_reset_head=GRH
+forgit_ignore=GI
+forgit_checkout_file=GCF
+forgit_checkout_branch=GCB
+forgit_checkout_commit=GCO
+forgit_clean=GCLEAN
+forgit_stash_show=GSS
+forgit_cherry_pick=GCP
+forgit_rebase=GRB
+forgit_fixup=GFU
+# forgit fzf settings
+export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
+  'bat --style=numbers --color=always --line-range :500 {}' \
+  --preview-window=right:50% \
+  --bind=ctrl-/:toggle-preview \
+  --bind=alt-j:preview-down,alt-k:preview-up \
+  --bind=alt-b:preview-page-up,alt-f:preview-page-down \
+  --bind=alt-u:preview-half-page-up,alt-d:preview-half-page-down \
+  --bind=alt-up:preview-top,alt-down:preview-bottom \
+  --bind=ctrl-space:toggle+up \
+  --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
+  --bind=ctrl-f:page-down,ctrl-b:page-up"
+
 # Which plugins to load?
 plugins=(
           auto-notify
@@ -128,6 +162,7 @@ plugins=(
           encode64
           extract
           fasd
+          forgit
           fzf-fasd
           fzf-tab
           git
