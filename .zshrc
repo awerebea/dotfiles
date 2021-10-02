@@ -375,6 +375,10 @@ zstyle ':completion:*:*:docker-*:*' option-stacking yes
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+bindkey -M vicmd '^[[A' history-substring-search-up
+bindkey -M vicmd '^[[B' history-substring-search-down
+bindkey -M viins '^[[A' history-substring-search-up
+bindkey -M viins '^[[B' history-substring-search-down
 
 # check daily for plugins updates
 export UPDATE_ZSH_DAYS=1
