@@ -84,6 +84,12 @@ zsh-sed-sub.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/\
+tipz.zsh ]]; then
+  git clone https://github.com/molovo/tipz \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -566,8 +572,8 @@ alias_for() {
   fi
 }
 expand_command_line() {
-  GREEN='\033[0;32m'
-  CYAN='\033[0;36m'
+  CYAN='\033[1;36m'
+  BLUE='\033[0;34m'
   NC='\033[0m'
   first=$(echo "$1" | awk '{print $1;}')
   rest=$(echo ${${1}/"${first}"/})
@@ -575,7 +581,7 @@ expand_command_line() {
     cmd_alias="$(alias_for "${first}" "${NC}${rest:1}")"
     # Check if there's an alias for the command
     if [[ -n $cmd_alias ]]; then # If there was
-      echo "  ↳ ${CYAN}${cmd_alias}${NC}" # Print it
+      echo "  ${CYAN}↳${NC} ${BLUE}${cmd_alias}${NC}" # Print it
     fi
   fi
 }
@@ -586,3 +592,9 @@ pre_validation() {
 autoload -U add-zsh-hook                      # Load the zsh hook module.
 add-zsh-hook preexec pre_validation           # Adds the hook
 # add-zsh-hook -d preexec pre_validation        # Remove it for this hook.
+
+# tipz plugin
+if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
+  source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh
+  export TIPZ_TEXT='  \033[1;33m↳\033[0m'
+fi
