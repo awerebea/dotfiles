@@ -4,7 +4,16 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-export EDITOR='vim'
+if [[ $commands[nvim] ]]; then
+  export EDITOR='nvim'
+  alias vim="nvim"
+elif [[ $commands[vim] ]]; then
+  export EDITOR='vim'
+elif [[ $commands[vi] ]]; then
+  export EDITOR='vi'
+else
+  export EDITOR='nano'
+fi
 
 export TERM=xterm-256color
 
