@@ -276,7 +276,7 @@ function omz-update() {
   NC='\033[0m' # No Color
   local current_pwd="$PWD"
   echo "${GREEN}Updating OMZ custom plugins:${NC}"
-  cd "$ZSH/custom/plugins"
+  cd "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins"
     for plugin in *; do
       if [ -d $plugin/.git ]; then
         echo "${YELLOW_BOLD}${plugin}${NC}"
