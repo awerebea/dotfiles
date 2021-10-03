@@ -342,6 +342,9 @@ function gacp() {
 }
 
 # zsh_history settings and sync via GitHub
+HISTSIZE=100500
+SAVEHIST=100000
+setopt HIST_EXPIRE_DUPS_FIRST
 setopt HIST_FIND_NO_DUPS
 setopt HIST_IGNORE_ALL_DUPS
 setopt HIST_IGNORE_SPACE
