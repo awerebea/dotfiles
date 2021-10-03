@@ -84,6 +84,13 @@ zsh-sed-sub.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub
 fi
 
+# terraform plugin with resource names detection
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
+terraform.plugin.zsh ]]; then
+  git clone https://github.com/macunha1/zsh-terraform \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform
+fi
+
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
