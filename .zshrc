@@ -90,6 +90,12 @@ tipz.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tmux-vim-integration/\
+tmux-vim-integration.plugin.zsh ]]; then
+  git clone https://github.com/jsahlen/tmux-vim-integration.plugin.zsh.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tmux-vim-integration
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -209,6 +215,7 @@ plugins=(
           systemd
           terraform
           tmux
+          tmux-vim-integration
           ubuntu
           web-search
           zsh-autosuggestions
