@@ -1,10 +1,13 @@
 set nocompatible              " be iMproved, required
 
 " Install vim-plug if not found
-if empty(glob('~/.vim/autoload/plug.vim'))
+let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
+if empty(glob(data_dir . '/autoload/plug.vim'))
   silent !export GIT_SSL_NO_VERIFY=true
-  silent !curl --insecure -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  silent execute '!curl -fLo '.data_dir.'/autoload/plug.vim
+  \ --create-dirs
+  \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
 " Run PlugInstall if there are missing plugins
@@ -246,7 +249,9 @@ if has("autocmd")
 endif
 " }}}
 
-set ttymouse=xterm2
+if !has('nvim')
+  set ttymouse=xterm2
+endif
 set mouse=a
 set mousehide
 set showcmd
@@ -854,10 +859,10 @@ call yankstack#setup()
 noremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
 
 " List buffers keybinds " {{{
-if v:version < 802
+if v:version < 802 && !has('nvim')
   nnoremap <silent> <leader><Enter> :BufExplorer<CR>
 else
-  nnoremap <silent> <leader><Enter>  :Buffers<CR>
+  nnoremap <silent> <leader><Enter> :Buffers<CR>
   nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
 endif
 nmap <F5> :BufExplorer<CR>
@@ -1006,51 +1011,86 @@ nmap Q q
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/backup or .
-if isdirectory($HOME . '/.vim/backup') == 0
-  :silent !mkdir -p ~/.vim/backup >/dev/null 2>&1
-endif
 set backup
 set backupdir-=.
 set backupdir+=.
 set backupdir-=~/
-set backupdir^=~/.vim/backup//
-set backupdir^=./.vim-backup//
+if has('nvim')
+  if isdirectory($HOME . '/.vim/nvim-backup') == 0
+    :silent !mkdir -p ~/.vim/nvim-backup >/dev/null 2>&1
+  endif
+  set backupdir^=~/.vim/nvim-backup//
+  set backupdir^=./.nvim-backup//
+else
+  if isdirectory($HOME . '/.vim/vim-backup') == 0
+    :silent !mkdir -p ~/.vim/vim-backup >/dev/null 2>&1
+  endif
+  set backupdir^=~/.vim/vim-backup//
+  set backupdir^=./.vim-backup//
+endif
 set writebackup
 
 " Save your swap files to a less annoying place than the current directory.
 " If you have .vim-swap in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/swap, ~/tmp or .
-if isdirectory($HOME . '/.vim/swap') == 0
-  :silent !mkdir -p ~/.vim/swap >/dev/null 2>&1
-endif
 set swapfile
 set updatecount=100
-set directory=./.vim-swap//
-set directory+=~/.vim/swap//
+if has('nvim')
+  if isdirectory($HOME . '/.vim/nvim-swap') == 0
+    :silent !mkdir -p ~/.vim/nvim-swap >/dev/null 2>&1
+  endif
+  set directory=./.nvim-swap//
+  set directory+=~/.vim/nvim-swap//
+else
+  if isdirectory($HOME . '/.vim/vim-swap') == 0
+    :silent !mkdir -p ~/.vim/vim-swap >/dev/null 2>&1
+  endif
+  set directory=./.vim-swap//
+  set directory+=~/.vim/vim-swap//
+endif
 set directory+=~/tmp//
 set directory+=.
 
 " Viminfo stores the the state of your previous editing session
-set viminfo+=n~/.vim/viminfo
+if has('nvim')
+  set viminfo+=n~/.vim/nviminfo
+else
+  set viminfo+=n~/.vim/viminfo
+endif
 
 if exists("+undofile")
   " Undofile - This allows you to use undos after exiting and restarting
   " This, like swap and backup files, uses .vim-undo first, then ~/.vim/undo
   " :help undo-persistence
   " This is only present in 7.3+
-  if isdirectory($HOME . '/.vim/undo') == 0
-    :silent !mkdir -p ~/.vim/undo > /dev/null 2>&1
-  endif
   set undofile
-  set undodir=./.vim-undo//
-  set undodir+=~/.vim/undo//
+  if has('nvim')
+    if isdirectory($HOME . '/.vim/nvim-undo') == 0
+      :silent !mkdir -p ~/.vim/nvim-undo > /dev/null 2>&1
+    endif
+    set undodir=./.nvim-undo//
+    set undodir+=~/.vim/nvim-undo//
+  else
+    if isdirectory($HOME . '/.vim/vim-undo') == 0
+      :silent !mkdir -p ~/.vim/vim-undo > /dev/null 2>&1
+    endif
+    set undodir=./.vim-undo//
+    set undodir+=~/.vim/vim-undo//
+  endif
 endif
 
 " Viewdir
-if isdirectory($HOME . '/.vim/view') == 0
-  :silent !mkdir -p ~/.vim/view >/dev/null 2>&1
+if has('nvim')
+  if isdirectory($HOME . '/.vim/nvim-view') == 0
+    :silent !mkdir -p ~/.vim/nvim-view >/dev/null 2>&1
+  endif
+  set viewdir=~/.vim/nvim-view
+else
+  if isdirectory($HOME . '/.vim/vim-view') == 0
+    :silent !mkdir -p ~/.vim/vim-view >/dev/null 2>&1
+  endif
+  set viewdir=~/.vim/vim-view
 endif
-set viewdir=~/.vim/view
 " }}}
 
 " Highlight TODO, FIXME, NOTE, etc. " {{{
@@ -1231,7 +1271,7 @@ let g:fzf_colors =
 autocmd! FileType fzf
 autocmd  FileType fzf set noshowmode noruler nonu
 
-if v:version >= 802
+if v:version >= 802 || has('nvim')
   nnoremap <silent> <leader>f        :Files<CR>
   nnoremap <silent> <leader>C        :Colors<CR>
   nnoremap <silent> <leader>l        :Lines<CR>
