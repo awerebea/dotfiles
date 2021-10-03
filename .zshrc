@@ -78,12 +78,6 @@ forgit.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/print-alias/\
-print-alias.plugin.zsh ]]; then
-  git clone https://github.com/brymck/print-alias.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/print-alias
-fi
-
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub/\
 zsh-sed-sub.plugin.zsh ]]; then
   git clone https://github.com/MenkeTechnologies/zsh-sed-sub.git \
@@ -190,14 +184,14 @@ plugins=(
           fzf-fasd
           fzf-tab
           git
+          globalias
           helm
           history-sync
           kubectl
           kubectx
           notify
-          rsync
           pass
-          print-alias
+          rsync
           sudo
           systemd
           terraform
@@ -548,3 +542,40 @@ export PRINT_ALIAS_IGNORE_REDEFINED_COMMANDS=true
 # default Ctrl-F Ctrl-P
 bindkey -M viins '^F^P' basicSedSub
 bindkey -M vicmd '^F^P' basicSedSub
+
+# Reveal Executed Alias
+alias_for() {
+  local cmd_alias=""
+  [[ $1 =~ '[[:punct:]]' ]] && return
+  local search=${1}
+  local found="$( alias $search )"
+  if [[ -n $found ]]; then
+    found=${found//\\//} # Replace backslash with slash
+    found=${found%\'} # Remove end single quote
+    found=${found#"$search='"} # Remove alias name
+    echo "${found} ${2}" | xargs # Return found value (with parameters)
+  else
+    echo ""
+  fi
+}
+expand_command_line() {
+  GREEN='\033[0;32m'
+  CYAN='\033[0;36m'
+  NC='\033[0m'
+  first=$(echo "$1" | awk '{print $1;}')
+  rest=$(echo ${${1}/"${first}"/})
+  if [[ -n "${first//-//}" ]]; then # is not hypen
+    cmd_alias="$(alias_for "${first}" "${NC}${rest:1}")"
+    # Check if there's an alias for the command
+    if [[ -n $cmd_alias ]]; then # If there was
+      echo "  ↳ ${CYAN}${cmd_alias}${NC}" # Print it
+    fi
+  fi
+}
+pre_validation() {
+  [[ $# -eq 0 ]] && return                    # If there's no input, return. Else...
+  expand_command_line "$@"
+}
+autoload -U add-zsh-hook                      # Load the zsh hook module.
+add-zsh-hook preexec pre_validation           # Adds the hook
+# add-zsh-hook -d preexec pre_validation        # Remove it for this hook.
