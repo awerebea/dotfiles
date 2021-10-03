@@ -1657,15 +1657,19 @@ endif
 " Word not recognized
 hi clear SpellBad
 hi SpellBad cterm=underline ctermfg=blue
+hi SpellBad gui=underline guifg=DeepSkyBlue
 " Word not capitalized
 hi clear SpellCap
 hi SpellCap cterm=underline ctermfg=red
+hi SpellCap gui=underline guifg=firebrick3
 " Word is rare
 hi clear SpellRare
 hi SpellRare cterm=underline ctermfg=green
+hi SpellRare gui=underline guifg=LimeGreen
 " Wrong spelling for selected region
 hi clear SpellLocal
 hi SpellLocal cterm=underline ctermfg=yellow
+hi SpellLocal gui=underline guifg=DarkGoldenrod1
 " }}}
 
 inoremap <expr> <c-x><c-k> SpellCheck("\<c-x>\<c-k>")
