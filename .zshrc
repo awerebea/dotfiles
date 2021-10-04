@@ -623,3 +623,6 @@ if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
   source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh
   export TIPZ_TEXT='  \033[1;33m↳\033[0m'
 fi
+
+# globalias filter values (commands that should not be expanded)
+export GLOBALIAS_FILTER_VALUES=(z)
