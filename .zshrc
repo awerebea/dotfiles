@@ -187,7 +187,7 @@ forgit_fixup=GFU
 # forgit fzf settings
 export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
   'bat --style=numbers --color=always --line-range :500 {}' \
-  --preview-window=right:50% \
+  --preview-window=up:60% \
   --bind=ctrl-/:toggle-preview \
   --bind=alt-j:preview-down,alt-k:preview-up \
   --bind=alt-b:preview-page-up,alt-f:preview-page-down \
