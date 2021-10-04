@@ -1284,6 +1284,7 @@ if v:version >= 802 || has('nvim')
   nnoremap <silent> <leader>`        :Marks<CR>
   nnoremap <silent> q: :History:<CR>
   nnoremap <silent> q/ :History/<CR>
+  nnoremap <silent> <leader>h :History<CR>
 
   " inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
   "   \ --scroll 498 --min 5')
