@@ -363,6 +363,7 @@ set pastetoggle= " keep indent when pasting test
 
 " Text selection highlighting
 highlight Visual cterm=BOLD ctermbg=238 ctermfg=NONE
+  \ gui=BOLD guibg=#ffffff guifg=NONE
 " set syntax=c
 " Enable syntax highlighting
 if has("syntax")
@@ -441,7 +442,7 @@ highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
 " iTerm compatibility {{{
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m" " }}}
-highlight Comment cterm=italic
+highlight Comment cterm=italic gui=italic
 
 " NERDCommenter
 " Add spaces after comment delimiters
