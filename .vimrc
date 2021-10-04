@@ -369,8 +369,22 @@ if has("syntax")
   syntax on
 endif
 
-" Toggle GitGutter signs
+" GitGutter settings
+autocmd BufWritePost * GitGutter
+" toggle signs
 nmap <leader>gg :GitGutterSignsToggle<CR>
+nmap <leader>ga :GitGutterAll<CR>
+" [c / ]c - go to previous/next hunk
+nmap ghp <Plug>(GitGutterPreviewHunk)
+nmap ghs <Plug>(GitGutterStageHunk)
+nmap ghu <Plug>(GitGutterUndoHunk)
+" " Use fontawesome icons as signs
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '_'
+let g:gitgutter_sign_removed_first_line = '^'
+let g:gitgutter_sign_modified_removed = '~_'
+
 " Launch 'Goyo' style
 nmap <leader>go :Goyo<CR>
 let g:goyo_width = 86
