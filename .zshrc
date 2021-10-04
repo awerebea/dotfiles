@@ -625,4 +625,16 @@ if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
 fi
 
 # globalias filter values (commands that should not be expanded)
-export GLOBALIAS_FILTER_VALUES=(z)
+export GLOBALIAS_FILTER_VALUES=(f z)
+
+# fasd + fzf
+zd() {
+  fasdlist=$( fasd -d -l -R $1 | \
+    fzf --query="$1" --select-1 --exit-0 --height=100% --reverse --no-sort --cycle) &&
+    cd "$fasdlist"
+}
+zf() {
+  fasdlist=$( fasd -f -l -R $1 | \
+    fzf --query="$1" --select-1 --exit-0 --height=100% --reverse --no-sort --cycle) &&
+    xdg-open "$fasdlist"
+}
