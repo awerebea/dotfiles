@@ -871,7 +871,8 @@ endif
 call yankstack#setup()
 
 " Turn off search highlight by presing space
-noremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
+nnoremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
+nnoremap <Esc><Esc> :<C-u>nohlsearch<CR><C-l>
 
 " List buffers keybinds " {{{
 if v:version < 802 && !has('nvim')
