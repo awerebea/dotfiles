@@ -285,7 +285,7 @@ else
   endif
 endfunction
 
-nnoremap <leader>rn :call ToggleSmartRelativenumbers()<CR>
+nnoremap <leader><leader>rn :call ToggleSmartRelativenumbers()<CR>
 
 " ESC button remap
 " inoremap kj <esc>
@@ -1833,7 +1833,7 @@ endfunction
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
 " Symbol renaming.
-nmap <leader>crn <Plug>(coc-rename)
+nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
 xmap <leader>cf  <Plug>(coc-format-selected)
