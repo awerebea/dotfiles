@@ -764,7 +764,7 @@ imap <F10> <esc>:TlistToggle<cr>
 
 " 'ale' syntax error checker
 let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc'],
-  \ 'python': ['flake8', 'mypy', 'pylint', 'pyright'],
+  \ 'python': ['flake8', 'mypy', 'pylint', 'pyright', 'pydocstyle'],
   \ }
 
 " Yankstack
@@ -1762,9 +1762,12 @@ nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 set iskeyword-=_
 
 " Coc settings {{{
-" Disable Ale at startup (launch if needed)
+" enable(1)/disable(0) ale at startup
 let g:ale_enabled = 0
-
+" disable ale LSP to work with coc.nvim simultaneously
+let g:ale_disable_lsp = 1
+" toggle ale linting
+nnoremap <leader>at :ALEToggle<cr>
 " Give more space for displaying messages.
 " set cmdheight=2
 
@@ -1799,7 +1802,7 @@ function! s:check_back_space() abort
 endfunction
 
 " Disable Coc suggestions by default, use manual trigger.
-autocmd BufEnter * let b:coc_suggest_disable = 1
+" autocmd BufEnter * let b:coc_suggest_disable = 1
 
 " Use <c-space> to trigger completion.
 if has('nvim')
