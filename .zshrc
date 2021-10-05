@@ -295,8 +295,12 @@ function omz-update() {
     cd "$current_pwd"
 }
 
-alias rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`; \
-  cd "$LASTDIR" > /dev/null 2>&1'
+# Store the alias command in a variable to prevent an error using the alias_for
+# function.
+rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`;'
+rr+=' cd "$LASTDIR" > /dev/null 2>&1'
+alias rr=${rr}
+unset rr
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
 
 # exa aliases
@@ -558,13 +562,6 @@ pastefinish() {
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
-
-# print-alias plugin
-export PRINT_ALIAS_PREFIX='  ↳ '
-# export PRINT_ALIAS_FORMAT=$'\e[1;36m'
-# export PRINT_NON_ALIAS_FORMAT=$'\e[0m'
-export PRINT_ALIAS_IGNORE_REDEFINED_COMMANDS=true
-# export PRINT_ALIAS_IGNORE_ALIASES=(my_alias my_other_alias)
 
 # zsh-sed-sub plugin
 # keybindings to do global search and replace on current command line
