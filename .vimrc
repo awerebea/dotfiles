@@ -82,6 +82,7 @@ Plug 'tpope/vim-git'
 Plug 'airblade/vim-gitgutter'
 " A light and configurable statusline/tabline plugin for Vim
 Plug 'itchyny/lightline.vim'
+Plug 'niklaas/lightline-gitdiff'
 " Automatically save/restore current state of Vim
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
@@ -544,7 +545,8 @@ let g:rigel_lightline = 1
 let g:lightline = {
   \ 'colorscheme': 'rigel',
   \ 'active': {
-  \   'left': [['mode', 'paste'], ['gitbranch'], ['filename', 'modified']],
+  \   'left': [['mode', 'paste'], ['gitbranch', 'gitdiff'],
+  \             ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
   \ 'fileencoding', 'charvaluehex', 'spell', 'indent']]
   \ },
@@ -578,9 +580,11 @@ let g:lightline = {
   \   'lineinfo': 'LightlineLineinfo',
   \   'percent': 'LightlinePercent',
   \   'spell': 'LightlineSpell',
+  \   'gitdiff': 'LightlineGitDiff',
   \ },
   \ 'component_type': {
   \   'readonly': 'error',
+  \   'gitdiff': 'middle',
   \ },
   \ }
 
@@ -676,10 +680,14 @@ function! LightlineFileencoding()
 endfunction
 
 function! LightlineGitbranch()
-  if winwidth(0) > 90 || &filetype == 'nerdtree'
+  if winwidth(0) > 85 || &filetype == 'nerdtree'
     return fugitive#head()
   endif
   return ''
+endfunction
+
+function! LightlineGitDiff() abort
+      return winwidth(0) > 88 ? lightline#gitdiff#get() : ''
 endfunction
 
 function! LightlineSpell()
@@ -1921,3 +1929,9 @@ nnoremap <silent><nowait> \ck  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> \cp  :<C-u>CocListResume<CR>
 " }}}
+
+" lightline-gitdiff settings
+let g:lightline#gitdiff#indicator_added = '+'
+let g:lightline#gitdiff#indicator_deleted = '-'
+let g:lightline#gitdiff#indicator_modified = '~'
+let g:lightline#gitdiff#separator = ' '
