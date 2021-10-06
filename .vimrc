@@ -121,6 +121,7 @@ Plug 'Shougo/vimproc.vim'
 
 " Syntax checker
 Plug 'dense-analysis/ale'
+Plug 'maximbaz/lightline-ale'
 let check_result = system("command -v node")
 if v:shell_error == 0
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -241,7 +242,7 @@ if has("autocmd")
   autocmd FileType tmux       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType conf       setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType nginx      setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType json       setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType json*      setlocal ts=4 sts=4 sw=4 expandtab
   autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType c          setlocal ts=4 sts=4 sw=4 noet
   autocmd FileType dockerfile setlocal ts=4 sts=4 sw=4 noet
@@ -551,8 +552,9 @@ let g:lightline = {
   \ 'active': {
   \   'left': [['mode', 'paste'], ['gitbranch', 'gitdiff'],
   \             ['filename', 'modified']],
-  \   'right': [['lineinfo'], ['percent'], ['fileformat', 'filetype',
-  \ 'fileencoding', 'charvaluehex', 'spell', 'indent']]
+  \   'right': [['lineinfo'], ['percent'], ['fileformat',
+  \ 'filetype', 'fileencoding', 'charvaluehex', 'spell', 'indent',
+  \ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos']]
   \ },
   \ 'inactive': {
   \   'left': [ [ 'filename', 'modified' ] ],
@@ -586,9 +588,21 @@ let g:lightline = {
   \   'spell': 'LightlineSpell',
   \   'gitdiff': 'LightlineGitDiff',
   \ },
+  \ 'component_expand': {
+  \   'linter_checking': 'lightline#ale#checking',
+  \   'linter_infos': 'lightline#ale#infos',
+  \   'linter_warnings': 'lightline#ale#warnings',
+  \   'linter_errors': 'lightline#ale#errors',
+  \   'linter_ok': 'lightline#ale#ok',
+  \ },
   \ 'component_type': {
   \   'readonly': 'error',
   \   'gitdiff': 'middle',
+  \   'linter_checking': 'middle',
+  \   'linter_infos': 'middle',
+  \   'linter_warnings': 'warning',
+  \   'linter_errors': 'error',
+  \   'linter_ok': 'middle',
   \ },
   \ }
 
@@ -769,6 +783,7 @@ imap <F10> <esc>:TlistToggle<cr>
 " 'ale' syntax error checker
 let g:ale_linters = {'cpp': ['cppcheck', 'clang'], 'c': ['cppcheck', 'gcc'],
   \ 'python': ['flake8', 'mypy', 'pylint', 'pyright', 'pydocstyle'],
+  \ 'sh': ['bashate', 'language_server', 'shell', 'shellcheck'],
   \ }
 
 " Yankstack
@@ -1765,24 +1780,60 @@ nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 " Use underscore as word separator
 set iskeyword-=_
 
-" Coc settings {{{
+" ale settings {{{
+" lightline-ale icons
+let g:lightline#ale#indicator_checking = "\uf110"
+let g:lightline#ale#indicator_infos = "\uf129"
+let g:lightline#ale#indicator_warnings = "\uf071"
+let g:lightline#ale#indicator_errors = "\uf05e"
+let g:lightline#ale#indicator_ok = "\uf00c"
+
+" enable(1)/disable(0) ale at startup
+let g:ale_enabled = 1
+" disable ale LSP to work with coc.nvim simultaneously
+" let g:ale_disable_lsp = 1
+
+if has('popupwin') || has('nvim')
+  " use floating windows for errors and warnings
+  let g:ale_floating_preview = 1
+  let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+  " autopopup detail window with cursor on the line
+  let g:ale_cursor_detail = 0
+endif
+
+" enable completion
+let g:ale_completion_enabled = 1
+
+" if autoinsert issues with completion popup occurs
+set completeopt=menu,menuone,preview,noselect,noinsert
+" or alternatively, to show documentation in popups
+" set completeopt=menu,menuone,popup,noselect,noinsert
+
+" toggle ale linting
+nnoremap <leader>at :ALEToggle<cr>
+" show full message in split window
+nnoremap <leader>ad :ALEDetail<cr>
+
+nmap <silent> [g <Plug>(ale_previous_wrap)
+nmap <silent> ]g <Plug>(ale_next_wrap)
+
+" go-to keymaps
+nmap <silent> gd :ALEGoToDefinition<cr>
+nmap <silent> gy :ALEGoToTypeDefinition<cr>
+nmap <silent> gr :ALEFindReferences<cr>
+
+" coc settings {{{
 let check_result = system("command -v node")
 if v:shell_error == 0
-  " enable(1)/disable(0) ale at startup
-  let g:ale_enabled = 0
-  " disable ale LSP to work with coc.nvim simultaneously
-  let g:ale_disable_lsp = 1
-  " toggle ale linting
-  nnoremap <leader>at :ALEToggle<cr>
-  " Give more space for displaying messages.
-  " set cmdheight=2
-
   " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
   " delays and poor user experience.
   set updatetime=300
 
   " Don't pass messages to |ins-completion-menu|.
   set shortmess+=c
+
+  " Give more space for displaying messages.
+  " set cmdheight=2
 
   " Always show the signcolumn, otherwise it would shift the text each time
   " diagnostics appear/become resolved.
@@ -1819,14 +1870,12 @@ if v:shell_error == 0
 
   " Make <CR> auto-select the first completion item and notify coc.nvim to
   " format on enter, <cr> could be remapped by other vim plugin
-  " inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-  "                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+  inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                                \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
-  " Use `[g` and `]g` to navigate diagnostics
-  " Use `:CocDiagnostics` to get all diagnostics of current buffer in
-  " location list.
-  nmap <silent> [g <Plug>(coc-diagnostic-prev)
-  nmap <silent> ]g <Plug>(coc-diagnostic-next)
+  " Use `[g` and `]g` to navigate diagnostics (use ale instead)
+  " nmap <silent> [g <Plug>(coc-diagnostic-prev)
+  " nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
   " GoTo code navigation.
   nmap <silent> gd <Plug>(coc-definition)
@@ -1922,7 +1971,7 @@ if v:shell_error == 0
   " Add (Neo)Vim's native statusline support.
   " NOTE: Please see `:h coc-status` for integrations with external plugins
   " that provide custom statusline: lightline.vim, vim-airline.
-  set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+  " set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
   " Mappings for CoCList
   " Show all diagnostics.
