@@ -116,12 +116,14 @@ fi
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
 kubectx.plugin.zsh ]]; then
-  git clone --recursive https://github.com/unixorn/kubectx-zshplugin.git \
+  git clone https://github.com/unixorn/kubectx-zshplugin.git \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
   local current_pwd="$PWD"
   cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
+  sed -i 's|git@github.com:|https://github.com/|' .gitmodules
   git submodule init
   git submodule update
+  sed -i 's|https://github.com/|git@github.com:|' .gitmodules
   cd "$current_pwd"
 fi
 
