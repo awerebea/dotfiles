@@ -54,7 +54,7 @@ Plug 'tomtom/tinykeymap_vim'
 Plug 'simeji/winresizer'
 " Interpret a file by function and cache file automatically
 Plug 'MarcWeber/vim-addon-mw-utils'
-" Libraries provides some utility functions
+" Libraries provides some utility functions (autocomplpop dependency)
 Plug 'vim-scripts/L9'
 " Smart substitution and easy change case styles
 " (fooBar, foo_bar, foo-bar, boo.bar, foo bar, Foo Bar)
@@ -1813,8 +1813,8 @@ endif
 
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+"                               \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
