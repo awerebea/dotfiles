@@ -220,6 +220,7 @@ function! TabsExpandByFourSpaces()
   setlocal expandtab
 endfunction
 command TabsPython call TabsExpandByFourSpaces()
+command TabsBash call TabsExpandByFourSpaces()
 
 function! TabsExpandByTwoSpaces()
   setlocal tabstop=2
@@ -227,11 +228,10 @@ function! TabsExpandByTwoSpaces()
   setlocal softtabstop=2
   setlocal expandtab
 endfunction
-command TabsBash call TabsExpandByTwoSpaces()
 
 if has("autocmd")
   autocmd FileType ruby       setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType sh         setlocal ts=2 sts=2 sw=2 expandtab
+  autocmd FileType sh         setlocal ts=4 sts=4 sw=4 expandtab
   autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType zsh        setlocal ts=2 sts=2 sw=2 expandtab
   autocmd FileType tmux       setlocal ts=2 sts=2 sw=2 expandtab
