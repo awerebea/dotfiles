@@ -554,7 +554,8 @@ let g:lightline = {
   \             ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat',
   \ 'filetype', 'fileencoding', 'charvaluehex', 'spell', 'indent',
-  \ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos']]
+  \ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_infos',
+  \ 'linter_ok']]
   \ },
   \ 'inactive': {
   \   'left': [ [ 'filename', 'modified' ] ],
