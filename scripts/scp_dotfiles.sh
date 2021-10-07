@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Transfer dotfiles from local host to remote using scp utility
-set -e
 
 # define filenames to transfer
 FILES_VIM=".vimrc"
@@ -47,7 +46,6 @@ __EOM__
 }
 
 # variables list
-ALL=
 VIM=
 NVIM=
 ZSH=
@@ -101,12 +99,12 @@ get_ssh_host() {
 }
 
 # get ssh options and host from the SSH_DATA variable
-SSH_OPTS=$(get_ssh_opts ${SSH_DATA})
-SSH_HOST=$(get_ssh_host ${SSH_DATA})
+SSH_OPTS=$(get_ssh_opts "${SSH_DATA}")
+SSH_HOST=$(get_ssh_host "${SSH_DATA}")
 
 # check if all required arguments are specified
-if ([[ -z ${VIM} ]] && [[ -z ${ZSH} ]] \
-    && [[ -z ${TMUX} ]] && [[ -z ${RANGER} ]]) || [[ -z ${SSH_DATA} ]]; then
+if [[ -z ${VIM} ]] && [[ -z ${ZSH} ]] \
+    && [[ -z ${TMUX} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA} ]]; then
     usage
     exit 1;
 fi
@@ -115,20 +113,22 @@ fi
 CWD_BCKP=$(pwd)
 
 # cd to the dotfiles directory
-cd ${GIT_DOTFILES}
+cd "${GIT_DOTFILES}" || exit 1
 
 # generate a random name for file archive
-ARC_NAME=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+ARC_NAME=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)
 
 # pack files for transfer to a remote host into one archive
-tar -czf ${ARC_NAME}.tar.gz --transform 's,^ranger,.config/ranger,' \
+tar -czf "${ARC_NAME}".tar.gz --transform 's,^ranger,.config/ranger,' \
     ${VIM} ${ZSH} ${TMUX} ${RANGER}
 
 # copy archive to the remote host
-scp ${SSH_OPTS} ${ARC_NAME}.tar.gz ${SSH_HOST}:~
+scp "${SSH_OPTS}" "${ARC_NAME}".tar.gz "${SSH_HOST}":~
+result=$?
 
 # remove archive from local host
-rm -f ${ARC_NAME}.tar.gz
+rm -f "${ARC_NAME}".tar.gz
+[ "${result}" -ne 0 ] && exit ${result}
 
 # create directories on the remote host if needed
 [[ -n ${NVIM} ]] && NVIM_HANDLING="&& mkdir -p ~/.config/nvim && \
@@ -136,9 +136,9 @@ rm -f ${ARC_NAME}.tar.gz
 [[ -n ${RANGER} ]] && RANGER_HANDLING="&& mkdir -p ~/.local/bin && \
     ln -s ~/.config/ranger/scripts/* ~/.local/bin/"
 # launch commands on the remote host
-ssh -t ${SSH_OPTS} ${SSH_HOST} "tar -xf ${ARC_NAME}.tar.gz && \
+ssh -t "${SSH_OPTS}" "${SSH_HOST}" "tar -xf ${ARC_NAME}.tar.gz && \
     rm -f ${ARC_NAME}.tar.gz ${NVIM_HANDLING} ${RANGER_HANDLING}"
 
 # cd to the previous location
-cd ${CWD_BCKP}
+cd "${CWD_BCKP}" || exit 1
 echo "All done!"
