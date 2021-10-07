@@ -1859,7 +1859,7 @@ if v:shell_error == 0
   endfunction
 
   " Disable Coc suggestions by default, use manual trigger.
-  " autocmd BufEnter * let b:coc_suggest_disable = 1
+  autocmd BufEnter * let b:coc_suggest_disable = 1
 
   " Use <c-space> to trigger completion.
   if has('nvim')
