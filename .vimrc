@@ -132,7 +132,8 @@ endif
 " Plug 'tomtom/tlib_vim'
 " Automatically folding
 Plug 'pseewald/vim-anyfold'
-" A Vim plugin for visually displaying indent levels in code
+" Vim plugins for visually displaying indent levels in code
+Plug 'Yggdroot/indentLine'
 Plug 'nathanaelkane/vim-indent-guides'
 " Tabs
 Plug 'ap/vim-buftabline'
@@ -174,7 +175,7 @@ filetype plugin indent on    " required
 set laststatus=2
 set noshowmode
 " Show non-visible white spaces
-set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
+set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:« ",space:·
 set list
 " Turn off sound bell
 set noerrorbells
@@ -444,6 +445,7 @@ highlight ColorColumn     ctermbg=238 guibg=#444444
 " Color of non-printable white spaces, with transparent background
 highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
                           \ ctermbg=NONE guibg=NONE
+highlight NonText       term=bold ctermfg=241 guifg=#626262
 
 " Use italic font for comments
 " iTerm compatibility {{{
@@ -1999,3 +2001,16 @@ let g:lightline#gitdiff#indicator_added = '+'
 let g:lightline#gitdiff#indicator_deleted = '-'
 let g:lightline#gitdiff#indicator_modified = '~'
 let g:lightline#gitdiff#separator = ' '
+
+" identline settings
+" let g:indentLine_char = '▏'
+let g:indentLine_char = '│'
+
+" vim-indent-guides settings
+" let g:indent_guides_enable_on_vim_startup = 1
+let g:indent_guides_auto_colors = 0
+let g:indent_guides_guide_size = 1
+autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd
+      \ guibg=#303030 guifg=#626262 ctermbg=236 ctermfg=241
+autocmd VimEnter,Colorscheme * :hi IndentGuidesEven
+      \ guibg=#303030 guifg=#626262 ctermbg=236 ctermfg=241
