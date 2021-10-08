@@ -175,7 +175,7 @@ filetype plugin indent on    " required
 set laststatus=2
 set noshowmode
 " Show non-visible white spaces
-set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:« ",space:·
+set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
 set list
 " Turn off sound bell
 set noerrorbells
@@ -236,24 +236,42 @@ function! TabsExpandByTwoSpaces()
 endfunction
 
 if has("autocmd")
-  autocmd FileType ruby       setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType sh         setlocal ts=4 sts=4 sw=4 expandtab
-  autocmd FileType vim        setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType zsh        setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType tmux       setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType conf       setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType nginx      setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType json*      setlocal ts=4 sts=4 sw=4 expandtab
-  autocmd FileType javascript setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType c          setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType dockerfile setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType make       setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType cmake      setlocal ts=4 sts=4 sw=4 expandtab
-  autocmd FileType cpp        setlocal ts=4 sts=4 sw=4 noet
-  autocmd BufEnter **/cpp.snippets setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType gitcommit  setlocal ts=2 sts=2 sw=2 expandtab
-  autocmd FileType gitignore  setlocal ts=4 sts=4 sw=4 noet
-  autocmd FileType gitconfig  setlocal ts=4 sts=4 sw=4 noet
+  autocmd FileType ruby
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType sh
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+  autocmd FileType vim
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType zsh
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType tmux
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType conf
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType nginx
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType json*
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+  autocmd FileType javascript
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType c
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType dockerfile
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType make
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType cmake
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+  autocmd FileType cpp
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd BufEnter **/cpp.snippets
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType gitcommit
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType gitignore
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType gitconfig
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
 endif
 " }}}
 
