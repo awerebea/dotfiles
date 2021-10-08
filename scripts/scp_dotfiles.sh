@@ -3,8 +3,8 @@
 
 # define filenames to transfer
 FILES_VIM=".vimrc"
-FILES_ZSH=".zshrc .zshscripts .p10k.zsh"
-FILES_TMUX=".tmux.conf .tmux.conf.local"
+FILES_ZSH=(".zshrc" ".zshscripts" ".p10k.zsh")
+FILES_TMUX=(".tmux.conf" ".tmux.conf.local")
 FILES_RANGER="ranger"
 
 # Usage message
@@ -29,9 +29,9 @@ OPTIONS:
 
   nvim      Copy ${FILES_VIM} and create symlink to ~/.config/nvim/init.vim
 
-  zsh       Copy ${FILES_ZSH}
+  zsh       Copy ${FILES_ZSH[@]}
 
-  tmux      Copy ${FILES_TMUX}
+  tmux      Copy ${FILES_TMUX[@]}
 
   ranger    Copy ${FILES_RANGER} directory to the ~/.config/
             and create symlinks to all ranger scripts in ~/.local/bin
@@ -59,8 +59,8 @@ while [[ -n "$1" ]]; do
     all)
         VIM="${FILES_VIM}"
         NVIM="1"
-        ZSH="${FILES_ZSH}"
-        TMUX="${FILES_TMUX}"
+        ZSH=("${FILES_ZSH[@]}")
+        TMUX=("${FILES_TMUX[@]}")
         RANGER="${FILES_RANGER}"
         ;;
     vim)
@@ -71,10 +71,10 @@ while [[ -n "$1" ]]; do
         NVIM="1"
         ;;
     zsh)
-        ZSH="${FILES_ZSH}"
+        ZSH=("${FILES_ZSH[@]}")
         ;;
     tmux)
-        TMUX="${FILES_TMUX}"
+        TMUX=("${FILES_TMUX[@]}")
         ;;
     ranger)
         RANGER="${FILES_RANGER}"
@@ -103,8 +103,8 @@ SSH_OPTS=$(get_ssh_opts "${SSH_DATA}")
 SSH_HOST=$(get_ssh_host "${SSH_DATA}")
 
 # check if all required arguments are specified
-if [[ -z ${VIM} ]] && [[ -z ${ZSH} ]] \
-    && [[ -z ${TMUX} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA} ]]; then
+if [[ -z ${VIM} ]] && [[ -z ${ZSH[*]} ]] \
+    && [[ -z ${TMUX[*]} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA} ]]; then
     usage
     exit 1;
 fi
@@ -120,7 +120,7 @@ ARC_NAME=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)
 
 # pack files for transfer to a remote host into one archive
 tar -czf "${ARC_NAME}".tar.gz --transform 's,^ranger,.config/ranger,' \
-    ${VIM} ${ZSH} ${TMUX} ${RANGER}
+    ${VIM} "${ZSH[@]}" "${TMUX[@]}" ${RANGER}
 
 # copy archive to the remote host
 scp "${SSH_OPTS}" "${ARC_NAME}".tar.gz "${SSH_HOST}":~
