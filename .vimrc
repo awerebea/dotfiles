@@ -126,6 +126,7 @@ let check_result = system("command -v node")
 if v:shell_error == 0
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
 endif
+Plug 'pearofducks/ansible-vim'
 " Snippets (code blocks) handling
 " Plug 'garbas/vim-snipmate'
 " Plug 'honza/vim-snippets'
@@ -968,7 +969,7 @@ nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
 " Switch to last tab
 if !exists('g:lasttab')
-	let g:lasttab = 1
+  let g:lasttab = 1
 endif
 nmap <leader>tt :exe "tabn ".g:lasttab<CR>
 au TabLeave * let g:lasttab = tabpagenr()
@@ -1562,8 +1563,13 @@ let g:prosession_tmux_title_format = "vim - @@@"
 
 " Terminal in vim buffer settings
 " make terminal window in vim buffer inactive
-nnoremap <leader>t :term<CR>
-tnoremap <C-x> <C-w>N
+if has('nvim')
+  nnoremap <leader>t :split term://zsh<CR>
+  tnoremap <C-x> <C-\><C-n>:q!<CR>
+else
+  nnoremap <leader>t :term<CR>
+  tnoremap <C-x> <C-w>N:bdelete!<CR>
+endif
 
 " Indexer settings (fix ctags generation for vimprj plugin)
 let g:indexer_ctagsCommandLineOptions =
@@ -1772,10 +1778,19 @@ imap <s-tab> <Plug>snipMateShow
 
 " Run/compile from vim {{{
 if has("autocmd")
-  autocmd FileType python map <buffer> <F9> :w<CR>
-  \ :exec '!clear; python3' shellescape(@%, 1)<CR>
-  autocmd FileType python imap <buffer> <F9> <esc>:w<CR>
-  \ :exec '!clear; python3' shellescape(@%, 1)<CR>
+  if has('nvim')
+    autocmd FileType python map <buffer> <F9>
+          \ :w!<CR>:sp term://python3 %<CR>a
+    autocmd FileType python imap <buffer> <F9>
+          \ <esc>:w!<CR>:sp term://python3 %<CR>a
+  else
+    autocmd FileType python map <buffer> <F9>
+          \ :w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
+    autocmd FileType python imap <buffer> <F9>
+          \ <esc>:w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
+  endif
+  autocmd FileType markdown map <buffer> <F9>
+        \ :CocCommand markdown-preview-enhanced.openPreview<CR>
   autocmd FileType cpp map <buffer> <F9> :make<CR>
   autocmd FileType c map <buffer> <F9> :make<CR>
 endif
