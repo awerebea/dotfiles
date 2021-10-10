@@ -140,7 +140,9 @@ Plug 'nathanaelkane/vim-indent-guides'
 Plug 'ap/vim-buftabline'
 " A Vim alignment plugin
 Plug 'junegunn/vim-easy-align'
-"
+" Plugin that shows keybindings in popup
+Plug 'liuchengxu/vim-which-key'
+
 if executable('xkb-switch')
   " Automatic keyboard layout switching in insert mode
   Plug 'lyokha/vim-xkbswitch'
@@ -185,8 +187,8 @@ set t_vb=
 set scrolloff=2 " always show minimum n lines after current line
 
 " Set <space> as leader key
-nnoremap <SPACE> <Nop>
-let mapleader=" "
+let g:mapleader = "\<Space>"
+" let g:maplocalleader = ','
 
 " Always use 10-base numbers
 set nrformats=
@@ -2032,3 +2034,7 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesOdd
       \ guibg=#303030 guifg=#626262 ctermbg=236 ctermfg=241
 autocmd VimEnter,Colorscheme * :hi IndentGuidesEven
       \ guibg=#303030 guifg=#626262 ctermbg=236 ctermfg=241
+
+" vim-which-key
+set timeoutlen=500       " Keystrokes timeout
+nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
