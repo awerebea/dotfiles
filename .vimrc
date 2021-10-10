@@ -974,6 +974,25 @@ nnoremap <leader>tn :tabnext<Space>
 nnoremap <leader>tm :tabmove<Space>
 nnoremap <leader>td :tabclose<CR>
 nnoremap <leader>to :tabonly<CR>
+
+" Smart buffers/tabs switch
+let s:tab_switcher_mode="buffers"
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+function! ToggleTabSwitcherMode()
+  if s:tab_switcher_mode == "buffers"
+    nnoremap <Tab> :tabnext<CR>
+    nnoremap <S-Tab> :tabprevious<CR>
+    let s:tab_switcher_mode="tabs"
+    echo "Switch tabs"
+  else
+    nnoremap <Tab> :bnext<CR>
+    nnoremap <S-Tab> :bprevious<CR>
+    let s:tab_switcher_mode="buffers"
+    echo "Switch buffers"
+  endif
+endfunction
+nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
 " }}}
 
 " Search for the Current Selection
