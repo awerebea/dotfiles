@@ -817,19 +817,6 @@ let g:indent_guides_guide_size = 1
 let g:indent_guides_color_change_percent = 3
 let g:indent_guides_enable_on_vim_startup = 0
 
-" Multi cursors " {{{
-let g:multi_cursor_use_default_mapping=0
-" Default mapping
-let g:multi_cursor_start_word_key      = '<C-n>'
-" let g:multi_cursor_select_all_word_key = '<A-n>'
-" let g:multi_cursor_start_key           = 'g<C-n>'
-" let g:multi_cursor_select_all_key      = 'g<A-n>'
-let g:multi_cursor_next_key            = '<C-n>'
-" let g:multi_cursor_prev_key            = '<C-p>'
-" let g:multi_cursor_skip_key            = '<C-x>'
-let g:multi_cursor_quit_key            = '<Esc>'
-" }}}
-
 " Folding settings " {{{
 " zc                          fold block
 " zo                          unfold block
@@ -1339,6 +1326,7 @@ autocmd  FileType fzf set noshowmode noruler nonu
 
 if v:version >= 802 || has('nvim')
   nnoremap <silent> <leader>f        :Files<CR>
+  nnoremap <silent> <C-p>            :Files<CR>
   nnoremap <silent> <leader>C        :Colors<CR>
   nnoremap <silent> <leader>l        :Lines<CR>
   " nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
@@ -1837,13 +1825,8 @@ if has('popupwin') || has('nvim')
   let g:ale_cursor_detail = 0
 endif
 
-" enable completion
-let g:ale_completion_enabled = 1
-
-" if autoinsert issues with completion popup occurs
-set completeopt=menu,menuone,preview,noselect,noinsert
-" or alternatively, to show documentation in popups
-" set completeopt=menu,menuone,popup,noselect,noinsert
+" enable/disable completion
+let g:ale_completion_enabled = 0
 
 " toggle ale linting
 nnoremap <leader>at :ALEToggle<cr>
@@ -1916,8 +1899,8 @@ if v:shell_error == 0
   " GoTo code navigation.
   nmap <silent> gd <Plug>(coc-definition)
   nmap <silent> gy <Plug>(coc-type-definition)
-  nmap <silent> gi <Plug>(coc-implementation)
   nmap <silent> gr <Plug>(coc-references)
+  nmap <silent> gi <Plug>(coc-implementation)
 
   " Use K to show documentation in preview window.
   nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -1933,7 +1916,7 @@ if v:shell_error == 0
   endfunction
 
   " Highlight the symbol and its references when holding the cursor.
-  autocmd CursorHold * silent call CocActionAsync('highlight')
+  " autocmd CursorHold * silent call CocActionAsync('highlight')
 
   " Symbol renaming.
   nmap <leader>rn <Plug>(coc-rename)
@@ -2026,6 +2009,9 @@ if v:shell_error == 0
   nnoremap <silent><nowait> \ck  :<C-u>CocPrev<CR>
   " Resume latest coc list.
   nnoremap <silent><nowait> \cp  :<C-u>CocListResume<CR>
+
+  " root patterns (for go to definition)
+  " autocmd FileType python let b:coc_root_patterns = ['*.py', '.git', '.env']
 endif
 " }}}
 
