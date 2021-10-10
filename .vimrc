@@ -2014,6 +2014,9 @@ if v:shell_error == 0
 
   " root patterns (for go to definition)
   " autocmd FileType python let b:coc_root_patterns = ['*.py', '.git', '.env']
+
+  " coc-explorer
+  nnoremap <leader>e :CocCommand explorer<CR>
 endif
 " }}}
 
