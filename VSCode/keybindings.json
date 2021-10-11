@@ -185,7 +185,7 @@
     {
         "key": "tab",
         "command": "workbench.action.nextEditor",
-        "when": "vim.mode  == 'Normal'"
+        "when": "vim.mode  == 'Normal' && !terminalFocus"
     },
     {
         "key": "ctrl+alt+h",
@@ -195,7 +195,7 @@
     {
         "key": "shift+tab",
         "command": "workbench.action.previousEditor",
-        "when": "vim.mode == 'Normal'"
+        "when": "vim.mode == 'Normal' && !terminalFocus"
     },
     // Insert tab
     {
