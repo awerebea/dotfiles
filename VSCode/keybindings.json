@@ -1,4 +1,3 @@
-// vim: ft=jsonc
 // Place your key bindings in this file to override the defaultsauto[]
 [
     // Use CapsLock as Esc
@@ -7,13 +6,11 @@
         "command": "extension.vim_escape",
         "when": "editorTextFocus && vim.active && !inDebugRepl"
     },
-
     // Toggle auto hard-wrap long lines
     {
         "key": "shift+alt+q",
         "command": "rewrap.toggleAutoWrap"
     },
-
     // Toggle block comment
     {
         "key": "ctrl+shift+/",
@@ -25,7 +22,6 @@
         "command": "-editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
     },
-
     // Move between windows like in Vim, Tmux
     {
         "key": "ctrl+h",
@@ -35,7 +31,7 @@
     {
         "key": "ctrl+h",
         "command": "workbench.action.terminal.focusPreviousPane",
-        "when": "terminalFocus"
+        "when": "terminalFocus && terminalProcessSupported"
     },
     {
         "key": "ctrl+l",
@@ -45,7 +41,7 @@
     {
         "key": "ctrl+l",
         "command": "workbench.action.terminal.focusNextPane",
-        "when": "terminalFocus"
+        "when": "terminalFocus && terminalProcessSupported"
     },
     {
         "key": "ctrl+k",
@@ -57,26 +53,81 @@
         "command": "workbench.action.navigateDown",
         "when": "vim.mode != 'Insert'"
     },
-
+    // Resize editor window
+    {
+        "key": "ctrl+shift+[",
+        "command": "workbench.action.decreaseViewHeight",
+        "when": "vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+shift+]",
+        "command": "workbench.action.increaseViewHeight",
+        "when": "vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+alt+[",
+        "command": "workbench.action.decreaseViewWidth",
+        "when": "vim.mode != 'Insert'"
+    },
+    {
+        "key": "ctrl+alt+]",
+        "command": "workbench.action.increaseViewWidth",
+        "when": "vim.mode != 'Insert'"
+    },
+    // Resize terminal window
+    {
+        "key": "ctrl+shift+h",
+        "command": "workbench.action.terminal.resizePaneLeft",
+        "when": "terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "ctrl+shift+j",
+        "command": "workbench.action.terminal.resizePaneDown",
+        "when": "terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "ctrl+shift+k",
+        "command": "workbench.action.terminal.resizePaneUp",
+        "when": "terminalFocus && terminalProcessSupported"
+    },
+    {
+        "key": "ctrl+shift+l",
+        "command": "workbench.action.terminal.resizePaneRight",
+        "when": "terminalFocus && terminalProcessSupported"
+    },
+    // Toggle minimap
+    {
+        "key": "alt+m",
+        "command": "editor.action.toggleMinimap",
+        "when": "vim.mode != 'Insert'"
+    },
     // Toggle sidebar
     {
         "key": "f2",
         "command": "workbench.action.toggleSidebarVisibility",
-        "when": "!sideBarFocus"
+        // "when": "!sideBarFocus",
     },
+    {
+        "key": "q",
+        "command": "workbench.action.toggleSidebarVisibility",
+        "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
+    },
+    // {
+    //     "key": "space e",
+    //     "command": "workbench.action.toggleSidebarVisibility",
+    //     "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
+    // },
     {
         "key": "ctrl+b",
         "command": "-workbench.action.toggleSidebarVisibility"
     },
-
     // Maximaze panel (terminal)
     {
         "key": "ctrl+a z",
         "command": "workbench.action.toggleMaximizedPanel",
         "when": "terminalFocus"
     },
-
-    // Use ctrl+j, ctrl+k enstead arrows in lists menus
+    // Use ctrl+j, ctrl+k instead of arrows in lists menus
     {
         "key": "ctrl+j",
         "command": "-workbench.action.togglePanel"
@@ -85,6 +136,11 @@
     {
         "key": "l",
         "command": "list.expand",
+        "when": "vim.active && listFocus && !inputFocus"
+    },
+    {
+        "key": "h",
+        "command": "list.collapse",
         "when": "vim.active && listFocus && !inputFocus"
     },
     // Code suggestion selection
@@ -122,16 +178,78 @@
     // Move between editors
     {
         "key": "ctrl+alt+l",
-        "command": "workbench.action.nextEditor"
+        "command": "workbench.action.nextEditor",
+        "when": "vim.mode  == 'Normal'"
+    },
+    {
+        "key": "tab",
+        "command": "workbench.action.nextEditor",
+        "when": "vim.mode  == 'Normal'"
     },
     {
         "key": "ctrl+alt+h",
-        "command": "workbench.action.previousEditor"
+        "command": "workbench.action.previousEditor",
+        "when": "vim.mode  == 'Normal'"
     },
     {
-    "key": "ctrl+alt+v tab",
-    "command": "type",
-    "args": { "text": "\t" },
-    "when": "editorTextFocus"
+        "key": "shift+tab",
+        "command": "workbench.action.previousEditor",
+        "when": "vim.mode == 'Normal'"
+    },
+    // Insert tab
+    {
+        "key": "ctrl+alt+v tab",
+        "command": "type",
+        "args": {
+            "text": "\t"
+        },
+        "when": "editorTextFocus"
+    },
+    // File-explorer navigation
+    {
+        "key": "j",
+        "command": "list.focusDown",
+        "when": "listFocus"
+    },
+    {
+        "key": "k",
+        "command": "list.focusUp",
+        "when": "listFocus"
+    },
+    {
+        "key": "enter",
+        "command": "list.select",
+        "when": "explorerViewletVisible && filesExplorerFocus"
+    },
+    {
+        "key": "o",
+        "command": "list.toggleExpand",
+        "when": "listFocus"
+    },
+    {
+        "key": "r",
+        "command": "renameFile",
+        "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
+    },
+    {
+        "key": "a",
+        "command": "explorer.newFile",
+        "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
+    },
+    {
+        "key": "shift+a",
+        "command": "explorer.newFolder",
+        "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
+    },
+    // Show "hover" documentation
+    {
+        "key": "shift+k",
+        "command": "editor.action.showHover",
+        "when": "editorTextFocus"
+    },
+    // Toggle activity bar
+    {
+        "key": "ctrl+shift+a",
+        "command": "workbench.action.toggleActivityBarVisibility"
     }
 ]
