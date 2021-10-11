@@ -142,6 +142,8 @@ Plug 'ap/vim-buftabline'
 Plug 'junegunn/vim-easy-align'
 " Plugin that shows keybindings in popup
 Plug 'liuchengxu/vim-which-key'
+" Find and replace
+Plug 'brooth/far.vim'
 
 if executable('xkb-switch')
   " Automatic keyboard layout switching in insert mode
@@ -1359,9 +1361,9 @@ if v:version >= 802 || has('nvim')
   nnoremap <silent> <leader>RG       :FZFRg <C-R><C-W><CR>
   xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
   nnoremap <silent> <leader>`        :Marks<CR>
-  nnoremap <silent> q: :History:<CR>
-  nnoremap <silent> q/ :History/<CR>
-  nnoremap <silent> <leader>h :History<CR>
+  nnoremap <silent> q:               :History:<CR>
+  nnoremap <silent> q/               :History/<CR>
+  nnoremap <silent> <leader>h        :History<CR>
 
   " inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
   "   \ --scroll 498 --min 5')
@@ -2062,3 +2064,18 @@ autocmd VimEnter,Colorscheme * :hi IndentGuidesEven
 " vim-which-key
 set timeoutlen=500       " Keystrokes timeout
 nnoremap <silent> <leader> :WhichKey '<Space>'<CR>
+
+" far.vim (find and replace)
+let g:far#enable_undo=1
+" Improve scrolling performance when navigating through large results
+set lazyredraw
+" Use old regexp engine
+" set regexpengine=1
+" Ignore case only when the pattern contains no capital letters
+set ignorecase smartcase
+" Shortcut for far.vim find
+nnoremap <silent> <leader>ff :Farf<cr>
+vnoremap <silent> <leader>ff :Farf<cr>
+" Shortcut for far.vim replace
+nnoremap <silent> <leader>fr :Farr<cr>
+vnoremap <silent> <leader>fr :Farr<cr>
