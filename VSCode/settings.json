@@ -2,9 +2,8 @@
 {
     "terminal.integrated.fontFamily": "MesloLGS NF",
     "terminal.integrated.fontSize": 12,
-    "terminal.integrated.lineHeight":1,
+    "terminal.integrated.lineHeight": 1,
     "editor.fontFamily": "MesloLGS NF",
-    
     "editor.fontSize": 13,
     "editor.renderControlCharacters": true,
     // Disable current word highlight
@@ -14,10 +13,8 @@
     // Set terminal cursor style
     "terminal.integrated.cursorStyle": "block",
     "terminal.integrated.cursorBlinking": true,
-
     // Colorscheme
     "workbench.colorTheme": "Cobalt2",
-
     // Colors
     // Commented to use with Cobalt2 theme
     // "workbench.colorCustomizations": {
@@ -33,45 +30,39 @@
     //   // StatusBar font color
     //   "statusBar.foreground" : "#a8a8a0"
     // },
-
     // Icons settings
     "workbench.iconTheme": "vscode-icons",
-
     // Wrap long lines at 80th column
     "editor.rulers": [80, 120],
     "editor.wordWrap": "wordWrapColumn",
     "editor.wrappingIndent": "same",
     "editor.wordWrapColumn": 80,
     "[markdown]": {
-            "editor.wordWrap": "wordWrapColumn",
-            "editor.quickSuggestions": false
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.quickSuggestions": false
     },
-
     // Show whitespace characters
-    "editor.renderWhitespace": "all", 
-
+    "editor.renderWhitespace": "all",
     // Files associations
     "files.associations": {
-            "*.ctmpl": "hcl",
-            "*.tf": "terraform",
-            "*.tfvars": "terraform",
-            "[Jj]enkinsfile*": "jenkinsfile"
+        "*.ctmpl": "hcl",
+        "*.tf": "terraform",
+        "*.tfvars": "terraform",
+        "[Jj]enkinsfile*": "jenkinsfile"
     },
     "workbench.editorAssociations": {
         "*.ipynb": "jupyter.notebook.ipynb"
     },
-
     // Open in Vim fullscreen
     "multiCommand.commands": [
         {
-                "command": "multiCommand.openInVimFullscreen",
-                "sequence": [
-                        "open-in-vim.open",
-                        "workbench.action.toggleMaximizedPanel"
-                ]
+            "command": "multiCommand.openInVimFullscreen",
+            "sequence": [
+                "open-in-vim.open",
+                "workbench.action.toggleMaximizedPanel"
+            ]
         }
     ],
-
     // Plugins and extentions settings
     // Vim plugin settings
     "vim.easymotion": true,
@@ -81,24 +72,23 @@
     "vim.hlsearch": true,
     "vim.surround": true,
     // Disable VSCodeVim extension
-    "vim.disableExtension": false, 
+    "vim.disableExtension": false,
     // In visual mode, start a search with * or # using the current selection
     "vim.visualstar": true,
     // Do not open folds when moving with j/k
     "vim.foldfix": true,
     // Keybinds in Insert mode
-    "vim.insertModeKeyBindings": [
-    ],
+    "vim.insertModeKeyBindings": [],
     // Keybinds in Normal mode
     "vim.normalModeKeyBindings": [
         {
-                "before": ["<leader>", "m"],
-                "commands": ["bookmarks.toggle"]
+            "before": ["<leader>", "m"],
+            "commands": ["bookmarks.toggle"]
         },
         {
-                "before": ["<leader>", "b"],
-                "commands": ["bookmarks.list"]
-        },
+            "before": ["<leader>", "b"],
+            "commands": ["bookmarks.list"]
+        }
     ],
     "vim.normalModeKeyBindingsNonRecursive": [
         // Turn off search highlighting
@@ -181,7 +171,6 @@
         // Open file in Vim (fullscreen)
         {
             "before": ["<Leader>", "v", "v"],
-            // "commands": ["open-in-vim.open"]
             "commands": ["multiCommand.openInVimFullscreen"]
         },
         // Toggle auto hard-wrap long lines
@@ -218,6 +207,20 @@
         {
             "before": ["<Leader>", "f", "r"],
             "commands": ["workbench.action.replaceInFiles"]
+        },
+        {
+            "before": ["<space>"],
+            "commands": ["vspacecode.space"]
+        },
+        {
+            "before": [","],
+            "commands": [
+                "vspacecode.space",
+                {
+                    "command": "whichkey.triggerKey",
+                    "args": "m"
+                }
+            ]
         }
     ],
     // Keybinds in Visual mode
@@ -232,6 +235,20 @@
             "before": ["s"],
             "after": ["<Leader>", "<Leader>", "2", "s"]
         },
+        {
+            "before": ["<space>"],
+            "commands": ["vspacecode.space"]
+        },
+        {
+            "before": [","],
+            "commands": [
+                "vspacecode.space",
+                {
+                    "command": "whichkey.triggerKey",
+                    "args": "m"
+                }
+            ]
+        }
     ],
     // Leader key is '\' (back slash) by default
     "vim.leader": "<space>",
@@ -239,18 +256,15 @@
         "<C-a>": true,
         "<C-f>": true
     },
-    // Set a limit on the length of a string 
+    // Set a limit on the length of a string
     "vim.textwidth": 80,
-
     // Kubernetes plugin settings
     "vs-kubernetes": {
         "vscode-kubernetes.minikube-path.linux": "/home/andrei/.vs-kubernetes/tools/minikube/linux-amd64/minikube",
         "vscode-kubernetes.helm-path.linux": "/home/andrei/.vs-kubernetes/tools/helm/linux-amd64/helm"
     },
-
     "C_Cpp.updateChannel": "Insiders",
     "terminal.external.linuxExec": "/usr/bin/konsole",
-
     // Python module settings
     "python.linting.enabled": true,
     "python.linting.pylintUseMinimalCheckers": false,
@@ -258,7 +272,6 @@
     "python.linting.flake8Enabled": true,
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
-
     // MSSQL db connections
     "mssql.connections": [
         {
@@ -266,52 +279,40 @@
             "database": "{{put-database-name-here}}",
             "user": "{{put-username-here}}",
             "password": ""
-        },
+        }
     ],
-
     // Spell and dictionary settings
     // Spell check only comments for specified languages
     "cSpell.languageSettings": [
         // This one works with Python
         {
-                "languageId": "python",
-                "includeRegExpList": [
-                        "/#.*/",
-                     "/('''|\"\"\")[^\\1]+?\\1/g",
-                        "strings"
-                ]
+            "languageId": "python",
+            "includeRegExpList": [
+                "/#.*/",
+                "/('''|\"\"\")[^\\1]+?\\1/g",
+                "strings"
+            ]
         },
         // This one works with JavaScript, Typescript, etc
         {
-                "languageId": "javascript,typescript",
-                "includeRegExpList": [
-                        "CStyleComment",
-                        "strings"
-                ]
+            "languageId": "javascript,typescript",
+            "includeRegExpList": ["CStyleComment", "strings"]
         },
         // Use with cpp or c files
         {
-                "languageId": "cpp,c",
-                // Turn off compound words, because it is only checking strings.
-                "allowCompoundWords": false,
-                // Only check comments and strings
-                "includeRegExpList": [
-                        "CStyleComment",
-                        "string"
-                ],
-                // Exclude includes, because they are also strings.
-                "ignoreRegExpList": [
-                        "/#[ ]*include.*/"
-                ]
+            "languageId": "cpp,c",
+            // Turn off compound words, because it is only checking strings.
+            "allowCompoundWords": false,
+            // Only check comments and strings
+            "includeRegExpList": ["CStyleComment", "string"],
+            // Exclude includes, because they are also strings.
+            "ignoreRegExpList": ["/#[ ]*include.*/"]
         }
     ],
     // Custom user words list
-    "cSpell.userWords": [
-    ],
-
+    "cSpell.userWords": [],
     // Editor startup
     "workbench.startupEditor": "newUntitledFile",
-
     // Indentation settings
     "[typescript]": {
         "editor.detectIndentation": true,
@@ -336,12 +337,10 @@
     // Terraform settings
     "[terraform]": {
         // Format on file saving
-        "editor.formatOnSave": true,
+        "editor.formatOnSave": true
     },
-
     // Characters that will be used as word separators when doing word related navigations or operations
     "editor.wordSeparators": "_`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
-
     "commentAnchors.tags.list": [
         {
             "tag": "DEBUG",
@@ -349,10 +348,14 @@
             "iconColor": "default",
             "highlightColor": "#D75FFF",
             "styleComment": false
-        },
+        }
     ],
     "editor.formatOnSave": true,
     "redhat.telemetry.enabled": true,
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
-    "workbench.activityBar.visible": false,
+    "editor.minimap.enabled": false,
+    "[jsonc]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.tabWidth": 4
 }
