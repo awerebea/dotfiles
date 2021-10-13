@@ -53,10 +53,16 @@ elif [[ `uname -n` == "laptop-acer" && `uname` == "Linux" ]]; then
   # laptop-acer
   export ZSH="$HOME/.oh-my-zsh"
   export DOCKER_CMD_FOR_ALIAS="docker"
-  export GIT_DOTFILES="$HOME/Documents/Github/dotfiles"
-  export GIT_WORKSPACE="$HOME/Documents/Github/workspace"
+  export GIT_DOTFILES="$HOME/Github/dotfiles"
+  export GIT_WORKSPACE="$HOME/Github/workspace"
   export PATH="$PATH:/var/lib/gems/2.7.0"
   export PATH="$PATH:/opt/mssql-tools/bin"
+  export PATH="$PATH:/usr/local/go/bin"
+  # Setup nvm
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
   alias o='a -e xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
   # Fix history-substring-search plugin behaviour in Tmux
