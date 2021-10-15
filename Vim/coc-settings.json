@@ -1,3 +1,43 @@
 {
-  "suggest.autoTrigger": "trigger",
+    "diagnostic.displayByAle": true,
+    // "diagnostic.checkCurrentLine": true,
+    "languageserver": {
+        // "bash": {
+        //     "command": "bash-language-server",
+        //     "args": ["start"],
+        //     "filetypes": ["sh"],
+        //     "ignoredRootPaths": ["~"]
+        // },
+        "clangd": {
+            "command": "clangd",
+            "rootPatterns": ["compile_flags.txt", "compile_commands.json"],
+            "filetypes": ["c", "cc", "cpp", "c++", "objc", "objcpp"]
+        },
+        "dockerfile": {
+            "command": "docker-langserver",
+            "filetypes": ["dockerfile"],
+            "args": ["--stdio"]
+        },
+        "golang": {
+            "command": "gopls",
+            "rootPatterns": ["go.mod"],
+            "filetypes": ["go"]
+        },
+        // "terraform": {
+        //     "command": "terraform-lsp",
+        //     "filetypes": ["terraform"],
+        //     "initializationOptions": {}
+        // },
+        "terraform": {
+            "command": "terraform-ls",
+            "args": ["serve"],
+            "filetypes": ["terraform", "tf"],
+            "initializationOptions": {}
+        }
+    },
+    "yaml.schemas": {
+        "kubernetes": "/*.yaml"
+        // "ansible": "/*.yaml"
+    },
+    "clangd.path": "/home/andrei/Timeshift_exclude/_config/coc/extensions/coc-clangd-data/install/12.0.1/clangd_12.0.1/bin/clangd"
 }
