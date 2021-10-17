@@ -125,6 +125,7 @@ Plug 'maximbaz/lightline-ale'
 let check_result = system("command -v node")
 if v:shell_error == 0
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'tjdevries/coc-zsh'
 endif
 Plug 'pearofducks/ansible-vim'
 " Snippets (code blocks) handling
