@@ -35,7 +35,7 @@ fi
 # Install custom plugins if they aren't there yet.
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync/\
 history-sync.plugin.zsh ]]; then
-  git clone https://github.com/wulfgarpro/history-sync.git \
+  git clone https://github.com/awerebea/history-sync.git \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync
 fi
 
