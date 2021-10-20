@@ -123,6 +123,10 @@ kubectx.plugin.zsh ]]; then
   sed -i 's|git@github.com:|https://github.com/|' .gitmodules
   git submodule init
   git submodule update
+  git submodule foreach git checkout \
+    $(git symbolic-ref refs/remotes/origin/HEAD |
+    sed 's@^refs/remotes/origin/@@')
+  git submodule foreach git pull origin
   sed -i 's|https://github.com/|git@github.com:|' .gitmodules
   cd "$current_pwd"
 fi
