@@ -296,6 +296,11 @@ function omz-update() {
       if [ -d $plugin/.git ]; then
         echo "${YELLOW_BOLD}${plugin}${NC}"
         git -C "$plugin" pull
+        git -C "$plugin" submodule update
+        git -C "$plugin" submodule foreach git checkout \
+          $(git symbolic-ref refs/remotes/origin/HEAD |
+          sed 's@^refs/remotes/origin/@@')
+        git -C "$plugin" submodule foreach git pull origin
       fi
     done
     cd "$current_pwd"
