@@ -2,12 +2,16 @@
 # Transfer dotfiles from local host to remote using scp utility
 
 # define users data
+USER_0="awerebea"
+EMAIL_0="awerebea.21@gmail.com"
 USER_1="awerebea (pc-home)"
 EMAIL_1="awerebea.21@gmail.com"
 USER_2="awerebea (laptop-acer)"
 EMAIL_2="awerebea.21@gmail.com"
 USER_3="Andrei Bulgakov"
 EMAIL_3="awerebea.21@gmail.com"
+USER_4="Andrei Bulgakov"
+EMAIL_4="awerebea.21@gmail.com"
 
 # Usage message
 usage () {
@@ -17,11 +21,15 @@ usage: ${0} [USERNAME] [-h|--help]
 Setup git username and email for current git repository.
 
 USERNAME:
-  1         User data "${USER_1}"
+  0, awerebea       User data: ${USER_0} <${EMAIL_0}>
 
-  2         User data "${USER_2}"
+  1, pc-home        User data: ${USER_1} <${EMAIL_1}>
 
-  3         User data "${USER_3}"
+  2, laptop-acer    User data: ${USER_2} <${EMAIL_2}>
+
+  3, work           User data: ${USER_3} <${EMAIL_3}>
+
+  4, realname       User data: ${USER_4} <${EMAIL_4}>
 
 
   -h, --help
@@ -38,17 +46,25 @@ USEREMAIL=
 # Process command line options
 while [[ -n "$1" ]]; do
     case "$1" in
-    1)
+    0 | awerebea)
+        USERNAME="${USER_0}"
+        USEREMAIL="${EMAIL_0}"
+        ;;
+    1 | pc-home)
         USERNAME="${USER_1}"
         USEREMAIL="${EMAIL_1}"
         ;;
-    2)
+    2 | laptop-acer)
         USERNAME="${USER_2}"
         USEREMAIL="${EMAIL_2}"
         ;;
-    3)
+    3 | work)
         USERNAME="${USER_3}"
         USEREMAIL="${EMAIL_3}"
+        ;;
+    4 | realname)
+        USERNAME="${USER_4}"
+        USEREMAIL="${EMAIL_4}"
         ;;
     -h | --help)
         usage
