@@ -99,6 +99,9 @@ Plug 'sheerun/vim-polyglot'
 " Syntax highlighting, matching rules and mappings for Markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
+" Markdown live preview
+Plug 'iamcco/markdown-preview.nvim',
+      \ { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 " Text objects for the last searched pattern
 Plug 'kana/vim-textobj-lastpat'
 " Create your own text objects
@@ -2078,3 +2081,7 @@ vnoremap <silent> <leader>ff :Farf<cr>
 " Shortcut for far.vim replace
 nnoremap <silent> <leader>fr :Farr<cr>
 vnoremap <silent> <leader>fr :Farr<cr>
+
+" vim-markdown
+let g:vim_markdown_conceal = 0
+let g:vim_markdown_conceal_code_blocks = 0
