@@ -712,8 +712,8 @@ if -b 'command -v clip.exe > /dev/null 2>&1' 'bind u run -b "tmux save-buffer - 
 if -b '[ -c /dev/clipboard ]' 'bind u run -b "tmux save-buffer - > /dev/clipboard && tmux display-message \"Copied tmux buffer to system clipboard\""'
 
 # reorganize current pane with previous-number pane
-bind M-r move-pane -t '.-' # previous at the top, current at the bottom
-bind M-v move-pane -h -t '.-' # previous at the left, current at the right
+bind M-, move-pane -t '.-' # previous at the top, current at the bottom
+bind M-. move-pane -h -t '.-' # previous at the left, current at the right
 
 # tmux ressurect. Restoring vim and neovim sessions
 set -g @resurrect-strategy-vim 'session'
