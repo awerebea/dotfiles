@@ -17,3 +17,4 @@ ExcludeApp Google-chrome
 ExcludeApp Krdc
 ExcludeApp Remmina
 ExcludeApp TelegramDesktop
+ExcludeApp GoldenDict
