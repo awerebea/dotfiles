@@ -341,13 +341,14 @@ alias dk=docker
 alias dkc=docker-compose
 
 # kubectl (k8s) aliases
-alias kg="kubectl get "
-alias kgw="kubectl get -o wide "
-alias kgl="kubectl get --show-labels "
-alias kgwl="kubectl get -o wide --show-labels "
-alias ke="kubectl edit "
-alias kd="kubectl describe "
-alias kex="kubectl exec -it "
+alias kg="kubectl get"
+alias kgy="kubectl get -o yaml"
+alias kgw="kubectl get -o wide"
+alias kgl="kubectl get --show-labels"
+alias kgwl="kubectl get -o wide --show-labels"
+alias ke="kubectl edit"
+alias kd="kubectl describe"
+alias kex="kubectl exec -it"
 alias -g Y=" -o yaml | yh"
 alias -g J=" -o json | jq"
 
