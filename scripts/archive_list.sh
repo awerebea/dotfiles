@@ -15,10 +15,30 @@ cat <<- EOF > "${TMP_FILE}"
 EOF
 
 
-# Setup colors
-COLOR_GREEN='\033[0;32m'
-COLOR_RED='\033[0;31m'
-COLOR_DFLT='\033[0m' # No Color
+# Define global variables
+SRC_PATH=
+DST_PATH=
+FILE_LIST=
+
+
+# Define colors
+RED='\e[1;31m'
+GRN='\e[1;32m'
+END='\e[0m' # No Color
+
+
+# Clean up environment and exit
+function clean_and_exit() {
+    unset FILE_LIST TMP_FILE SRC_PATH DST_PATH GRN RED END
+    exit "${1}"
+}
+
+
+# Exit on error
+error_quit() {
+    echo -e "Snapshot ${RED}failed${END}"
+    clean_and_exit 1
+}
 
 
 # Usage message
@@ -29,7 +49,7 @@ usage: ${0} [list] src=root/of/filelist dst=target/path
 
 Archive files from the file list from the src root prefix to the dst path.
 
-  list          List of files to archive.
+  list          Path to the list of files for the archive.
                 If not specified, the default list is used.
 
   src           Root directory (prefix) for entries from the file list.
@@ -44,16 +64,20 @@ __EOM__
 }
 
 
-# Command line options variables
-SRC_PATH=
-DST_PATH=
-
-
 # Check if the specified path exists and is a directory
-function validate_path() {
+function validate_path_d() {
     if [ ! -d "$1" ]; then
-        echo "Path: ${COLOR_RED}${1}${COLOR_DFLT} is not a valid directory" >&2
-        exit 1
+        echo "Path: ${RED}${1}${END} is not a valid directory" >&2
+        clean_and_exit 1
+    fi
+    return
+}
+
+# Check if the specified path exists and is a regular file
+function validate_path_f() {
+    if [ ! -f "$1" ]; then
+        echo "Path: ${RED}${1}${END} is not a valid file" >&2
+        clean_and_exit 1
     fi
     return
 }
@@ -64,16 +88,16 @@ while [[ -n "$1" ]]; do
     case "$1" in
     -h | --help)
         usage
-        exit
+        clean_and_exit 0
         ;;
     src | src=* | source | source=*)
         if [ "$1" = "src" ] || [ "$1" = "source" ]; then
             shift
             SRC_PATH="$1"
-            validate_path "${SRC_PATH}"
+            validate_path_d "${SRC_PATH}"
         else
             SRC_PATH=$(echo "$1" | cut -d '=' -f 2-)
-            validate_path "${SRC_PATH}"
+            validate_path_d "${SRC_PATH}"
         fi
         ;;
     dst | dst=* | dest | dest=* | destination | destination=*)
@@ -81,15 +105,25 @@ while [[ -n "$1" ]]; do
         then
             shift
             DST_PATH="$1"
-            validate_path "${DST_PATH}"
+            validate_path_d "${DST_PATH}"
         else
             DST_PATH=$(echo "$1" | cut -d '=' -f 2-)
-            validate_path "${DST_PATH}"
+            validate_path_d "${DST_PATH}"
+        fi
+        ;;
+    list | list=*)
+        if [ "$1" = "list" ]; then
+            shift
+            FILE_LIST="$1"
+            validate_path_f "${FILE_LIST}"
+        else
+            FILE_LIST=$(echo "$1" | cut -d '=' -f 2-)
+            validate_path_f "${FILE_LIST}"
         fi
         ;;
     *)
         usage >&2
-        exit 1
+        clean_and_exit 1
         ;;
     esac
     shift
@@ -103,25 +137,15 @@ if [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_PATH}" ]]; then
 fi
 
 
-# Exit on error
-error_quit() {
-    echo -e "Snapshot ${COLOR_RED}failed${COLOR_DFLT}"
-    exit 1
-}
-
-
 # The function requires 3 arguments: file list, source root, destination path.
 sync() {
     # Synchronize files from the list to the target directory
     sudo rsync --archive --verbose --recursive --stats --sparse \
         --files-from="${1}" \
         "${2}/" "${3}/" || error_quit
-    echo -e "Archiving completed ${COLOR_GREEN}successfully${COLOR_DFLT}"
+    echo -e "Archiving completed ${GRN}successfully${END}"
     return
 }
 
 sync "${FILE_LIST:-${TMP_FILE}}" "${SRC_PATH}/" "${DST_PATH}/"
 rm "${TMP_FILE}"
-
-# Unset global variables
-unset TMP_FILE SRC_PATH DST_PATH COLOR_GREEN COLOR_RED COLOR_DFLT
