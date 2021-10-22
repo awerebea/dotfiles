@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-# Setup variables
+
+# Define global variables
 SOURCE_PATH="/home/andrei"
 SNAPSHOT_PATH="/media/andrei/bckp/backup"
 
@@ -14,11 +15,11 @@ DATA_DIR_NAME="home"
 LOG_FILENAME="rsync-log"
 SUCCESS_FILE="completed_successfully"
 
-# Setup colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BROWN='\033[0;33m'
-NC='\033[0m' # No Color
+# Define colors
+RED='\e[1;31m'
+GRN='\e[1;32m'
+YEL='\e[1;33m'
+END='\e[0m' # No Color
 
 # Snapshot name pattern
 SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
@@ -27,11 +28,27 @@ SNAPSHOT_NAME_PATTERN="^${SNAPSHOT_PATH}/"
 SNAPSHOT_NAME_PATTERN+="20([0-9]{2})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])"
 SNAPSHOT_NAME_PATTERN+="_(0[0-9]|1[0-9]|2[0-3])-([0-5][0-9])-([0-5][0-9])$"
 
+FORCE=
+SNAPSHOTS_TO_KEEP=
+AUTO_CONFIRM=
+SNAPSHOTS_LIST=()
+LAST_SNAPSHOT=
+
+
+# Clean up environment and exit
+function clean_and_exit() {
+    unset SOURCE_PATH SNAPSHOT_PATH SNAPSHOT_TIMEOUT DATA_DIR_NAME \
+        LOG_FILENAME SUCCESS_FILE RED GRN YEL END SNAPSHOT_NAME \
+        SNAPSHOT_NAME_PATTERN FORCE SNAPSHOTS_TO_KEEP AUTO_CONFIRM \
+        SNAPSHOTS_LIST LAST_SNAPSHOT
+    exit "${1}"
+}
+
 
 # Define functions
 exit_err() {
-    echo -e "Snapshot ${RED}failed${NC}"
-    exit 1
+    echo -e "Snapshot ${RED}failed${END}"
+    clean_and_exit 1
 }
 
 
@@ -198,16 +215,10 @@ __EOM__
 }
 
 
-# Command line options variables
-FORCE=
-SNAPSHOTS_TO_KEEP=
-AUTO_CONFIRM=
-
-
 check_if_var_is_num() {
     local num='^[0-9]+$'
     if ! [[ "$1" =~ $num ]] ; then
-        usage >&2; exit 1
+        usage >&2; clean_and_exit 1
     fi
 }
 
@@ -247,11 +258,11 @@ while [[ -n "$1" ]]; do
         ;;
     -h | --help)
         usage
-        exit
+        clean_and_exit 0
         ;;
     *)
         usage >&2
-        exit 1
+        clean_and_exit 1
         ;;
     esac
     shift
@@ -300,7 +311,6 @@ get_latest_dir_by_name() {
 remove_interrupded_snapshots
 
 # Get an array of valid snapshots
-SNAPSHOTS_LIST=()
 mapfile -t SNAPSHOTS_LIST < <( generate_snapshot_list )
 
 # Get the last valid snapshot
@@ -319,9 +329,9 @@ else
             link_prev_snapshot
             create_snapshot
         else
-            echo -e "Snapshot creation ${BROWN}skipped${NC} by timeout"
+            echo -e "Snapshot creation ${YEL}skipped${END} by timeout"
             remove_old_snapshots
-            exit 0
+            clean_and_exit 0
         fi
     else
             link_prev_snapshot
@@ -329,4 +339,4 @@ else
     fi
 fi
 remove_old_snapshots
-echo -e "Snapshot completed ${GREEN}successfully${NC}"
+echo -e "Snapshot completed ${GRN}successfully${END}"
