@@ -51,7 +51,7 @@ NVIM=
 ZSH=
 TMUX=
 RANGER=
-SSH_DATA=
+SSH_DATA=()
 
 # Process command line options
 while [[ -n "$1" ]]; do
@@ -84,27 +84,19 @@ while [[ -n "$1" ]]; do
         exit
         ;;
     *)
-        SSH_DATA+=" ${1}"
+        SSH_DATA+=("${1}")
     ;;
     esac
     shift
 done
 
-# functions to split ssh data to options and ssh host
-get_ssh_opts() {
-    echo "${@:1:$#-1}"
-}
-get_ssh_host() {
-    echo "${@: -1}"
-}
-
 # get ssh options and host from the SSH_DATA variable
-SSH_OPTS=$(get_ssh_opts "${SSH_DATA}")
-SSH_HOST=$(get_ssh_host "${SSH_DATA}")
+SSH_OPTS=("${SSH_DATA[@]::${#SSH_DATA[@]}-1}")
+SSH_HOST="${SSH_DATA[${#SSH_DATA[*]} - 1]}"
 
 # check if all required arguments are specified
 if [[ -z ${VIM} ]] && [[ -z ${ZSH[*]} ]] \
-    && [[ -z ${TMUX[*]} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA} ]]; then
+    && [[ -z ${TMUX[*]} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA[*]} ]]; then
     usage
     exit 1;
 fi
@@ -123,7 +115,7 @@ tar -czf "${ARC_NAME}".tar.gz --transform 's,^ranger,.config/ranger,' \
     ${VIM} "${ZSH[@]}" "${TMUX[@]}" ${RANGER}
 
 # copy archive to the remote host
-scp "${SSH_OPTS}" "${ARC_NAME}".tar.gz "${SSH_HOST}":~
+scp "${SSH_OPTS[@]}" "${ARC_NAME}".tar.gz "${SSH_HOST}":~
 result=$?
 
 # remove archive from local host
@@ -132,11 +124,11 @@ rm -f "${ARC_NAME}".tar.gz
 
 # create directories on the remote host if needed
 [[ -n ${NVIM} ]] && NVIM_HANDLING="&& mkdir -p ~/.config/nvim && \
-    ln -s ~/.vimrc ~/.config/nvim/init.vim"
+    ln -sf ~/.vimrc ~/.config/nvim/init.vim"
 [[ -n ${RANGER} ]] && RANGER_HANDLING="&& mkdir -p ~/.local/bin && \
-    ln -s ~/.config/ranger/scripts/* ~/.local/bin/"
+    ln -sf ~/.config/ranger/scripts/* ~/.local/bin/"
 # launch commands on the remote host
-ssh -t "${SSH_OPTS}" "${SSH_HOST}" "tar -xf ${ARC_NAME}.tar.gz && \
+ssh -t "${SSH_OPTS[@]}" "${SSH_HOST}" "tar -xf ${ARC_NAME}.tar.gz && \
     rm -f ${ARC_NAME}.tar.gz ${NVIM_HANDLING} ${RANGER_HANDLING}"
 
 # cd to the previous location
