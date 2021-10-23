@@ -159,6 +159,13 @@ fzf-tab.plugin.zsh ]]; then
   zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
 fi
 
+# kafka
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kafka/\
+kafka.plugin.zsh ]]; then
+  git clone https://github.com/Dabz/kafka-zsh-completions.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kafka
+fi
+
 # Install powerlevel10k theme if it's not there yet.
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k/\
 powerlevel10k.zsh-theme ]]; then
@@ -221,6 +228,7 @@ plugins=(
           globalias
           helm
           history-sync
+          kafka
           kubectl
           kubectx
           notify
