@@ -5,7 +5,7 @@ for file in "$@"; do
       *.7z) 7z x "$file" ;;
       *.tar) tar -xvf "$file" ;;
       *.tar.bz2) tar -xjvf "$file" ;;
-      *.tar.gz) tar -xzvf "$file" ;;
+      *.tar.gz | *.tgz) tar -xzvf "$file" ;;
       *.zip) unzip "$file" ;;
       *) echo "Unsupported format" ;;
   esac
