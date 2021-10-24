@@ -77,6 +77,12 @@ else
   alias open='xdg-open >/dev/null 2>&1' # quick opening files with xdg-open
 fi
 
+# Add kafka to the path if exist
+export KAFKA_HOME="${HOME}/.local/opt/kafka"
+if [[ -e "${KAFKA_HOME}" ]]; then
+  export PATH="${PATH}:${KAFKA_HOME}/bin"
+fi
+
 # Add ~/.local/bin to PATH
 export PATH="${PATH}:${HOME}/.local/bin"
 
