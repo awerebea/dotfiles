@@ -12,18 +12,18 @@ if [[ `uname -n` == "pc-home" && `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
-  export ZSH="/Users/andrei/.oh-my-zsh"
+  export ZSH="$HOME/.oh-my-zsh"
   export DOCKER_CMD_FOR_ALIAS="docker"
   export GIT_DOTFILES="$HOME/Github/dotfiles"
   export GIT_WORKSPACE="$HOME/Github/workspace"
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
   alias sudoedit="sudo vim"
-  export PATH="$PATH:/Users/andrei/Library/Python/3.7/bin"
-  export PATH="$PATH:/Users/andrei/.local/bin"
-  if [ -x '/Users/andrei/.local/bin/vim' ]; then
-    alias vim='/Users/andrei/.local/bin/vim'
-    export EDITOR='/Users/andrei/.local/bin/vim'
+  export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+  export PATH="$PATH:$HOME/.local/bin"
+  if [ -x "$HOME/.local/bin/vim" ]; then
+    alias vim="$HOME/.local/bin/vim"
+    export EDITOR="$HOME/.local/bin/vim"
   fi
   # Bundle aliases
   alias fast="bundle exec fastlane"
