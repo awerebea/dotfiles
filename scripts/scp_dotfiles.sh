@@ -111,8 +111,13 @@ cd "${GIT_DOTFILES}" || exit 1
 ARC_NAME=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)
 
 # pack files for transfer to a remote host into one archive
+FINAL_FILELIST=()
+[ -n "${VIM}" ] && FINAL_FILELIST+=("${VIM}")
+[ -n "${ZSH[*]}" ] && FINAL_FILELIST+=("${ZSH[@]}")
+[ -n "${TMUX[*]}" ] && FINAL_FILELIST+=("${TMUX[@]}")
+[ -n "${RANGER}" ] && FINAL_FILELIST+=("${RANGER}")
 tar -czf "${ARC_NAME}".tar.gz --transform 's,^ranger,.config/ranger,' \
-    ${VIM} "${ZSH[@]}" "${TMUX[@]}" ${RANGER}
+    "${FINAL_FILELIST[@]}"
 
 # copy archive to the remote host
 scp "${SSH_OPTS[@]}" "${ARC_NAME}".tar.gz "${SSH_HOST}":~
