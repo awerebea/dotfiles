@@ -563,13 +563,15 @@ bindkey -M viins '^[[B' history-substring-search-down
 export UPDATE_ZSH_DAYS=1
 ZSH_CUSTOM_AUTOUPDATE_QUIET=true
 
-# Automatically start tmux on remote server when logging in via SSH (and only SSH)
-if [[ -n "$PS1" ]] && [[ -z "$TMUX" ]] && [[ -n "$SSH_CONNECTION" ]]; then
+# Automatically start tmux on remote server when logging in via SSH
+if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -n "$SSH_CONNECTION" ]; then
   tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 
 # Automatically start tmux on local machine if not running yet
-[[ -z "$SSH_CONNECTION" ]] && tmux info &> /dev/null || tmux
+if [ -z "$SSH_CONNECTION" ] && ! tmux info &> /dev/null; then
+  tmux
+fi
 
 # Activate fzf-marks plugin
 source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/fzf-marks.plugin.zsh
