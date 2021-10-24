@@ -363,11 +363,24 @@ alias -g J=" -o json | jq"
 alias kctx="kubectx"
 alias kns="kubens"
 
+# kafkactl aliases
+alias kaf="kafkactl"
+
 # Source kubectl completion if exist
 [[ $commands[kubectl] ]] && source <(kubectl completion zsh)
 
 # Source stern completion if exist
 [[ $commands[stern] ]] && source <(stern --completion=zsh)
+
+# Source kafkactl completion if exist
+[[ $commands[kafkactl] ]] && source <(kafkactl completion zsh)
+if [ ! -e "${ZSH}/completions/_kafkactl" ]; then
+  mkdir "${ZSH}/completions"
+  kafkactl completion zsh > "${ZSH}/completions/_kafkactl"
+fi
+
+# Initialize completions
+compinit
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
