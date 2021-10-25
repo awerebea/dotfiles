@@ -482,7 +482,7 @@ alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 alias cls="clear"
 alias -g B='| bat -n'
 alias -g G='| grep -i'
-alias -g L="| less -NR"
+alias -g L="| less -NR -r"
 alias dir='dirs -v | head -20'
 alias 1='cd -'
 alias 2='cd -2'
@@ -537,22 +537,16 @@ unset rr
 alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
 
 # exa aliases
-alias l="exa --long --all --header --links --git --icons \
+alias l="exa --long --all --header --links --git --icons --color=always \
   --group-directories-first --color-scale"
 alias lle="exa --long --all --header --links --git --icons --color=always \
   --group-directories-first --color-scale | less -NR"
-alias lT="exa --long --all --header --links --git --icons \
-  --group-directories-first --color-scale -T"
-alias lTle="exa --long --all --header --links --git --icons --color=always \
-  --group-directories-first --color-scale -T | less -NR"
-alias ll="exa --long --header --links --git --icons --group-directories-first \
-  --color-scale"
-alias llle="exa --long --header --links --git --icons --group-directories-first \
-  --color=always --color-scale | less -NR"
-alias llT="exa --long --header --links --git --icons --group-directories-first \
-  --color-scale -T"
-alias llTle="exa --long --header --links --git --icons --group-directories-first \
-  --color=always --color-scale -T | less -NR"
+alias lT="exa --long --all --header --links --git --icons --color=always \
+  --group-directories-first --color-scale --tree"
+alias ll="exa --long --header --links --git --icons --color=always \
+  --group-directories-first --color-scale"
+alias llT="exa --long --header --links --git --icons --color=always \
+  --group-directories-first --color-scale --tree"
 
 # docker aliases
 alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -qa)"
