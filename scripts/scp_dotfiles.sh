@@ -3,7 +3,7 @@
 
 # define filenames to transfer
 FILES_VIM=".vimrc"
-FILES_ZSH=(".zshrc" ".zshscripts" ".p10k.zsh")
+FILES_ZSH=(".zshrc" ".p10k.zsh")
 FILES_TMUX=(".tmux.conf" ".tmux.conf.local")
 FILES_RANGER="ranger"
 
