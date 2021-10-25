@@ -161,7 +161,7 @@ if [ -z "${BACKUP_PATH}" ]; then
             echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
             read -r ANS
             case "${ANS}" in
-            y | Y | yes | YES | Yes)
+            [yY] | [yY][eE][sS])
                 continue
                 ;;
             *)
@@ -186,7 +186,7 @@ while true; do
         read -r ANS
     fi
     case "${ANS}" in
-    y | Y | yes | YES | Yes)
+    [yY] | [yY][eE][sS])
         while true; do
             read -r -p "Input full partition name in format /dev/sdXY: " ANS
             validate_path_b "${ANS}"
@@ -194,7 +194,7 @@ while true; do
                 echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
                 read -r ANS
                 case "${ANS}" in
-                y | Y | yes | YES | Yes)
+                [yY] | [yY][eE][sS])
                     continue
                     ;;
                 *)
@@ -215,7 +215,7 @@ while true; do
                     echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
                     read -r ANS2
                     case "${ANS2}" in
-                    y | Y | yes | YES | Yes)
+                    [yY] | [yY][eE][sS])
                         continue
                         ;;
                     *)
@@ -270,7 +270,7 @@ function preview_and_confirm() {
     echo -en "\n${YEL}WRN:${END} Are you sure (y|n): "
     read -r ANS
     case "${ANS}" in
-    [Yy] | [Yy]es | YES)
+    [yY] | [yY][eE][sS])
         return
         ;;
     *)
