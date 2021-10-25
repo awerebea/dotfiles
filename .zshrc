@@ -1,9 +1,10 @@
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Define default editor nvim, vim, vi or nano
 if [[ $commands[nvim] ]]; then
   export EDITOR='nvim'
   alias vim="nvim"
@@ -28,7 +29,7 @@ if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
   backup_name+=$(date '+%F_%H-%M-%S')
   mv ~/.zshrc ~/${backup_name}
   # install oh-my-zsh
-  sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+  sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
   mv ~/${backup_name} ~/.zshrc
 fi
 
@@ -118,7 +119,7 @@ if [[ ! $commands[kubectx] ]] && \
 kubectx.plugin.zsh ]]; then
   git clone https://github.com/unixorn/kubectx-zshplugin.git \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
-  local current_pwd="$PWD"
+  local current_pwd="${PWD}"
   cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
   sed -i 's|git@github.com:|https://github.com/|' .gitmodules
   git submodule init
@@ -128,7 +129,7 @@ kubectx.plugin.zsh ]]; then
     sed 's@^refs/remotes/origin/@@')
   git submodule foreach git pull origin
   sed -i 's|https://github.com/|git@github.com:|' .gitmodules
-  cd "$current_pwd"
+  cd "${current_pwd}"
 fi
 
 # fzf-fasd
@@ -171,12 +172,6 @@ if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k/\
 powerlevel10k.zsh-theme ]]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
-fi
-
-if [ -f ~/.zshscripts ]; then
-    source ~/.zshscripts
-else
-    print "404: ~/.zshscripts not found."
 fi
 
 # Set name of the theme to load
@@ -251,16 +246,235 @@ plugins=(
           history-substring-search
   )
 
-source $ZSH/oh-my-zsh.sh
+export ZSH="${HOME}/.oh-my-zsh"
+source ${ZSH}/oh-my-zsh.sh
 
 # User configuration
+
+export GIT_DOTFILES="${HOME}/Github/dotfiles"
+export GIT_WORKSPACE="${HOME}/Github/workspace"
+export PATH="${PATH}:${HOME}/.local/bin"
+
+# Detect and setup current environment
+if [[ `uname` == "Linux" ]]; then
+  # quick opening files with xdg-open
+  alias o='a -e xdg-open >/dev/null 2>&1'
+  alias open='xdg-open >/dev/null 2>&1'
+  # Fix history-substring-search plugin behaviour in Tmux
+  bindkey "$terminfo[kcuu1]" history-substring-search-up
+  bindkey "$terminfo[kcud1]" history-substring-search-down
+fi
+
+if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
+  && [[ `uname` == "Linux" ]]; then
+  # Home pc or personal laptop with linux mint
+  export DOCKER_CMD="docker"
+  export PATH="${PATH}:/var/lib/gems/2.7.0"
+  export PATH="${PATH}:/opt/mssql-tools/bin"
+  export PATH="${PATH}:/usr/local/go/bin"
+  # Setup nvm (load nvm and completion)
+  export NVM_DIR="${HOME}/.nvm"
+  [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"
+  [ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"
+
+elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
+  # Home macOS
+  export DOCKER_CMD="docker"
+  alias o='a -e open' # quick opening files with open
+  alias sudo='sudo '
+  alias sudoedit="sudo vim"
+  export PATH="${PATH}:${HOME}/Library/Python/3.7/bin"
+  # Use manually installed vim
+  if [ -x "${HOME}/.local/bin/vim" ]; then
+    alias vim="${HOME}/.local/bin/vim"
+    export EDITOR="${HOME}/.local/bin/vim"
+  fi
+  # Bundle aliases
+  alias fast="bundle exec fastlane"
+  alias be="bundle exec"
+
+elif [[ `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
+  # Home Ubuntu in WSL (Windows)
+  export DOCKER_CMD="sudo docker"
+fi
+
+# fasd history sync via GitHub
+function fhistsync() {
+  echo "\e[1;33mNeed to pull before sync? (y/N)\e[0m"
+  while true; do
+    read -r input
+    case ${input} in
+    [yY][eE][sS]|[yY])
+      git -C ${GIT_WORKSPACE} pull; break;;
+    [nN][oO]|[nN])
+      echo "\e[1;33mLocal file used\e[0m"; break;;
+    *)
+      echo -en "\e[1;33mIncorrect input. Need to push? Answer: "
+      echo -en "\e[1;32mYes\e[1;33m/\e[1;31mNo \e[1;32my\e[1;33m/\e[1;31mn "
+      echo -e "\e[1;32mY\e[1;33m/\e[1;31mN\e[0m";;
+    esac
+  done
+  cat ${HOME}/.fasd >> ${GIT_WORKSPACE}/.fasd
+  cat ${GIT_WORKSPACE}/.fasd | sort -t $'\|' -rk2 |
+    awk -F"[|]" '!a[$1]++' > ${GIT_WORKSPACE}/.fasd_
+  rm -f ${GIT_WORKSPACE}/.fasd ${HOME}/.fasd
+  mv ${GIT_WORKSPACE}/.fasd_ ${GIT_WORKSPACE}/.fasd
+  cp -rf ${GIT_WORKSPACE}/.fasd ${HOME}/.fasd
+  git -C ${GIT_WORKSPACE} add .fasd
+  git -C ${GIT_WORKSPACE} commit -m "Sync fasd history"
+  echo "\e[1;33mfasd synced history commited, need to push? (y/N)\e[0m"
+  while true; do
+    read -r input
+    case $input in
+    [yY] | [yY][eE][sS])
+      git -C ${GIT_WORKSPACE} push origin; break;;
+    [nN] | [nN][oO])
+      break;;
+    *)
+      echo -en "\e[1;33mIncorrect input. Need to push? Answer: "
+      echo -en "\e[1;32mYes\e[1;33m/\e[1;31mNo \e[1;32my\e[1;33m/\e[1;31mn "
+      echo -e "\e[1;32mY\e[1;33m/\e[1;31mN\e[0m";;
+    esac
+  done
+}
+
+# "Forget" last N commands from history
+# Added a space in 'my_remove_last_history_entry'
+# so that zsh forgets the 'forget' command :).
+alias frgt=' my_remove_last_history_entry'
+my_remove_last_history_entry() {
+    # This sub-function checks if the argument passed is a number.
+    # Thanks to @yabt on stackoverflow for this :).
+    is_int() ( return $(test "$@" -eq "$@" > /dev/null 2>&1); )
+    # Set history file's location
+    history_file="${ZSH_HISTORY_FILE}"
+    history_temp_file="${history_file}.tmp"
+    # Check if the user passed a number, so we can delete N lines from history.
+    if [ $# -eq 0 ]; then
+        # No arguments supplied, so set to one.
+        lines_to_remove=1
+    else
+        # An argument passed. Check if it's a number.
+        if $(is_int "${1}"); then
+            lines_to_remove="$1"
+        else
+            echo "Unknown argument passed. Exiting..."
+            return
+        fi
+    fi
+    # fc -W # write current shell's history to the history file.
+    sed "$(($(wc -l < $history_file)-$lines_to_remove + 1)),\$d" \
+      $history_file > $history_temp_file 2>/dev/null
+    mv "$history_temp_file" "$history_file"
+    fc -R # read history file.
+}
+
+# create git hooks for ctags tags update
+function githooksctags() {
+  touch -a .git/hooks/post-checkout
+  grep -qxF '#!/bin/bash' .git/hooks/post-checkout || \
+    echo "#!/bin/bash" >> .git/hooks/post-checkout
+  local POST_CHECKOUT_STRING=
+  POST_CHECKOUT_STRING='ctags -R --fields=+l --tag-relative=yes --exclude=.git '
+  POST_CHECKOUT_STRING+='--exclude=.gitignore --exclude=@.gitignore '
+  POST_CHECKOUT_STRING+='--exclude=@.ctagsignore -f .git/tags 2>/dev/null'
+  grep -qxF "${POST_CHECKOUT_STRING}" .git/hooks/post-checkout || \
+    echo "${POST_CHECKOUT_STRING}" >> .git/hooks/post-checkout
+  chmod +x .git/hooks/post-checkout
+  touch -a .git/hooks/post-commit
+  grep -qxF '#!/bin/bash' .git/hooks/post-commit || \
+    echo "#!/bin/bash" >> .git/hooks/post-commit
+  local POST_COMMIT_STRING=
+  POST_COMMIT_STRING='ctags -R --fields=+l --tag-relative=yes --exclude=.git '
+  POST_COMMIT_STRING+='--exclude=.gitignore --exclude=@.gitignore '
+  POST_COMMIT_STRING+='--exclude=@.ctagsignore -f .git/tags 2>/dev/null'
+  grep -qxF "${POST_COMMIT_STRING}" .git/hooks/post-commit || \
+    echo "${POST_COMMIT_STRING}" >> .git/hooks/post-commit
+  chmod +x .git/hooks/post-commit
+}
+
+## bash and zsh only!
+# functions to cd to the next or previous sibling directory, in glob order {{{
+prev () {
+  # default to current directory if no previous
+  local prevdir="./"
+  local cwd=${PWD##*/}
+  if [[ -z $cwd ]]; then
+    # $PWD must be /
+    echo 'No previous directory.' >&2
+    return 1
+  fi
+  for x in ../*/; do
+    if [[ ${x#../} == ${cwd}/ ]]; then
+      # found cwd
+      if [[ $prevdir == ./ ]]; then
+        echo 'No previous directory.' >&2
+        return 1
+      fi
+      cd "$prevdir"
+      return
+    fi
+    if [[ -d $x ]]; then
+      prevdir=$x
+    fi
+  done
+  # Should never get here.
+  echo 'Directory not changed.' >&2
+  return 1
+}
+
+next () {
+  local foundcwd=
+  local cwd=${PWD##*/}
+  if [[ -z $cwd ]]; then
+    # $PWD must be /
+    echo 'No next directory.' >&2
+    return 1
+  fi
+  for x in ../*/; do
+    if [[ -n $foundcwd ]]; then
+      if [[ -d $x ]]; then
+        cd "$x"
+        return
+      fi
+    elif [[ ${x#../} == ${cwd}/ ]]; then
+      foundcwd=1
+    fi
+  done
+  echo 'No next directory.' >&2
+  return 1
+}
+# }}}
+
+# Decrypt and export in env variables secret token
+alias ghtkn="gpg ${GIT_WORKSPACE}/github_token.gpg; \
+  source ${GIT_WORKSPACE}/github_token; rm -f ${GIT_WORKSPACE}/github_token"
+
+# Use remote docker daemon {{{
+dkremote() {
+  local DEFAULT_REMOTE_HOST=
+  DEFAULT_REMOTE_HOST="10.10.15.162:2376"
+  export DOCKER_HOST="tcp://${1:-${DEFAULT_REMOTE_HOST}}"
+  export DOCKER_TLS_VERIFY=1
+}
+
+dklocal() {
+  unset DOCKER_HOST
+  unset DOCKER_TLS_VERIFY
+}
+# }}}
+
+# Source broot shell script
+BR_SCRIPT="${HOME}/.config/broot/launcher/bash/br"
+if [ -f "${BR_SCRIPT}" ]; then
+  source "${BR_SCRIPT}"
+fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Personal aliases
 alias zshconfig="vim ~/.zshrc"
-alias zshscripts="vim ~/.zshscripts"
 alias vimconfig="vim ~/.vimrc"
 alias rangerconfig="vim ~/.config/ranger/rc.conf"
 alias zhistedit="vim ~/.zsh_history"
@@ -297,26 +511,26 @@ function omz-update() {
   GREEN='\033[0;32m'
   YELLOW_BOLD='\033[1;33m'
   NC='\033[0m' # No Color
-  local current_pwd="$PWD"
+  local current_pwd="${PWD}"
   echo "${GREEN}Updating OMZ custom plugins:${NC}"
   cd "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins"
     for plugin in *; do
-      if [ -d $plugin/.git ]; then
+      if [ -d ${plugin}/.git ]; then
         echo "${YELLOW_BOLD}${plugin}${NC}"
-        git -C "$plugin" pull
-        git -C "$plugin" submodule update
-        git -C "$plugin" submodule foreach git checkout \
+        git -C "${plugin}" pull
+        git -C "${plugin}" submodule update
+        git -C "${plugin}" submodule foreach git checkout \
           $(git symbolic-ref refs/remotes/origin/HEAD |
           sed 's@^refs/remotes/origin/@@')
-        git -C "$plugin" submodule foreach git pull origin
+        git -C "${plugin}" submodule foreach git pull origin
       fi
     done
-    cd "$current_pwd"
+    cd "${current_pwd}"
 }
 
 # Store the alias command in a variable to prevent an error using the alias_for
 # function.
-rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`;'
+rr='ranger --choosedir=${HOME}/.rangerdir; LASTDIR=`cat ${HOME}/.rangerdir`;'
 rr+=' cd "$LASTDIR" > /dev/null 2>&1'
 alias rr=${rr}
 unset rr
@@ -341,11 +555,11 @@ alias llTle="exa --long --header --links --git --icons --group-directories-first
   --color=always --color-scale -T | less -NR"
 
 # docker aliases
-alias dksa="${DOCKER_CMD_FOR_ALIAS} stop \$(${DOCKER_CMD_FOR_ALIAS} ps -qa)"
-alias dkrc="${DOCKER_CMD_FOR_ALIAS} rm \$(${DOCKER_CMD_FOR_ALIAS} container ls -qa)"
-alias dkri="${DOCKER_CMD_FOR_ALIAS} rmi \$(${DOCKER_CMD_FOR_ALIAS} image ls -qa)"
+alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -qa)"
+alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
+alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
 alias dkreset="dksa && dkrc && dkri"
-alias dk=docker
+alias dk=${DOCKER_CMD:-docker}
 alias dkc=docker-compose
 
 # kubectl (k8s) aliases
@@ -377,6 +591,12 @@ alias kaf="kafkactl"
 if [ ! -e "${ZSH}/completions/_kafkactl" ]; then
   mkdir "${ZSH}/completions"
   kafkactl completion zsh > "${ZSH}/completions/_kafkactl"
+fi
+
+# Add kafka to the path if exist
+if [[ -e "${HOME}/.local/opt/kafka" ]]; then
+  export KAFKA_HOME="${HOME}/.local/opt/kafka"
+  export PATH="${PATH}:${KAFKA_HOME}/bin"
 fi
 
 # Initialize completions
@@ -450,7 +670,7 @@ if [[ $commands[fd] ]]; then
 elif [[ $commands[fdfind] ]]; then
   FD_BIN_NAME="fdfind"
 fi
-if [[ ! -z ${FD_BIN_NAME} ]]; then
+if [[ -n ${FD_BIN_NAME} ]]; then
   export FZF_DEFAULT_COMMAND="${FD_BIN_NAME} --type file --follow --hidden --exclude .git"
 else
   export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
@@ -458,8 +678,14 @@ fi
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # Set fzf preview options
-export FZF_DEFAULT_OPTS="--height=100% --preview \
-  'bat --style=numbers --color=always --line-range :500 {}' \
+FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
+2> /dev/null || cat --number {} 2> /dev/null)) || ([[ -d {} ]] && \
+(exa --oneline --group-directories-first --color=always --color-scale --icons \
+--all --git {} 2> /dev/null || tree -a -C -L 1 -v --dirsfirst {} \
+2> /dev/null)) || echo {} 2> /dev/null | head -200"
+export FZF_DEFAULT_OPTS=" \
+  --height=100% \
+  --preview '${FZF_PREVIEW_STRING/$\'\n\'/}' \
   --preview-window=up:60%:hidden \
   --bind=ctrl-/:toggle-preview \
   --bind=alt-j:preview-down,alt-k:preview-up \
@@ -468,7 +694,8 @@ export FZF_DEFAULT_OPTS="--height=100% --preview \
   --bind=alt-up:preview-top,alt-down:preview-bottom \
   --bind=ctrl-space:toggle+up \
   --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
-  --bind=ctrl-f:page-down,ctrl-b:page-up"
+  --bind=ctrl-f:page-down,ctrl-b:page-up \
+  "
 export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
 
 # ranger filemanager plugins
@@ -646,12 +873,12 @@ expand_command_line() {
   fi
 }
 pre_validation() {
-  [[ $# -eq 0 ]] && return                    # If there's no input, return. Else...
+  [[ $# -eq 0 ]] && return               # If there's no input, return. Else...
   expand_command_line "$@"
 }
-autoload -U add-zsh-hook                      # Load the zsh hook module.
-add-zsh-hook preexec pre_validation           # Adds the hook
-# add-zsh-hook -d preexec pre_validation        # Remove it for this hook.
+autoload -U add-zsh-hook                 # Load the zsh hook module.
+add-zsh-hook preexec pre_validation      # Adds the hook
+# add-zsh-hook -d preexec pre_validation   # Remove it for this hook.
 
 # tipz plugin
 if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
@@ -664,12 +891,10 @@ export GLOBALIAS_FILTER_VALUES=(f z ls)
 
 # fasd + fzf
 zd() {
-  fasdlist=$( fasd -d -l -R $1 | \
-    fzf --query="$1" --select-1 --exit-0 --height=100% --reverse --no-sort --cycle) &&
-    cd "$fasdlist"
+  fasdlist=$( fasd -d -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
+    --height=100% --reverse --no-sort --cycle) && cd "$fasdlist"
 }
 zf() {
-  fasdlist=$( fasd -f -l -R $1 | \
-    fzf --query="$1" --select-1 --exit-0 --height=100% --reverse --no-sort --cycle) &&
-    xdg-open "$fasdlist"
+  fasdlist=$( fasd -f -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
+    --height=100% --reverse --no-sort --cycle) && xdg-open "$fasdlist"
 }
