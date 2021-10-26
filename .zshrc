@@ -232,7 +232,6 @@ plugins=(
           kafka
           kubectl
           kubectx
-          minikube
           notify
           pass
           rsync
@@ -618,8 +617,18 @@ if [ -d "$HOME/.local/opt/kafka" ] &&
     export PATH="$PATH:$KAFKA_HOME/bin"
 fi
 
-# Initialize completions
-compinit
+# Source minikube completion if exist
+if [[ $commands[minikube] ]]; then
+  if [ ! -e "$ZSH/completions/_minikube" ]; then
+    mkdir -p "$ZSH/completions"
+    minikube completion zsh > "$ZSH/completions/_minikube"
+    sed "/\t<<'BASH_COMPLETION_EOF'/i\\\t-e \
+'s/aliashash\\\\[\"\\\\(\\\\w\\\\+\\\\)\"\\\\]/aliashash[\\\\1]/g' \\\\" \
+      "$ZSH/completions/_minikube" > _minikube.tmp
+    mv _minikube.tmp _minikube
+  fi
+  source "$ZSH/completions/_minikube"
+fi
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
