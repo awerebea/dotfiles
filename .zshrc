@@ -27,10 +27,10 @@ if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
   # backup ~/.zshrc
   backup_name=".zshrc_backup_"
   backup_name+=$(date '+%F_%H-%M-%S')
-  mv ~/.zshrc ~/${backup_name}
+  mv ~/.zshrc ~/$backup_name
   # install oh-my-zsh
   sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  mv ~/${backup_name} ~/.zshrc
+  mv ~/$backup_name ~/.zshrc
 fi
 
 # Install custom plugins if they aren't there yet.
@@ -129,7 +129,7 @@ kubectx.plugin.zsh ]]; then
     sed 's@^refs/remotes/origin/@@')
   git submodule foreach git pull origin
   sed -i 's|https://github.com/|git@github.com:|' .gitmodules
-  cd "${current_pwd}"
+  cd "$current_pwd"
 fi
 
 # fzf-fasd
@@ -205,6 +205,12 @@ export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
   --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
   --bind=ctrl-f:page-down,ctrl-b:page-up"
 
+# Set LD_LIBRARY_PATH so it includes user's private lib if it exists¬
+if [ -d "$HOME/.local/lib" ] &&
+  [[ ":$LD_LIBRARY_PATH:" != *":$HOME/.local/lib:"* ]]; then
+    export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
+fi
+
 # Which plugins to load?
 plugins=(
           aws
@@ -246,14 +252,18 @@ plugins=(
           history-substring-search
   )
 
-export ZSH="${HOME}/.oh-my-zsh"
-source ${ZSH}/oh-my-zsh.sh
+export ZSH="$HOME/.oh-my-zsh"
+source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
-export GIT_DOTFILES="${HOME}/Github/dotfiles"
-export GIT_WORKSPACE="${HOME}/Github/workspace"
-export PATH="${PATH}:${HOME}/.local/bin"
+export GIT_DOTFILES="$HOME/Github/dotfiles"
+export GIT_WORKSPACE="$HOME/Github/workspace"
+
+if [ -d "$HOME/.local/bin" ] &&
+  [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$PATH:$HOME/.local/bin"
+fi
 
 # Detect and setup current environment
 if [[ `uname` == "Linux" ]]; then
@@ -269,13 +279,22 @@ if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
   && [[ `uname` == "Linux" ]]; then
   # Home pc or personal laptop with linux mint
   export DOCKER_CMD="docker"
-  export PATH="${PATH}:/var/lib/gems/2.7.0"
-  export PATH="${PATH}:/opt/mssql-tools/bin"
-  export PATH="${PATH}:/usr/local/go/bin"
+  if [ -d "/var/lib/gems/2.7.0" ] &&
+    [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
+      export PATH="$PATH:/var/lib/gems/2.7.0"
+  fi
+  if [ -d "/opt/mssql-tools/bin" ] &&
+    [[ ":$PATH:" != *":/opt/mssql-tools/bin:"* ]]; then
+      export PATH="$PATH:/opt/mssql-tools/bin"
+  fi
+  if [ -d "/usr/local/go/bin" ] &&
+    [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
+      export PATH="$PATH:/usr/local/go/bin"
+  fi
   # Setup nvm (load nvm and completion)
-  export NVM_DIR="${HOME}/.nvm"
-  [ -s "${NVM_DIR}/nvm.sh" ] && \. "${NVM_DIR}/nvm.sh"
-  [ -s "${NVM_DIR}/bash_completion" ] && \. "${NVM_DIR}/bash_completion"
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
@@ -283,17 +302,20 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
   alias sudoedit="sudo vim"
-  export PATH="${PATH}:${HOME}/Library/Python/3.7/bin"
+  if [ -d "$HOME/Library/Python/3.7/bin" ] &&
+    [[ ":$PATH:" != *":$HOME/Library/Python/3.7/bin:"* ]]; then
+      export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+  fi
   # Use manually installed vim
-  if [ -x "${HOME}/.local/bin/vim" ]; then
-    alias vim="${HOME}/.local/bin/vim"
-    export EDITOR="${HOME}/.local/bin/vim"
+  if [ -x "$HOME/.local/bin/vim" ]; then
+    alias vim="$HOME/.local/bin/vim"
+    export EDITOR="$HOME/.local/bin/vim"
   fi
   # Bundle aliases
   alias fast="bundle exec fastlane"
   alias be="bundle exec"
 
-elif [[ `echo ${WSL_DISTRO_NAME}` == "Ubuntu" ]]; then
+elif [[ `echo $WSL_DISTRO_NAME` == "Ubuntu" ]]; then
   # Home Ubuntu in WSL (Windows)
   export DOCKER_CMD="sudo docker"
 fi
@@ -303,9 +325,9 @@ function fhistsync() {
   echo "\e[1;33mNeed to pull before sync? (y/N)\e[0m"
   while true; do
     read -r input
-    case ${input} in
+    case $input in
     [yY][eE][sS]|[yY])
-      git -C ${GIT_WORKSPACE} pull; break;;
+      git -C $GIT_WORKSPACE pull; break;;
     [nN][oO]|[nN])
       echo "\e[1;33mLocal file used\e[0m"; break;;
     *)
@@ -314,20 +336,20 @@ function fhistsync() {
       echo -e "\e[1;32mY\e[1;33m/\e[1;31mN\e[0m";;
     esac
   done
-  cat ${HOME}/.fasd >> ${GIT_WORKSPACE}/.fasd
-  cat ${GIT_WORKSPACE}/.fasd | sort -t $'\|' -rk2 |
-    awk -F"[|]" '!a[$1]++' > ${GIT_WORKSPACE}/.fasd_
-  rm -f ${GIT_WORKSPACE}/.fasd ${HOME}/.fasd
-  mv ${GIT_WORKSPACE}/.fasd_ ${GIT_WORKSPACE}/.fasd
-  cp -rf ${GIT_WORKSPACE}/.fasd ${HOME}/.fasd
-  git -C ${GIT_WORKSPACE} add .fasd
-  git -C ${GIT_WORKSPACE} commit -m "Sync fasd history"
+  cat $HOME/.fasd >> $GIT_WORKSPACE/.fasd
+  cat $GIT_WORKSPACE/.fasd | sort -t $'\|' -rk2 |
+    awk -F"[|]" '!a[$1]++' > $GIT_WORKSPACE/.fasd_
+  rm -f $GIT_WORKSPACE/.fasd $HOME/.fasd
+  mv $GIT_WORKSPACE/.fasd_ $GIT_WORKSPACE/.fasd
+  cp -rf $GIT_WORKSPACE/.fasd $HOME/.fasd
+  git -C $GIT_WORKSPACE add .fasd
+  git -C $GIT_WORKSPACE commit -m "Sync fasd history"
   echo "\e[1;33mfasd synced history commited, need to push? (y/N)\e[0m"
   while true; do
     read -r input
     case $input in
     [yY] | [yY][eE][sS])
-      git -C ${GIT_WORKSPACE} push origin; break;;
+      git -C $GIT_WORKSPACE push origin; break;;
     [nN] | [nN][oO])
       break;;
     *)
@@ -347,15 +369,15 @@ my_remove_last_history_entry() {
     # Thanks to @yabt on stackoverflow for this :).
     is_int() ( return $(test "$@" -eq "$@" > /dev/null 2>&1); )
     # Set history file's location
-    history_file="${ZSH_HISTORY_FILE}"
-    history_temp_file="${history_file}.tmp"
+    history_file="$ZSH_HISTORY_FILE"
+    history_temp_file="$history_file.tmp"
     # Check if the user passed a number, so we can delete N lines from history.
     if [ $# -eq 0 ]; then
         # No arguments supplied, so set to one.
         lines_to_remove=1
     else
         # An argument passed. Check if it's a number.
-        if $(is_int "${1}"); then
+        if $(is_int "$1"); then
             lines_to_remove="$1"
         else
             echo "Unknown argument passed. Exiting..."
@@ -378,8 +400,8 @@ function githooksctags() {
   POST_CHECKOUT_STRING='ctags -R --fields=+l --tag-relative=yes --exclude=.git '
   POST_CHECKOUT_STRING+='--exclude=.gitignore --exclude=@.gitignore '
   POST_CHECKOUT_STRING+='--exclude=@.ctagsignore -f .git/tags 2>/dev/null'
-  grep -qxF "${POST_CHECKOUT_STRING}" .git/hooks/post-checkout || \
-    echo "${POST_CHECKOUT_STRING}" >> .git/hooks/post-checkout
+  grep -qxF "$POST_CHECKOUT_STRING" .git/hooks/post-checkout || \
+    echo "$POST_CHECKOUT_STRING" >> .git/hooks/post-checkout
   chmod +x .git/hooks/post-checkout
   touch -a .git/hooks/post-commit
   grep -qxF '#!/bin/bash' .git/hooks/post-commit || \
@@ -388,8 +410,8 @@ function githooksctags() {
   POST_COMMIT_STRING='ctags -R --fields=+l --tag-relative=yes --exclude=.git '
   POST_COMMIT_STRING+='--exclude=.gitignore --exclude=@.gitignore '
   POST_COMMIT_STRING+='--exclude=@.ctagsignore -f .git/tags 2>/dev/null'
-  grep -qxF "${POST_COMMIT_STRING}" .git/hooks/post-commit || \
-    echo "${POST_COMMIT_STRING}" >> .git/hooks/post-commit
+  grep -qxF "$POST_COMMIT_STRING" .git/hooks/post-commit || \
+    echo "$POST_COMMIT_STRING" >> .git/hooks/post-commit
   chmod +x .git/hooks/post-commit
 }
 
@@ -405,7 +427,7 @@ prev () {
     return 1
   fi
   for x in ../*/; do
-    if [[ ${x#../} == ${cwd}/ ]]; then
+    if [[ ${x#../} == $cwd/ ]]; then
       # found cwd
       if [[ $prevdir == ./ ]]; then
         echo 'No previous directory.' >&2
@@ -437,7 +459,7 @@ next () {
         cd "$x"
         return
       fi
-    elif [[ ${x#../} == ${cwd}/ ]]; then
+    elif [[ ${x#../} == $cwd/ ]]; then
       foundcwd=1
     fi
   done
@@ -447,14 +469,14 @@ next () {
 # }}}
 
 # Decrypt and export in env variables secret token
-alias ghtkn="gpg ${GIT_WORKSPACE}/github_token.gpg; \
-  source ${GIT_WORKSPACE}/github_token; rm -f ${GIT_WORKSPACE}/github_token"
+alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; \
+  source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
 
 # Use remote docker daemon {{{
 dkremote() {
   local DEFAULT_REMOTE_HOST=
   DEFAULT_REMOTE_HOST="10.10.15.162:2376"
-  export DOCKER_HOST="tcp://${1:-${DEFAULT_REMOTE_HOST}}"
+  export DOCKER_HOST="tcp://${1:-$DEFAULT_REMOTE_HOST}"
   export DOCKER_TLS_VERIFY=1
 }
 
@@ -465,10 +487,11 @@ dklocal() {
 # }}}
 
 # Source broot shell script
-BR_SCRIPT="${HOME}/.config/broot/launcher/bash/br"
-if [ -f "${BR_SCRIPT}" ]; then
-  source "${BR_SCRIPT}"
+BR_SCRIPT="$HOME/.config/broot/launcher/bash/br"
+if [ -f "$BR_SCRIPT" ]; then
+  source "$BR_SCRIPT"
 fi
+unset BR_SCRIPT
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -508,33 +531,33 @@ alias 19='cd -19'
 function omz-update() {
   omz update
   # Setup colors
-  GREEN='\033[0;32m'
-  YELLOW_BOLD='\033[1;33m'
-  NC='\033[0m' # No Color
-  local current_pwd="${PWD}"
-  echo "${GREEN}Updating OMZ custom plugins:${NC}"
-  cd "${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins"
+  local GREEN='\033[0;32m'
+  local YELLOW_BOLD='\033[1;33m'
+  local NC='\033[0m' # No Color
+  local current_pwd="$PWD"
+  echo "${GREEN}Updating OMZ custom plugins:$NC"
+  cd "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
     for plugin in *; do
-      if [ -d ${plugin}/.git ]; then
+      if [ -d $plugin/.git ]; then
         echo "${YELLOW_BOLD}${plugin}${NC}"
-        git -C "${plugin}" pull
-        git -C "${plugin}" submodule update
-        git -C "${plugin}" submodule foreach git checkout \
+        git -C "$plugin" pull
+        git -C "$plugin" submodule update
+        git -C "$plugin" submodule foreach git checkout \
           $(git symbolic-ref refs/remotes/origin/HEAD |
           sed 's@^refs/remotes/origin/@@')
-        git -C "${plugin}" submodule foreach git pull origin
+        git -C "$plugin" submodule foreach git pull origin
       fi
     done
-    cd "${current_pwd}"
+    cd "$current_pwd"
 }
 
 # Store the alias command in a variable to prevent an error using the alias_for
 # function.
-rr='ranger --choosedir=${HOME}/.rangerdir; LASTDIR=`cat ${HOME}/.rangerdir`;'
+rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=`cat $HOME/.rangerdir`;'
 rr+=' cd "$LASTDIR" > /dev/null 2>&1'
-alias rr=${rr}
+alias rr=$rr
 unset rr
-alias cpmakefile="cp ${GIT_DOTFILES}/templates/Makefile ."
+alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 
 # exa aliases
 alias l="exa --long --all --header --links --git --icons --color=always \
@@ -582,15 +605,16 @@ alias kaf="kafkactl"
 
 # Source kafkactl completion if exist
 [[ $commands[kafkactl] ]] && source <(kafkactl completion zsh)
-if [ ! -e "${ZSH}/completions/_kafkactl" ]; then
-  mkdir "${ZSH}/completions"
-  kafkactl completion zsh > "${ZSH}/completions/_kafkactl"
+if [ ! -e "$ZSH/completions/_kafkactl" ]; then
+  mkdir "$ZSH/completions"
+  kafkactl completion zsh > "$ZSH/completions/_kafkactl"
 fi
 
 # Add kafka to the path if exist
-if [[ -e "${HOME}/.local/opt/kafka" ]]; then
-  export KAFKA_HOME="${HOME}/.local/opt/kafka"
-  export PATH="${PATH}:${KAFKA_HOME}/bin"
+if [ -d "$HOME/.local/opt/kafka" ] &&
+  [[ ":$PATH:" != *":$HOME/.local/opt/kafka"* ]]; then
+    export KAFKA_HOME="$HOME/.local/opt/kafka"
+    export PATH="$PATH:$KAFKA_HOME/bin"
 fi
 
 # Initialize completions
@@ -598,9 +622,9 @@ compinit
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
 function vimprj() {
-  mkdir -p .vimprj && for f in `ls -A ${GIT_DOTFILES}/Vim/.vimprj | \
+  mkdir -p .vimprj && for f in `ls -A $GIT_DOTFILES/Vim/.vimprj | \
     grep -v '.indexer_files_tags'`; do \
-    cp -- ${GIT_DOTFILES}/Vim/.vimprj/$f .vimprj/$f; done
+    cp -- $GIT_DOTFILES/Vim/.vimprj/$f .vimprj/$f; done
 }
 
 # enable fasd
@@ -634,10 +658,10 @@ setopt SHARE_HISTORY
 
 export HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 export ZSH_HISTORY_FILE_NAME=".zsh_history"
-export ZSH_HISTORY_FILE="${HOME}/${ZSH_HISTORY_FILE_NAME}"
-export ZSH_HISTORY_PROJ="${GIT_WORKSPACE}"
+export ZSH_HISTORY_FILE="$HOME/$ZSH_HISTORY_FILE_NAME"
+export ZSH_HISTORY_PROJ="$GIT_WORKSPACE"
 export ZSH_HISTORY_FILE_ENC_NAME="zsh_history.gpg"
-export ZSH_HISTORY_FILE_ENC="${ZSH_HISTORY_PROJ}/${ZSH_HISTORY_FILE_ENC_NAME}"
+export ZSH_HISTORY_FILE_ENC="$ZSH_HISTORY_PROJ/$ZSH_HISTORY_FILE_ENC_NAME"
 export GIT_COMMIT_MSG="Sync zsh history"
 
 # re-read history file
@@ -649,7 +673,7 @@ setopt CORRECT_ALL
 
 # ranger
 export RANGER_LOAD_DEFAULT_RC=FALSE
-export W3MIMGDISPLAY_PATH="${HOME}/.local/libexec/w3m/w3mimgdisplay"
+export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 
 # set vim as the default pager for man pages
 export MANPAGER="/bin/sh -c \"col -b | \
@@ -664,8 +688,8 @@ if [[ $commands[fd] ]]; then
 elif [[ $commands[fdfind] ]]; then
   FD_BIN_NAME="fdfind"
 fi
-if [[ -n ${FD_BIN_NAME} ]]; then
-  export FZF_DEFAULT_COMMAND="${FD_BIN_NAME} --type file --follow --hidden --exclude .git"
+if [[ -n $FD_BIN_NAME ]]; then
+  export FZF_DEFAULT_COMMAND="$FD_BIN_NAME --type file --follow --hidden --exclude .git"
 else
   export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
 fi
@@ -694,7 +718,7 @@ export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
 
 # ranger filemanager plugins
 # fzf_marks
-export FZF_MARKS_FILE="${HOME}/.fzf-marks"
+export FZF_MARKS_FILE="$HOME/.fzf-marks"
 export FZF_MARKS_CMD="fzf"
 export FZF_FZM_OPTS="--cycle +m --ansi --bind=ctrl-o:accept,ctrl-t:toggle --select-1"
 export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
@@ -704,7 +728,7 @@ export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # Pass storage path
-export PASSWORD_STORE_DIR="${GIT_WORKSPACE}/.password-store"
+export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
 
 # Create and launch python VENV
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
@@ -780,9 +804,9 @@ bindkey -M vicmd '^[[B' history-substring-search-down
 bindkey -M viins '^[[A' history-substring-search-up
 bindkey -M viins '^[[B' history-substring-search-down
 
-# check daily for plugins updates
+# Check daily for plugins updates
 export UPDATE_ZSH_DAYS=1
-ZSH_CUSTOM_AUTOUPDATE_QUIET=true
+ZSH_CUSTOM_AUTOUPDATE_QUIET=false
 
 # Automatically start tmux on remote server when logging in via SSH
 if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -n "$SSH_CONNECTION" ]; then
@@ -832,21 +856,21 @@ bindkey -M vicmd '^F^P' basicSedSub
 alias_for() {
   local cmd_alias=""
   [[ $1 =~ '[[:punct:]]' ]] && return
-  local search=${1}
+  local search=$1
   local found="$( alias $search )"
   if [[ -n $found ]]; then
     found=${found//\\//} # Replace backslash with slash
     found=${found%\'} # Remove end single quote
     found=${found#"$search='"} # Remove alias name
-    echo "${found} ${2}" | xargs # Return found value (with parameters)
+    echo "${found} $2" | xargs # Return found value (with parameters)
   else
     echo ""
   fi
 }
 expand_command_line() {
-  CYAN='\033[1;36m'
-  BLUE='\033[0;34m'
-  NC='\033[0m'
+  local CYAN='\033[1;36m'
+  local BLUE='\033[0;34m'
+  local NC='\033[0m'
   excluded_commands=("nvim")
   first=$(echo "$1" | awk '{print $1;}')
   rest=$(echo ${${1}/"${first}"/})
@@ -854,14 +878,14 @@ expand_command_line() {
     full_cmd="$(alias_for "${first}")"
     # Check if expanded command string heve more than one word (have spaces)
     # to avoid alias=command output
-    if [[ ! "${full_cmd}" =~ ' ' ]]; then
-      full_cmd=$(cut -d "=" -f2- <<< "${full_cmd}")
+    if [[ ! "$full_cmd" =~ ' ' ]]; then
+      full_cmd=$(cut -d "=" -f2- <<< "$full_cmd")
     fi
     # Check if there's a command for the alias
     if [[ -n $full_cmd ]]; then # If there was
       # Check if the command is not in the exluded list
       if [[ ! "${excluded_commands[*]}" =~ "${full_cmd%% *}" ]]; then
-        echo "  ${CYAN}↳${NC} ${BLUE}${full_cmd} ${NC}${rest:1}" # Print it
+        echo "  $CYAN↳$NC $BLUE${full_cmd} $NC${rest:1}" # Print it
       fi
     fi
   fi
