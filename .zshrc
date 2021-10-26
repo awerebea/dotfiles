@@ -232,6 +232,7 @@ plugins=(
           kafka
           kubectl
           kubectx
+          minikube
           notify
           pass
           rsync
@@ -606,7 +607,7 @@ alias kaf="kafkactl"
 # Source kafkactl completion if exist
 [[ $commands[kafkactl] ]] && source <(kafkactl completion zsh)
 if [ ! -e "$ZSH/completions/_kafkactl" ]; then
-  mkdir "$ZSH/completions"
+  mkdir -p "$ZSH/completions"
   kafkactl completion zsh > "$ZSH/completions/_kafkactl"
 fi
 
