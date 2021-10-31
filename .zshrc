@@ -607,17 +607,13 @@ alias kns="kubens"
 # kafkactl aliases
 alias kaf="kafkactl"
 
-# Source kubectl completion if exist
-[[ $commands[kubectl] ]] && source <(kubectl completion zsh)
-
-# Source stern completion if exist
-[[ $commands[stern] ]] && source <(stern --completion=zsh)
-
-# Source kafkactl completion if exist
-[[ $commands[kafkactl] ]] && source <(kafkactl completion zsh)
-if [ ! -e "$ZSH/completions/_kafkactl" ]; then
-  mkdir -p "$ZSH/completions"
-  kafkactl completion zsh > "$ZSH/completions/_kafkactl"
+# Lazy loading stern completions
+if [ $commands[stern] ]; then
+  stern() {
+    unfunction "$0"
+    source <(stern --completion=zsh)
+    $0 "$@"
+  }
 fi
 
 # Add kafka to the path if exist
@@ -627,17 +623,29 @@ if [ -d "$HOME/.local/opt/kafka" ] &&
     export PATH="$PATH:$KAFKA_HOME/bin"
 fi
 
-# Source minikube completion if exist
-if [[ $commands[minikube] ]]; then
-  if [ ! -e "$ZSH/completions/_minikube" ]; then
-    mkdir -p "$ZSH/completions"
-    minikube completion zsh > "$ZSH/completions/_minikube"
-    sed "/\t<<'BASH_COMPLETION_EOF'/i\\\t-e \
+# Create kafkacl completion file if needed
+if [[ $commands[kafkactl] ]] && [ ! -s "$ZSH/completions/_kafkactl" ]; then
+  mkdir -p "$ZSH/completions"
+  kafkactl completion zsh > "$ZSH/completions/_kafkactl"
+fi
+
+# Create minikube completion file if needed
+if [ $commands[minikube] ] && [ ! -e "$ZSH/completions/_minikube" ]; then
+  mkdir -p "$ZSH/completions"
+  minikube completion zsh > "$ZSH/completions/_minikube"
+  sed "/\t<<'BASH_COMPLETION_EOF'/i\\\t-e \
 's/aliashash\\\\[\"\\\\(\\\\w\\\\+\\\\)\"\\\\]/aliashash[\\\\1]/g' \\\\" \
-      "$ZSH/completions/_minikube" > _minikube.tmp
-    mv _minikube.tmp _minikube
-  fi
-  source "$ZSH/completions/_minikube"
+    "$ZSH/completions/_minikube" > $ZSH/completions/_minikube.tmp
+  mv $ZSH/completions/_minikube.tmp $ZSH/completions/_minikube
+fi
+
+# Lazy loading minikube completions
+if [ $commands[minikube] ]; then
+  minikube() {
+    unfunction "$0"
+    source "$ZSH/completions/_minikube"
+    $0 "$@"
+  }
 fi
 
 # Lazy loading nvm if exists
