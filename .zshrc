@@ -947,7 +947,15 @@ if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
 fi
 
 # globalias filter values (commands that should not be expanded)
-export GLOBALIAS_FILTER_VALUES=(f z ls)
+export GLOBALIAS_FILTER_VALUES=(
+  egrep
+  f
+  fgrep
+  grep
+  ls
+  tmux
+  z
+)
 
 # fasd + fzf
 zd() {
