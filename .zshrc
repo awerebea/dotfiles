@@ -973,3 +973,22 @@ timezsh() {
 Average startup time: %.3f seconds\n' $VAR
   rm -f zsh_startup_time.tmp
 }
+
+# Ctrl+rightarrow to move to the next word
+bindkey '^[[1;5C' emacs-forward-word
+# Ctrl+Alt+l to move to the next word
+bindkey '^[^L' emacs-forward-word
+# Ctrl+leftarrow to move to the previous word
+bindkey '^[[1;5D' emacs-backward-word
+# Ctrl+Alt+h to move to the previous word
+bindkey '^[^H' emacs-backward-word
+# Alt+; to accept autosuggestion
+bindkey '^[;' end-of-line
+# Alt+Enter to execute autosuggestion
+bindkey '^[^M' autosuggest-execute
+# Home to move to the start of line
+bindkey '^[[H' beginning-of-line
+# End to move to the start of line
+bindkey '^[[F' end-of-line
+# Ctrl+O to open file in vim using fzf
+bindkey -s '^o' 'vim $(fzf)^M'
