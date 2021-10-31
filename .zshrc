@@ -220,6 +220,9 @@ if [ -d "$HOME/.local/lib" ] &&
     export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
 fi
 
+# zsh-autosuggestions settings
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
 # # Setup zsh-nvm plugin              # use custom lazy loading function instead
 # export NVM_LAZY_LOAD=true
 # export NVM_COMPLETION=true
