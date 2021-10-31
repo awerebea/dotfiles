@@ -108,6 +108,13 @@ tmux-vim-integration.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tmux-vim-integration
 fi
 
+# # Lazy loading nvm                  # use custom lazy loading function instead
+# if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-nvm/\
+# zsh-nvm.plugin.zsh ]]; then
+#   git clone https://github.com/lukechilds/zsh-nvm \
+#     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-nvm
+# fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -213,6 +220,10 @@ if [ -d "$HOME/.local/lib" ] &&
     export LD_LIBRARY_PATH="$HOME/.local/lib:$LD_LIBRARY_PATH"
 fi
 
+# # Setup zsh-nvm plugin              # use custom lazy loading function instead
+# export NVM_LAZY_LOAD=true
+# export NVM_COMPLETION=true
+
 # Which plugins to load?
 plugins=(
           aws
@@ -248,6 +259,7 @@ plugins=(
           zsh-completions
           zsh-exa
           zsh-interactive-cd
+          # zsh-nvm                   # use custom lazy loading function instead
           zsh-sed-sub
           zsh-syntax-highlighting
           zsh-vi-mode
@@ -293,10 +305,6 @@ if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
     [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
       export PATH="$PATH:/usr/local/go/bin"
   fi
-  # Setup nvm (load nvm and completion)
-  export NVM_DIR="$HOME/.nvm"
-  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
@@ -630,6 +638,17 @@ if [[ $commands[minikube] ]]; then
     mv _minikube.tmp _minikube
   fi
   source "$ZSH/completions/_minikube"
+fi
+
+# Lazy loading nvm if exists
+if [ -d "$HOME/.nvm" ]; then
+  nvm() {
+    unfunction "$0"
+    [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+    $0 "$@"
+  }
 fi
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
