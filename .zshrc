@@ -1,3 +1,5 @@
+zmodload zsh/zprof
+
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -925,4 +927,19 @@ zd() {
 zf() {
   fasdlist=$( fasd -f -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
     --height=100% --reverse --no-sort --cycle) && xdg-open "$fasdlist"
+}
+
+timezsh() {
+  echo "Real zsh startup time in seconds:"
+  local VAR
+  VAR=${1:-10};
+  for ((i = 1; i <= VAR; i++)); do
+    (/usr/bin/time -f "%e" zsh -i -c exit) &>> zsh_startup_time.tmp;
+    printf '%2s) ' $i
+    cat zsh_startup_time.tmp | tail -n 1;
+  done
+  VAR=$(awk 'BEGIN{s=0;}{s+=$1;}END{print s/NR;}' zsh_startup_time.tmp)
+  printf '-----------------------------------
+Average startup time: %.3f seconds\n' $VAR
+  rm -f zsh_startup_time.tmp
 }
