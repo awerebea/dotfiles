@@ -1007,3 +1007,5 @@ bindkey '^[[H' beginning-of-line
 bindkey '^[[F' end-of-line
 # Ctrl+O to open file in vim using fzf
 bindkey -s '^o' 'vim $(fzf)^M'
+
+bindkey '^[y' yank-pop
