@@ -121,6 +121,12 @@ zsh-bash-completions-fallback.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bash-completions-fallback
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-edit/\
+zsh-edit.plugin.zsh ]]; then
+  git clone https://github.com/marlonrichert/zsh-edit.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-edit
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -266,6 +272,7 @@ plugins=(
           web-search
           zsh-autosuggestions
           zsh-completions
+          zsh-edit
           zsh-exa
           zsh-interactive-cd
           # zsh-nvm                   # use custom lazy loading function instead
