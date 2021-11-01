@@ -115,6 +115,12 @@ fi
 #     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-nvm
 # fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bash-completions-fallback/\
+zsh-bash-completions-fallback.plugin.zsh ]]; then
+  git clone https://github.com/3v1n0/zsh-bash-completions-fallback.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bash-completions-fallback
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -267,6 +273,7 @@ plugins=(
           zsh-syntax-highlighting
           zsh-vi-mode
           history-substring-search
+          zsh-bash-completions-fallback
   )
 
 export ZSH="$HOME/.oh-my-zsh"
