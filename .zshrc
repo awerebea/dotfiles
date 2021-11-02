@@ -1016,3 +1016,10 @@ bindkey '^[[F' end-of-line
 bindkey -s '^o' 'vim $(fzf)^M'
 
 bindkey '^[y' yank-pop
+
+# Yank from vim's visual selection mode to the system clipboard
+zvm_vi_yank () {
+  zvm_yank
+  printf %s "${CUTBUFFER}" | xclip -selection clipboard
+  zvm_exit_visual_mode
+}
