@@ -245,6 +245,7 @@ plugins=(
           colored-man-pages
           copydir
           copyfile
+          cp
           docker
           docker-compose
           encode64
