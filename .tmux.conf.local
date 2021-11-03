@@ -460,7 +460,9 @@ set -g @tpm_plugins '                 \
   MunifTanjim/tmux-mode-indicator     \
   MunifTanjim/tmux-suspend            \
   charlietag/tmux-split-statusbar     \
+  fcsonline/tmux-thumbs               \
 '
+  # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
 unbind C-l # conflicts with pane movements
 # bind l send-keys 'C-l' # clear screen (conflicts with nested session)
@@ -732,3 +734,12 @@ set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
 set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
                                                   # bindkey for status-left / status-right hiding
                                                   # define yourself just like bind-key, default: M-d
+
+# tmux-thumbs
+set -g @thumbs-key F
+set -g @thumbs-unique enabled
+set -g @thumbs-reverse enabled
+set -g @thumbs-command 'echo -n {} | xclip -selection clipboard && \
+tmux set-buffer -- {} && tmux display-message "Copied {}"'
+set -g @thumbs-multi-command 'echo -n {} | xclip -selection clipboard && \
+tmux set-buffer -- "{}" && tmux display-message "Copied multiple items!"'
