@@ -463,6 +463,7 @@ set -g @tpm_plugins '                 \
   fcsonline/tmux-thumbs               \
   sainnhe/tmux-fzf                    \
   wfxr/tmux-fzf-url                   \
+  awerebea/tmux-translator            \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -724,3 +725,17 @@ TMUX_FZF_LAUNCH_KEY="M-f" # prefix Alt-f
 # tmux-fzf-url
 set -g @fzf-url-bind 'u'
 set -g @fzf-url-history-limit '2000'
+
+# tmux-translator
+# the key to trigger translation
+set -g @tmux-translator "M-t"
+# the width of popup window
+set -g @tmux-translator-width "38%"
+# the height of popup window
+set -g @tmux-translator-height "38%"
+# translate from
+set -g @tmux-translator-from "en"
+# translate to
+set -g @tmux-translator-to "ru"
+# engine
+set -g @tmux-translator-engine "google"
