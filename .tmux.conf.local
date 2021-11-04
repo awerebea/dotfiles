@@ -464,6 +464,7 @@ set -g @tpm_plugins '                 \
   sainnhe/tmux-fzf                    \
   wfxr/tmux-fzf-url                   \
   awerebea/tmux-translator            \
+  addisonlynch/tmux-sidebar-plus      \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -686,7 +687,7 @@ set -g @pomodoro_start 'v'
 set -g @pomodoro_cancel 'V'
 
 # override buffer keybinds
-bind b choose-buffer # choose which buffer to paste from
+bind C-b choose-buffer -Z # choose which buffer to paste from
 
 # reorganize current pane with previous-number pane
 bind M-, move-pane -t '.-' # previous at the top, current at the bottom
@@ -739,3 +740,8 @@ set -g @tmux-translator-from "en"
 set -g @tmux-translator-to "ru"
 # engine
 set -g @tmux-translator-engine "google"
+
+# tmux-sidebar-plus
+set -g @sidebar-plus-sidebar-key 'b'
+set -g @sidebar-plus-layout-key 'g'
+set -g @sidebar-plus-position 'left'
