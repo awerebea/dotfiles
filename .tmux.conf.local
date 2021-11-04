@@ -462,6 +462,7 @@ set -g @tpm_plugins '                 \
   charlietag/tmux-split-statusbar     \
   fcsonline/tmux-thumbs               \
   sainnhe/tmux-fzf                    \
+  wfxr/tmux-fzf-url                   \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -719,3 +720,7 @@ tmux set-buffer -- "{}" && tmux display-message "Copied multiple items!"'
 
 # tmux-fzf
 TMUX_FZF_LAUNCH_KEY="M-f" # prefix Alt-f
+
+# tmux-fzf-url
+set -g @fzf-url-bind 'u'
+set -g @fzf-url-history-limit '2000'
