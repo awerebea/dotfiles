@@ -628,9 +628,18 @@ set -g @sidebar-tree-width '60'
 # extracto
 set -g @extrakto_grab_area recent
 
+# Add keybinds with modifiers to use the original with other commands
+bind-key 'M-s' choose-session -Z
+bind-key 'M-w' choose-window -Z
+
 # tmux-copy-toolkit
 set -g @copytk-no-default-binds on
+set -g @copytk-copy-command 'tmux load-buffer - && tmux save-buffer - | \
+xclip -selection clipboard && \
+tmux display-message "Copied to the system clipboard!"'
 # copytk prefix: easymotion action bindings
+bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
 bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
 bind-key -T copytk S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
 bind-key -T copytk k run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction backward"
@@ -643,7 +652,7 @@ bind-key -T copy-mode s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/
 bind-key -T copytk y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
 bind-key -T copytk Y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 2"
 # tmux prefix: easycopy action bindings
-bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+bind-key -T prefix C-M-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
 # tmux prefix: quickcopy action bindings
 bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
 # tmux prefix: quickopen action bindings
@@ -651,6 +660,8 @@ bind-key -T prefix P run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/cop
 # bindings to enter copytk prefix
 bind-key -T copy-mode-vi a switch-client -T copytk
 bind-key -T copy-mode a switch-client -T copytk
+set -g @copytk-quickopen-match-0-2 paths
+set -g @copytk-quickopen-match-0-3 filenames
 
 # Prefix ! will split the current pane into it's own window.  To join use
 # Prefix W then give the window number at the prompt
