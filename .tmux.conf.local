@@ -461,6 +461,7 @@ set -g @tpm_plugins '                 \
   MunifTanjim/tmux-suspend            \
   charlietag/tmux-split-statusbar     \
   fcsonline/tmux-thumbs               \
+  sainnhe/tmux-fzf                    \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -743,3 +744,6 @@ set -g @thumbs-command 'echo -n {} | xclip -selection clipboard && \
 tmux set-buffer -- {} && tmux display-message "Copied {}"'
 set -g @thumbs-multi-command 'echo -n {} | xclip -selection clipboard && \
 tmux set-buffer -- "{}" && tmux display-message "Copied multiple items!"'
+
+# tmux-fzf
+TMUX_FZF_LAUNCH_KEY="M-f" # prefix Alt-f
