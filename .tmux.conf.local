@@ -468,7 +468,7 @@ set -g @tpm_plugins '                 \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
-unbind C-l # conflicts with pane movements
+# unbind C-l # conflicts with pane movements
 # bind l send-keys 'C-l' # clear screen (conflicts with nested session)
 
 # continuum
