@@ -246,8 +246,8 @@ plugins=(
           copydir
           copyfile
           cp
-          docker
-          docker-compose
+          # docker
+          # docker-compose
           encode64
           extract
           fasd
@@ -282,7 +282,7 @@ plugins=(
           zsh-vi-mode
           history-substring-search
           zsh-bash-completions-fallback
-  )
+)
 
 export ZSH="$HOME/.oh-my-zsh"
 source $ZSH/oh-my-zsh.sh
@@ -310,7 +310,6 @@ fi
 if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
   && [[ `uname` == "Linux" ]]; then
   # Home pc or personal laptop with linux mint
-  export DOCKER_CMD="docker"
   if [ -d "/var/lib/gems/2.7.0" ] &&
     [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
       export PATH="$PATH:/var/lib/gems/2.7.0"
@@ -326,7 +325,6 @@ if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
-  export DOCKER_CMD="docker"
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
   alias sudoedit="sudo vim"
@@ -343,9 +341,6 @@ elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   alias fast="bundle exec fastlane"
   alias be="bundle exec"
 
-elif [[ `echo $WSL_DISTRO_NAME` == "Ubuntu" ]]; then
-  # Home Ubuntu in WSL (Windows)
-  export DOCKER_CMD="sudo docker"
 fi
 
 # fasd history sync via GitHub
@@ -599,13 +594,14 @@ alias ll="exa --long --header --links --git --icons --color=always \
 alias llT="exa --long --header --links --git --icons --color=always \
   --group-directories-first --color-scale --tree"
 
-# docker aliases
-alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -qa)"
-alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
-alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
-alias dkreset="dksa && dkrc && dkri"
-alias dk=${DOCKER_CMD:-docker}
-alias dkc=docker-compose
+# # docker aliases
+# [[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo docker"
+# alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -q)"
+# alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
+# alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
+# alias dkreset="dksa && dkrc && dkri"
+# alias dk=${DOCKER_CMD:-docker}
+# alias dkc=docker-compose
 
 # kubectl (k8s) aliases
 alias kg="kubectl get"
@@ -675,6 +671,24 @@ if [ -d "$HOME/.nvm" ]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     $0 "$@"
   }
+fi
+
+# Create nerdctl completion file if needed
+if [[ $commands[nerdctl] ]] && [ ! -s "$ZSH/completions/_nerdctl" ]; then
+  mkdir -p "$ZSH/completions"
+  nerdctl completion zsh > "$ZSH/completions/_nerdctl"
+fi
+
+# Lazy loading nerdctl completions
+if [ $commands[nerdctl] ]; then
+  nerdctl() {
+    unfunction "$0"
+    # source "$ZSH/completions/_nerdctl"
+    compinit
+    $0 "$@"
+  }
+  alias docker="nerdctl"
+  alias dk="nerdctl"
 fi
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
