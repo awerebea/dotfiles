@@ -246,8 +246,8 @@ plugins=(
           copydir
           copyfile
           cp
-          # docker
-          # docker-compose
+          docker
+          docker-compose
           encode64
           extract
           fasd
@@ -594,14 +594,14 @@ alias ll="exa --long --header --links --git --icons --color=always \
 alias llT="exa --long --header --links --git --icons --color=always \
   --group-directories-first --color-scale --tree"
 
-# # docker aliases
-# [[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo docker"
-# alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -q)"
-# alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
-# alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
-# alias dkreset="dksa && dkrc && dkri"
-# alias dk=${DOCKER_CMD:-docker}
-# alias dkc=docker-compose
+# docker aliases
+[[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo docker"
+alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -q)"
+alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
+alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
+alias dkreset="dksa && dkrc && dkri"
+alias dk=${DOCKER_CMD:-docker}
+alias dkc=docker-compose
 
 # kubectl (k8s) aliases
 alias kg="kubectl get"
