@@ -619,7 +619,7 @@ alias kctx="kubectx"
 alias kns="kubens"
 
 # kafkactl aliases
-alias kaf="kafkactl"
+alias kafka="kafkactl"
 
 # Lazy loading stern completions
 if [ $commands[stern] ]; then
