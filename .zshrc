@@ -307,9 +307,9 @@ if [[ `uname` == "Linux" ]]; then
   bindkey "$terminfo[kcud1]" history-substring-search-down
 fi
 
-if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" ]] \
-  && [[ `uname` == "Linux" ]]; then
-  # Home pc or personal laptop with linux mint
+if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" || \
+  `uname -n` == "laptop-hp" ]] && [[ `uname` == "Linux" ]]; then
+  # Home pc, personal or work laptop with linux mint
   if [ -d "/var/lib/gems/2.7.0" ] &&
     [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
       export PATH="$PATH:/var/lib/gems/2.7.0"
