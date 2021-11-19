@@ -129,6 +129,7 @@ create_snapshot() {
 	Documents
 	Downloads
 	Timeshift_exclude/.cache/google-chrome/Default/Cache/
+	Timeshift_exclude/.cache/google-chrome/Default/Code Cache/
 	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2/
 	Timeshift_exclude/.cache/thumbnails/
 	Timeshift_exclude/.cache/thunderbird/*-release/cache2/
@@ -141,8 +142,9 @@ create_snapshot() {
 	Timeshift_exclude/_config/Code/CachedExtensions/
 	Timeshift_exclude/_config/Slack/
 	Timeshift_exclude/_config/coc/extensions/node_modules/
-	Timeshift_exclude/_config/google-chrome/Default/Service\ Worker/CacheStorage/
+	Timeshift_exclude/_config/google-chrome/Default/Service Worker/CacheStorage/
 	Timeshift_exclude/_config/skypeforlinux/
+	vm
 	EOF
 
     # Create differential snapshot
