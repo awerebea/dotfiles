@@ -1,0 +1,2 @@
+event=button/lid.*
+action=/home/andrei/.config/scripts/laptop-lid.sh

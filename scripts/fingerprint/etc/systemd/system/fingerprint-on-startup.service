@@ -1,0 +1,9 @@
+[Unit]
+Description=Enable or disable fingerprint sensor regardles closed or opened laptop lid.
+
+[Service]
+Type=Simple
+ExecStart=/bin/bash /home/andrei/.config/scripts/laptop-lid.sh
+
+[Install]
+WantedBy=multi-user.target

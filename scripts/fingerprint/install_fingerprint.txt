@@ -1,0 +1,59 @@
+# https://linux-hardware.org/index.php?id=usb:06cb-00df
+
+sudo pip3 install meson ninja
+
+# install libfprint
+git clone https://github.com/freedesktop/libfprint.git && \
+cd libfprint
+
+sudo apt install -y \
+libgusb-dev \
+libgirepository1.0-dev \
+libnss3-dev \
+libgudev-1.0-dev \
+gtk-doc-tools
+
+meson builddir && cd builddir
+meson compile && sudo meson install
+
+# install fprintd
+git clone https://github.com/freedesktop/libfprint-fprintd.git && \
+cd libfprint-fprintd
+
+sed -i "s/error('Python3 module/warning('Python3 module/" meson.build
+
+pip3 install python-dbusmock
+
+sudo apt install -y \
+libpolkit-gobject-1-dev \
+libsystemd-dev \
+libpam0g-dev \
+libpam-wrapper
+
+meson builddir && cd builddir
+meson compile && sudo meson install
+
+# update firmware
+sudo apt purge fwupd
+sudo snap install fwupd --classic
+sudo fwupdmgr enable-remote lvfs-testing
+sudo fwupdmgr refresh --force
+sudo fwupdmgr update
+sudo fwupdmgr disable-remote lvfs-testing
+
+# !!! IMPORTANT !!!
+# Reboot after firmware update
+shutdown --reboot now
+
+# setup fingerprints
+for finger in {left,right}-{thumb,{index,middle}-finger}; do
+    sudo fprintd-enroll -f "$finger"
+done
+
+# install and set up pam fingerprint module
+sudo apt install libpam-fprintd
+sudo pam-auth-update --enable fprintd
+
+# install lid close/open script
+
+# install fingerprint-on-startup script
