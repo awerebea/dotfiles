@@ -126,6 +126,8 @@ create_snapshot() {
     cat <<- EOF > "${TMP_FILE}"
 	*/.terraform.lock.hcl
 	*/.terraform/
+	build
+	Clouds
 	Documents
 	Downloads
 	Timeshift_exclude/.cache/google-chrome/Default/Cache/
@@ -133,6 +135,7 @@ create_snapshot() {
 	Timeshift_exclude/.cache/mozilla/firefox/*-release/cache2/
 	Timeshift_exclude/.cache/thumbnails/
 	Timeshift_exclude/.cache/thunderbird/*-release/cache2/
+	Timeshift_exclude/.cache/nvim/log
 	Timeshift_exclude/.minikube/
 	Timeshift_exclude/.thunderbird/*-release/ImapMail/
 	Timeshift_exclude/.vscode/
