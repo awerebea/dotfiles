@@ -335,7 +335,9 @@ set autowrite           " Automatically save before commands :next and :make
 set wrapmargin=0
 set colorcolumn=+1
 set wrap linebreak
-" Wrap toggle
+" Toggle word wrap for current buffer
+nmap <leader>ww :setlocal wrap!<CR>
+" Toggle wrap at 80 column
 nmap <leader>aw :call AutoWrapToggle()<CR>
 function! AutoWrapToggle()
   if &formatoptions =~ 't'
