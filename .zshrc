@@ -528,7 +528,7 @@ alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 alias cls="clear"
 alias -g B='| bat -n'
 alias -g G='| grep -i'
-alias -g L="| less -NR -r"
+alias -g L='| less -NR -r'
 alias dir='dirs -v | head -20'
 alias 1='cd -'
 alias 2='cd -2'
@@ -549,6 +549,14 @@ alias 16='cd -16'
 alias 17='cd -17'
 alias 18='cd -18'
 alias 19='cd -19'
+alias myip='curl http://ipecho.net/plain; echo'
+
+# copy/paste to/from system clipboard
+alias cb='xclip -selection clipboard && echo "\033[0;33mCopied to clipboard:\033[0m $(xclip -o -selection clipboard)"'
+alias pb='xclip -o -selection clipboard'
+
+# Find (fd) aliases
+alias fdh='fd -H' # search in hidden files too
 
 # update oh-my-zsh and all custom plugins
 function omz-update() {
