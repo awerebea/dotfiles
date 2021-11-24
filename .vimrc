@@ -121,6 +121,8 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " Interactive command execution in Vim
 Plug 'Shougo/vimproc.vim'
+" Terraform
+Plug 'hashivim/vim-terraform'
 
 " Syntax checker
 Plug 'dense-analysis/ale'
@@ -2087,3 +2089,7 @@ vnoremap <silent> <leader>fr :Farr<cr>
 " vim-markdown
 let g:vim_markdown_conceal = 0
 let g:vim_markdown_conceal_code_blocks = 0
+
+" vim-terraform
+let g:terraform_fmt_on_save =  1
+let g:terraform_align = 1
