@@ -322,6 +322,10 @@ if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" || \
     [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
       export PATH="$PATH:/usr/local/go/bin"
   fi
+  if [ -d "$HOME/go/bin" ] &&
+    [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
+      export PATH="$PATH:$HOME/go/bin"
+  fi
 
 elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
