@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# set -e  # Stop the script if any step fails
+set -e  # Stop the script if any step fails
 
 terraform validate
 tflint
