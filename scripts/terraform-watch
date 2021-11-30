@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+fd '\.(tf|tfvars)' | entr terraform-check

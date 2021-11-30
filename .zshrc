@@ -555,6 +555,10 @@ alias 18='cd -18'
 alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
 
+# terraform lint scripts
+[[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
+[[ $commands[terraform-check] ]] && alias tf-check="terraform-check"
+
 # copy/paste to/from system clipboard
 alias cb='xclip -selection clipboard && echo "\033[0;33mCopied to clipboard:\033[0m $(xclip -o -selection clipboard)"'
 alias pb='xclip -o -selection clipboard'
