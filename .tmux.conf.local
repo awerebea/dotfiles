@@ -476,6 +476,7 @@ set -g @tpm_plugins '                 \
   wfxr/tmux-fzf-url                   \
   awerebea/tmux-translator            \
   addisonlynch/tmux-sidebar-plus      \
+  kolach/tmux-temp                    \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -552,7 +553,7 @@ tmux_conf_theme_mode_bg='#ffd200'                       # my yellow
 tmux_conf_theme_mode_attr='bold'
 
 # status line style
-tmux_conf_theme_status_fg='#9e9e9e'                     # light gray
+tmux_conf_theme_status_fg='colour249'                   # light gray (#9e9e9e)
 tmux_conf_theme_status_bg='#3a3a3a'                     # dark gray
 tmux_conf_theme_status_attr='none'
 
@@ -580,7 +581,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
-tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default] | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{pairing}#{synchronized} #{?battery_status, #{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},}#[fg=colour249]#{temp_cpu} #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
@@ -610,7 +611,7 @@ tmux_conf_theme_clock_colour='#00afff'  # blue
 tmux_conf_theme_clock_style='24'
 
 set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
-set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=#7ea169]#{mem.total}#[default])'
+set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
 set -g @sysstat_cpu_medium_threshold "30"
 set -g @sysstat_cpu_stress_threshold "80"
 set -g @sysstat_mem_medium_threshold "50"
