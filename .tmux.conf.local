@@ -302,10 +302,10 @@ tmux_conf_battery_vbar_palette="gradient"
 #tmux_conf_battery_vbar_palette="#d70000,#ff5f00,#5fff00"  # red, orange, green
 
 # symbols used to indicate whether battery is charging or discharging
-tmux_conf_battery_status_charging="↑"       # U+2191
-tmux_conf_battery_status_discharging="↓"    # U+2193
-#tmux_conf_battery_status_charging="🔌"     # U+1F50C
-#tmux_conf_battery_status_discharging="🔋"  # U+1F50B
+# tmux_conf_battery_status_charging="↑"       # U+2191
+# tmux_conf_battery_status_discharging="↓"    # U+2193
+tmux_conf_battery_status_charging="🔌"     # U+1F50C
+tmux_conf_battery_status_discharging="🔋"  # U+1F50B
 
 # clock style (when you hit <prefix> + t)
 # you may want to use %I:%M %p in place of %R in tmux_conf_theme_status_right
@@ -604,6 +604,18 @@ tmux_conf_theme_synchronized='🔒'     # U+1F512
 tmux_conf_theme_synchronized_fg='none'
 tmux_conf_theme_synchronized_bg='none'
 tmux_conf_theme_synchronized_attr='none'
+
+# prefix indicator
+tmux_conf_theme_prefix="🔼"           # U+1F53C
+tmux_conf_theme_prefix_fg="none"
+tmux_conf_theme_prefix_bg="none"
+tmux_conf_theme_prefix_attr="none"
+
+# mouse indicator
+tmux_conf_theme_mouse="🖱"            # U+1F5B1
+tmux_conf_theme_mouse_fg="none"
+tmux_conf_theme_mouse_bg="none"
+tmux_conf_theme_mouse_attr="bold"
 
 # clock style (when you hit <prefix> + t)
 # you may want to use %I:%M %p in place of %R in tmux_conf_theme_status_right
