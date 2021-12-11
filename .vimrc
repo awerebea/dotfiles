@@ -268,7 +268,7 @@ if has("autocmd")
   autocmd FileType c
         \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
   autocmd FileType dockerfile
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
   autocmd FileType make
         \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
   autocmd FileType cmake
