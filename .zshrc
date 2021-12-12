@@ -680,13 +680,16 @@ fi
 
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
-  nvm() {
-    unfunction "$0"
+  lazy_nvm() {
+    unset -f nvm npm node nvim # unset -f == unfunction
     [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-    $0 "$@"
   }
+  nvm()  { lazy_nvm; $0 "$@" }
+  npm()  { lazy_nvm; $0 "$@" }
+  node() { lazy_nvm; $0 "$@" }
+  nvim() { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
 fi
 
 # Create nerdctl completion file if needed
