@@ -196,7 +196,7 @@
         },
         // Easymotion
         {
-            "before": ["s"],
+            "before": ["<Leader>", "<Leader>", "d"],
             "after": ["<Leader>", "<Leader>", "2", "s"]
         },
         // Find and replace in files
@@ -207,20 +207,6 @@
         {
             "before": ["<Leader>", "f", "r"],
             "commands": ["workbench.action.replaceInFiles"]
-        },
-        {
-            "before": ["<space>"],
-            "commands": ["vspacecode.space"]
-        },
-        {
-            "before": [","],
-            "commands": [
-                "vspacecode.space",
-                {
-                    "command": "whichkey.triggerKey",
-                    "args": "m"
-                }
-            ]
         }
     ],
     // Keybinds in Visual mode
@@ -232,22 +218,8 @@
         },
         // Easymotion
         {
-            "before": ["s"],
+            "before": ["<Leader>", "<Leader>", "d"],
             "after": ["<Leader>", "<Leader>", "2", "s"]
-        },
-        {
-            "before": ["<space>"],
-            "commands": ["vspacecode.space"]
-        },
-        {
-            "before": [","],
-            "commands": [
-                "vspacecode.space",
-                {
-                    "command": "whichkey.triggerKey",
-                    "args": "m"
-                }
-            ]
         }
     ],
     // Leader key is '\' (back slash) by default
@@ -360,5 +332,6 @@
     "prettier.tabWidth": 4,
     // Disable default json formatter
     "json.format.enable": false,
-    "vim.timeout": 500
+    "vim.timeout": 500,
+    "window.zoomLevel": 1
 }
