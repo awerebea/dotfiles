@@ -502,7 +502,7 @@ alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; \
 # Use remote docker daemon {{{
 dkremote() {
   local DEFAULT_REMOTE_HOST=
-  DEFAULT_REMOTE_HOST="10.10.15.162:2376"
+  DEFAULT_REMOTE_HOST="192.168.100.4:2376"
   export DOCKER_HOST="tcp://${1:-$DEFAULT_REMOTE_HOST}"
   export DOCKER_TLS_VERIFY=1
 }
