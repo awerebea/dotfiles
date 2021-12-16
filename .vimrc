@@ -1124,15 +1124,13 @@ if has('nvim')
   if isdirectory($HOME . '/.vim/nvim-swap') == 0
     :silent !mkdir -p ~/.vim/nvim-swap >/dev/null 2>&1
   endif
-  set directory+=~/.vim/nvim-swap//
+  set directory^=~/.vim/nvim-swap//
 else
   if isdirectory($HOME . '/.vim/vim-swap') == 0
     :silent !mkdir -p ~/.vim/vim-swap >/dev/null 2>&1
   endif
-  set directory+=~/.vim/vim-swap//
+  set directory^=~/.vim/vim-swap//
 endif
-set directory+=~/tmp//
-set directory+=.
 
 " Viminfo stores the the state of your previous editing session
 if has('nvim')
@@ -1151,12 +1149,12 @@ if exists("+undofile")
     if isdirectory($HOME . '/.vim/nvim-undo') == 0
       :silent !mkdir -p ~/.vim/nvim-undo > /dev/null 2>&1
     endif
-    set undodir+=~/.vim/nvim-undo//
+    set undodir^=~/.vim/nvim-undo//
   else
     if isdirectory($HOME . '/.vim/vim-undo') == 0
       :silent !mkdir -p ~/.vim/vim-undo > /dev/null 2>&1
     endif
-    set undodir+=~/.vim/vim-undo//
+    set undodir^=~/.vim/vim-undo//
   endif
 endif
 
