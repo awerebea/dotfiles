@@ -1102,17 +1102,10 @@ set backup
 set backupdir-=.
 set backupdir+=.
 set backupdir-=~/
-if has('nvim')
-  if isdirectory($HOME . '/.vim/nvim-backup') == 0
-    :silent !mkdir -p ~/.vim/nvim-backup >/dev/null 2>&1
-  endif
-  set backupdir^=~/.vim/nvim-backup//
-else
-  if isdirectory($HOME . '/.vim/vim-backup') == 0
-    :silent !mkdir -p ~/.vim/vim-backup >/dev/null 2>&1
-  endif
-  set backupdir^=~/.vim/vim-backup//
+if isdirectory($HOME . '/.vim/backup') == 0
+  :silent !mkdir -p ~/.vim/backup >/dev/null 2>&1
 endif
+set backupdir^=~/.vim/backup//
 set writebackup
 
 " Save your swap files to a less annoying place than the current directory.
@@ -1120,17 +1113,10 @@ set writebackup
 " Otherwise it saves it to ~/.vim/swap, ~/tmp or .
 set swapfile
 set updatecount=100
-if has('nvim')
-  if isdirectory($HOME . '/.vim/nvim-swap') == 0
-    :silent !mkdir -p ~/.vim/nvim-swap >/dev/null 2>&1
-  endif
-  set directory^=~/.vim/nvim-swap//
-else
-  if isdirectory($HOME . '/.vim/vim-swap') == 0
-    :silent !mkdir -p ~/.vim/vim-swap >/dev/null 2>&1
-  endif
-  set directory^=~/.vim/vim-swap//
+if isdirectory($HOME . '/.vim/swap') == 0
+  :silent !mkdir -p ~/.vim/swap >/dev/null 2>&1
 endif
+set directory^=~/.vim/swap//
 
 " Viminfo stores the the state of your previous editing session
 if has('nvim')
@@ -1146,30 +1132,23 @@ if exists("+undofile")
   " This is only present in 7.3+
   set undofile
   if has('nvim')
-    if isdirectory($HOME . '/.vim/nvim-undo') == 0
-      :silent !mkdir -p ~/.vim/nvim-undo > /dev/null 2>&1
+    if isdirectory($HOME . '/.vim/undo-nvim') == 0
+      :silent !mkdir -p ~/.vim/undo-nvim > /dev/null 2>&1
     endif
-    set undodir^=~/.vim/nvim-undo//
+    set undodir^=~/.vim/undo-nvim//
   else
-    if isdirectory($HOME . '/.vim/vim-undo') == 0
-      :silent !mkdir -p ~/.vim/vim-undo > /dev/null 2>&1
+    if isdirectory($HOME . '/.vim/undo-vim') == 0
+      :silent !mkdir -p ~/.vim/undo-vim > /dev/null 2>&1
     endif
-    set undodir^=~/.vim/vim-undo//
+    set undodir^=~/.vim/undo-vim//
   endif
 endif
 
 " Viewdir
-if has('nvim')
-  if isdirectory($HOME . '/.vim/nvim-view') == 0
-    :silent !mkdir -p ~/.vim/nvim-view >/dev/null 2>&1
-  endif
-  set viewdir=~/.vim/nvim-view
-else
-  if isdirectory($HOME . '/.vim/vim-view') == 0
-    :silent !mkdir -p ~/.vim/vim-view >/dev/null 2>&1
-  endif
-  set viewdir=~/.vim/vim-view
+if isdirectory($HOME . '/.vim/view') == 0
+  :silent !mkdir -p ~/.vim/view >/dev/null 2>&1
 endif
+set viewdir=~/.vim/view
 " }}}
 
 " Highlight TODO, FIXME, NOTE, etc. " {{{
