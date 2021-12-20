@@ -969,6 +969,7 @@ inoremap {;<CR> {<CR>};<ESC>O
 
 " Tabs navigation " {{{
 " nnoremap gz :bdelete<CR>
+" Open all buffers in tab
 nnoremap <leader>o :tab sball<CR>
 set switchbuf=usetab,newtab
 " Switch to last tab
@@ -1500,7 +1501,9 @@ nmap gz <Plug>Kwbd
 " }}}
 
 " Tinykeymap settings (faster win resize)
-call tinykeymap#EnterMap('windows', '<C-W>', {'name': 'Windows mode'})
+" let g:tinykeymaps_default=['buffers', 'diff', 'filter', 'folds',
+"       \ 'lines', 'loc', 'qfl', 'tabs', 'undo', 'windows']
+call tinykeymap#EnterMap('windows', '<C-w>', {'name': 'windows mode'})
 
 " GPG settings " {{{
 if has("autocmd")
