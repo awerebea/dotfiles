@@ -76,6 +76,7 @@ Plug 'jlanzarotta/bufexplorer'
 Plug 'yegappan/grep'
 " Run Git commands from Vim
 Plug 'tpope/vim-fugitive'
+Plug 'junegunn/gv.vim'
 " Vim Git runtime files
 Plug 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the sign column
