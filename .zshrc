@@ -25,7 +25,6 @@ if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
   echo "\033[1;31m!!! ATTENTION !!!\033[0m"
   echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
   echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
-  read -t 3 -n 1 -s -r -p "Press any key to continue"
   # backup ~/.zshrc
   backup_name=".zshrc_backup_"
   backup_name+=$(date '+%F_%H-%M-%S')
