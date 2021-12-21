@@ -81,6 +81,11 @@ Plug 'junegunn/gv.vim'
 Plug 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the sign column
 Plug 'airblade/vim-gitgutter'
+if has('nvim') || has('patch-8.0.902')
+  Plug 'mhinz/vim-signify'
+else
+  Plug 'mhinz/vim-signify', { 'branch': 'legacy' }
+endif
 " A light and configurable statusline/tabline plugin for Vim
 Plug 'itchyny/lightline.vim'
 Plug 'niklaas/lightline-gitdiff'
@@ -332,7 +337,7 @@ set encoding=utf-8      " default file encoding
 set fileencodings=utf8,cp1251
 set t_Co=256
 set autowrite           " Automatically save before commands :next and :make
-" set updatetime=2000     " gitgutter update delay
+set updatetime=100      " Interface update timeout
 
 " Word wrap " {{{
 set wrapmargin=0
@@ -410,22 +415,6 @@ if has("syntax")
   syntax on
 endif
 
-" GitGutter settings
-autocmd BufWritePost * GitGutter
-" toggle signs
-nmap <leader>gg :GitGutterSignsToggle<CR>
-nmap <leader>ga :GitGutterAll<CR>
-" [c / ]c - go to previous/next hunk
-nmap ghp <Plug>(GitGutterPreviewHunk)
-nmap ghs <Plug>(GitGutterStageHunk)
-nmap ghu <Plug>(GitGutterUndoHunk)
-" " Use fontawesome icons as signs
-let g:gitgutter_sign_added = '+'
-let g:gitgutter_sign_modified = '~'
-let g:gitgutter_sign_removed = '_'
-let g:gitgutter_sign_removed_first_line = '^'
-let g:gitgutter_sign_modified_removed = '~_'
-
 " Launch 'Goyo' style
 nmap <leader>go :Goyo<CR>
 let g:goyo_width = 86
@@ -478,6 +467,53 @@ highlight ColorColumn     ctermbg=238 guibg=#444444
 highlight SpecialKey      term=bold ctermfg=241 guifg=#626262
                           \ ctermbg=NONE guibg=NONE
 highlight NonText       term=bold ctermfg=241 guifg=#626262
+
+" GitGutter settings
+autocmd BufWritePost * GitGutter
+" disable signs, use signify instead
+let g:gitgutter_signs = 0
+" " toggle signs
+" nmap <leader>gg :GitGutterSignsToggle<CR>
+" nmap <leader>ga :GitGutterAll<CR>
+" [c / ]c - go to previous/next hunk
+nmap ghp <Plug>(GitGutterPreviewHunk)
+nmap ghs <Plug>(GitGutterStageHunk)
+nmap ghu <Plug>(GitGutterUndoHunk)
+" " Use fontawesome icons as signs
+let g:gitgutter_sign_added = '+'
+let g:gitgutter_sign_modified = '~'
+let g:gitgutter_sign_removed = '_'
+let g:gitgutter_sign_removed_first_line = '^'
+let g:gitgutter_sign_modified_removed = '~_'
+
+" Signify settings
+" show current/total hunk when jump to it
+autocmd User SignifyHunk call s:show_current_hunk()
+function! s:show_current_hunk() abort
+  let h = sy#util#get_hunk_stats()
+  if !empty(h)
+    echo printf('[Hunk %d/%d]', h.current_hunk, h.total_hunks)
+  endif
+endfunction
+" toggle signs
+nmap <leader>gg :SignifyToggle<CR>
+" signs colors
+highlight SignifySignAdd
+  \ term=bold ctermfg=156 ctermbg=NONE guifg=#9cf087 guibg=NONE
+highlight SignifySignChange
+  \ term=bold ctermfg=44 ctermbg=NONE  guifg=#ffc500 guibg=NONE
+highlight SignifySignChangeDelete
+  \ term=bold ctermfg=44 ctermbg=NONE  guifg=#ffc500 guibg=NONE
+highlight SignifySignDelete
+  \ term=bold ctermfg=167 ctermbg=NONE guifg=#c43060 guibg=NONE
+highlight SignifySignDeleteFirstLine
+  \ term=bold ctermfg=167 ctermbg=NONE guifg=#c43060 guibg=NONE
+" Signs
+let g:signify_sign_add = '+'
+let g:signify_sign_change = '~'
+let g:signify_sign_delete = '_'
+let g:signify_sign_delete_first_line = '^'
+let g:signify_sign_change_delete = '~_'
 
 " Use italic font for comments
 " iTerm compatibility {{{
