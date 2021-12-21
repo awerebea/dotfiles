@@ -396,8 +396,6 @@ else " windows
 endif
 
 set autoread " reread modified files automatically
-" reread modified .vimrc automatically
-autocmd! bufwritepost $MYVIMRC source $MYVIMRC
 
 set backspace=indent,eol,start
 set sessionoptions=curdir,buffers,tabpages
