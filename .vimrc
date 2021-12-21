@@ -88,7 +88,7 @@ else
 endif
 " A light and configurable statusline/tabline plugin for Vim
 Plug 'itchyny/lightline.vim'
-Plug 'niklaas/lightline-gitdiff'
+Plug 'macthecadillac/lightline-gitdiff'
 " Automatically save/restore current state of Vim
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
@@ -613,7 +613,20 @@ let g:rainbow_conf = {
   \ }
 " }}}
 
+" lightline-gitdiff
+let g:lightline_gitdiff#indicator_added = '+'
+let g:lightline_gitdiff#indicator_deleted = '-'
+let g:lightline_gitdiff#indicator_modified = '~'
+let g:lightline_gitdiff#min_winwidth = '88'
+
 "lightline " {{{
+" Reload
+function LightlineReload()
+  call lightline#init()
+  call lightline#colorscheme()
+  call lightline#update()
+endfunction
+command LightlineReload call LightlineReload()
   " \ 'colorscheme': 'default',
   " \ 'colorscheme': 'wombat',
   " \ 'colorscheme': 'onedark',
@@ -622,7 +635,7 @@ let g:rigel_lightline = 1
 let g:lightline = {
   \ 'colorscheme': 'rigel',
   \ 'active': {
-  \   'left': [['mode', 'paste'], ['gitbranch', 'gitdiff'],
+  \   'left': [['mode', 'paste'], ['gitbranch', 'gitstatus'],
   \             ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat',
   \ 'filetype', 'fileencoding', 'charvaluehex', 'spell', 'indent',
@@ -659,8 +672,13 @@ let g:lightline = {
   \   'lineinfo': 'LightlineLineinfo',
   \   'percent': 'LightlinePercent',
   \   'spell': 'LightlineSpell',
-  \   'gitdiff': 'LightlineGitDiff',
   \ },
+  \   'component': {
+  \     'gitstatus': '%<%{lightline_gitdiff#get_status()}',
+  \   },
+  \   'component_visible_condition': {
+  \     'gitstatus': 'lightline_gitdiff#get_status() !=# ""',
+  \   },
   \ 'component_expand': {
   \   'linter_checking': 'lightline#ale#checking',
   \   'linter_infos': 'lightline#ale#infos',
@@ -775,10 +793,6 @@ function! LightlineGitbranch()
     return fugitive#head()
   endif
   return ''
-endfunction
-
-function! LightlineGitDiff() abort
-      return winwidth(0) > 88 ? lightline#gitdiff#get() : ''
 endfunction
 
 function! LightlineSpell()
