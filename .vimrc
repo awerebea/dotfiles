@@ -105,9 +105,6 @@ Plug 'sheerun/vim-polyglot'
 " Syntax highlighting, matching rules and mappings for Markdown
 Plug 'godlygeek/tabular'
 Plug 'plasticboy/vim-markdown'
-" Markdown live preview
-Plug 'iamcco/markdown-preview.nvim',
-      \ { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 " Text objects for the last searched pattern
 Plug 'kana/vim-textobj-lastpat'
 " Create your own text objects
