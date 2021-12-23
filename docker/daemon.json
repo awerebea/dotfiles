@@ -1,0 +1,22 @@
+{
+    "exec-opts": ["native.cgroupdriver=systemd"],
+    "log-driver": "json-file",
+    "log-opts": {
+        "max-size": "100m"
+    },
+    "storage-driver": "overlay2",
+    "data-root": "/home/andrei/vm/docker",
+    "icc": false,
+    "tls": true,
+    "tlsverify": true,
+    "tlscacert": "/etc/docker/ssl/ca.pem",
+    "tlscert": "/etc/docker/ssl/server-cert.pem",
+    "tlskey": "/etc/docker/ssl/server-key.pem",
+    "userland-proxy": false,
+    "hosts": [
+        "unix:///var/run/docker.sock",
+        "tcp://0.0.0.0:2376"
+    ],
+    "metrics-addr": "0.0.0.0:9323",
+    "experimental": true
+}
