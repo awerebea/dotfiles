@@ -1,0 +1,5 @@
+#!/bin/env bash
+IDS=$(xinput list | grep 'slave  pointer' | grep -v Virtual | grep -o -P 'id=(\d+)' | grep -o -P '\d+')
+for ID in $IDS; do
+	xinput set-prop "$ID" "libinput Scroll Method Enabled" 0, 0, 1
+done
