@@ -242,6 +242,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 plugins=(
           aws
           colored-man-pages
+          command-not-found
           copydir
           copyfile
           cp
