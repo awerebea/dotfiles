@@ -253,6 +253,7 @@ function! TabsExpandByTwoSpaces()
   setlocal softtabstop=2
   setlocal expandtab
 endfunction
+command TabsTwoSpaces call TabsExpandByTwoSpaces()
 
 if has("autocmd")
   autocmd FileType ruby
@@ -291,6 +292,8 @@ if has("autocmd")
         \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
   autocmd FileType gitconfig
         \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType yaml.ansible
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 endif
 " }}}
 
