@@ -180,8 +180,6 @@ endif
 call plug#end()
 " }}}
 
-let loaded_scripts = execute('scriptnames')
-
 set hidden
 runtime macros/matchit.vim
 filetype plugin indent on    " required
@@ -191,10 +189,7 @@ filetype plugin indent on    " required
 set laststatus=2
 set noshowmode
 " Show non-visible white spaces
-try
-  set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
-  catch
-endtry
+set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
 set list
 " Turn off sound bell
 set noerrorbells
@@ -431,10 +426,8 @@ au BufNewFile,BufRead * let b:mtabbeforesp=matchadd('ErrorMsg',
 au BufNewFile,BufRead * let b:mtabaftersp=matchadd('ErrorMsg',
   \ '\v( +)\zs(\t+)', -1)
 
-try
-  colorscheme cobalt2
-  catch
-endtry
+" " cobalt2 theme settings
+colorscheme cobalt2
 
 " " gruvbox theme settings
 " original gruvbox colorcheme
@@ -741,16 +734,13 @@ function! LightlineLineinfo() abort
       return ''
 endfunction
 
-let result = stridx(loaded_scripts, 'lightline.vim')
-if result > 0
-  augroup lightline_update
-    autocmd!
-    if has('patch-7.4.786') " 17 Jul 2015 with fixes in 7.4.888, 8.0.0974
-      autocmd OptionSet tabstop,shiftwidth,expandtab :call lightline#update()
-    endif
-    autocmd Filetype * :call lightline#update()
-  augroup END
-endif
+augroup lightline_update
+  autocmd!
+  if has('patch-7.4.786') " 17 Jul 2015 with fixes in 7.4.888, 8.0.0974
+    autocmd OptionSet tabstop,shiftwidth,expandtab :call lightline#update()
+  endif
+  autocmd Filetype * :call lightline#update()
+augroup END
 
 function! LightlineTabname(n) abort
   let bufnr = tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]
@@ -978,10 +968,7 @@ if exists('+termguicolors')
 endif
 
 " Fix to vim-surround 'S' keybin works with yankstack plug
-let result = stridx(loaded_scripts, 'yankstack.vim')
-if result > 0
-  call yankstack#setup()
-endif
+call yankstack#setup()
 
 " Turn off search highlight by presing space
 nnoremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
@@ -1565,10 +1552,7 @@ nmap gz <Plug>Kwbd
 " Tinykeymap settings (faster win resize)
 " let g:tinykeymaps_default=['buffers', 'diff', 'filter', 'folds',
 "       \ 'lines', 'loc', 'qfl', 'tabs', 'undo', 'windows']
-let result = stridx(loaded_scripts, 'tinykeymap.vim')
-if result > 0
-  call tinykeymap#EnterMap('windows', '<C-w>', {'name': 'windows mode'})
-endif
+call tinykeymap#EnterMap('windows', '<C-w>', {'name': 'windows mode'})
 
 " GPG settings " {{{
 if has("autocmd")
