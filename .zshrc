@@ -296,6 +296,22 @@ if [ -d "$HOME/.local/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$PATH:$HOME/.local/bin"
 fi
+if [ -d "/var/lib/gems/2.7.0" ] &&
+  [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
+    export PATH="$PATH:/var/lib/gems/2.7.0"
+fi
+if [ -d "/opt/mssql-tools/bin" ] &&
+  [[ ":$PATH:" != *":/opt/mssql-tools/bin:"* ]]; then
+    export PATH="$PATH:/opt/mssql-tools/bin"
+fi
+if [ -d "/usr/local/go/bin" ] &&
+  [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
+    export PATH="$PATH:/usr/local/go/bin"
+fi
+if [ -d "$HOME/go/bin" ] &&
+  [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
+    export PATH="$PATH:$HOME/go/bin"
+fi
 
 # Detect and setup current environment
 if [[ `uname` == "Linux" ]]; then
@@ -307,27 +323,7 @@ if [[ `uname` == "Linux" ]]; then
   bindkey "$terminfo[kcud1]" history-substring-search-down
 fi
 
-if [[ `uname -n` == "pc-home" || `uname -n` == "laptop-acer" || \
-  `uname -n` == "laptop-hp" ]] && [[ `uname` == "Linux" ]]; then
-  # Home pc, personal or work laptop with linux mint
-  if [ -d "/var/lib/gems/2.7.0" ] &&
-    [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
-      export PATH="$PATH:/var/lib/gems/2.7.0"
-  fi
-  if [ -d "/opt/mssql-tools/bin" ] &&
-    [[ ":$PATH:" != *":/opt/mssql-tools/bin:"* ]]; then
-      export PATH="$PATH:/opt/mssql-tools/bin"
-  fi
-  if [ -d "/usr/local/go/bin" ] &&
-    [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
-      export PATH="$PATH:/usr/local/go/bin"
-  fi
-  if [ -d "$HOME/go/bin" ] &&
-    [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
-      export PATH="$PATH:$HOME/go/bin"
-  fi
-
-elif [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
+if [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
