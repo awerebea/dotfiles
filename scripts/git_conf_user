@@ -4,32 +4,27 @@
 # define users data
 USER_0="awerebea"
 EMAIL_0="awerebea.21@gmail.com"
-USER_1="awerebea (pc-home)"
-EMAIL_1="awerebea.21@gmail.com"
-USER_2="awerebea (laptop-acer)"
-EMAIL_2="awerebea.21@gmail.com"
-USER_3="Andrei Bulgakov"
-EMAIL_3="awerebea.21@gmail.com"
-USER_4="Andrei Bulgakov"
-EMAIL_4="awerebea.21@gmail.com"
+USER_1="Andrei Bulgakov"
+EMAIL_1="andrei_bulgakov1@epam.com"
+USER_2="Andrei Bulgakov"
+EMAIL_2="a.bulgakov.86@gmail.com"
+
+GLOBAL=
 
 # Usage message
 usage () {
     local MESSAGE=
     read -r -d '' MESSAGE << __EOM__ || true
-usage: ${0} [USERNAME] [-h|--help]
-Setup git username and email for current git repository.
+usage: ${0} [-g|--global] [USERNAME] [-h|--help]
+Configure the git username and email address for the current git repository (default)
+or globally for the current user.
 
 USERNAME:
   0, awerebea       User data: ${USER_0} <${EMAIL_0}>
 
-  1, pc-home        User data: ${USER_1} <${EMAIL_1}>
+  1, work           User data: ${USER_1} <${EMAIL_1}>
 
-  2, laptop-acer    User data: ${USER_2} <${EMAIL_2}>
-
-  3, work           User data: ${USER_3} <${EMAIL_3}>
-
-  4, realname       User data: ${USER_4} <${EMAIL_4}>
+  2, realname       User data: ${USER_2} <${EMAIL_2}>
 
 
   -h, --help
@@ -46,25 +41,20 @@ USEREMAIL=
 # Process command line options
 while [[ -n "$1" ]]; do
     case "$1" in
+    -g | --global)
+        GLOBAL='global'
+        ;;
     0 | awerebea)
         USERNAME="${USER_0}"
         USEREMAIL="${EMAIL_0}"
         ;;
-    1 | pc-home)
+    1 | work)
         USERNAME="${USER_1}"
         USEREMAIL="${EMAIL_1}"
         ;;
-    2 | laptop-acer)
+    2 | realname)
         USERNAME="${USER_2}"
         USEREMAIL="${EMAIL_2}"
-        ;;
-    3 | work)
-        USERNAME="${USER_3}"
-        USEREMAIL="${EMAIL_3}"
-        ;;
-    4 | realname)
-        USERNAME="${USER_4}"
-        USEREMAIL="${EMAIL_4}"
         ;;
     -h | --help)
         usage
@@ -85,7 +75,7 @@ if [[ -z ${USERNAME} ]]; then
 fi
 
 
-git config --local user.name "${USERNAME}"
-git config --local user.email "${USEREMAIL}"
+git config --${GLOBAL:-local} user.name "${USERNAME}"
+git config --${GLOBAL:-local} user.email "${USEREMAIL}"
 
 git config --list --show-origin | grep -e user.name -e user.email
