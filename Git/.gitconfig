@@ -1,7 +1,3 @@
-[user]
-	name = awerebea (pc-home)
-	email = awerebea.21@gmail.com
-
 [core]
 	excludesfile = /home/andrei/.gitignore
 	pager = less -x1,5
