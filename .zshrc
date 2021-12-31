@@ -495,6 +495,12 @@ next () {
 alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; \
   source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
 
+# Launch spotifyd with authentication
+launch_spotify() {
+  gpg $GIT_WORKSPACE/spotify.sh.gpg && \. $GIT_WORKSPACE/spotify.sh &&
+    rm -f $GIT_WORKSPACE/spotify.sh && spt
+}
+
 # Use remote docker daemon {{{
 dkremote() {
   local DEFAULT_REMOTE_HOST DEFAULT_CERT_DIR CERT_DIR
