@@ -132,6 +132,12 @@ git-extra-commands.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-extra-commands
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/gunstage/\
+gunstage.plugin.zsh ]]; then
+  git clone https://github.com/LucasLarson/gunstage.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/gunstage
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -262,6 +268,7 @@ plugins=(
           fzf-tab
           git
           git-extra-commands
+          gunstage
           globalias
           helm
           history-sync
