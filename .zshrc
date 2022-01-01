@@ -126,6 +126,12 @@ zsh-edit.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-edit
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-extra-commands/\
+git-extra-commands.plugin.zsh ]]; then
+  git clone https://github.com/unixorn/git-extra-commands.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-extra-commands
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -255,6 +261,7 @@ plugins=(
           fzf-fasd
           fzf-tab
           git
+          git-extra-commands
           globalias
           helm
           history-sync
