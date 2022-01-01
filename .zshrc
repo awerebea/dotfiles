@@ -144,6 +144,13 @@ blackbox.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/blackbox
 fi
 
+
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-flow-completion/\
+git-flow-completion.plugin.zsh ]]; then
+  git clone https://github.com/bobthecow/git-flow-completion.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-flow-completion
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -275,6 +282,7 @@ plugins=(
           fzf-tab
           git
           git-extra-commands
+          git-flow-completion
           gunstage
           globalias
           helm
