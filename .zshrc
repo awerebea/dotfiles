@@ -138,6 +138,12 @@ gunstage.plugin.zsh ]]; then
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/gunstage
 fi
 
+if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/blackbox/\
+blackbox.plugin.zsh ]]; then
+  git clone https://github.com/StackExchange/blackbox.git \
+    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/blackbox
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
 terraform.plugin.zsh ]]; then
@@ -253,6 +259,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 # Which plugins to load?
 plugins=(
           aws
+          blackbox
           colored-man-pages
           command-not-found
           copydir
