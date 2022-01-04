@@ -1092,3 +1092,10 @@ zvm_vi_yank () {
   printf %s "${CUTBUFFER}" | xclip -selection clipboard
   zvm_exit_visual_mode
 }
+
+# Fetch all origin remote branches
+git-pull-all-remote-branches () {
+  for abranch in $(git branch -a | grep -v HEAD | grep remotes |
+  sed "s/remotes\/origin\///g"); do git checkout $abranch ; done
+}
+alias glall='git-pull-all-remote-branches'
