@@ -299,6 +299,7 @@ plugins=(
           tmux
           tmux-vim-integration
           ubuntu
+          vagrant
           web-search
           zsh-autosuggestions
           zsh-completions
