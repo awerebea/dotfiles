@@ -1111,3 +1111,8 @@ git-pull-all-remote-branches () {
   sed "s/remotes\/origin\///g"); do git checkout $abranch ; done
 }
 alias glall='git-pull-all-remote-branches'
+
+# Restart cinnamon from tty when black screen after wake up from suspend
+restart-cinnamon () {
+  pkill -HUP -f "cinnamon --replace"; export DISPLAY=:0.0; cinnamon --replace &
+}
