@@ -712,6 +712,18 @@ if [ $commands[minikube] ]; then
   }
 fi
 
+# Lazy loading vagrant completions
+if [ $commands[vagrant] ]; then
+  vagrant() {
+    unfunction "$0"
+    local VAGRANT_COMPLETIONS=$(find /opt/vagrant/ -type d \
+      -path "/vagrant*/contrib/zsh" | tail -n1)
+    fpath=("$VAGRANT_COMPLETIONS" $fpath)
+    compinit
+    $0 "$@"
+  }
+fi
+
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
   lazy_nvm() {
