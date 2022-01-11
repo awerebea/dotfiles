@@ -4,31 +4,47 @@
 # define users data
 USER_0="awerebea"
 EMAIL_0="awerebea.21@gmail.com"
+SIGNING_KEY_0="0D29164EF13B24BD"
 USER_1="Andrei Bulgakov"
-EMAIL_1="andrei_bulgakov1@epam.com"
+EMAIL_1="a.bulgakov.86@gmail.com"
+SIGNING_KEY_1="98DEAF83552D8DFA"
 USER_2="Andrei Bulgakov"
-EMAIL_2="a.bulgakov.86@gmail.com"
+EMAIL_2="andrei_bulgakov1@epam.com"
+SIGNING_KEY_2="DDD644B7D4DA3C33"
 
 GLOBAL=
+
+SIGN_COMMITS=
+SIGN_TAGS=
+UNSET=
 
 # Usage message
 usage () {
     local MESSAGE=
     read -r -d '' MESSAGE << __EOM__ || true
-usage: ${0} [-g|--global] [USERNAME] [-h|--help]
+usage: ${0} [OPTIONS] USERNAME [-h|--help]
 Configure the git username and email address for the current git repository (default)
 or globally for the current user.
 
 USERNAME:
-  0, awerebea       User data: ${USER_0} <${EMAIL_0}>
+  0, awerebea           User data: ${USER_0} <${EMAIL_0}>
 
-  1, work           User data: ${USER_1} <${EMAIL_1}>
+  1, personal           User data: ${USER_1} <${EMAIL_1}>
 
-  2, realname       User data: ${USER_2} <${EMAIL_2}>
+  2, work               User data: ${USER_2} <${EMAIL_2}>
+
+OPTIONS:
+  -c, --sign-commits    Sign all commits automattically
+
+  -t, --sign-tags       Sign all tags automattically
+
+  -u, --unset           Unset selected option(s) but keep username/email
+
+  -g, --global          Apply settings globally for the current user
 
 
-  -h, --help
-            Print this help message and exit
+
+  -h, --help            Print this help message and exit
 __EOM__
     echo "${MESSAGE}"
     return
@@ -37,6 +53,7 @@ __EOM__
 # variables list
 USERNAME=
 USEREMAIL=
+SIGNING_KEY=
 
 # Process command line options
 while [[ -n "$1" ]]; do
@@ -44,17 +61,29 @@ while [[ -n "$1" ]]; do
     -g | --global)
         GLOBAL='global'
         ;;
+    -c | --sign-commits)
+        SIGN_COMMITS='true'
+        ;;
+    -t | --sign-tags)
+        SIGN_TAGS='true'
+        ;;
+    -u | --unset)
+        UNSET='--unset'
+        ;;
     0 | awerebea)
         USERNAME="${USER_0}"
         USEREMAIL="${EMAIL_0}"
+        SIGNING_KEY="${SIGNING_KEY_0}"
         ;;
-    1 | work)
+    1 | personal)
         USERNAME="${USER_1}"
         USEREMAIL="${EMAIL_1}"
+        SIGNING_KEY="${SIGNING_KEY_1}"
         ;;
-    2 | realname)
+    2 | work)
         USERNAME="${USER_2}"
         USEREMAIL="${EMAIL_2}"
+        SIGNING_KEY="${SIGNING_KEY_2}"
         ;;
     -h | --help)
         usage
@@ -77,5 +106,15 @@ fi
 
 git config --${GLOBAL:-local} user.name "${USERNAME}"
 git config --${GLOBAL:-local} user.email "${USEREMAIL}"
+git config --${GLOBAL:-local} user.signingkey "${SIGNING_KEY}"
 
-git config --list --show-origin | grep -e user.name -e user.email
+if [[ -n ${SIGN_COMMITS} ]]; then
+    git config --${GLOBAL:-local} ${UNSET:+"$UNSET"} commit.gpgsign true
+fi
+
+if [[ -n ${SIGN_TAGS} ]]; then
+    git config --${GLOBAL:-local} ${UNSET:+"$UNSET"} tag.gpgSign true
+fi
+
+git config --list --show-origin |
+    grep -e user.name -e user.email -e commit.gpgsign -e tag.gpgsign
