@@ -282,6 +282,7 @@ plugins=(
           fzf-tab
           git
           git-extra-commands
+          git-flow
           git-flow-completion
           gunstage
           globalias
