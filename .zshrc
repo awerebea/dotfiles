@@ -1148,3 +1148,10 @@ alias glpf='git log --pretty=fuller'
 restart-cinnamon () {
   pkill -HUP -f "cinnamon --replace"; export DISPLAY=:0.0; cinnamon --replace &
 }
+
+# Launch environment adjusting scripts
+adjust-my-env () {
+  mouse-middle-button-scroll 2> /dev/null || true
+  xrandr-$(hostname) 2> /dev/null || true
+}
+alias ame='adjust-my-env'
