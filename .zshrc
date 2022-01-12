@@ -1106,12 +1106,43 @@ zvm_vi_yank () {
   zvm_exit_visual_mode
 }
 
-# Fetch all origin remote branches
+# Git. Fetch all origin remote branches
 git-pull-all-remote-branches () {
   for abranch in $(git branch -a | grep -v HEAD | grep remotes |
   sed "s/remotes\/origin\///g"); do git checkout $abranch ; done
 }
 alias glall='git-pull-all-remote-branches'
+
+# Git. Amend commit, preserve committer date
+git-commit-amend-preserve-committer-date () {
+  GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend
+}
+alias gcpd!='git-commit-amend-preserve-committer-date'
+
+# Git. Amend commit, preserve committer date, no-edit
+git-commit-amend-preserve-committer-date-no-edit () {
+  GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend --no-edit
+}
+alias gcpdn!='git-commit-amend-preserve-committer-date-no-edit'
+
+# Git. Amend commit, update author date
+git-commit-amend-update-author-date () {
+  git commit -v --amend --date=now
+}
+alias gcud!='git-commit-amend-update-author-date'
+
+# Git. Amend commit, update author date, no-edit
+git-commit-amend-update-author-date-no-edit () {
+  git commit --amend --date=now --no-edit
+}
+alias gcudn!='git-commit-amend-update-author-date-no-edit'
+
+# Git aliases
+# Rebase preserving merges and committer date
+alias grbrm='git rebase --committer-date-is-author-date --rebase-merges'
+# Rebase interactively preserving merges and committer date
+alias grbrmi='git rebase -i --committer-date-is-author-date --rebase-merges'
+alias glpf='git log --pretty=fuller'
 
 # Restart cinnamon from tty when black screen after wake up from suspend
 restart-cinnamon () {
