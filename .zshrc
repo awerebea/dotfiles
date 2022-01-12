@@ -280,9 +280,9 @@ plugins=(
           forgit
           fzf-fasd
           fzf-tab
+          git-flow
           git
           git-extra-commands
-          git-flow
           git-flow-completion
           gunstage
           globalias
