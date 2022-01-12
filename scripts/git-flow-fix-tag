@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Fix git-flow tagging
+git-flow-fix-tag () {
+    local GIT_FLOW_PATH REL_1 REL_2 REL_MSG HF_1 HF_2 HF_MSG
+
+    GIT_FLOW_PATH=$(command -v git-flow)
+
+    [[ -z $GIT_FLOW_PATH ]] && echo "git-flow binary not found!" && exit 1
+
+    REL_1='eval git_do tag $opts "$tagname" "$BRANCH" || \'
+    REL_2='eval git_do tag $opts "$tagname" "$MASTER_BRANCH" || \'
+
+    HF_1='eval git_do tag $opts "$VERSION_PREFIX$VERSION" "$BRANCH" || \'
+    HF_2='eval git_do tag $opts "$VERSION_PREFIX$VERSION" "$MASTER_BRANCH" || \'
+
+    if sudo grep -F "$REL_1" "${GIT_FLOW_PATH}-release" > /dev/null; then
+        sudo sed -i "s/$REL_1\/$REL_2\/" "${GIT_FLOW_PATH}-release"
+        REL_MSG="merged commit from the release branch in the master"
+    elif sudo grep -F "$REL_2" "${GIT_FLOW_PATH}-release" > /dev/null; then
+        sudo sed -i "s/$REL_2\/$REL_1\/" "${GIT_FLOW_PATH}-release"
+        REL_MSG="latest commit in the release"
+    fi
+
+    if sudo grep -F "$HF_1" "${GIT_FLOW_PATH}-hotfix" > /dev/null; then
+        sudo sed -i "s/$HF_1\/$HF_2\/" "${GIT_FLOW_PATH}-hotfix"
+        HF_MSG="merged commit from the hotfix branch in the master"
+    elif sudo grep -F "$HF_2" "${GIT_FLOW_PATH}-hotfix" > /dev/null; then
+        sudo sed -i "s/$HF_2\/$HF_1\/" "${GIT_FLOW_PATH}-hotfix"
+        HF_MSG="latest commit in the hotfix"
+    fi
+
+    [[ -z $REL_MSG ]] || [[ -z $HF_MSG ]] && echo "Something's wrong!" && exit 1
+    echo "Tag the $REL_MSG branch and the $HF_MSG branch."
+}
+
+git-flow-fix-tag
