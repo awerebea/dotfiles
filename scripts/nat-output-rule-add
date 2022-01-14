@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Route outgoing traffic from one IP address to another
+
+nat-output-rule-add () {
+
+    local DEFAULT_PORT RED GRN END
+
+    # Define colors
+    RED='\e[1;31m'
+    GRN='\e[1;32m'
+    END='\e[0m' # No Color
+
+    if [[ $# -lt 2 ]]; then
+        echo -e "${RED}ERR:${END} Not enough arguments" 1>&2
+        exit 1
+    fi
+
+    DEFAULT_PORT=6443
+
+    if sudo iptables -t nat -A OUTPUT -d "$1" -p tcp \
+        --dport "${3:-$DEFAULT_PORT}" -j DNAT --to-destination "$2"; then
+        echo -e "\n${GRN}SUCCESS:${END} Entry added\n"
+        sudo iptables -t nat -L OUTPUT --line-numbers |
+            grep -E --color -e "^" -e ".*$1.*${3:-$DEFAULT_PORT}.*$2.*|$"
+    else
+        echo -e "${RED}ERR:${END} iptables error occurs ^^^" 1>&2
+        exit 1
+    fi
+}
+
+nat-output-rule-add "$@"

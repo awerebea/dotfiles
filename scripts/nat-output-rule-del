@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+# Delete rule of routing outgoing traffic from NAT IP table
+
+nat-output-rule-del () {
+    # Define colors
+    local RED GRN YEL END VERIFY NUM ANS
+    RED='\e[1;31m'
+    GRN='\e[1;32m'
+    YEL='\e[1;33m'
+    END='\e[0m' # No Color
+
+    while true; do
+        sudo iptables -t nat -L OUTPUT --line-numbers
+
+        echo -n "Select the rule number to delete, or (q) to quit: "
+        read -r NUM
+
+        if [[ $NUM == "q" ]]; then
+            exit 0
+        fi
+
+        if ! VERIFY=$(sudo iptables -t nat -L OUTPUT "$NUM"); then
+            echo -e "${RED}ERR:${END} iptables error occurs ^^^" 1>&2
+            exit 1
+        fi
+
+        if [[ -z "$VERIFY" ]]; then
+            echo -e "\n${RED}ERR:${END} There is no such entry in the table\n" \
+                1>&2
+            continue
+        fi
+
+        echo -e "This entry will be deleted:\n${YEL}${VERIFY}${END}"
+        echo -en "Are you sure? (y|N): "
+        read -r -N 1 ANS
+        case "$ANS" in
+        [yY])
+            sudo iptables -t nat -D OUTPUT "$NUM"
+            echo -e "\n\n${GRN}SUCCESS:${END} Entry deleted\n"
+            continue
+            ;;
+        *)
+            echo -e "\n\n${YEL}WRN:${END} Operation aborted\n"
+            ;;
+        esac
+    done
+}
+
+nat-output-rule-del
