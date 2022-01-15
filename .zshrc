@@ -740,6 +740,22 @@ if [ -d "$HOME/.nvm" ]; then
   nvim() { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
 fi
 
+# Create eksctl completion file if needed
+if [[ $commands[eksctl] ]] && [ ! -s "$ZSH/completions/_eksctl" ]; then
+  mkdir -p "$ZSH/completions"
+  eksctl completion zsh > "$ZSH/completions/_eksctl"
+fi
+
+# Lazy loading eksctl completions
+if [ $commands[eksctl] ]; then
+  eksctl() {
+    unfunction "$0"
+    source "$ZSH/completions/_eksctl"
+    compinit
+    $0 "$@"
+  }
+fi
+
 # Create nerdctl completion file if needed
 if [[ $commands[nerdctl] ]] && [ ! -s "$ZSH/completions/_nerdctl" ]; then
   mkdir -p "$ZSH/completions"
