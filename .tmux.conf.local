@@ -763,3 +763,19 @@ set -g @tmux-translator-engine "google"
 set -g @sidebar-plus-sidebar-key 'b'
 set -g @sidebar-plus-layout-key 'g'
 set -g @sidebar-plus-position 'left'
+
+# toggle mouse
+bind-key M set-option -gF mouse "#{?mouse,off,on}" \; \
+display-message "#{?mouse,Mouse: ON,Mouse: OFF}"
+
+# Marked pane actions
+# binding to enter marked-pane-actions prefix
+bind-key m switch-client -T marked-pane-actions
+# mark/unmark active pane
+bind-key -T marked-pane-actions m select-pane -m
+# unmark marked pane from any window/pane
+bind-key -T marked-pane-actions M select-pane -M
+# go to marked pane
+bind-key -T marked-pane-actions g switch-client -t '{marked}'
+# swap current pane with marked
+bind-key -T marked-pane-actions s swap-pane
