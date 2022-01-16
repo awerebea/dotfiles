@@ -126,6 +126,8 @@ Plug 'junegunn/fzf.vim'
 Plug 'Shougo/vimproc.vim'
 " Terraform
 Plug 'hashivim/vim-terraform'
+" Syntax highlighting for Kitty terminal config files
+Plug 'fladson/vim-kitty'
 
 " Syntax checker
 Plug 'dense-analysis/ale'
