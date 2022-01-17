@@ -770,12 +770,17 @@ display-message "#{?mouse,Mouse: ON,Mouse: OFF}"
 
 # Marked pane actions
 # binding to enter marked-pane-actions prefix
-bind-key m switch-client -T marked-pane-actions
-# mark/unmark active pane
+bind-key m switch-client -T marked-pane-actions \; \
+display-message "Marked pane actions mode"
+# mark/unmark the active pane
 bind-key -T marked-pane-actions m select-pane -m
-# unmark marked pane from any window/pane
+# unmark the marked pane from any window/pane
 bind-key -T marked-pane-actions M select-pane -M
-# go to marked pane
+# go to the marked pane
 bind-key -T marked-pane-actions g switch-client -t '{marked}'
-# swap current pane with marked
+# swap the current pane with the marked
 bind-key -T marked-pane-actions s swap-pane
+# swap the current window with the one containing the marked panel
+bind-key -T marked-pane-actions w swap-window
+# join(move) the marked pane to the current window next to the current pane
+bind-key -T marked-pane-actions j join-pane
