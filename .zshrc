@@ -705,15 +705,6 @@ if [ $commands[minikube] ] && [ ! -e "$ZSH/completions/_minikube" ]; then
   mv $ZSH/completions/_minikube.tmp $ZSH/completions/_minikube
 fi
 
-# Lazy loading minikube completions
-if [ $commands[minikube] ]; then
-  minikube() {
-    unfunction "$0"
-    source "$ZSH/completions/_minikube"
-    $0 "$@"
-  }
-fi
-
 # Lazy loading vagrant completions
 if [ $commands[vagrant] ]; then
   vagrant() {
@@ -724,6 +715,11 @@ if [ $commands[vagrant] ]; then
     compinit
     $0 "$@"
   }
+fi
+
+# Load googler @t aliases
+if [ $commands[googler] ]; then
+    source "$ZSH/completions/googler_at"
 fi
 
 # Lazy loading nvm if exists
@@ -746,16 +742,6 @@ if [[ $commands[eksctl] ]] && [ ! -s "$ZSH/completions/_eksctl" ]; then
   eksctl completion zsh > "$ZSH/completions/_eksctl"
 fi
 
-# Lazy loading eksctl completions
-if [ $commands[eksctl] ]; then
-  eksctl() {
-    unfunction "$0"
-    source "$ZSH/completions/_eksctl"
-    compinit
-    $0 "$@"
-  }
-fi
-
 # Create nerdctl completion file if needed
 if [[ $commands[nerdctl] ]] && [ ! -s "$ZSH/completions/_nerdctl" ]; then
   mkdir -p "$ZSH/completions"
@@ -766,7 +752,6 @@ fi
 if [ $commands[nerdctl] ]; then
   nerdctl() {
     unfunction "$0"
-    # source "$ZSH/completions/_nerdctl"
     compinit
     $0 "$@"
   }
