@@ -138,6 +138,7 @@ if v:shell_error == 0
   Plug 'tjdevries/coc-zsh'
 endif
 Plug 'pearofducks/ansible-vim'
+Plug 'towolf/vim-helm'
 " Snippets (code blocks) handling
 " Plug 'garbas/vim-snipmate'
 " Plug 'honza/vim-snippets'
@@ -290,6 +291,15 @@ if has("autocmd")
   autocmd FileType gitconfig
         \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
   autocmd FileType yaml.ansible
+        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+endif
+" }}}
+
+" helm settings
+" {{{
+if has("autocmd")
+  autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+  autocmd FileType helm
         \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 endif
 " }}}
