@@ -567,7 +567,7 @@ alias zhistedit="vim ~/.zsh_history"
 alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 alias cls="clear"
 alias -g B='| bat -n'
-alias -g G='| grep -i'
+alias -g G='| grep -i --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox}'
 alias -g L='| less -NR -r'
 alias dir='dirs -v | head -20'
 alias 1='cd -'
@@ -590,6 +590,7 @@ alias 17='cd -17'
 alias 18='cd -18'
 alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
+alias h='helm'
 
 # terraform lint scripts
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
@@ -1045,13 +1046,11 @@ fi
 
 # globalias filter values (commands that should not be expanded)
 export GLOBALIAS_FILTER_VALUES=(
-  egrep
-  f
-  fgrep
-  grep
+  f z v
+  grep fgrep egrep
+  l ll lle lT llT
   ls
   tmux
-  z
 )
 
 # fasd + fzf
