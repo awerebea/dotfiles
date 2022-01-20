@@ -737,6 +737,40 @@ if [ -d "$HOME/.nvm" ]; then
   nvim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
 fi
 
+# Lazy loading rbenv if exists
+if [ -d "$HOME/.rbenv/bin" ]; then
+  lazy_rbenv () {
+    unset -f bundle bundler erb gem irb racc rake rbs rdbg rdoc ri ruby typeprof
+    if [[ ":$PATH:" != *":$HOME/.rbenv/bin:"* ]]; then
+        export PATH="$PATH:$HOME/.rbenv/bin"
+    fi
+    eval "$(rbenv init - zsh)"
+  }
+  bundle () { lazy_rbenv; $0 "$@" }
+  bundler () { lazy_rbenv; $0 "$@" }
+  erb () { lazy_rbenv; $0 "$@" }
+  gem () { lazy_rbenv; $0 "$@" }
+  irb () { lazy_rbenv; $0 "$@" }
+  racc () { lazy_rbenv; $0 "$@" }
+  rake () { lazy_rbenv; $0 "$@" }
+  rbs () { lazy_rbenv; $0 "$@" }
+  rdbg () { lazy_rbenv; $0 "$@" }
+  rdoc () { lazy_rbenv; $0 "$@" }
+  ri () { lazy_rbenv; $0 "$@" }
+  ruby () { lazy_rbenv; $0 "$@" }
+  typeprof () { lazy_rbenv; $0 "$@" }
+fi
+# Setup ruby environment
+export_all_ruby_versions_bin_dirs () {
+  if [ -d "$HOME/.rbenv/versions" ]; then
+    for VERSION in "$HOME"/.rbenv/versions/*; do
+      [[ ":$PATH:" != *":$VERSION/bin:"* ]] &&
+          export PATH="$PATH:$VERSION/bin"
+    done
+  fi
+}
+export_all_ruby_versions_bin_dirs
+
 # Create eksctl completion file if needed
 if [[ $commands[eksctl] ]] && [ ! -s "$ZSH/completions/_eksctl" ]; then
   mkdir -p "$ZSH/completions"
