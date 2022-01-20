@@ -375,7 +375,7 @@ if [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
 fi
 
 # fasd history sync via GitHub
-function fhistsync() {
+fhistsync () {
   echo "\e[1;33mNeed to pull before sync? (y/N)\e[0m"
   while true; do
     read -r input
@@ -418,10 +418,10 @@ function fhistsync() {
 # Added a space in 'my_remove_last_history_entry'
 # so that zsh forgets the 'forget' command :).
 alias frgt=' my_remove_last_history_entry'
-my_remove_last_history_entry() {
+my_remove_last_history_entry () {
     # This sub-function checks if the argument passed is a number.
     # Thanks to @yabt on stackoverflow for this :).
-    is_int() ( return $(test "$@" -eq "$@" > /dev/null 2>&1); )
+    is_int () ( return $(test "$@" -eq "$@" > /dev/null 2>&1); )
     # Set history file's location
     history_file="$ZSH_HISTORY_FILE"
     history_temp_file="$history_file.tmp"
@@ -446,7 +446,7 @@ my_remove_last_history_entry() {
 }
 
 # create git hooks for ctags tags update
-function githooksctags() {
+githooksctags () {
   touch -a .git/hooks/post-checkout
   grep -qxF '#!/bin/bash' .git/hooks/post-checkout || \
     echo "#!/bin/bash" >> .git/hooks/post-checkout
@@ -527,12 +527,12 @@ alias ghtkn="gpg $GIT_WORKSPACE/github_token.gpg; \
   source $GIT_WORKSPACE/github_token; rm -f $GIT_WORKSPACE/github_token"
 
 # Launch spotifyd with authentication
-launch-spotify() {
+launch-spotify () {
   gpg --decrypt -r awerebea $GIT_WORKSPACE/spotify.sh.gpg | /bin/env bash && spt
 }
 
 # Use remote docker daemon {{{
-dkremote() {
+dkremote () {
   local DEFAULT_REMOTE_HOST DEFAULT_CERT_DIR CERT_DIR
   DEFAULT_REMOTE_HOST="192.168.100.4:2376"
   DEFAULT_CERT_DIR="/home/$USER/.docker"
@@ -542,7 +542,7 @@ dkremote() {
   export DOCKER_CERT_PATH="${CERT_DIR:-$DEFAULT_CERT_DIR}"
 }
 
-dklocal() {
+dklocal () {
   unset DOCKER_TLS_VERIFY
   unset DOCKER_HOST
   unset DOCKER_CERT_PATH
@@ -604,7 +604,7 @@ alias pb='xclip -o -selection clipboard'
 alias fdh='fd -H' # search in hidden files too
 
 # update oh-my-zsh and all custom plugins
-function omz-update() {
+omz-update () {
   omz update
   # Setup colors
   local GREEN='\033[0;32m'
@@ -676,7 +676,7 @@ alias kafka="kafkactl"
 
 # Lazy loading stern completions
 if [ $commands[stern] ]; then
-  stern() {
+  stern () {
     unfunction "$0"
     source <(stern --completion=zsh)
     $0 "$@"
@@ -708,7 +708,7 @@ fi
 
 # Lazy loading vagrant completions
 if [ $commands[vagrant] ]; then
-  vagrant() {
+  vagrant () {
     unfunction "$0"
     local VAGRANT_COMPLETIONS=$(find /opt/vagrant/ -type d \
       -path "/vagrant*/contrib/zsh" | tail -n1)
@@ -725,16 +725,16 @@ fi
 
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
-  lazy_nvm() {
+  lazy_nvm () {
     unset -f nvm npm node nvim # unset -f == unfunction
     [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   }
-  nvm()  { lazy_nvm; $0 "$@" }
-  npm()  { lazy_nvm; $0 "$@" }
-  node() { lazy_nvm; $0 "$@" }
-  nvim() { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
+  nvm ()  { lazy_nvm; $0 "$@" }
+  npm ()  { lazy_nvm; $0 "$@" }
+  node () { lazy_nvm; $0 "$@" }
+  nvim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
 fi
 
 # Create eksctl completion file if needed
@@ -751,7 +751,7 @@ fi
 
 # Lazy loading nerdctl completions
 if [ $commands[nerdctl] ]; then
-  nerdctl() {
+  nerdctl () {
     unfunction "$0"
     compinit
     $0 "$@"
@@ -761,7 +761,7 @@ if [ $commands[nerdctl] ]; then
 fi
 
 # Copy vim tags plugins (indexer, vimprj) config dir to project root
-function vimprj() {
+vimprj () {
   mkdir -p .vimprj && for f in `ls -A $GIT_DOTFILES/Vim/.vimprj | \
     grep -v '.indexer_files_tags'`; do \
     cp -- $GIT_DOTFILES/Vim/.vimprj/$f .vimprj/$f; done
@@ -771,12 +771,12 @@ function vimprj() {
 eval "$(fasd --init auto)"
 
 # git add all changed files and commit
-function gac() {
+gac () {
   git add .
   git commit -m "$1"
 }
 # git add all changed files, commit and push
-function gacp() {
+gacp () {
   git add .
   git commit -m "$1"
   git push
@@ -898,7 +898,7 @@ ZVM_OPPEND_MODE_CURSOR=$ZVM_CURSOR_BLINKING_UNDERLINE
 ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
 
 # The plugin will auto execute this zvm_after_init function
-function zvm_after_init() {
+zvm_after_init () {
   [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 }
 
@@ -976,11 +976,11 @@ bindkey -v '^O' vi-cmd
 
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
-pasteinit() {
+pasteinit () {
   OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
   zle -N self-insert url-quote-magic # I wonder if you'd need `.url-quote-magic`?
 }
-pastefinish() {
+pastefinish () {
   zle -N self-insert $OLD_SELF_INSERT
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
@@ -993,7 +993,7 @@ bindkey -M viins '^F^P' basicSedSub
 bindkey -M vicmd '^F^P' basicSedSub
 
 # Reveal Executed Alias
-alias_for() {
+alias_for () {
   local cmd_alias=""
   [[ $1 =~ '[[:punct:]]' ]] && return
   local search=$1
@@ -1007,7 +1007,7 @@ alias_for() {
     echo ""
   fi
 }
-expand_command_line() {
+expand_command_line () {
   local CYAN='\033[1;36m'
   local BLUE='\033[0;34m'
   local NC='\033[0m'
@@ -1030,7 +1030,7 @@ expand_command_line() {
     fi
   fi
 }
-pre_validation() {
+pre_validation () {
   [[ $# -eq 0 ]] && return               # If there's no input, return. Else...
   expand_command_line "$@"
 }
@@ -1054,16 +1054,16 @@ export GLOBALIAS_FILTER_VALUES=(
 )
 
 # fasd + fzf
-zd() {
+zd () {
   fasdlist=$( fasd -d -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
     --height=100% --reverse --no-sort --cycle) && cd "$fasdlist"
 }
-zf() {
+zf () {
   fasdlist=$( fasd -f -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
     --height=100% --reverse --no-sort --cycle) && xdg-open "$fasdlist"
 }
 
-timezsh() {
+timezsh () {
   echo "Real zsh startup time in seconds:"
   local VAR
   VAR=${1:-10};
