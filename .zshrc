@@ -144,7 +144,7 @@ fi
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f $ZSH/custom/plugins/kubectx/kubectx.plugin.zsh ]]; then
   git clone --recurse-submodules \
-    https://github.com/unixorn/kubectx-zshplugin.git $ZSH/custom/plugins/kubectx
+    https://github.com/awerebea/kubectx-zshplugin $ZSH/custom/plugins/kubectx
   git -C "$ZSH/custom/plugins/kubectx" submodule update
   git -C "$ZSH/custom/plugins/kubectx" submodule foreach git checkout \
     $(git symbolic-ref refs/remotes/origin/HEAD |
