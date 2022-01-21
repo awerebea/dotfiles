@@ -1184,3 +1184,13 @@ adjust-my-env () {
   xrandr-$(hostname) 2> /dev/null || true
 }
 alias ame='adjust-my-env'
+
+git-update-all-submodules () {
+  [ $# -lt 1 ] && echo "Repository path missed!" && return 1
+  git -C "$1" submodule update
+  git -C "$1" submodule foreach git checkout \
+    $(git symbolic-ref refs/remotes/origin/HEAD |
+    sed 's@^refs/remotes/origin/@@')
+  git -C "$1" submodule foreach git pull origin
+}
+
