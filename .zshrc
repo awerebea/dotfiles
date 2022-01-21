@@ -162,19 +162,14 @@ fi
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
 kubectx.plugin.zsh ]]; then
-  git clone https://github.com/unixorn/kubectx-zshplugin.git \
+  git clone --recurse-submodules \
+    https://github.com/unixorn/kubectx-zshplugin.git \
     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
-  local current_pwd="${PWD}"
-  cd ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
-  sed -i 's|git@github.com:|https://github.com/|' .gitmodules
-  git submodule init
-  git submodule update
-  git submodule foreach git checkout \
-    $(git symbolic-ref refs/remotes/origin/HEAD |
-    sed 's@^refs/remotes/origin/@@')
-  git submodule foreach git pull origin
-  sed -i 's|https://github.com/|git@github.com:|' .gitmodules
-  cd "$current_pwd"
+    git -C "$ZSH/custom/plugins/kubectx" submodule update
+    git -C "$ZSH/custom/plugins/kubectx" submodule foreach git checkout \
+      $(git symbolic-ref refs/remotes/origin/HEAD |
+      sed 's@^refs/remotes/origin/@@')
+    git -C "$ZSH/custom/plugins/kubectx" submodule foreach git pull origin
 fi
 
 # fzf-fasd
