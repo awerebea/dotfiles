@@ -20,148 +20,154 @@ fi
 
 export TERM=xterm-256color
 
+export ZSH="$HOME/.oh-my-zsh"
+
 # Install oh-my-zsh if it's not there yet.
-if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
+if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
   echo "\033[1;31m!!! ATTENTION !!!\033[0m"
   echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
   echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
   # backup ~/.zshrc
-  backup_name=".zshrc_backup_"
-  backup_name+=$(date '+%F_%H-%M-%S')
-  mv ~/.zshrc ~/$backup_name
+  backup_name=".zshrc_backup_$(date '+%F_%H-%M-%S')"
+  mv "~/.zshrc" "~/$backup_name"
   # install oh-my-zsh
   sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  mv ~/$backup_name ~/.zshrc
+  mv "~/$backup_name" "~/.zshrc"
+  unset backup_name
 fi
 
 # Install custom plugins if they aren't there yet.
-if [[ ! -f $ZSH/custom/plugins/history-sync/history-sync.plugin.zsh ]]; then
-  git clone https://github.com/awerebea/history-sync.git \
-    $ZSH/custom/plugins/history-sync
+if [[ ! -f "$ZSH/custom/plugins/history-sync/history-sync.plugin.zsh" ]]; then
+  git clone https://github.com/awerebea/history-sync \
+    "$ZSH/custom/plugins/history-sync"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-autosuggestions/\
-zsh-autosuggestions.plugin.zsh ]]; then
+if [[ ! -f "$ZSH/custom/plugins/zsh-autosuggestions/\
+zsh-autosuggestions.plugin.zsh" ]]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions \
-    $ZSH/custom/plugins/zsh-autosuggestions
+    "$ZSH/custom/plugins/zsh-autosuggestions"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-completions/\
-zsh-completions.plugin.zsh ]]; then
+if [[ ! -f "$ZSH/custom/plugins/zsh-completions/\
+zsh-completions.plugin.zsh" ]]; then
   git clone https://github.com/zsh-users/zsh-completions \
-    ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
+    "$ZSH/custom/plugins/zsh-completions"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-syntax-highlighting/\
-zsh-syntax-highlighting.plugin.zsh ]]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-    $ZSH/custom/plugins/zsh-syntax-highlighting
+if [[ ! -f "$ZSH/custom/plugins/zsh-syntax-highlighting/\
+zsh-syntax-highlighting.plugin.zsh" ]]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting \
+    "$ZSH/custom/plugins/zsh-syntax-highlighting"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh ]]; then
+if [[ ! -f "$ZSH/custom/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh" ]]; then
   git clone https://github.com/jeffreytse/zsh-vi-mode \
-    $ZSH/custom/plugins/zsh-vi-mode
+    "$ZSH/custom/plugins/zsh-vi-mode"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh ]]; then
+if [[ ! -f "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh" ]]; then
   git clone https://github.com/urbainvaes/fzf-marks \
-    $ZSH/custom/plugins/fzf-marks
+    "$ZSH/custom/plugins/fzf-marks"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/notify/notify.plugin.zsh ]]; then
-  git clone https://github.com/marzocchi/zsh-notify.git \
-    $ZSH/custom/plugins/notify
+if [[ ! -f "$ZSH/custom/plugins/notify/notify.plugin.zsh" ]]; then
+  git clone https://github.com/marzocchi/zsh-notify \
+    "$ZSH/custom/plugins/notify"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-exa/zsh-exa.plugin.zsh ]]; then
-  git clone https://github.com/ptavares/zsh-exa.git $ZSH/custom/plugins/zsh-exa
+if [[ ! -f "$ZSH/custom/plugins/zsh-exa/zsh-exa.plugin.zsh" ]]; then
+  git clone https://github.com/ptavares/zsh-exa "$ZSH/custom/plugins/zsh-exa"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/forgit/forgit.plugin.zsh ]]; then
-  git clone https://github.com/wfxr/forgit.git $ZSH/custom/plugins/forgit
+if [[ ! -f "$ZSH/custom/plugins/forgit/forgit.plugin.zsh" ]]; then
+  git clone https://github.com/wfxr/forgit "$ZSH/custom/plugins/forgit"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-sed-sub/zsh-sed-sub.plugin.zsh ]]; then
-  git clone https://github.com/MenkeTechnologies/zsh-sed-sub.git \
-    $ZSH/custom/plugins/zsh-sed-sub
+if [[ ! -f "$ZSH/custom/plugins/zsh-sed-sub/zsh-sed-sub.plugin.zsh" ]]; then
+  git clone https://github.com/MenkeTechnologies/zsh-sed-sub \
+    "$ZSH/custom/plugins/zsh-sed-sub"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/tipz/tipz.zsh ]]; then
-  git clone https://github.com/molovo/tipz $ZSH/custom/plugins/tipz
+if [[ ! -f "$ZSH/custom/plugins/tipz/tipz.zsh" ]]; then
+  git clone https://github.com/molovo/tipz "$ZSH/custom/plugins/tipz"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/tmux-vim-integration/\
-tmux-vim-integration.plugin.zsh ]]; then
-  git clone https://github.com/jsahlen/tmux-vim-integration.plugin.zsh.git \
-    $ZSH/custom/plugins/tmux-vim-integration
+if [[ ! -f "$ZSH/custom/plugins/tmux-vim-integration/\
+tmux-vim-integration.plugin.zsh" ]]; then
+  git clone https://github.com/jsahlen/tmux-vim-integration.plugin.zsh \
+    "$ZSH/custom/plugins/tmux-vim-integration"
 fi
 
 # # Lazy loading nvm                  # use custom lazy loading function instead
-# if [[ ! -f $ZSH/custom/plugins/zsh-nvm/zsh-nvm.plugin.zsh ]]; then
-#   git clone https://github.com/lukechilds/zsh-nvm $ZSH/custom/plugins/zsh-nvm
+# if [[ ! -f "$ZSH/custom/plugins/zsh-nvm/zsh-nvm.plugin.zsh" ]]; then
+#   git clone https://github.com/lukechilds/zsh-nvm "$ZSH/custom/plugins/zsh-nvm"
 # fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-bash-completions-fallback/\
-zsh-bash-completions-fallback.plugin.zsh ]]; then
-  git clone https://github.com/3v1n0/zsh-bash-completions-fallback.git \
-    $ZSH/custom/plugins/zsh-bash-completions-fallback
+if [[ ! -f "$ZSH/custom/plugins/zsh-bash-completions-fallback/\
+zsh-bash-completions-fallback.plugin.zsh" ]]; then
+  git clone https://github.com/3v1n0/zsh-bash-completions-fallback \
+    "$ZSH/custom/plugins/zsh-bash-completions-fallback"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/zsh-edit/zsh-edit.plugin.zsh ]]; then
-  git clone https://github.com/marlonrichert/zsh-edit.git \
-    $ZSH/custom/plugins/zsh-edit
+if [[ ! -f "$ZSH/custom/plugins/zsh-edit/zsh-edit.plugin.zsh" ]]; then
+  git clone https://github.com/marlonrichert/zsh-edit \
+    "$ZSH/custom/plugins/zsh-edit"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/git-extra-commands/\
-git-extra-commands.plugin.zsh ]]; then
-  git clone https://github.com/unixorn/git-extra-commands.git \
-    $ZSH/custom/plugins/git-extra-commands
+if [[ ! -f "$ZSH/custom/plugins/git-extra-commands/\
+git-extra-commands.plugin.zsh" ]]; then
+  git clone https://github.com/unixorn/git-extra-commands \
+    "$ZSH/custom/plugins/git-extra-commands"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/gunstage/gunstage.plugin.zsh ]]; then
-  git clone https://github.com/LucasLarson/gunstage.git \
-    $ZSH/custom/plugins/gunstage
+if [[ ! -f "$ZSH/custom/plugins/gunstage/gunstage.plugin.zsh" ]]; then
+  git clone https://github.com/LucasLarson/gunstage \
+    "$ZSH/custom/plugins/gunstage"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/blackbox/blackbox.plugin.zsh ]]; then
-  git clone https://github.com/StackExchange/blackbox.git \
-    $ZSH/custom/plugins/blackbox
+if [[ ! -f "$ZSH/custom/plugins/blackbox/blackbox.plugin.zsh" ]]; then
+  git clone https://github.com/StackExchange/blackbox \
+    "$ZSH/custom/plugins/blackbox"
 fi
 
-if [[ ! -f $ZSH/custom/plugins/git-flow-completion/\
-git-flow-completion.plugin.zsh ]]; then
-  git clone https://github.com/bobthecow/git-flow-completion.git \
-    $ZSH/custom/plugins/git-flow-completion
+if [[ ! -f "$ZSH/custom/plugins/git-flow-completion/\
+git-flow-completion.plugin.zsh" ]]; then
+  git clone https://github.com/bobthecow/git-flow-completion \
+    "$ZSH/custom/plugins/git-flow-completion"
 fi
 
 # terraform plugin with resource names detection
-if [[ ! -f $ZSH/custom/plugins/terraform/terraform.plugin.zsh ]]; then
+if [[ ! -f "$ZSH/custom/plugins/terraform/terraform.plugin.zsh" ]]; then
   git clone https://github.com/macunha1/zsh-terraform \
-    $ZSH/custom/plugins/terraform
+    "$ZSH/custom/plugins/terraform"
 fi
 
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
-  [[ ! -f $ZSH/custom/plugins/kubectx/kubectx.plugin.zsh ]]; then
+  [[ ! -f "$ZSH/custom/plugins/kubectx/kubectx.plugin.zsh" ]]; then
   git clone --recurse-submodules \
-    https://github.com/awerebea/kubectx-zshplugin $ZSH/custom/plugins/kubectx
-  git -C "$ZSH/custom/plugins/kubectx" submodule update
-  git -C "$ZSH/custom/plugins/kubectx" submodule foreach git checkout \
+    https://github.com/awerebea/kubectx-zshplugin "$ZSH/custom/plugins/kubectx"
+  old_pwd="$PWD"
+  cd "$ZSH/custom/plugins/kubectx" || exit 1
+  git submodule update
+  git submodule foreach git checkout \
     $(git symbolic-ref refs/remotes/origin/HEAD |
     sed 's@^refs/remotes/origin/@@')
-  git -C "$ZSH/custom/plugins/kubectx" submodule foreach git pull origin
+  git submodule foreach git pull origin
+  cd "$old_pwd" || exit 1
+  unset old_pwd
 fi
 
 # fzf-fasd
-if [[ ! -f $ZSH/custom/plugins/fzf-fasd/fzf-fasd.plugin.zsh ]]; then
-  git clone https://github.com/wookayin/fzf-fasd $ZSH/custom/plugins/fzf-fasd
+if [[ ! -f "$ZSH/custom/plugins/fzf-fasd/fzf-fasd.plugin.zsh" ]]; then
+  git clone https://github.com/wookayin/fzf-fasd "$ZSH/custom/plugins/fzf-fasd"
 fi
 
 # fzf-tab
-if [[ ! -f $ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh ]]; then
-  git clone https://github.com/Aloxaf/fzf-tab $ZSH/custom/plugins/fzf-tab
+if [[ ! -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
+  git clone https://github.com/Aloxaf/fzf-tab "$ZSH/custom/plugins/fzf-tab"
 fi
-if [[ -f $ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh ]]; then
+if [[ -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
   # disable sort when completing `git checkout`
   zstyle ':completion:*:git-checkout:*' sort false
   zstyle ':completion:*:git-branch:*' sort false
@@ -176,15 +182,15 @@ if [[ -f $ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh ]]; then
 fi
 
 # kafka
-if [[ ! -f $ZSH/custom/plugins/kafka/kafka.plugin.zsh ]]; then
-  git clone https://github.com/Dabz/kafka-zsh-completions.git \
-    $ZSH/custom/plugins/kafka
+if [[ ! -f "$ZSH/custom/plugins/kafka/kafka.plugin.zsh" ]]; then
+  git clone https://github.com/Dabz/kafka-zsh-completions \
+    "$ZSH/custom/plugins/kafka"
 fi
 
 # Install powerlevel10k theme if it's not there yet.
-if [[ ! -f $ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme ]]; then
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-    $ZSH/custom/themes/powerlevel10k
+if [[ ! -f "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k \
+    "$ZSH/custom/themes/powerlevel10k"
 fi
 
 # Set name of the theme to load
@@ -283,8 +289,7 @@ plugins=(
           zsh-bash-completions-fallback
 )
 
-export ZSH="$HOME/.oh-my-zsh"
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 # User configuration
 
@@ -389,8 +394,9 @@ alias frgt=' my_remove_last_history_entry'
 my_remove_last_history_entry () {
     # This sub-function checks if the argument passed is a number.
     # Thanks to @yabt on stackoverflow for this :).
-    is_int () ( return $(test "$@" -eq "$@" > /dev/null 2>&1); )
+    is_int () { return $(test "$@" -eq "$@" > /dev/null 2>&1); }
     # Set history file's location
+    local history_file history_temp_file lines_to_remove
     history_file="$ZSH_HISTORY_FILE"
     history_temp_file="$history_file.tmp"
     # Check if the user passed a number, so we can delete N lines from history.
@@ -441,25 +447,26 @@ githooksctags () {
 # functions to cd to the next or previous sibling directory, in glob order {{{
 prev () {
   # default to current directory if no previous
-  local prevdir="./"
-  local cwd=${PWD##*/}
-  if [[ -z $cwd ]]; then
+  local prevdir cwd x
+  prevdir="./"
+  cwd="${PWD##*/}"
+  if [[ -z "$cwd" ]]; then
     # $PWD must be /
     echo 'No previous directory.' >&2
     return 1
   fi
   for x in ../*/; do
-    if [[ ${x#../} == $cwd/ ]]; then
+    if [[ "${x#../}" == "$cwd/" ]]; then
       # found cwd
-      if [[ $prevdir == ./ ]]; then
+      if [[ "$prevdir" == ./ ]]; then
         echo 'No previous directory.' >&2
         return 1
       fi
-      cd "$prevdir"
+      cd "$prevdir" || return 1
       return
     fi
-    if [[ -d $x ]]; then
-      prevdir=$x
+    if [[ -d "$x" ]]; then
+      prevdir="$x"
     fi
   done
   # Should never get here.
@@ -468,20 +475,21 @@ prev () {
 }
 
 next () {
-  local foundcwd=
-  local cwd=${PWD##*/}
-  if [[ -z $cwd ]]; then
+  local foundcwd cwd x
+  foundcwd=
+  cwd="${PWD##*/}"
+  if [[ -z "$cwd" ]]; then
     # $PWD must be /
     echo 'No next directory.' >&2
     return 1
   fi
   for x in ../*/; do
-    if [[ -n $foundcwd ]]; then
-      if [[ -d $x ]]; then
-        cd "$x"
+    if [[ -n "$foundcwd" ]]; then
+      if [[ -d "$x" ]]; then
+        cd "$x" || return 1
         return
       fi
-    elif [[ ${x#../} == $cwd/ ]]; then
+    elif [[ "${x#../}" == "$cwd/" ]]; then
       foundcwd=1
     fi
   done
@@ -525,7 +533,7 @@ fi
 unset BR_SCRIPT
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+[[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
 # Personal aliases
 alias zshconfig="vim ~/.zshrc"
@@ -575,14 +583,15 @@ alias fdh='fd -H' # search in hidden files too
 omz-update () {
   omz update
   # Setup colors
-  local GREEN='\033[0;32m'
-  local YELLOW_BOLD='\033[1;33m'
-  local NC='\033[0m' # No Color
-  local current_pwd="$PWD"
+  local GREEN YELLOW_BOLD NC current_pwd plugin
+  GREEN='\033[0;32m'
+  YELLOW_BOLD='\033[1;33m'
+  NC='\033[0m' # No Color
+  current_pwd="$PWD"
   echo "${GREEN}Updating OMZ custom plugins:$NC"
-  cd "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins"
+  cd "$ZSH/custom/plugins"
     for plugin in *; do
-      if [ -d $plugin/.git ]; then
+      if [ -d "$plugin/.git" ]; then
         echo "${YELLOW_BOLD}${plugin}${NC}"
         git -C "$plugin" pull
         git -C "$plugin" submodule update
@@ -670,15 +679,16 @@ if [ $commands[minikube] ] && [ ! -e "$ZSH/completions/_minikube" ]; then
   minikube completion zsh > "$ZSH/completions/_minikube"
   sed "/\t<<'BASH_COMPLETION_EOF'/i\\\t-e \
 's/aliashash\\\\[\"\\\\(\\\\w\\\\+\\\\)\"\\\\]/aliashash[\\\\1]/g' \\\\" \
-    "$ZSH/completions/_minikube" > $ZSH/completions/_minikube.tmp
-  mv $ZSH/completions/_minikube.tmp $ZSH/completions/_minikube
+    "$ZSH/completions/_minikube" > "$ZSH/completions/_minikube.tmp"
+  mv "$ZSH/completions/_minikube.tmp" "$ZSH/completions/_minikube"
 fi
 
 # Lazy loading vagrant completions
 if [ $commands[vagrant] ]; then
   vagrant () {
     unfunction "$0"
-    local VAGRANT_COMPLETIONS=$(find /opt/vagrant/ -type d \
+    local VAGRANT_COMPLETIONS
+    VAGRANT_COMPLETIONS=$(find /opt/vagrant/ -type d \
       -path "/vagrant*/contrib/zsh" | tail -n1)
     fpath=("$VAGRANT_COMPLETIONS" $fpath)
     compinit
@@ -687,7 +697,7 @@ if [ $commands[vagrant] ]; then
 fi
 
 # Load googler @t aliases
-if [ $commands[googler] ]; then
+if [ $commands[googler] ] && [ -f "$ZSH/completions/googler_at" ]; then
     source "$ZSH/completions/googler_at"
 fi
 
@@ -733,7 +743,7 @@ export_all_ruby_versions_bin_dirs () {
   if [ -d "$HOME/.rbenv/versions" ]; then
     for VERSION in "$HOME"/.rbenv/versions/*; do
       [[ ":$PATH:" != *":$VERSION/bin:"* ]] &&
-          export PATH="$PATH:$VERSION/bin"
+          export PATH="$VERSION/bin:$PATH"
     done
   fi
 }
@@ -784,7 +794,7 @@ gacp () {
   git push
 }
 
-# zsh_history settings and sync via GitHub
+# zsh_history settings
 HISTSIZE=100500
 SAVEHIST=100000
 setopt HIST_EXPIRE_DUPS_FIRST
@@ -801,10 +811,6 @@ setopt SHARE_HISTORY
 export HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 export ZSH_HISTORY_FILE_NAME=".zsh_history"
 export ZSH_HISTORY_FILE="$HOME/$ZSH_HISTORY_FILE_NAME"
-export ZSH_HISTORY_PROJ="$GIT_WORKSPACE"
-export ZSH_HISTORY_FILE_ENC_NAME="zsh_history.gpg"
-export ZSH_HISTORY_FILE_ENC="$ZSH_HISTORY_PROJ/$ZSH_HISTORY_FILE_ENC_NAME"
-export GIT_COMMIT_MSG="Sync zsh history"
 
 # re-read history file
 alias re=" fc -R"
@@ -867,8 +873,6 @@ export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
 # ranger_gpg
 export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
 # Pass storage path
 export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
 
@@ -884,7 +888,7 @@ export KEYTIMEOUT=50
 
 # zsh-vi-mode plugin
 # Change to Zsh's default readkey engine
-ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX #NEW
+ZVM_READKEY_ENGINE="$ZVM_READKEY_ENGINE_NEX" #NEW
 
 ZVM_KEYTIMEOUT=0.4
 ZVM_ESCAPE_KEYTIMEOUT=0.03
@@ -893,15 +897,15 @@ ZVM_VI_HIGHLIGHT_BACKGROUND=#ffd200
 ZVM_VI_HIGHLIGHT_FOREGROUND=#000000
 ZVM_VI_HIGHLIGHT_EXTRASTYLE=bold
 
-ZVM_NORMAL_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BLOCK
-ZVM_INSERT_MODE_CURSOR=$ZVM_CURSOR_BLINKING_BEAM
-ZVM_OPPEND_MODE_CURSOR=$ZVM_CURSOR_BLINKING_UNDERLINE
+ZVM_NORMAL_MODE_CURSOR="$ZVM_CURSOR_BLINKING_BLOCK"
+ZVM_INSERT_MODE_CURSOR="$ZVM_CURSOR_BLINKING_BEAM"
+ZVM_OPPEND_MODE_CURSOR="$ZVM_CURSOR_BLINKING_UNDERLINE"
 
-ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
+ZVM_LINE_INIT_MODE="$ZVM_MODE_INSERT"
 
 # The plugin will auto execute this zvm_after_init function
 zvm_after_init () {
-  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
 }
 
 # docker plugin
@@ -961,29 +965,29 @@ if [ -z "$SSH_CONNECTION" ] && ! tmux info &> /dev/null; then
 fi
 
 # Activate fzf-marks plugin
-source $ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh
+source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
   local REPLY
   # Read the next keystroke, look it up in the `vicmd` keymap and, if successful,
   # evalute the widget bound to it in the context of the `vicmd` keymap.
-  zle .read-command -K vicmd && 
-      zle $REPLY -K vicmd
+  zle .read-command -K vicmd && zle "$REPLY" -K vicmd
 }
 # Make a keyboard widget out of the function above.
 zle -N vi-cmd
-# Bind the widget to Ctrl-O in the `viins` keymap.
-bindkey -v '^O' vi-cmd
+# Bind the widget to Ctrl-o in the `viins` keymap.
+bindkey -v '^o' vi-cmd
 
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
 pasteinit () {
-  OLD_SELF_INSERT=${${(s.:.)widgets[self-insert]}[2,3]}
+  OLD_SELF_INSERT="${${(s.:.)widgets[self-insert]}[2,3]}"
   zle -N self-insert url-quote-magic # I wonder if you'd need `.url-quote-magic`?
 }
 pastefinish () {
-  zle -N self-insert $OLD_SELF_INSERT
+  zle -N self-insert "$OLD_SELF_INSERT"
+  unset OLD_SELF_INSERT
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
@@ -996,23 +1000,26 @@ bindkey -M vicmd '^F^P' basicSedSub
 
 # Reveal Executed Alias
 alias_for () {
-  local cmd_alias=""
+  local cmd_alias
+  cmd_alias=""
   [[ $1 =~ '[[:punct:]]' ]] && return
-  local search=$1
-  local found="$( alias $search )"
-  if [[ -n $found ]]; then
-    found=${found//\\//} # Replace backslash with slash
-    found=${found%\'} # Remove end single quote
-    found=${found#"$search='"} # Remove alias name
+  local search found
+  search="$1"
+  found="$( alias "$search" )"
+  if [[ -n "$found" ]]; then
+    found="${found//\\//}" # Replace backslash with slash
+    found="${found%\'}" # Remove end single quote
+    found="${found#"$search='"}" # Remove alias name
     echo "${found} $2" | xargs # Return found value (with parameters)
   else
     echo ""
   fi
 }
 expand_command_line () {
-  local CYAN='\033[1;36m'
-  local BLUE='\033[0;34m'
-  local NC='\033[0m'
+  local CYAN BLUE NC excluded_commands first rest full_cmd
+  CYAN='\033[1;36m'
+  BLUE='\033[0;34m'
+  NC='\033[0m'
   excluded_commands=("nvim")
   first=$(echo "$1" | awk '{print $1;}')
   rest=$(echo ${${1}/"${first}"/})
@@ -1021,10 +1028,10 @@ expand_command_line () {
     # Check if expanded command string heve more than one word (have spaces)
     # to avoid alias=command output
     if [[ ! "$full_cmd" =~ ' ' ]]; then
-      full_cmd=$(cut -d "=" -f2- <<< "$full_cmd")
+      full_cmd="$(cut -d "=" -f2- <<< "$full_cmd")"
     fi
     # Check if there's a command for the alias
-    if [[ -n $full_cmd ]]; then # If there was
+    if [[ -n "$full_cmd" ]]; then # If there was
       # Check if the command is not in the exluded list
       if [[ ! "${excluded_commands[*]}" =~ "${full_cmd%% *}" ]]; then
         echo "  $CYAN↳$NC $BLUE${full_cmd} $NC${rest:1}" # Print it
@@ -1041,8 +1048,8 @@ add-zsh-hook preexec pre_validation      # Adds the hook
 # add-zsh-hook -d preexec pre_validation   # Remove it for this hook.
 
 # tipz plugin
-if [[ -f $ZSH/custom/plugins/tipz/tipz.zsh ]]; then
-  source $ZSH/custom/plugins/tipz/tipz.zsh
+if [[ -f "$ZSH/custom/plugins/tipz/tipz.zsh" ]]; then
+  source "$ZSH/custom/plugins/tipz/tipz.zsh"
   export TIPZ_TEXT='  \033[1;33m↳\033[0m'
 fi
 
@@ -1057,17 +1064,17 @@ export GLOBALIAS_FILTER_VALUES=(
 
 # fasd + fzf
 zd () {
-  fasdlist=$( fasd -d -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
+  fasdlist=$( fasd -d -l -R "$1" | fzf --query="$1" --select-1 --exit-0 \
     --height=100% --reverse --no-sort --cycle) && cd "$fasdlist"
 }
 zf () {
-  fasdlist=$( fasd -f -l -R $1 | fzf --query="$1" --select-1 --exit-0 \
+  fasdlist=$( fasd -f -l -R "$1" | fzf --query="$1" --select-1 --exit-0 \
     --height=100% --reverse --no-sort --cycle) && xdg-open "$fasdlist"
 }
 
 timezsh () {
   echo "Real zsh startup time in seconds:"
-  local VAR
+  local VAR i
   VAR=${1:-10};
   for ((i = 1; i <= VAR; i++)); do
     (/usr/bin/time -f "%e" zsh -i -c exit) &>> zsh_startup_time.tmp;
@@ -1096,8 +1103,8 @@ bindkey '^[^M' autosuggest-execute
 bindkey '^[[H' beginning-of-line
 # End to move to the start of line
 bindkey '^[[F' end-of-line
-# Ctrl+O to open file in vim using fzf
-bindkey -s '^o' 'vim $(fzf)^M'
+# Ctrl+x,Ctrl+v to open file in vim using fzf
+bindkey -s '^x^v' 'vim $(fzf)^M'
 
 bindkey '^[y' yank-pop
 
@@ -1110,40 +1117,29 @@ zvm_vi_yank () {
 
 # Git. Fetch all origin remote branches
 git-pull-all-remote-branches () {
+  local abranch
   for abranch in $(git branch -a | grep -v HEAD | grep remotes |
   sed "s/remotes\/origin\///g"); do git checkout $abranch ; done
 }
 alias glall='git-pull-all-remote-branches'
 
-# Git. Amend commit, preserve committer date
-git-commit-amend-preserve-committer-date () {
-  GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend
-}
-alias gcpd!='git-commit-amend-preserve-committer-date'
-
-# Git. Amend commit, preserve committer date, no-edit
-git-commit-amend-preserve-committer-date-no-edit () {
-  GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend --no-edit
-}
-alias gcpdn!='git-commit-amend-preserve-committer-date-no-edit'
-
-# Git. Amend commit, update author date
-git-commit-amend-update-author-date () {
-  git commit -v --amend --date=now
-}
-alias gcud!='git-commit-amend-update-author-date'
-
-# Git. Amend commit, update author date, no-edit
-git-commit-amend-update-author-date-no-edit () {
-  git commit --amend --date=now --no-edit
-}
-alias gcudn!='git-commit-amend-update-author-date-no-edit'
-
 # Git aliases
+# Git. Amend commit, preserve committer date
+alias gcpd='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend'
+# Git. Amend commit, preserve committer date, no-edit
+alias gcpdn!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend --no-edit'
+# Git. Amend commit, update author date
+alias gcud!='git commit -v --amend --date=now'
+# Git. Amend commit, update author date, no-edit
+alias gcudn!='git commit --amend --date=now --no-edit'
 # Rebase preserving merges and committer date
-alias grbrm='git rebase --committer-date-is-author-date --rebase-merges'
+alias grbpdrm='git rebase --committer-date-is-author-date --rebase-merges'
 # Rebase interactively preserving merges and committer date
-alias grbrmi='git rebase -i --committer-date-is-author-date --rebase-merges'
+alias grbipdrm='git rebase -i --committer-date-is-author-date --rebase-merges'
+# Rebase preserving committer date
+alias grbpd='git rebase --committer-date-is-author-date'
+# Rebase interactively preserving committer date
+alias grbipd='git rebase -i --committer-date-is-author-date'
 alias glpf='git log --pretty=fuller'
 
 # Restart cinnamon from tty when black screen after wake up from suspend
@@ -1158,12 +1154,16 @@ adjust-my-env () {
 }
 alias ame='adjust-my-env'
 
+# Update all submodules in the specified repository
 git-update-all-submodules () {
   [ $# -lt 1 ] && echo "Repository path missed!" && return 1
-  git -C "$1" submodule update
-  git -C "$1" submodule foreach git checkout \
+  local old_pwd
+  old_pwd="$PWD"
+  cd "$1" || return 1
+  git submodule update
+  git submodule foreach git checkout \
     $(git symbolic-ref refs/remotes/origin/HEAD |
     sed 's@^refs/remotes/origin/@@')
-  git -C "$1" submodule foreach git pull origin
+  git submodule foreach git pull origin
+  cd "$old_pwd" || return 1
 }
-
