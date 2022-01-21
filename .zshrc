@@ -35,158 +35,133 @@ if [[ ! -f ~/.oh-my-zsh/oh-my-zsh.sh ]]; then
 fi
 
 # Install custom plugins if they aren't there yet.
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync/\
-history-sync.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/history-sync/history-sync.plugin.zsh ]]; then
   git clone https://github.com/awerebea/history-sync.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/history-sync
+    $ZSH/custom/plugins/history-sync
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions/\
+if [[ ! -f $ZSH/custom/plugins/zsh-autosuggestions/\
 zsh-autosuggestions.plugin.zsh ]]; then
   git clone https://github.com/zsh-users/zsh-autosuggestions \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+    $ZSH/custom/plugins/zsh-autosuggestions
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-completions/\
+if [[ ! -f $ZSH/custom/plugins/zsh-completions/\
 zsh-completions.plugin.zsh ]]; then
   git clone https://github.com/zsh-users/zsh-completions \
     ${ZSH_CUSTOM:=~/.oh-my-zsh/custom}/plugins/zsh-completions
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting/\
+if [[ ! -f $ZSH/custom/plugins/zsh-syntax-highlighting/\
 zsh-syntax-highlighting.plugin.zsh ]]; then
   git clone https://github.com/zsh-users/zsh-syntax-highlighting.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+    $ZSH/custom/plugins/zsh-syntax-highlighting
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode/\
-zsh-vi-mode.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh ]]; then
   git clone https://github.com/jeffreytse/zsh-vi-mode \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-vi-mode
+    $ZSH/custom/plugins/zsh-vi-mode
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/\
-fzf-marks.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh ]]; then
   git clone https://github.com/urbainvaes/fzf-marks \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks
+    $ZSH/custom/plugins/fzf-marks
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/notify/\
-notify.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/notify/notify.plugin.zsh ]]; then
   git clone https://github.com/marzocchi/zsh-notify.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/notify
+    $ZSH/custom/plugins/notify
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa/\
-zsh-exa.plugin.zsh ]]; then
-  git clone https://github.com/ptavares/zsh-exa.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-exa
+if [[ ! -f $ZSH/custom/plugins/zsh-exa/zsh-exa.plugin.zsh ]]; then
+  git clone https://github.com/ptavares/zsh-exa.git $ZSH/custom/plugins/zsh-exa
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit/\
-forgit.plugin.zsh ]]; then
-  git clone https://github.com/wfxr/forgit.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/forgit
+if [[ ! -f $ZSH/custom/plugins/forgit/forgit.plugin.zsh ]]; then
+  git clone https://github.com/wfxr/forgit.git $ZSH/custom/plugins/forgit
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub/\
-zsh-sed-sub.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/zsh-sed-sub/zsh-sed-sub.plugin.zsh ]]; then
   git clone https://github.com/MenkeTechnologies/zsh-sed-sub.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-sed-sub
+    $ZSH/custom/plugins/zsh-sed-sub
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/\
-tipz.zsh ]]; then
-  git clone https://github.com/molovo/tipz \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz
+if [[ ! -f $ZSH/custom/plugins/tipz/tipz.zsh ]]; then
+  git clone https://github.com/molovo/tipz $ZSH/custom/plugins/tipz
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tmux-vim-integration/\
+if [[ ! -f $ZSH/custom/plugins/tmux-vim-integration/\
 tmux-vim-integration.plugin.zsh ]]; then
   git clone https://github.com/jsahlen/tmux-vim-integration.plugin.zsh.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tmux-vim-integration
+    $ZSH/custom/plugins/tmux-vim-integration
 fi
 
 # # Lazy loading nvm                  # use custom lazy loading function instead
-# if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-nvm/\
-# zsh-nvm.plugin.zsh ]]; then
-#   git clone https://github.com/lukechilds/zsh-nvm \
-#     ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-nvm
+# if [[ ! -f $ZSH/custom/plugins/zsh-nvm/zsh-nvm.plugin.zsh ]]; then
+#   git clone https://github.com/lukechilds/zsh-nvm $ZSH/custom/plugins/zsh-nvm
 # fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bash-completions-fallback/\
+if [[ ! -f $ZSH/custom/plugins/zsh-bash-completions-fallback/\
 zsh-bash-completions-fallback.plugin.zsh ]]; then
   git clone https://github.com/3v1n0/zsh-bash-completions-fallback.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-bash-completions-fallback
+    $ZSH/custom/plugins/zsh-bash-completions-fallback
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-edit/\
-zsh-edit.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/zsh-edit/zsh-edit.plugin.zsh ]]; then
   git clone https://github.com/marlonrichert/zsh-edit.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-edit
+    $ZSH/custom/plugins/zsh-edit
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-extra-commands/\
+if [[ ! -f $ZSH/custom/plugins/git-extra-commands/\
 git-extra-commands.plugin.zsh ]]; then
   git clone https://github.com/unixorn/git-extra-commands.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-extra-commands
+    $ZSH/custom/plugins/git-extra-commands
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/gunstage/\
-gunstage.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/gunstage/gunstage.plugin.zsh ]]; then
   git clone https://github.com/LucasLarson/gunstage.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/gunstage
+    $ZSH/custom/plugins/gunstage
 fi
 
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/blackbox/\
-blackbox.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/blackbox/blackbox.plugin.zsh ]]; then
   git clone https://github.com/StackExchange/blackbox.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/blackbox
+    $ZSH/custom/plugins/blackbox
 fi
 
-
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-flow-completion/\
+if [[ ! -f $ZSH/custom/plugins/git-flow-completion/\
 git-flow-completion.plugin.zsh ]]; then
   git clone https://github.com/bobthecow/git-flow-completion.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/git-flow-completion
+    $ZSH/custom/plugins/git-flow-completion
 fi
 
 # terraform plugin with resource names detection
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform/\
-terraform.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/terraform/terraform.plugin.zsh ]]; then
   git clone https://github.com/macunha1/zsh-terraform \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/terraform
+    $ZSH/custom/plugins/terraform
 fi
 
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
-  [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx/\
-kubectx.plugin.zsh ]]; then
+  [[ ! -f $ZSH/custom/plugins/kubectx/kubectx.plugin.zsh ]]; then
   git clone --recurse-submodules \
-    https://github.com/unixorn/kubectx-zshplugin.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kubectx
-    git -C "$ZSH/custom/plugins/kubectx" submodule update
-    git -C "$ZSH/custom/plugins/kubectx" submodule foreach git checkout \
-      $(git symbolic-ref refs/remotes/origin/HEAD |
-      sed 's@^refs/remotes/origin/@@')
-    git -C "$ZSH/custom/plugins/kubectx" submodule foreach git pull origin
+    https://github.com/unixorn/kubectx-zshplugin.git $ZSH/custom/plugins/kubectx
+  git -C "$ZSH/custom/plugins/kubectx" submodule update
+  git -C "$ZSH/custom/plugins/kubectx" submodule foreach git checkout \
+    $(git symbolic-ref refs/remotes/origin/HEAD |
+    sed 's@^refs/remotes/origin/@@')
+  git -C "$ZSH/custom/plugins/kubectx" submodule foreach git pull origin
 fi
 
 # fzf-fasd
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd/\
-fzf-fasd.plugin.zsh ]]; then
-  git clone https://github.com/wookayin/fzf-fasd \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-fasd
+if [[ ! -f $ZSH/custom/plugins/fzf-fasd/fzf-fasd.plugin.zsh ]]; then
+  git clone https://github.com/wookayin/fzf-fasd $ZSH/custom/plugins/fzf-fasd
 fi
 
 # fzf-tab
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
-fzf-tab.plugin.zsh ]]; then
-  git clone https://github.com/Aloxaf/fzf-tab \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab
+if [[ ! -f $ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh ]]; then
+  git clone https://github.com/Aloxaf/fzf-tab $ZSH/custom/plugins/fzf-tab
 fi
-if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-tab/\
-fzf-tab.plugin.zsh ]]; then
+if [[ -f $ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh ]]; then
   # disable sort when completing `git checkout`
   zstyle ':completion:*:git-checkout:*' sort false
   zstyle ':completion:*:git-branch:*' sort false
@@ -201,17 +176,15 @@ fzf-tab.plugin.zsh ]]; then
 fi
 
 # kafka
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kafka/\
-kafka.plugin.zsh ]]; then
+if [[ ! -f $ZSH/custom/plugins/kafka/kafka.plugin.zsh ]]; then
   git clone https://github.com/Dabz/kafka-zsh-completions.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/kafka
+    $ZSH/custom/plugins/kafka
 fi
 
 # Install powerlevel10k theme if it's not there yet.
-if [[ ! -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k/\
-powerlevel10k.zsh-theme ]]; then
+if [[ ! -f $ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme ]]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git \
-    ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
+    $ZSH/custom/themes/powerlevel10k
 fi
 
 # Set name of the theme to load
@@ -988,7 +961,7 @@ if [ -z "$SSH_CONNECTION" ] && ! tmux info &> /dev/null; then
 fi
 
 # Activate fzf-marks plugin
-source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/fzf-marks/fzf-marks.plugin.zsh
+source $ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
@@ -1068,8 +1041,8 @@ add-zsh-hook preexec pre_validation      # Adds the hook
 # add-zsh-hook -d preexec pre_validation   # Remove it for this hook.
 
 # tipz plugin
-if [[ -f ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh ]]; then
-  source ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/tipz/tipz.zsh
+if [[ -f $ZSH/custom/plugins/tipz/tipz.zsh ]]; then
+  source $ZSH/custom/plugins/tipz/tipz.zsh
   export TIPZ_TEXT='  \033[1;33m↳\033[0m'
 fi
 
