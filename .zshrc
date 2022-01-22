@@ -146,7 +146,7 @@ fi
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f "$ZSH/custom/plugins/kubectx/kubectx.plugin.zsh" ]]; then
   git clone --recurse-submodules \
-    https://github.com/awerebea/kubectx-zshplugin "$ZSH/custom/plugins/kubectx"
+    https://github.com/unixorn/kubectx-zshplugin "$ZSH/custom/plugins/kubectx"
   old_pwd="$PWD"
   cd "$ZSH/custom/plugins/kubectx" || exit 1
   git submodule update
