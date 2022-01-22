@@ -187,6 +187,12 @@ if [[ ! -f "$ZSH/custom/plugins/kafka/kafka.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/kafka"
 fi
 
+# zsh-easy-motion
+if [[ ! -f "$ZSH/custom/plugins/easy_motion/easy_motion.plugin.zsh" ]]; then
+  git clone https://github.com/IngoMeyer441/zsh-easy-motion \
+    "$ZSH/custom/plugins/easy_motion"
+fi
+
 # Install powerlevel10k theme if it's not there yet.
 if [[ ! -f "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
   git clone --depth=1 https://github.com/romkatv/powerlevel10k \
@@ -248,6 +254,7 @@ plugins=(
           cp
           docker
           docker-compose
+          easy_motion
           encode64
           extract
           fasd
@@ -1190,3 +1197,6 @@ if [ -n "$PATH" ]; then
   PATH=${PATH#:}
   unset old_PATH x
 fi
+
+# zsh-easy-motion
+bindkey -M vicmd ' ' vi-easy-motion
