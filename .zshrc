@@ -964,8 +964,16 @@ if [ -z "$SSH_CONNECTION" ] && ! tmux info &> /dev/null; then
   tmux
 fi
 
-# Activate fzf-marks plugin
-source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
+# Lazy activate fzf-marks plugin
+fzm-lazy-load () {
+  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
+  unset -f fzm-lazy-load
+  fzm
+}
+# Make a keyboard widget out of the function above.
+zle -N fzm-lazy-load
+# Bind the widget to Ctrl-g in the `v` keymap.
+bindkey -v '^g' fzm-lazy-load
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
