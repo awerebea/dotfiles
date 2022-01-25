@@ -1,5 +1,15 @@
 set nocompatible              " be iMproved, required
 
+" Set the list of hosts to use the full-featured configuration
+let hosts_list = ["laptop-hp", "laptop-acer", "home-pc"]
+" Determine current hostname
+let current_host = substitute(system('hostname'), '\n', '', '')
+" Check if the current host is in the list and set the flag variable if it is
+if index(hosts_list, current_host) >= 0
+  let use_feature = 'true'
+endif
+unlet hosts_list current_host
+
 " Install vim-plug if not found
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
@@ -43,17 +53,21 @@ Plug 'othree/vim-autocomplpop'
 Plug 'preservim/nerdcommenter'
 " Efficient way of using Vim as a Git mergetool
 Plug 'samoshkin/vim-mergetool'
+if exists('use_feature')
 " Make terminal vim and tmux work better together
 Plug 'benmills/vimux'
 Plug 'christoomey/vim-tmux-navigator'
+endif
 " Easy text exchange operator
 Plug 'tommcdo/vim-exchange'
 " This plugin lets users define 'temporary keymaps', with the function
 Plug 'tomtom/tinykeymap_vim'
 " Easy move and resize windows
 Plug 'simeji/winresizer'
+if exists('use_feature')
 " Interpret a file by function and cache file automatically
 Plug 'MarcWeber/vim-addon-mw-utils'
+endif
 " Libraries provides some utility functions (autocomplpop dependency)
 Plug 'vim-scripts/L9'
 " Smart substitution and easy change case styles
@@ -69,7 +83,9 @@ Plug 'tpope/vim-surround'
 Plug 'tpope/vim-unimpaired'
 " File system explorers
 Plug 'preservim/nerdtree'
+if exists('use_feature')
 Plug 'francoiscabrol/ranger.vim'
+endif
 " Explore buffers
 Plug 'jlanzarotta/bufexplorer'
 " Plugin to integrate various grep like search tools with Vim
@@ -89,10 +105,12 @@ endif
 " A light and configurable statusline/tabline plugin for Vim
 Plug 'itchyny/lightline.vim'
 Plug 'macthecadillac/lightline-gitdiff'
+if exists('use_feature')
 " Automatically save/restore current state of Vim
 Plug 'tpope/vim-obsession'
 Plug 'dhruvasagar/vim-prosession'
 Plug 'vim-scripts/restore_view.vim'
+endif
 " Colorschemes
 " Plug 'joshdick/onedark.vim'
 " Plug 'crusoexia/vim-monokai'
@@ -115,25 +133,30 @@ Plug 'luochen1990/rainbow'
 Plug 'chrisbra/NrrwRgn'
 " Color hex codes and color names
 Plug 'chrisbra/Colorizer'
+if exists('use_feature')
 " Distraction-free writing in Vim
 Plug 'junegunn/goyo.vim'
+endif
 " This script implements transparent editing of gpg encrypted files
 Plug 'jamessan/vim-gnupg'
 " A command-line fuzzy finder in Vim
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf'
 Plug 'junegunn/fzf.vim'
 " Interactive command execution in Vim
 Plug 'Shougo/vimproc.vim'
 " Terraform
 Plug 'hashivim/vim-terraform'
+if exists('use_feature')
 " Syntax highlighting for Kitty terminal config files
 Plug 'fladson/vim-kitty'
+endif
 
 " Syntax checker
+if exists('use_feature')
 Plug 'dense-analysis/ale'
 Plug 'maximbaz/lightline-ale'
-let check_result = system("command -v node")
-if v:shell_error == 0
+endif
+if executable('node')
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'tjdevries/coc-zsh'
 endif
@@ -183,6 +206,12 @@ endif
 call plug#end()
 " }}}
 
+" Install the latest fzf binary if it doesn't already exist
+let fzf_bin_path='~/.vim/plugged/fzf/bin/fzf'
+autocmd VimEnter * if !executable('fzf') && empty(glob(fzf_bin_path)) |
+  \ echo 'fzf executable not found, to download run: execute fzf#install()' |
+  \ endif
+
 set hidden
 runtime macros/matchit.vim
 filetype plugin indent on    " required
@@ -192,7 +221,10 @@ filetype plugin indent on    " required
 set laststatus=2
 set noshowmode
 " Show non-visible white spaces
-set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·
+set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«
+if v:version >= 705 || has('nvim')
+  set listchars+=space:·
+endif
 set list
 " Turn off sound bell
 set noerrorbells
@@ -846,7 +878,9 @@ nmap <leader>llu :Goyo<CR>:Goyo<CR>
 " Change cursor view:
 "set ttimeoutlen=10       " Keystrokes timeout
 let &t_SI.="\e[5 q"      " SI = Insert mode
-let &t_SR.="\e[3 q"      " SR = Replace mode
+if v:version >= 705 || has('nvim')
+  let &t_SR.="\e[3 q"      " SR = Replace mode
+endif
 let &t_EI.="\e[1 q"      " EI = Normal mode
 " 1 - blink block
 " 2 - block
@@ -987,11 +1021,11 @@ nnoremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
 nnoremap <Esc><Esc> :<C-u>nohlsearch<CR><C-l>
 
 " List buffers keybinds " {{{
-if v:version < 802 && !has('nvim')
-  nnoremap <silent> <leader><Enter> :BufExplorer<CR>
-else
+if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <leader><Enter> :Buffers<CR>
   nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
+else
+  nnoremap <silent> <leader><Enter> :BufExplorer<CR>
 endif
 nmap <F5> :BufExplorer<CR>
 " }}}
@@ -1353,7 +1387,9 @@ let g:indexer_disableCtagsWarning=1
 
 " FZF settings " {{{
 " Ignore files ignored in .gitignore but show hidden
-let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+if executable('ag')
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+endif
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
 " let g:fzf_preview_window = ['right:50%', 'ctrl-/']
 " let g:fzf_preview_window = ['up:40%:hidden', 'ctrl-/']
@@ -1393,17 +1429,21 @@ let g:fzf_colors =
 autocmd! FileType fzf
 autocmd  FileType fzf set noshowmode noruler nonu
 
-if v:version >= 802 || has('nvim')
+if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <leader>f        :Files<CR>
   nnoremap <silent> <C-p>            :Files<CR>
   nnoremap <silent> <leader>C        :Colors<CR>
   nnoremap <silent> <leader>l        :Lines<CR>
-  " nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
-  " nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
-  " xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
-  nnoremap <silent> <leader>rg       :FZFRg<CR>
-  nnoremap <silent> <leader>RG       :FZFRg <C-R><C-W><CR>
-  xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
+  " if executable('ag')
+  "   nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
+  "   nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
+  "   xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
+  " endif
+  if executable('rg')
+    nnoremap <silent> <leader>rg       :FZFRg<CR>
+    nnoremap <silent> <leader>RG       :FZFRg <C-R><C-W><CR>
+    xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
+  endif
   nnoremap <silent> <leader>`        :Marks<CR>
   nnoremap <silent> q:               :History:<CR>
   nnoremap <silent> q/               :History/<CR>
@@ -1625,7 +1665,7 @@ let g:prosession_tmux_title_format = "vim - @@@"
 if has('nvim')
   nnoremap <leader>t :split term://zsh<CR>
   tnoremap <C-x> <C-\><C-n>:q!<CR>
-else
+elseif v:version >= 705
   nnoremap <leader>t :term<CR>
   tnoremap <C-x> <C-w>N:bdelete!<CR>
 endif
@@ -1875,6 +1915,7 @@ nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 " Use underscore as word separator
 set iskeyword-=_
 
+if exists('use_feature')
 " ale settings {{{
 " lightline-ale icons
 let g:lightline#ale#indicator_checking = "\uf110"
@@ -1911,10 +1952,11 @@ nmap <silent> ]g <Plug>(ale_next_wrap)
 nmap <silent> gd :ALEGoToDefinition<cr>
 nmap <silent> gy :ALEGoToTypeDefinition<cr>
 nmap <silent> gr :ALEFindReferences<cr>
+" }}} ale settings
+endif
 
 " coc settings {{{
-let check_result = system("command -v node")
-if v:shell_error == 0
+if executable('node')
   " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
   " delays and poor user experience.
   set updatetime=300
