@@ -145,15 +145,18 @@ fi
 # kubectx
 if [[ ! $commands[kubectx] ]] && \
   [[ ! -f "$ZSH/custom/plugins/kubectx/kubectx.plugin.zsh" ]]; then
-  git clone --recurse-submodules \
-    https://github.com/unixorn/kubectx-zshplugin "$ZSH/custom/plugins/kubectx"
+  git clone https://github.com/unixorn/kubectx-zshplugin \
+    "$ZSH/custom/plugins/kubectx"
   old_pwd="$PWD"
   cd "$ZSH/custom/plugins/kubectx" || exit 1
+  sed -i 's|git@github.com:|https://github.com/|' .gitmodules
+  git submodule init
   git submodule update
   git submodule foreach git checkout \
     $(git symbolic-ref refs/remotes/origin/HEAD |
     sed 's@^refs/remotes/origin/@@')
   git submodule foreach git pull origin
+  sed -i 's|https://github.com/|git@github.com:|' .gitmodules
   cd "$old_pwd" || exit 1
   unset old_pwd
 fi
