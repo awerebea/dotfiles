@@ -8,6 +8,12 @@
 # Exit on error
 set -e
 
+# Check if dependencies are installed
+if ! command -v gcc &> /dev/null && ! command -v clang &> /dev/null; then
+    echo "Required C compiler is not installed" 1>&2
+    exit 1
+fi
+
 TMUX_VERSION="3.3-rc"
 LIBEVENT_VERSION="2.1.12-stable"    # latest on 2021.10
 NCURSES_VERSION="6.3"               # latest on 2021.10
@@ -26,31 +32,40 @@ YEL='\e[1;33m'
 END='\e[0m' # No Color
 
 # Download source files for tmux, libevent, and ncurses
-wget "https://github.com/tmux/tmux/releases/download/$TMUX_VERSION/\
+TMUX_URL="https://github.com/tmux/tmux/releases/download/$TMUX_VERSION/\
 tmux-$TMUX_VERSION.tar.gz"
-wget "https://github.com/libevent/libevent/releases/download/\
+LIBEVENT_URL="https://github.com/libevent/libevent/releases/download/\
 release-$LIBEVENT_VERSION/libevent-$LIBEVENT_VERSION.tar.gz"
-wget "https://invisible-mirror.net/archives/ncurses/\
+NCURSES_URL="https://invisible-mirror.net/archives/ncurses/\
 ncurses-$NCURSES_VERSION.tar.gz"
+if command -v curl >/dev/null 2>&1; then
+    curl -OJL "$TMUX_URL"
+    curl -OJL "$LIBEVENT_URL"
+    curl -OJL "$NCURSES_URL"
+else
+    wget "$TMUX_URL"
+    wget "$LIBEVENT_URL"
+    wget "$NCURSES_URL"
+fi
 
 # Extract files, configure, and compile
 
 # libevent
-tar -xvzf libevent-$LIBEVENT_VERSION.tar.gz
+tar -xvf libevent-$LIBEVENT_VERSION.tar.gz
 cd libevent-$LIBEVENT_VERSION
 ./configure --prefix="$PREFIX" --disable-openssl
 make && make install
 cd ..
 
 # ncurses
-tar -xvzf ncurses-$NCURSES_VERSION.tar.gz
+tar -xvf ncurses-$NCURSES_VERSION.tar.gz
 cd ncurses-$NCURSES_VERSION
 ./configure --prefix="$PREFIX"
 make && make install
 cd ..
 
 # tmux
-tar -xvzf tmux-$TMUX_VERSION.tar.gz
+tar -xvf tmux-$TMUX_VERSION.tar.gz
 cd tmux-$TMUX_VERSION
 ./configure --prefix="$PREFIX" \
     CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses" \
