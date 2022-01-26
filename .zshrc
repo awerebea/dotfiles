@@ -590,25 +590,30 @@ alias fdh='fd -H' # search in hidden files too
 omz-update () {
   omz update
   # Setup colors
-  local GREEN YELLOW_BOLD NC current_pwd plugin
+  local GREEN YELLOW_BOLD NC old_pwd plugin
   GREEN='\033[0;32m'
   YELLOW_BOLD='\033[1;33m'
   NC='\033[0m' # No Color
-  current_pwd="$PWD"
+  old_pwd="$PWD"
   echo "${GREEN}Updating OMZ custom plugins:$NC"
   cd "$ZSH/custom/plugins"
     for plugin in *; do
-      if [ -d "$plugin/.git" ]; then
+      if [ -d "$ZSH/custom/plugins/$plugin/.git" ]; then
+        cd "$ZSH/custom/plugins/$plugin"
+        [ -f ./.gitmodules ] && \
+          sed -i 's|git@github.com:|https://github.com/|' .gitmodules
         echo "${YELLOW_BOLD}${plugin}${NC}"
-        git -C "$plugin" pull
-        git -C "$plugin" submodule update
-        git -C "$plugin" submodule foreach git checkout \
+        git pull
+        git submodule update
+        git submodule foreach git checkout \
           $(git symbolic-ref refs/remotes/origin/HEAD |
           sed 's@^refs/remotes/origin/@@')
-        git -C "$plugin" submodule foreach git pull origin
+        git submodule foreach git pull origin
+        [ -f ./.gitmodules ] && \
+          sed -i 's|https://github.com/|git@github.com:|' .gitmodules
       fi
     done
-    cd "$current_pwd"
+    cd "$old_pwd"
 }
 
 # Store the alias command in a variable to prevent an error using the alias_for
