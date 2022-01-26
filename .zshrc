@@ -792,7 +792,9 @@ vimprj () {
 }
 
 # enable fasd
-eval "$(fasd --init auto)"
+if [[ $commands[fasd] ]]; then
+  eval "$(fasd --init auto)"
+fi
 
 # git add all changed files and commit
 gac () {
