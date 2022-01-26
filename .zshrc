@@ -962,12 +962,14 @@ export UPDATE_ZSH_DAYS=1
 ZSH_CUSTOM_AUTOUPDATE_QUIET=false
 
 # Automatically start tmux on remote server when logging in via SSH
-if [ -n "$PS1" ] && [ -z "$TMUX" ] && [ -n "$SSH_CONNECTION" ]; then
-  tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
+if [ -n "$PS1" ] && [ -n "$SSH_CONNECTION" ] &&
+  [ $commands[tmux] ] && [ -z "$TMUX" ]; then
+    tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 
 # Automatically start tmux on local machine if not running yet
-if [ -z "$SSH_CONNECTION" ] && ! tmux info &> /dev/null; then
+if [ -z "$SSH_CONNECTION" ] && [ $commands[tmux] ] &&
+  ! tmux info &> /dev/null; then
   tmux
 fi
 
