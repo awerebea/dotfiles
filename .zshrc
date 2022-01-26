@@ -4,7 +4,7 @@ zmodload zsh/zprof
 if zsh --version | cut -d' ' -f2 |
   awk -F. '{ if ($1 > 5 || ($1 == 5 && $2 < 8) ) { exit 0 } else { exit 1 } }'; then
   ZSH_BIN_URL="https://raw.githubusercontent.com/romkatv/zsh-bin/master/install"
-  if command -v curl >/dev/null 2>&1; then
+  if command -v curl &>/dev/null; then
     sh -c "$(curl -fsSL $ZSH_BIN_URL)"
   else
     sh -c "$(wget -O- $ZSH_BIN_URL)"
@@ -346,8 +346,8 @@ fi
 # Detect and setup current environment
 if [[ `uname` == "Linux" ]]; then
   # quick opening files with xdg-open
-  alias o='a -e xdg-open >/dev/null 2>&1'
-  alias open='xdg-open >/dev/null 2>&1'
+  alias o='a -e xdg-open &>/dev/null'
+  alias open='xdg-open &>/dev/null'
   # Fix history-substring-search plugin behaviour in Tmux
   bindkey "$terminfo[kcuu1]" history-substring-search-up
   bindkey "$terminfo[kcud1]" history-substring-search-down
@@ -980,6 +980,7 @@ zstyle ':notify:*' enable-on-ssh yes
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
 bindkey -M vicmd 'j' history-substring-search-down
+# up/down keys
 bindkey -M vicmd '^[[A' history-substring-search-up
 bindkey -M vicmd '^[[B' history-substring-search-down
 bindkey -M viins '^[[A' history-substring-search-up
