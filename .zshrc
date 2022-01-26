@@ -301,7 +301,6 @@ plugins=(
           zsh-autosuggestions
           zsh-completions
           zsh-edit
-          zsh-exa
           zsh-interactive-cd
           # zsh-nvm                   # use custom lazy loading function instead
           zsh-sed-sub
@@ -310,6 +309,11 @@ plugins=(
           history-substring-search
           zsh-bash-completions-fallback
 )
+
+# Load the plugin only if it will work
+if [ $commands[exa] ]; then
+  plugins+=(zsh-exa)
+fi
 
 source "$ZSH/oh-my-zsh.sh"
 
@@ -639,17 +643,19 @@ alias rr=$rr
 unset rr
 alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 
-# exa aliases
-alias l="exa --long --all --header --links --git --icons --color=always \
-  --group-directories-first --color-scale"
-alias lle="exa --long --all --header --links --git --icons --color=always \
-  --group-directories-first --color-scale | less -NR"
-alias lT="exa --long --all --header --links --git --icons --color=always \
-  --group-directories-first --color-scale --tree"
-alias ll="exa --long --header --links --git --icons --color=always \
-  --group-directories-first --color-scale"
-alias llT="exa --long --header --links --git --icons --color=always \
-  --group-directories-first --color-scale --tree"
+# Define exa aliases conditionally
+if [ $commands[exa] ]; then
+  alias l="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale"
+  alias lle="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale | less -NR"
+  alias lT="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale --tree"
+  alias ll="exa --long --header --links --git --icons --color=always \
+    --group-directories-first --color-scale"
+  alias llT="exa --long --header --links --git --icons --color=always \
+    --group-directories-first --color-scale --tree"
+fi
 
 # docker aliases
 [[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo docker"
