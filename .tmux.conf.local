@@ -416,7 +416,8 @@ tmux_conf_uninstall_plugins_on_reload=false
 # # }
 #
 # online_status() {
-#   if ping -c 1 1.1.1.1 >/dev/null 2>&1; then
+#   if ping -c 1 1.1.1.1 >/dev/null 2>&1 ||
+#     curl http://ipecho.net/plain >/dev/null 2>&1; then
 #     printf '✔'
 #     tmux set @is_online true
 #   else
