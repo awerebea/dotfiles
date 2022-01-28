@@ -39,13 +39,10 @@ if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
   echo "\033[1;31m!!! ATTENTION !!!\033[0m"
   echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
   echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
-  # backup ~/.zshrc
-  backup_name=".zshrc_backup_$(date '+%F_%H-%M-%S')"
-  mv "~/.zshrc" "~/$backup_name"
   # install oh-my-zsh
   sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  mv "~/$backup_name" "~/.zshrc"
-  unset backup_name
+  # restore config
+  cp "$HOME/.zshrc.pre-oh-my-zsh" "$HOME/.zshrc"
 fi
 
 # Install custom plugins if they aren't there yet.
