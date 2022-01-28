@@ -1232,8 +1232,7 @@ bindkey -M vicmd ' ' vi-easy-motion
 # Install zsh-bin on the remote host easily
 install-zsh-bin-over-ssh () {
   [ $# -lt 1 ] && echo "Remote host is not specified." && return 1
-  ssh -t $1 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)" || \
-sh -c "$(wget -O- https://raw.githubusercontent.com/romkatv/zsh-bin/master/install)"; \
-sudo sed -i "/^Defaults.*secure_path/ s/$/\:\/usr\/local\/\bin/" /etc/sudoers && \
-echo "/usr/local/bin sucessfully added to secure_path in /etc/sudoers"'
+  ssh -t $1 '(export ZSH_BIN_URL="https://raw.githubusercontent.com/romkatv/\
+zsh-bin/master/install"; sh -c "$(curl -fsSL $ZSH_BIN_URL)" || \
+sh -c "$(wget -O- $ZSH_BIN_URL)")'
 }
