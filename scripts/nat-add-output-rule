@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Route outgoing traffic from one IP address to another
 
-nat-output-rule-add () {
+nat-add-output-rule () {
 
     local DEFAULT_PORT RED GRN END
 
@@ -28,4 +28,4 @@ nat-output-rule-add () {
     fi
 }
 
-nat-output-rule-add "$@"
+nat-add-output-rule "$@"

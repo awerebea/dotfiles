@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Delete rule of routing outgoing traffic from NAT IP table
 
-nat-output-rule-del () {
+nat-del-output-rule () {
     # Define colors
     local RED GRN YEL END VERIFY NUM ANS
     RED='\e[1;31m'
@@ -46,4 +46,4 @@ nat-output-rule-del () {
     done
 }
 
-nat-output-rule-del
+nat-del-output-rule
