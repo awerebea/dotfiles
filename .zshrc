@@ -335,6 +335,11 @@ if [ -d "$HOME/go/bin" ] &&
   [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
     export PATH="$PATH:$HOME/go/bin"
 fi
+if [ ! -d "$HOME/.fzf/bin" ] &&
+  [ -d "$HOME/.vim/plugged/fzf/bin" ] &&
+  [[ ":$PATH:" != *":$HOME/.vim/plugged/fzf/bin:"* ]]; then
+    export PATH="$PATH:$HOME/.vim/plugged/fzf/bin"
+fi
 
 # Detect and setup current environment
 if [[ `uname` == "Linux" ]]; then
