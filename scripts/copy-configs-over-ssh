@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+# Copy config files to user's home directory on remote host
+
+# Check if required argument is provided
+[ $# -lt 1 ] && echo "Specify the target in the format: user@hostgame" && exit 1
+
+FILE_LIST=(".vimrc" ".zshrc" ".p10k.zsh")
+FILE_LIST+=(".tmux.conf" ".tmux.conf.local" "scripts/install_tmux.sh")
+SCP_FILE_LIST=( "${FILE_LIST[@]/#/$GIT_DOTFILES\/}" )
+CP_FILE_LIST=( "${FILE_LIST[@]/scripts\/}" )
+USERNAME=${1/@*}
+CP_FILE_LIST=( "${CP_FILE_LIST[@]/#/\/home\/$USERNAME\/}" )
+
+# Copy files on remote host using the scp command
+scp "${SCP_FILE_LIST[@]}" "${1}:~/"
+
+# Unset global variables
+clean-exit () {
+    unset FILE_LIST SCP_FILE_LIST CP_FILE_LIST USERNAME ANS
+    exit 0
+}
+
+# Optionally copy these files to the root user HOME
+echo -en "Copy files to root user home directory? (y|N): "
+read -r -N 1 ANS
+case "$ANS" in
+[yY])
+    echo -n
+    ssh -t "$1" "sudo cp ${CP_FILE_LIST[*]} $(grep '^root:' /etc/passwd | cut -d':' -f6)/"
+    echo "Files copied"
+    ;;
+*)
+    clean-exit
+    ;;
+esac
+
+clean-exit
