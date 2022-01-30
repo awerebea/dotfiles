@@ -1,13 +1,5 @@
 zmodload zsh/zprof
 
-# Make sure you are using a modern version of zsh, install it if not.
-if zsh --version | cut -d' ' -f2 |
-  awk -F. '{ if ($1 > 5 || ($1 == 5 && $2 < 8) ) { exit 0 } else { exit 1 } }'; then
-  ZSH_BIN_URL="https://raw.githubusercontent.com/romkatv/zsh-bin/master/install"
-  sh -c "$(curl -fsSL $ZSH_BIN_URL)" || sh -c "$(wget -O- $ZSH_BIN_URL)"
-  unset ZSH_BIN_URL
-fi
-
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
