@@ -1233,7 +1233,7 @@ sh -c "$(wget -O- $ZSH_BIN_URL)")'
 }
 
 # Prepare remote host
-prepare-remote-host () {
+prepare-remote-host-full () {
   [ $# -lt 1 ] && echo "Remote host is not specified." && return 1
   copy-configs-over-ssh $1
   ssh -t $1 '(export ZSH_BIN_URL="https://raw.githubusercontent.com/romkatv/\
@@ -1241,4 +1241,12 @@ zsh-bin/master/install"; sh -c "$(curl -fsSL $ZSH_BIN_URL)" || \
 sh -c "$(wget -O- $ZSH_BIN_URL)") && (export DEPENDENCIES="gcc make"; \
 sudo yum install -y $DEPENDENCIES || sudo apt install -y $DEPENDENCIES) && \
 ./install_tmux.sh /usr/local'
+}
+
+prepare-remote-host-lite () {
+  [ $# -lt 1 ] && echo "Remote host is not specified." && return 1
+  copy-configs-over-ssh $1
+  ssh -t $1 '(export ZSH_BIN_URL="https://raw.githubusercontent.com/romkatv/\
+zsh-bin/master/install"; sh -c "$(curl -fsSL $ZSH_BIN_URL)" || \
+sh -c "$(wget -O- $ZSH_BIN_URL)")'
 }
