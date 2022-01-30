@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+killall copyq 2>/dev/null
+sleep 1
+copyq &
+echo "copyq restarted successfully"
