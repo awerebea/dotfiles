@@ -1167,7 +1167,7 @@ alias glall='git-pull-all-remote-branches'
 
 # Git aliases
 # Git. Amend commit, preserve committer date
-alias gcpd='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend'
+alias gcpd!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend'
 # Git. Amend commit, preserve committer date, no-edit
 alias gcpdn!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend --no-edit'
 # Git. Amend commit, update author date
