@@ -780,7 +780,7 @@ set -g @sidebar-plus-position 'left'
 bind-key M set-option -gF mouse "#{?mouse,off,on}" \; \
 display-message "#{?mouse,Mouse: ON,Mouse: OFF}"
 
-# Marked pane actions
+# Pane actions
 # binding to enter marked-pane-actions prefix
 bind-key m switch-client -T marked-pane-actions \; \
 display-message "Marked pane actions mode"
@@ -796,6 +796,10 @@ bind-key -T marked-pane-actions s swap-pane
 bind-key -T marked-pane-actions w swap-window
 # join(move) the marked pane to the current window next to the current pane
 bind-key -T marked-pane-actions j join-pane
+# disable the current pane so as not to run commands in synchronised mode
+bind-key -T marked-pane-actions d select-pane -d \; display-message "Pane disabled"
+# enable a previously disabled pane
+bind-key -T marked-pane-actions e select-pane -e \; display-message "Pane enabled"
 
 # tmux-easy-motion plugin settings
 # change default keybind for change panes layout to use "Sapce" as prefix
