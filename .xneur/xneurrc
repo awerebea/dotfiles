@@ -20,3 +20,4 @@ ExcludeApp TelegramDesktop
 ExcludeApp GoldenDict
 ExcludeApp PanGPUI
 ExcludeApp Skype
+ExcludeApp Joplin
