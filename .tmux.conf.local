@@ -656,6 +656,7 @@ set -g @sidebar-tree-width '60'
 
 # extracto
 set -g @extrakto_grab_area recent
+set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 
 # Add keybinds with modifiers to use the original with other commands
 bind-key 'M-s' choose-session -Z
