@@ -12,11 +12,12 @@ match-file-dates-with-file-names () {
 }
 match-file-dates-with-file-names
 
-# Find and delete all broken links after backups thin out
+# Find and delete all broken snapshot links
 remove-broken-links () {
     find "$SNAPSHOT_PATH"  -mindepth 2 -maxdepth 2 -xtype l -print0 |
         xargs -0 sudo rm 2>/dev/null || true
 }
+remove-broken-links
 
 # Conditional remove dereferenced link passed as an argument
 remove-deref-link () {
