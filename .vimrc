@@ -202,6 +202,9 @@ if executable('ctags')
   Plug 'vim-scripts/vimprj'
 endif
 
+" Yaml folding for Vim
+Plug 'pedrohdz/vim-yaml-folds'
+
 " Initialize plugin system
 call plug#end()
 " }}}
@@ -423,7 +426,7 @@ nnoremap <C-H> <C-W><C-H>
 nnoremap j gj
 nnoremap k gk
 
-:set viminfo='1000,<1000,s200,h		" Increasing the buffer size
+:set viminfo='1000,<1000,s200,h   " Increasing the buffer size
 
 " Copy to 'clipboard registry'
 vmap <C-c> "+y
