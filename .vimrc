@@ -2178,3 +2178,24 @@ let g:vim_markdown_conceal_code_blocks = 0
 " vim-terraform
 let g:terraform_fmt_on_save =  1
 let g:terraform_align = 1
+
+" A way to delete 'mkview' for current file
+function! MyDeleteView()
+  let path = fnamemodify(bufname('%'),':p')
+  " vim's odd =~ escaping for /
+  let path = substitute(path, '=', '==', 'g')
+  if empty($HOME)
+  else
+    let path = substitute(path, '^'.$HOME, '\~', '')
+  endif
+  let path = substitute(path, '/', '=+', 'g') . '='
+  " view directory
+  let path = &viewdir.'/'.path
+  call delete(path)
+  echo "Deleted: ".path
+  " re-open current file
+  edit %
+endfunction
+command Delview call MyDeleteView()
+" Lower-case user commands: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
+cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
