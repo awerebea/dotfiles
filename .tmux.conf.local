@@ -479,6 +479,7 @@ set -g @tpm_plugins '                 \
   addisonlynch/tmux-sidebar-plus      \
   kolach/tmux-temp                    \
   IngoMeyer441/tmux-easy-motion       \
+  jaclu/tmux-menus                    \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -810,3 +811,6 @@ set -g @easy-motion-prefix "Space"
 # use a single easy-motion movement, activated directly after pressing prefix
 # highlight all word beginnings (bidirectional)
 # set -g @easy-motion-default-motion "bd-w"
+
+# tmux-menus plugin settings
+set -g @menus_trigger '@'
