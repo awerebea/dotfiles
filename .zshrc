@@ -1254,3 +1254,13 @@ prepare-remote-host-lite () {
 zsh-bin/master/install"; sh -c "$(curl -fsSL $ZSH_BIN_URL)" || \
 sh -c "$(wget -O- $ZSH_BIN_URL)")'
 }
+
+# Color output of json file using jq and less
+jqc () {
+  jq --color-output . $1 | less -NR -r
+}
+
+# Color output of yaml file using yq and less
+yqc () {
+  yq --colors $1 | less -NR -r
+}
