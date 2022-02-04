@@ -484,6 +484,7 @@ set -g @tpm_plugins '                 \
   kolach/tmux-temp                    \
   IngoMeyer441/tmux-easy-motion       \
   jaclu/tmux-menus                    \
+  roosta/tmux-fuzzback                \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -818,3 +819,12 @@ set -g @easy-motion-prefix "Space"
 
 # tmux-menus plugin settings
 set -g @menus_trigger '@'
+
+# tmux-copycat plugin settings
+set -g @copycat_search ?
+
+# tmux-fuzzback plugin settings
+set -g @fuzzback-bind /
+if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
+  set -g @fuzzback-popup 1; \
+  set -g @fuzzback-popup-size '90%'"
