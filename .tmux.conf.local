@@ -431,6 +431,10 @@ tmux_conf_uninstall_plugins_on_reload=false
 
 # My overrides
 
+# Determine Tmux version for version-specific commands
+run-shell 'tmux setenv -g TMUX_VERSION $(tmux -V | \
+  sed -En "s/^tmux[^0-9]*([.0-9]+).*/\1/p")'
+
 # 24-bit color terminal
 # set -g default-terminal "xterm-256color-italic" # colors, italic (linux)
 set -g default-terminal "tmux-256color" # colors, italic (macOS)
