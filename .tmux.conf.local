@@ -485,6 +485,7 @@ set -g @tpm_plugins '                 \
   IngoMeyer441/tmux-easy-motion       \
   jaclu/tmux-menus                    \
   roosta/tmux-fuzzback                \
+  tmux-plugins/tmux-logging           \
 '
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
@@ -696,10 +697,11 @@ bind-key -T prefix C-M-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit
 # tmux prefix: quickcopy action bindings
 bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
 # tmux prefix: quickopen action bindings
-bind-key -T prefix P run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
+bind-key -T prefix C-p run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
 # bindings to enter copytk prefix
 bind-key -T copy-mode-vi a switch-client -T copytk
 bind-key -T copy-mode a switch-client -T copytk
+set -g @copytk-quickopen-open-command xdg-open
 set -g @copytk-quickopen-match-0-2 paths
 set -g @copytk-quickopen-match-0-3 filenames
 
@@ -828,3 +830,8 @@ set -g @fuzzback-bind /
 if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
   set -g @fuzzback-popup 1; \
   set -g @fuzzback-popup-size '90%'"
+
+# tmux-logging plugin settings
+set -g @logging-path "$HOME/.tmux/logs"
+set -g @screen-capture-path "$HOME/.tmux/logs"
+set -g @save-complete-history-path "$HOME/.tmux/logs"
