@@ -589,7 +589,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
-tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},}#[fg=colour249]#{temp_cpu} #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %e %b %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},}#[fg=colour249]#{temp_cpu} #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %F %T #(echo "/ Dublin: $(TZ="Europe/Dublin" date +%%H:%%M)") ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
@@ -597,8 +597,8 @@ tmux_conf_theme_status_left_bg='#87afaf,#87afaf,#4e4e4e,#00afff'
 tmux_conf_theme_status_left_attr='bold,none,none'
 
 # status right style
-tmux_conf_theme_status_right_fg='#9e9e9e,#9e9e9e,#3a3a3a' # light gray, white, black
-tmux_conf_theme_status_right_bg='#3a3a3a,#4e4e4e,#8a8a8a' # dark gray, red, white
+tmux_conf_theme_status_right_fg='#9e9e9e,#9e9e9e,#3a3a3a'
+tmux_conf_theme_status_right_bg='#3a3a3a,#4e4e4e,#8a8a8a'
 tmux_conf_theme_status_right_attr='none,none,bold'
 
 # pairing indicator
