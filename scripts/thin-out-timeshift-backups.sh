@@ -67,11 +67,20 @@ snapshot-history-limit-exceeded () {
     fi
 }
 
-snapshot-history-limit-exceeded "$1" && thin-out-snapshots 64 48 2 remove
+# Thin out every given time slice in a given interval
+thin-out-time-slice-in-interval () {
+    [ $# -lt 6 ] && echo "Not enough arguments" >&2 && return 1
+    for INTRVL in $(seq "$2" "$3" "$4"); do
+        if snapshot-history-limit-exceeded "$1"; then
+            thin-out-snapshots "$INTRVL" "$(echo "$INTRVL + $3" | bc)" "$5" "$6"
+        else
+            break;
+        fi
+    done
+}
 
-snapshot-history-limit-exceeded "$1" && thin-out-snapshots 48 40 2 remove
-
-snapshot-history-limit-exceeded "$1" && thin-out-snapshots 40 36 2 remove
+thin-out-time-slice-in-interval "$1" 241 -4 53 2 remove
+thin-out-time-slice-in-interval "$1" 241 -8 53 2 remove
 
 # Truncate hourly snapshot history to limit
 truncate-hourly-snapshots () {
