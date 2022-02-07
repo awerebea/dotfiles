@@ -1955,6 +1955,19 @@ nmap <silent> ]g <Plug>(ale_next_wrap)
 nmap <silent> gd :ALEGoToDefinition<cr>
 nmap <silent> gy :ALEGoToTypeDefinition<cr>
 nmap <silent> gr :ALEFindReferences<cr>
+
+" Function to append cloudformation to filetype and use the external cfn-lint
+" linter
+if executable('cfn-lint')
+  function! SetCloundformationFt()
+    if (&filetype=='yaml')
+      :set ft=yaml.cloudformation
+    elseif (&filetype=='json')
+      :set ft=json.cloudformation
+    endif
+  endfunction
+  command SetCfnFt call SetCloundformationFt()
+endif
 " }}} ale settings
 endif
 
