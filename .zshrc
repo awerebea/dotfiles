@@ -585,6 +585,8 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
 # To avoid repeating the last command if misspelled when calling the rr alias
 alias r="echo \"Don't use that shit!\""
+# Ripgrep alias to search in hidden files but ignore .git directory
+[[ $commands[rg] ]] && alias rg="rg --hidden --glob '!.git/*'"
 
 # terraform lint scripts
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
