@@ -1390,7 +1390,10 @@ let g:indexer_disableCtagsWarning=1
 
 " FZF settings " {{{
 " Ignore files ignored in .gitignore but show hidden
-if executable('ag')
+if executable('rg')
+  let $FZF_DEFAULT_COMMAND = 'rg --files --no-ignore --hidden --follow
+  \ --smart-case --glob "!.git/*"'
+elseif executable('ag')
   let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 endif
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
@@ -1416,7 +1419,7 @@ command! -nargs=? -complete=dir AF
 let g:fzf_colors =
 \ { 'fg':      ['fg', 'Normal'],
   \ 'bg':      ['bg', 'Normal'],
-  \ 'hl':      ['fg', 'Comment'],
+  \ 'hl':      ['fg', 'Statement'],
   \ 'fg+':     ['fg', 'CursorLine', 'CursorColumn', 'Normal'],
   \ 'bg+':     ['bg', 'CursorLine', 'CursorColumn'],
   \ 'hl+':     ['fg', 'Statement'],
@@ -1437,15 +1440,9 @@ if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <C-p>            :Files<CR>
   nnoremap <silent> <leader>C        :Colors<CR>
   nnoremap <silent> <leader>l        :Lines<CR>
-  " if executable('ag')
-  "   nnoremap <silent> <leader>ag       :Ag <C-R><C-W><CR>
-  "   nnoremap <silent> <leader>AG       :Ag <C-R><C-A><CR>
-  "   xnoremap <silent> <leader>ag       y:Ag <C-R>"<CR>
-  " endif
   if executable('rg')
-    nnoremap <silent> <leader>rg       :FZFRg<CR>
-    nnoremap <silent> <leader>RG       :FZFRg <C-R><C-W><CR>
-    xnoremap <silent> <leader>rg       y:FZFRg <C-R>"<CR>
+    nnoremap <leader>rg       :FZFRg<space>
+    xnoremap <leader>rg       y:FZFRg <C-R>"
   endif
   nnoremap <silent> <leader>`        :Marks<CR>
   nnoremap <silent> q:               :History:<CR>
@@ -1483,8 +1480,8 @@ command! PlugHelp call fzf#run(fzf#wrap({
   \ 'sink':   function('s:plug_help_sink')}))
 
 function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading
-  \ --color=always --smart-case %s || true'
+  let command_fmt = 'rg --column --line-number --no-heading --color=always
+  \ --smart-case --hidden --follow --glob "!.git" %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
   let options = {'options': ['--phony', '--query', a:query, '--bind',
@@ -1496,13 +1493,15 @@ endfunction
 command! -nargs=* -bang FZFRG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -bang -nargs=* FZFRg
-  \ call fzf#vim#grep(
-  \ "rg --colors 'match:bg:yellow' --colors 'match:fg:black'
-  \ --colors 'match:style:nobold' --colors 'path:fg:cyan'
-  \ --colors 'path:style:bold' --colors 'line:fg:yellow'
-  \ --colors 'line:style:bold' --line-number --no-heading
-  \ --color=always --smart-case --trim -- ".shellescape(<q-args>), 1,
-  \ fzf#vim#with_preview('up:50%', 'ctrl-/'), <bang>0)
+  \ call fzf#vim#grep('rg --no-ignore --hidden --glob "!.git"
+  \ --column --line-number --no-heading --color=always
+  \ --smart-case --follow
+  \ --colors "match:bg:yellow" --colors "match:fg:black"
+  \ --colors "match:style:nobold" --colors "path:fg:cyan"
+  \ --colors "path:style:bold" --colors "line:fg:yellow"
+  \ --colors "line:style:bold"
+  \ --trim '.shellescape(<q-args>), 1,
+  \ fzf#vim#with_preview('up:75%', 'ctrl-/'), <bang>0)
 
 command! -bang -nargs=* Ag
   \ call fzf#vim#ag(<q-args>, '--column --numbers --smart-case --color
