@@ -7,11 +7,11 @@ if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" 
 fi
 
 # Define default editor nvim, vim, vi or nano
-if [[ $commands[nvim] ]]; then
+if [[ $commands[vim] ]]; then
+  export EDITOR='vim'
+elif [[ $commands[nvim] ]]; then
   export EDITOR='nvim'
   alias vim="nvim"
-elif [[ $commands[vim] ]]; then
-  export EDITOR='vim'
 elif [[ $commands[vi] ]]; then
   export EDITOR='vi'
 else
