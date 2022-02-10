@@ -992,13 +992,13 @@ if [ -n "$PS1" ] && [ -n "$SSH_CONNECTION" ] && [ $commands[tmux] ] &&
     tmux attach-session -t ssh_tmux || tmux new-session -s ssh_tmux
 fi
 
-# Automatically start tmux on local machine if not running yet
-if [ -z "$SSH_CONNECTION" ] && [ $commands[tmux] ] &&
-  tmux -V | grep -Eo "[0-9]{1,}(\.[0-9]{1,}){0,}" | head -n1 |
-  awk -F. '{ if ($1 > 3 || ($1 == 3 && $2 >= 0) ) { exit 0 } else { exit 1 } }' &&
-  ! tmux info &> /dev/null; then
-  tmux
-fi
+# # Automatically start tmux on local machine if not running yet
+# if [ -z "$SSH_CONNECTION" ] && [ $commands[tmux] ] &&
+#   tmux -V | grep -Eo "[0-9]{1,}(\.[0-9]{1,}){0,}" | head -n1 |
+#   awk -F. '{ if ($1 > 3 || ($1 == 3 && $2 >= 0) ) { exit 0 } else { exit 1 } }' &&
+#   ! tmux info &> /dev/null; then
+#   tmux
+# fi
 
 # Lazy activate fzf-marks plugin
 fzm-lazy-load () {
