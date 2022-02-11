@@ -1442,6 +1442,7 @@ if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <leader>l        :Lines<CR>
   if executable('rg')
     nnoremap <leader>rg       :FZFRg<space>
+    nnoremap <leader>RG       :FZFRg <C-R><C-W><CR>
     xnoremap <leader>rg       y:FZFRg <C-R>"
   endif
   nnoremap <silent> <leader>`        :Marks<CR>
