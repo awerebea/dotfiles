@@ -21,15 +21,26 @@ remove-broken-links
 
 # Conditional remove dereferenced link passed as an argument
 remove-deref-link () {
+    local LOGFILE DATEFMT
+    LOGFILE="/var/log/thin-out-timeshift-snapshots.log"
+    DATEFMT="%Y-%m-%d %H:%M:%S"
     [ $# -lt 1 ] && echo "Not enough arguments" >&2 && return 1
-    [ -z "$(jq -r ".comments" "$1/info.json")" ] &&
+    if [ -z "$(jq -r ".comments" "$1/info.json")" ] &&
         [ ! -L "$SNAPSHOT_PATH/snapshots-boot/$(basename "$1")" ] &&
         [ ! -L "$SNAPSHOT_PATH/snapshots-daily/$(basename "$1")" ] &&
         [ ! -L "$SNAPSHOT_PATH/snapshots-weekly/$(basename "$1")" ] &&
         [ ! -L "$SNAPSHOT_PATH/snapshots-monthly/$(basename "$1")" ] &&
-        [ ! -L "$SNAPSHOT_PATH/snapshots-ondemand/$(basename "$1")" ] &&
-        echo -n "Removing snapshot: $(basename "$1") ... " &&
-        sudo rm -rf "$(readlink "$1")" && echo "successful!"
+        [ ! -L "$SNAPSHOT_PATH/snapshots-ondemand/$(basename "$1")" ]; then
+        echo "$(date +"$DATEFMT"): removing snapshot $(basename "$1") started" |
+            sudo tee -a "$LOGFILE"
+        if sudo rm -rf "$(readlink "$1")"; then
+            echo "$(date +"$DATEFMT"): removing snapshot $(basename "$1") successful" |
+                sudo tee -a "$LOGFILE"
+        else
+            echo "$(date +"$DATEFMT"): removing snapshot $(basename "$1") failed" |
+                sudo tee -a "$LOGFILE"
+        fi
+    fi
 }
 export -f remove-deref-link
 
@@ -80,7 +91,7 @@ thin-out-time-slice-in-interval () {
 }
 
 thin-out-time-slice-in-interval "$1" 241 -4 53 2 remove
-thin-out-time-slice-in-interval "$1" 241 -8 53 2 remove
+thin-out-time-slice-in-interval "$1" 241 -8 97 2 remove
 
 # Truncate hourly snapshot history to limit
 truncate-hourly-snapshots () {
