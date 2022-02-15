@@ -1392,7 +1392,7 @@ let g:indexer_disableCtagsWarning=1
 " Ignore files ignored in .gitignore but show hidden
 if executable('rg')
   let $FZF_DEFAULT_COMMAND = 'rg --files --no-ignore --hidden --follow
-  \ --smart-case --glob "!.git/*"'
+  \ --smart-case --glob "!.git/"'
 elseif executable('ag')
   let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 endif
@@ -1482,7 +1482,7 @@ command! PlugHelp call fzf#run(fzf#wrap({
 
 function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --column --line-number --no-heading --color=always
-  \ --smart-case --hidden --follow --glob "!.git" %s || true'
+  \ --smart-case --hidden --follow --glob "!.git/" %s || true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
   let options = {'options': ['--phony', '--query', a:query, '--bind',
@@ -1494,7 +1494,7 @@ endfunction
 command! -nargs=* -bang FZFRG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -bang -nargs=* FZFRg
-  \ call fzf#vim#grep('rg --no-ignore --hidden --glob "!.git"
+  \ call fzf#vim#grep('rg --no-ignore --hidden --glob "!.git/"
   \ --column --line-number --no-heading --color=always
   \ --smart-case --follow
   \ --colors "match:bg:yellow" --colors "match:fg:black"
