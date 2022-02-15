@@ -96,8 +96,11 @@ thin-out-time-slice-in-interval "$1" 241 -8 97 2 remove
 # Truncate hourly snapshot history to limit
 truncate-hourly-snapshots () {
     [ $# -lt 1 ] && echo "Not enough arguments" >&2 && return 1
-    local SNAPSHOT
-    for SNAPSHOT in "$SNAPSHOT_PATH"/snapshots-hourly/*; do
+    local OLD_PWD SNAPSHOT
+    OLD_PWD="$PWD"
+    cd "$SNAPSHOT_PATH/snapshots-hourly" || return 1
+    find . -mindepth 1 -maxdepth 1 -type l -printf '%h\0%d\0%p\n' |
+        sort -t '\0' -n | awk -F'\0' '{print $3}'| while read -r SNAPSHOT; do
         if snapshot-history-limit-exceeded "$1"; then
             remove-deref-link "$SNAPSHOT"
             remove-broken-links
@@ -105,6 +108,7 @@ truncate-hourly-snapshots () {
             break
         fi
     done
+    cd "$OLD_PWD" || return 1
 }
 
 truncate-hourly-snapshots "$1"
