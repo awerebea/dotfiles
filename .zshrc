@@ -768,9 +768,12 @@ fi
 # Setup ruby environment
 export_all_ruby_versions_bin_dirs () {
   if [ -d "$HOME/.rbenv/versions" ]; then
-    for VERSION in "$HOME"/.rbenv/versions/*; do
-      [[ ":$PATH:" != *":$VERSION/bin:"* ]] &&
-          export PATH="$VERSION/bin:$PATH"
+    find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d |
+      while read VERSION; do
+      if [ -d "$VERSION/bin" ]; then
+        [[ ":$PATH:" != *":$VERSION/bin:"* ]] &&
+            export PATH="$VERSION/bin:$PATH"
+      fi
     done
   fi
 }
