@@ -840,6 +840,10 @@ setopt SHARE_HISTORY
 export HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 export ZSH_HISTORY_FILE_NAME=".zsh_history"
 export ZSH_HISTORY_FILE="$HOME/$ZSH_HISTORY_FILE_NAME"
+export ZSH_HISTORY_PROJ="$GIT_WORKSPACE"
+export ZSH_HISTORY_FILE_ENC_NAME="zsh_history.gpg"
+export ZSH_HISTORY_FILE_ENC="$ZSH_HISTORY_PROJ/$ZSH_HISTORY_FILE_ENC_NAME"
+export GIT_COMMIT_MSG="Sync zsh history"
 
 # re-read history file
 alias re=" fc -R"
