@@ -733,7 +733,7 @@ bind C-b choose-buffer -Z # choose which buffer to paste from
 bind M-, move-pane -t '.-' # previous at the top, current at the bottom
 bind M-. move-pane -h -t '.-' # previous at the left, current at the right
 
-# tmux ressurect. Restoring vim and neovim sessions
+# tmux resurrect. Restoring vim and neovim sessions
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
 
@@ -836,3 +836,6 @@ if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
 set -g @logging-path "$HOME/.tmux/logs"
 set -g @screen-capture-path "$HOME/.tmux/logs"
 set -g @save-complete-history-path "$HOME/.tmux/logs"
+
+# Create a new window preserving the path of the current pane
+bind-key c run-shell 'MyCWD="#{pane_current_path}"; tmux new-window -c "$MyCWD"'
