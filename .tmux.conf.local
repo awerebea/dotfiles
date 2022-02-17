@@ -652,12 +652,13 @@ bind Escape copy-mode
 # Log output to a text file on demand
 bind C-q pipe-pane -o "mkdir -p ~/.tmux/logs && cat >>~/.tmux/logs/#W-#P.log" \; display " Toggled logging to ~/.tmux/logs/#W-#P.log"
 
-# Prefix-e - toggle sidebar-tree
-set -g @sidebar-tree off
-# Prefix-e - toggle sidebar-tree and move focus to tree pane
+# tmux-sidebar plugin settings
+# Toggle sidebar-tree and do not move focus to tree pane
+set -g @sidebar-tree ''
+# Toggle sidebar-tree and move focus to tree pane
 set -g @sidebar-tree-focus 'F2'
 # Colorize the tree directory listing in the sidebar
-set -g @sidebar-tree-command 'tree -C'
+set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
 # The default sidebar width
 set -g @sidebar-tree-width '60'
 
