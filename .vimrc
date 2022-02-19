@@ -208,6 +208,8 @@ Plug 'pedrohdz/vim-yaml-folds'
 Plug 'szw/vim-maximizer'
 " Wrapper of some vim/neovim's :terminal functions.
 Plug 'kassio/neoterm'
+" A (Neo)vim plugin for formatting code.
+Plug 'sbdchd/neoformat'
 
 " Initialize plugin system
 call plug#end()
@@ -2231,3 +2233,6 @@ let g:neoterm_autoinsert =1
 nnoremap <C-q> :Ttoggle<CR>
 inoremap <C-q> <Esc>:Ttoggle<CR>
 tnoremap <C-q> <c-\><c-n>:Ttoggle<CR>
+
+" sbdchd/neoformat
+nnoremap <leader>F :Neoformat prettier<CR>
