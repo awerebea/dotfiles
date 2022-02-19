@@ -204,6 +204,8 @@ endif
 
 " Yaml folding for Vim
 Plug 'pedrohdz/vim-yaml-folds'
+" Maximizes and restores the current window in Vim.
+Plug 'szw/vim-maximizer'
 
 " Initialize plugin system
 call plug#end()
@@ -2216,3 +2218,6 @@ cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delvie
 
 " Search and replace selected test
 vnoremap <leader><leader>re "hy:%s/<C-r>h//gc<left><left><left>
+
+" szw/vim-maximizer
+nnoremap <leader><leader>z :MaximizerToggle!<CR>
