@@ -1391,8 +1391,8 @@ let g:indexer_disableCtagsWarning=1
 " FZF settings " {{{
 " Ignore files ignored in .gitignore but show hidden
 if executable('rg')
-  let $FZF_DEFAULT_COMMAND = 'rg --files --no-ignore --hidden --follow
-  \ --smart-case --glob "!.git/"'
+  let $FZF_DEFAULT_COMMAND = 'rg --no-ignore --hidden --follow
+  \ --smart-case --glob "!.git/" --files --sort-files'
 elseif executable('ag')
   let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
 endif
@@ -1439,7 +1439,7 @@ if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <leader>f        :Files<CR>
   nnoremap <silent> <C-p>            :Files<CR>
   nnoremap <silent> <leader>C        :Colors<CR>
-  nnoremap <silent> <leader>l        :Lines<CR>
+  nnoremap <leader>l        :Lines<space>
   if executable('rg')
     nnoremap <leader>rg       :FZFRg<space>
     nnoremap <leader>RG       :FZFRg <C-R><C-W><CR>
@@ -1453,9 +1453,10 @@ if executable('fzf') || !empty(glob(fzf_bin_path))
   " inoremap <expr> <c-x><c-t> fzf#complete('tmuxwords.rb --all-but-current
   "   \ --scroll 498 --min 5')
   " map <c-x><c-k> <plug>(fzf-complete-word)
-  imap <c-x><c-f> <plug>(fzf-complete-path)
-  inoremap <expr> <c-x><c-d> fzf#vim#complete#path('blsd')
-  imap <c-x><c-j> <plug>(fzf-complete-file-ag)
+  " imap <c-x><c-f> <plug>(fzf-complete-path)
+  inoremap <expr> <c-x><c-f> fzf#vim#complete#path("find .
+    \ -type d \\( -path '*/\.git' \\) -prune -o -print \| LC_ALL=C sort \|
+    \ sed '1d;s:^..::'")
   imap <c-x><c-l> <plug>(fzf-complete-line)
 
   " nmap <leader><tab> <plug>(fzf-maps-n)
