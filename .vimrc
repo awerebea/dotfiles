@@ -239,7 +239,7 @@ set list
 set noerrorbells
 set visualbell
 set t_vb=
-set scrolloff=2 " always show minimum n lines after current line
+set scrolloff=5 " always show minimum n lines after current line
 
 " Set <space> as leader key
 let g:mapleader = "\<Space>"
@@ -1788,7 +1788,7 @@ set completeopt=menuone,longest,preview
 
 " Autocomplpop settings
 let g:acp_enableAtStartup = 1
-let g:acp_mappingDriven = 0
+let g:acp_mappingDriven = 1
 let g:acp_ignorecaseOption = 1
 " let g:acp_behaviorSnipmateLength = 3
 let g:acp_completeOption = '.,k,w,b,u,t,i,kspell'
