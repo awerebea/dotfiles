@@ -2002,16 +2002,16 @@ if executable('node')
   " Use tab for trigger completion with characters ahead and navigate.
   " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
   " other plugin before putting this into your config.
+  " function! s:check_back_space() abort
+  "   let col = col('.') - 1
+  "   return !col || getline('.')[col - 1]  =~# '\s'
+  " endfunction
+
   " inoremap <silent><expr> <TAB>
   "       \ pumvisible() ? "\<C-n>" :
   "       \ <SID>check_back_space() ? "\<TAB>" :
   "       \ coc#refresh()
   " inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
-  function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-  endfunction
 
   " Disable Coc suggestions by default, use manual trigger.
   autocmd BufEnter * let b:coc_suggest_disable = 1
@@ -2151,6 +2151,31 @@ if executable('node')
 
   " coc-explorer
   nnoremap <leader>e :CocCommand explorer<CR>
+
+  " extensions
+  let g:coc_global_extensions = [
+    \ 'coc-clangd',
+    \ 'coc-eslint',
+    \ 'coc-explorer',
+    \ 'coc-go',
+    \ 'coc-highlight',
+    \ 'coc-json',
+    \ 'coc-json',
+    \ 'coc-markdown-preview-enhanced',
+    \ 'coc-markdownlint',
+    \ 'coc-pairs',
+    \ 'coc-powershell',
+    \ 'coc-prettier',
+    \ 'coc-pyright',
+    \ 'coc-sh',
+    \ 'coc-snippets',
+    \ 'coc-sql',
+    \ 'coc-tsserver',
+    \ 'coc-vimlsp',
+    \ 'coc-webview',
+    \ 'coc-yaml',
+    \ ]
+
 endif
 " }}}
 
