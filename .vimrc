@@ -206,8 +206,8 @@ endif
 Plug 'pedrohdz/vim-yaml-folds'
 " Maximizes and restores the current window in Vim.
 Plug 'szw/vim-maximizer'
-" Wrapper of some vim/neovim's :terminal functions.
-Plug 'kassio/neoterm'
+" Terminal manager for (neo)vim
+Plug 'voldikss/vim-floaterm'
 " A (Neo)vim plugin for formatting code.
 Plug 'sbdchd/neoformat'
 
@@ -2251,13 +2251,13 @@ vnoremap <leader><leader>re "hy:%s/<C-r>h//gc<left><left><left>
 " szw/vim-maximizer
 nnoremap <leader><leader>z :MaximizerToggle!<CR>
 
-" kassio/neoterm
-let g:neoterm_default_mod = 'botright'
-" let g:neoterm_size = 15
-let g:neoterm_autoinsert =1
-nnoremap <C-q> :Ttoggle<CR>
-inoremap <C-q> <Esc>:Ttoggle<CR>
-tnoremap <C-q> <c-\><c-n>:Ttoggle<CR>
-
 " sbdchd/neoformat
 nnoremap <leader>F :Neoformat prettier<CR>
+
+" voldikss/vim-floaterm
+let g:floaterm_width = 0.99
+let g:floaterm_height = 0.99
+let g:floaterm_keymap_new    = '<F6>'
+let g:floaterm_keymap_prev   = '<F7>'
+let g:floaterm_keymap_next   = '<F8>'
+let g:floaterm_keymap_toggle = '<C-q>'
