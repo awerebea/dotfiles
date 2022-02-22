@@ -785,6 +785,7 @@ function! LightlineLineinfo() abort
       return l:lineinfo
     else
       return ''
+    endif
 endfunction
 
 augroup lightline_update
@@ -2157,6 +2158,7 @@ if executable('node')
     \ 'coc-clangd',
     \ 'coc-eslint',
     \ 'coc-explorer',
+    \ 'coc-floaterm',
     \ 'coc-go',
     \ 'coc-highlight',
     \ 'coc-json',
