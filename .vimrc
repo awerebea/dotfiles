@@ -1943,13 +1943,20 @@ let g:ale_enabled = 1
 if has('popupwin') || has('nvim')
   " use floating windows for errors and warnings
   let g:ale_floating_preview = 1
-  let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+  if !has('nvim')
+    let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+  else
+    let g:ale_floating_window_border = []
+  endif
   " autopopup detail window with cursor on the line
   let g:ale_cursor_detail = 0
 endif
 
 " enable/disable completion
 let g:ale_completion_enabled = 0
+
+" Use <c-space> to trigger completion.
+imap <C-Space> <Plug>(ale_complete)
 
 " toggle ale linting
 nnoremap <leader>at :ALEToggle<cr>
@@ -2102,6 +2109,10 @@ if executable('node')
     inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ?
           \ "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
     inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ?
+          \ "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+    inoremap <silent><nowait><expr> <C-j> coc#float#has_scroll() ?
+          \ "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    inoremap <silent><nowait><expr> <C-k> coc#float#has_scroll() ?
           \ "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
     vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ?
           \ coc#float#scroll(1) : "\<C-f>"
