@@ -249,8 +249,8 @@ plugins=(
           blackbox
           colored-man-pages
           command-not-found
-          copydir
           copyfile
+          copypath
           cp
           docker
           docker-compose
