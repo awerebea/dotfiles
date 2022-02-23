@@ -2263,3 +2263,42 @@ let g:floaterm_keymap_new    = '<F6>'
 let g:floaterm_keymap_prev   = '<F7>'
 let g:floaterm_keymap_next   = '<F8>'
 let g:floaterm_keymap_toggle = '<C-q>'
+
+" Terminal colors
+if has('nvim')
+  let g:terminal_color_0 = "#232627"
+  let g:terminal_color_1 = "#ed1515"
+  let g:terminal_color_2 = "#11d116"
+  let g:terminal_color_3 = "#f67400"
+  let g:terminal_color_4 = "#1d99f3"
+  let g:terminal_color_5 = "#9b59b6"
+  let g:terminal_color_6 = "#1abc9c"
+  let g:terminal_color_7 = "#fcfcfc"
+  let g:terminal_color_8 = "#7f8c8d"
+  let g:terminal_color_9 = "#c0392b"
+  let g:terminal_color_10 = "#1cdc9a"
+  let g:terminal_color_11 = "#fdbc4b"
+  let g:terminal_color_12 = "#3daee9"
+  let g:terminal_color_13 = "#8e44ad"
+  let g:terminal_color_14 = "#16a085"
+  let g:terminal_color_15 = "#ffffff"
+else
+  let g:terminal_ansi_colors = [
+    \ '#232627',
+    \ '#ed1515',
+    \ '#11d116',
+    \ '#f67400',
+    \ '#1d99f3',
+    \ '#9b59b6',
+    \ '#1abc9c',
+    \ '#fcfcfc',
+    \ '#7f8c8d',
+    \ '#c0392b',
+    \ '#1cdc9a',
+    \ '#fdbc4b',
+    \ '#3daee9',
+    \ '#8e44ad',
+    \ '#16a085',
+    \ '#ffffff'
+    \ ]
+endif
