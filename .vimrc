@@ -21,9 +21,13 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
 endif
 
 " Run PlugInstall if there are missing plugins
-autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
-  \| PlugInstall --sync | source $MYVIMRC
-  \| endif
+if has("autocmd")
+  augroup installMissedPlugins
+    autocmd!
+    autocmd VimEnter * if len(filter(values(g:plugs), '!isdirectory(v:val.dir)'))
+      \| PlugInstall --sync | source $MYVIMRC | endif
+  augroup END
+endif
 
 " Specify a directory for plugins {{{
 " - For Neovim: stdpath('data') . '/plugged'
@@ -275,7 +279,7 @@ function! TabsNoExpandByFourSpaces()
   setlocal softtabstop=4
   setlocal noexpandtab
 endfunction
-command TabsC call TabsNoExpandByFourSpaces()
+command! TabsC call TabsNoExpandByFourSpaces()
 
 function! TabsExpandByFourSpaces()
   setlocal tabstop=4
@@ -283,8 +287,8 @@ function! TabsExpandByFourSpaces()
   setlocal softtabstop=4
   setlocal expandtab
 endfunction
-command TabsPython call TabsExpandByFourSpaces()
-command TabsBash call TabsExpandByFourSpaces()
+command! TabsPython call TabsExpandByFourSpaces()
+command! TabsBash call TabsExpandByFourSpaces()
 
 function! TabsExpandByTwoSpaces()
   setlocal tabstop=2
@@ -292,56 +296,20 @@ function! TabsExpandByTwoSpaces()
   setlocal softtabstop=2
   setlocal expandtab
 endfunction
-command TabsTwoSpaces call TabsExpandByTwoSpaces()
+command! TabsTwoSpaces call TabsExpandByTwoSpaces()
 
+set noexpandtab
 if has("autocmd")
-  autocmd FileType ruby
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType sh
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-  autocmd FileType vim
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType zsh
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType tmux
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType conf
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType nginx
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType json*
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-  autocmd FileType javascript
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType c
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType dockerfile
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-  autocmd FileType make
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType cmake
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-  autocmd FileType cpp
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd BufEnter **/cpp.snippets
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType gitcommit
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType gitignore
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType gitconfig
-        \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType yaml.ansible
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-endif
-" }}}
-
-" helm settings
-" {{{
-if has("autocmd")
-  autocmd BufRead,BufNewFile Chart.yaml set ft=helm
-  autocmd FileType helm
-        \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  augroup filetypeRelatedSettings
+    autocmd!
+    autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+    autocmd FileType bash,sh,json*,dockerfile,python,cmake
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+    autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+    autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm
+      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  augroup END
 endif
 " }}}
 
@@ -672,12 +640,12 @@ let g:lightline_gitdiff#min_winwidth = '88'
 
 "lightline " {{{
 " Reload
-function LightlineReload()
+function! LightlineReload()
   call lightline#init()
   call lightline#colorscheme()
   call lightline#update()
 endfunction
-command LightlineReload call LightlineReload()
+command! LightlineReload call LightlineReload()
   " \ 'colorscheme': 'default',
   " \ 'colorscheme': 'wombat',
   " \ 'colorscheme': 'onedark',
@@ -811,13 +779,11 @@ function! LightlineIndent()
       return '⇆'.&tabstop."↹"
     elseif &tabstop && !&softtabstop && !&shiftwidth && !&expandtab
       return '⇆'.&tabstop."↹"
-    elseif &tabstop && !&softtabstop && &tabstop == &shiftwidth
-  \ && !&expandtab
+    elseif &tabstop && !&softtabstop && &tabstop == &shiftwidth && !&expandtab
       return '⇆'.&tabstop."↹"
     elseif &tabstop && !&softtabstop && !&shiftwidth && &expandtab
       return '⇆'.&tabstop."␣"
-    elseif &tabstop == &softtabstop && &shiftwidth == &softtabstop
-  \ && &expandtab
+    elseif &tabstop == &softtabstop && &shiftwidth == &softtabstop && &expandtab
       return '⇆'.&tabstop."␣"
     elseif &tabstop != &softtabstop && &shiftwidth && &expandtab
       return '⇆'.&shiftwidth."␣"
@@ -964,13 +930,13 @@ hi Folded guibg=NONE
 hi Folded guifg=#726e5c
 
 if has("autocmd")
-  autocmd BufEnter * if &filetype ==# 'vim' | setlocal foldmethod=marker
-  \ foldmarker={{{,}}} | endif
-  autocmd FileType javascript setlocal foldmethod=expr
-  autocmd FileType javascript setlocal foldexpr=JSFolds()
-  autocmd Filetype c          AnyFoldActivate
-  autocmd Filetype cpp        AnyFoldActivate
-  autocmd Filetype python     AnyFoldActivate
+  augroup foldMarkersAndAnyFold
+    autocmd!
+    autocmd BufEnter * if &filetype ==# 'vim' | setlocal foldmethod=marker
+    \ foldmarker={{{,}}} | endif
+    autocmd FileType javascript setlocal foldmethod=expr foldexpr=JSFolds()
+    autocmd Filetype c,cpp,python AnyFoldActivate
+  augroup END
 endif
 
 function! JSFolds()
@@ -1618,46 +1584,37 @@ nmap gz <Plug>Kwbd
 call tinykeymap#EnterMap('windows', '<C-w>', {'name': 'windows mode'})
 
 " GPG settings " {{{
+" Tell the GnuPG plugin to armor new files.
+let g:GPGPreferArmor=1
+" Tell the GnuPG plugin to sign new files.
+let g:GPGPreferSign=1
+" Use gpg(2) to take advantage of the agent.
+let g:GPGExecutable="/usr/bin/gpg2"
+" Take advantage of the running agent
+let g:GPGUseAgent=1
+" Override default set of file patterns
+let g:GPGFilePattern='*.\(gpg\|asc\|pgp\|pw\)'
 if has("autocmd")
-  " Tell the GnuPG plugin to armor new files.
-  let g:GPGPreferArmor=1
-
-  " Tell the GnuPG plugin to sign new files.
-  let g:GPGPreferSign=1
-
-  " Use gpg(2) to take advantage of the agent.
-  let g:GPGExecutable="/usr/bin/gpg2"
-
-  " Take advantage of the running agent
-  let g:GPGUseAgent=1
-
-  " Override default set of file patterns
-  let g:GPGFilePattern='*.\(gpg\|asc\|pgp\|pw\)'
-
   augroup GnuPGExtra
+    autocmd!
     " Set extra file options.
     autocmd BufReadCmd,FileReadCmd *.\(pw\) call SetGPGOptions()
-
     " Automatically close unmodified files after inactivity.
     autocmd CursorHold *.\(pw\) quit
   augroup END
-  function SetGPGOptions()
-    " Set the filetype for syntax highlighting.
-    set filetype=gpgpass
-
-    " Set updatetime to 5 minutes.
-    set updatetime=300000
-
-    " Fold at markers.
-    set foldmethod=marker
-
-    " Automatically close all folds.
-    set foldclose=all
-
-    " Only open folds with insert commands.
-    set foldopen=insert
-  endfunction
-endif " has ("autocmd")
+endif
+function! SetGPGOptions()
+  " Set the filetype for syntax highlighting.
+  set filetype=gpgpass
+  " Set updatetime to 5 minutes.
+  set updatetime=300000
+  " Fold at markers.
+  set foldmethod=marker
+  " Automatically close all folds.
+  set foldclose=all
+  " Only open folds with insert commands.
+  set foldopen=insert
+endfunction
 " }}}
 
 " Close quickfix window
@@ -1732,7 +1689,7 @@ function s:QuitWindow()
   endif
   quit
 endfunction
-command QuitWindow call s:QuitWindow()
+command! QuitWindow call s:QuitWindow()
 nnoremap <silent> <leader>q :QuitWindow<CR>
 " }}}
 
@@ -1741,7 +1698,7 @@ nnoremap <silent> <leader>q :QuitWindow<CR>
 " let g:loaded_restore_view = ['*/.vimrc']
 
 " Diff mode toggle (with SmartRelativenumbers support) {{{
-function ToggleDiff ()
+function! ToggleDiff ()
   if (&diff)
     if get(g:, 'SmartRelativenumbersBckp', 0)
       call ToggleSmartRelativenumbers()
@@ -1888,21 +1845,24 @@ imap <s-tab> <Plug>snipMateShow
 
 " Run/compile from vim {{{
 if has("autocmd")
-  if has('nvim')
-    autocmd FileType python map <buffer> <F9>
-          \ :w!<CR>:sp term://python3 %<CR>a
-    autocmd FileType python imap <buffer> <F9>
-          \ <esc>:w!<CR>:sp term://python3 %<CR>a
-  else
-    autocmd FileType python map <buffer> <F9>
-          \ :w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
-    autocmd FileType python imap <buffer> <F9>
-          \ <esc>:w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
-  endif
-  autocmd FileType markdown map <buffer> <F9>
-        \ :CocCommand markdown-preview-enhanced.openPreview<CR>
-  autocmd FileType cpp map <buffer> <F9> :make<CR>
-  autocmd FileType c map <buffer> <F9> :make<CR>
+  augroup runCompileFromVim
+    autocmd!
+    if has('nvim')
+      autocmd FileType python map <buffer> <F9>
+        \ :w!<CR>:sp term://python3 %<CR>a
+      autocmd FileType python imap <buffer> <F9>
+        \ <esc>:w!<CR>:sp term://python3 %<CR>a
+    else
+      autocmd FileType python map <buffer> <F9>
+        \ :w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
+      autocmd FileType python imap <buffer> <F9>
+        \ <esc>:w<CR>:exec '!clear; python3' shellescape(@%, 1)<CR>
+    endif
+    autocmd FileType markdown map <buffer> <F9>
+      \ :CocCommand markdown-preview-enhanced.openPreview<CR>
+    autocmd FileType cpp map <buffer> <F9> :make<CR>
+    autocmd FileType c map <buffer> <F9> :make<CR>
+  augroup END
 endif
 " }}}
 
@@ -1981,7 +1941,7 @@ if executable('cfn-lint')
       :set ft=json.cloudformation
     endif
   endfunction
-  command SetCfnFt call SetCloundformationFt()
+  command! SetCfnFt call SetCloundformationFt()
 endif
 " }}} ale settings
 endif
@@ -2254,7 +2214,7 @@ function! MyDeleteView()
   " re-open current file
   edit %
 endfunction
-command Delview call MyDeleteView()
+command! Delview call MyDeleteView()
 " Lower-case user commands: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
 cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
 
