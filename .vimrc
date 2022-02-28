@@ -1955,6 +1955,9 @@ if executable('node')
   " Don't pass messages to |ins-completion-menu|.
   set shortmess+=c
 
+  " Map for document filetypes
+   let g:coc_filetype_map = { 'yaml.ansible': 'ansible', }
+
   " Give more space for displaying messages.
   " set cmdheight=2
 
@@ -2126,6 +2129,7 @@ if executable('node')
 
   " extensions
   let g:coc_global_extensions = [
+    \ '@yaegassy/coc-ansible',
     \ 'coc-clangd',
     \ 'coc-eslint',
     \ 'coc-explorer',
