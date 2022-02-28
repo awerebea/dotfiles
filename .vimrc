@@ -1,6 +1,6 @@
 set nocompatible              " be iMproved, required
 
-" Set the list of hosts to use the full-featured configuration
+" {{{ Set the list of hosts to use the full-featured configuration
 let hosts_list = ["laptop-hp", "laptop-acer", "home-pc"]
 " Determine current hostname
 let current_host = substitute(system('hostname'), '\n', '', '')
@@ -9,8 +9,9 @@ if index(hosts_list, current_host) >= 0
   let use_feature = 'true'
 endif
 unlet hosts_list current_host
+" }}}
 
-" Install vim-plug if not found
+" {{{ Install vim-plug if not found
 let data_dir = has('nvim') ? stdpath('data') . '/site' : '~/.vim'
 if empty(glob(data_dir . '/autoload/plug.vim'))
   silent !export GIT_SSL_NO_VERIFY=true
@@ -19,8 +20,9 @@ if empty(glob(data_dir . '/autoload/plug.vim'))
   \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+" ]}}
 
-" Run PlugInstall if there are missing plugins
+" {{{ Run PlugInstall if there are missing plugins
 if has("autocmd")
   augroup installMissedPlugins
     autocmd!
@@ -28,8 +30,9 @@ if has("autocmd")
       \| PlugInstall --sync | source $MYVIMRC | endif
   augroup END
 endif
+" }}}
 
-" Specify a directory for plugins {{{
+" {{{ Specify a directory for plugins
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
@@ -252,7 +255,7 @@ let g:mapleader = "\<Space>"
 " Always use 10-base numbers
 set nrformats=
 
-" Wildmenu completion " {{{
+" {{{ Wildmenu completion
 set wildmenu
 set wildmode=full
 
@@ -272,7 +275,7 @@ set wildignore+=*.pyc                            " Python byte code
 set wildignore+=*.orig                           " Merge resolution files
 " }}}
 
-" tabs settings " {{{
+" {{{ tabs settings
 function! TabsNoExpandByFourSpaces()
   setlocal tabstop=4
   setlocal shiftwidth=4
@@ -360,7 +363,7 @@ set t_Co=256
 set autowrite           " Automatically save before commands :next and :make
 set updatetime=100      " Interface update timeout
 
-" Word wrap " {{{
+" {{{ Word wrap
 set wrapmargin=0
 set colorcolumn=+1
 set wrap linebreak
@@ -535,7 +538,7 @@ let g:signify_sign_delete_first_line = '^'
 let g:signify_sign_change_delete = '~_'
 
 " Use italic font for comments
-" iTerm compatibility {{{
+" {{{ iTerm compatibility
 let &t_ZH="\e[3m"
 let &t_ZR="\e[23m" " }}}
 highlight Comment cterm=italic gui=italic
@@ -564,12 +567,7 @@ vmap <Leader>c<space> <Plug>NERDCommenterToggle<CR>gv
 nmap <C-_> <Plug>NERDCommenterToggle
 vmap <C-_> <Plug>NERDCommenterToggle<CR>gv
 
-" Tagbar " {{{
-" JS
-let g:tagbar_type_javascript = {
-  \   'ctagsbin' : '/path/to/jsctags'
-  \ }
-
+" {{{ Tagbar
 " CSS
 let g:tagbar_type_css = {
   \ 'ctagstype' : 'Css',
@@ -593,7 +591,7 @@ let g:tagbar_type_go = {
   \ }
 " }}}
 
-" Rainbow brackets settings " {{{
+" {{{ Rainbow brackets settings
 let g:rainbow_active = 1
 let g:rainbow_conf = {
   \   'guifgs': ['darkorange', 'lightblue', 'lightyellow', 'lightcyan',
@@ -638,7 +636,7 @@ let g:lightline_gitdiff#indicator_deleted = '-'
 let g:lightline_gitdiff#indicator_modified = '~'
 let g:lightline_gitdiff#min_winwidth = '88'
 
-"lightline " {{{
+" {{{ lightline
 " Reload
 function! LightlineReload()
   call lightline#init()
@@ -902,7 +900,7 @@ let g:indent_guides_guide_size = 1
 let g:indent_guides_color_change_percent = 3
 let g:indent_guides_enable_on_vim_startup = 0
 
-" Folding settings " {{{
+" {{{ Folding settings
 " zc                          fold block
 " zo                          unfold block
 " zM                          fold all blocks
@@ -996,7 +994,7 @@ call yankstack#setup()
 nnoremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
 nnoremap <Esc><Esc> :<C-u>nohlsearch<CR><C-l>
 
-" List buffers keybinds " {{{
+" {{{ List buffers keybinds
 if executable('fzf') || !empty(glob(fzf_bin_path))
   nnoremap <silent> <leader><Enter> :Buffers<CR>
   nnoremap <silent> <leader><leader><Enter> :BufExplorer<CR>
@@ -1009,7 +1007,7 @@ nmap <F5> :BufExplorer<CR>
 " Past current buffer path instead %% in Ex editor line
 cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
-" Easymotion {{{
+" {{{ Easymotion
 let g:EasyMotion_smartcase = 1
 " incsearch
 map /  <Plug>(incsearch-forward)
@@ -1030,7 +1028,7 @@ omap <leader><leader>/ <Plug>(easymotion-tn)
 set autoindent
 set pastetoggle=<F4>
 
-" autopairing " {{{
+" {{{ autopairing
 inoremap {<CR> {<CR>}<ESC>O
 inoremap {;<CR> {<CR>};<ESC>O
 " }}}
@@ -1038,7 +1036,7 @@ inoremap {;<CR> {<CR>};<ESC>O
 " INFO Enable <ALT + p> keymap in the terminal
 " execute "set <M-p>=\ep"
 
-" Tabs navigation " {{{
+" {{{ Tabs navigation
 " nnoremap gz :bdelete<CR>
 " Open all buffers in tab
 nnoremap <leader>o :tab sball<CR>
@@ -1109,8 +1107,8 @@ if &diff
     highlight! link DiffText MatchParen
 endif
 
-" Convenient command to see the difference between the current buffer and the
-" file it was loaded from, thus the changes you made. " {{{
+" {{{ Convenient command to see the difference between the current buffer and
+" the file it was loaded from, thus the changes you made.
 " Only define it when not defined already.
 if !exists(":DiffOrig")
   command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
@@ -1168,7 +1166,7 @@ let s:uname_host = system("echo -n \"$(uname -n)\"")
 " Avoid unintentional switches to Ex mode.
 nmap Q q
 
-" Backup and Swap files settings " {{{
+" {{{ Backup and Swap files settings
 " Save your backup files to a less annoying place than the current directory.
 " If you have .vim-backup in the current directory, it'll use that.
 " Otherwise it saves it to ~/.vim/backup or .
@@ -1225,7 +1223,7 @@ endif
 set viewdir=~/.vim/view
 " }}}
 
-" Highlight TODO, FIXME, NOTE, etc. " {{{
+" {{{ Highlight TODO, FIXME, NOTE, etc.
 let g:my_todo_highlight_config = {
 \  'FIXME': {
 \    'gui_fg_color': '#ffffff',
@@ -1361,7 +1359,7 @@ noremap <leader>ct :ColorToggle<CR>
 " Indexer settings
 let g:indexer_disableCtagsWarning=1
 
-" FZF settings " {{{
+" {{{ FZF settings
 " Ignore files ignored in .gitignore but show hidden
 if executable('rg')
   let $FZF_DEFAULT_COMMAND = 'rg --no-ignore --hidden --follow
@@ -1505,8 +1503,8 @@ augroup filetypedetect
   au BufRead,BufNewFile webserv.conf*     setlocal ft=nginx
 augroup END
 
-" Delete a buffer without closing the window, create a scratch buffer if no
-" buffers left " {{{
+" {{{ Delete a buffer without closing the window, create a scratch buffer if
+" no buffers left
 function s:Kwbd(kwbdStage)
   if(a:kwbdStage == 1)
     if(&modified)
@@ -1583,7 +1581,7 @@ nmap gz <Plug>Kwbd
 "       \ 'lines', 'loc', 'qfl', 'tabs', 'undo', 'windows']
 call tinykeymap#EnterMap('windows', '<C-w>', {'name': 'windows mode'})
 
-" GPG settings " {{{
+" {{{ GPG settings
 " Tell the GnuPG plugin to armor new files.
 let g:GPGPreferArmor=1
 " Tell the GnuPG plugin to sign new files.
@@ -1642,7 +1640,7 @@ endif
 let g:indexer_ctagsCommandLineOptions =
   \ '-R --fields=+iaSl --c++-kinds=+p --extra=+q'
 
-" Vim-mergetool settings " {{{
+" {{{ Vim-mergetool settings
 nmap <leader>mt <plug>(MergetoolToggle)
 
 nmap <expr> <S-Left> &diff? '<Plug>(MergetoolDiffExchangeLeft)' : '<S-Left>'
@@ -1697,7 +1695,7 @@ nnoremap <silent> <leader>q :QuitWindow<CR>
 " Views of some files not to be saved
 " let g:loaded_restore_view = ['*/.vimrc']
 
-" Diff mode toggle (with SmartRelativenumbers support) {{{
+" {{{ Diff mode toggle (with SmartRelativenumbers support)
 function! ToggleDiff ()
   if (&diff)
     if get(g:, 'SmartRelativenumbersBckp', 0)
@@ -1737,7 +1735,7 @@ endfunction
 nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
 " }}}
 
-" Dictionary and completion settings " {{{
+" {{{ Dictionary and completion settings
 set complete=.,k,w,b,u,t,i,kspell
 set shortmess+=c
 set shortmess-=S
@@ -1778,8 +1776,8 @@ map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
 " Enable spell checking by default
 " set spell spelllang=en_us,ru_yo
 
-" Vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
-" command mode {{{
+" {{{ Vim-xkbswitch settings (auto switch to English keyboard layout in Normal and
+" command mode
 let g:XkbSwitchEnabled = 1
 let s:uname = system("echo -n \"$(uname)\"")
 let s:uname_host = system("echo -n \"$(uname -n)\"")
@@ -1794,7 +1792,7 @@ elseif !v:shell_error && s:uname == "Linux" && system("echo -n \"$(whoami)\"")
 endif
 " }}}
 
-" Colors for words that failed spell check {{{
+" {{{ Colors for words that failed spell check
 " Word not recognized
 hi clear SpellBad
 hi SpellBad cterm=underline ctermfg=blue
@@ -1827,7 +1825,7 @@ function! SpellCheck(...)
 endfunction
 " }}}
 
-" settings (Ultisnips, SnipMate) {{{
+" {{{ settings (Ultisnips, SnipMate)
 " Trigger configuration. You need to change this to something other than <tab>
 " if you use one of the following:
 " - https://github.com/Valloric/YouCompleteMe
@@ -1843,7 +1841,7 @@ let g:snipMate.snippet_version = 1
 imap <s-tab> <Plug>snipMateShow
 " }}}
 
-" Run/compile from vim {{{
+" {{{ Run/compile from vim
 if has("autocmd")
   augroup runCompileFromVim
     autocmd!
@@ -1887,7 +1885,7 @@ nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 set iskeyword-=_
 
 if exists('use_feature')
-" ale settings {{{
+" {{{ ale settings
 " lightline-ale icons
 let g:lightline#ale#indicator_checking = "\uf110"
 let g:lightline#ale#indicator_infos = "\uf129"
@@ -1946,7 +1944,7 @@ endif
 " }}} ale settings
 endif
 
-" coc settings {{{
+" {{{ coc settings
 if executable('node')
   " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
   " delays and poor user experience.
