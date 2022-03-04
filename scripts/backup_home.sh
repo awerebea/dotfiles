@@ -127,7 +127,6 @@ create_snapshot() {
 	*/.terraform.lock.hcl
 	*/.terraform/
 	build
-	Clouds
 	Documents
 	Downloads
 	Timeshift_exclude/.cache/google-chrome/Default/Cache/
