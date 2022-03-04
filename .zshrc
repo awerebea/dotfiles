@@ -1248,3 +1248,8 @@ jqc () {
 yqc () {
   yq --colors $1 | less -NR -r
 }
+
+# Source Sitecore stuff
+if [ -f ~/.sitecore_stuff ]; then
+    source ~/.sitecore_stuff
+fi
