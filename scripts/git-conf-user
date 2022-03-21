@@ -11,6 +11,8 @@ SIGNING_KEY_1="98DEAF83552D8DFA"
 USER_2="Andrei Bulgakov"
 EMAIL_2="andrei_bulgakov1@epam.com"
 SIGNING_KEY_2="DDD644B7D4DA3C33"
+USER_3="Andrey Bulgakov"
+EMAIL_3="andrey.bulgakov@boxever.com"
 
 GLOBAL=
 
@@ -32,6 +34,8 @@ USERNAME:
   1, personal           User data: ${USER_1} <${EMAIL_1}>
 
   2, work               User data: ${USER_2} <${EMAIL_2}>
+
+  3, sitecore           User data: ${USER_3} <${EMAIL_3}>
 
 OPTIONS:
   -c, --sign-commits    Sign all commits automattically
@@ -84,6 +88,10 @@ while [[ -n "$1" ]]; do
         USERNAME="${USER_2}"
         USEREMAIL="${EMAIL_2}"
         SIGNING_KEY="${SIGNING_KEY_2}"
+        ;;
+    3 | sitecore)
+        USERNAME="${USER_3}"
+        USEREMAIL="${EMAIL_3}"
         ;;
     -h | --help)
         usage
