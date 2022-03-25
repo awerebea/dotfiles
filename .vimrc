@@ -306,6 +306,7 @@ if has("autocmd")
   augroup filetypeRelatedSettings
     autocmd!
     autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+    autocmd BufRead,BufNewFile .yamllint set ft=yaml
     autocmd FileType bash,sh,json*,dockerfile,python,cmake
       \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
     autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
@@ -1892,6 +1893,8 @@ let g:lightline#ale#indicator_infos = "\uf129"
 let g:lightline#ale#indicator_warnings = "\uf071"
 let g:lightline#ale#indicator_errors = "\uf05e"
 let g:lightline#ale#indicator_ok = "\uf00c"
+
+let g:ale_yaml_yamllint_options = '-c $HOME/.yamllint'
 
 " enable(1)/disable(0) ale at startup
 let g:ale_enabled = 1
