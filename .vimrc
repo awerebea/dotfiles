@@ -1147,7 +1147,8 @@ command! Ball :call DeleteInactiveBufs()
 " NERDTree
 let NERDTreeShowHidden=1
 let NERDTreeShowBookmarks=1
-let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '.DS_Store']
+let NERDTreeIgnore=['\.pyc$', '\.vim$', '\~$', '\.git$', '\.venv$',
+  \ '.DS_Store']
 " Close nerdtree and vim on close file
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType")
   \ && b:NERDTreeType == "primary") | q | endif
@@ -1364,9 +1365,9 @@ let g:indexer_disableCtagsWarning=1
 " Ignore files ignored in .gitignore but show hidden
 if executable('rg')
   let $FZF_DEFAULT_COMMAND = 'rg --no-ignore --hidden --follow
-  \ --smart-case --glob "!.git/" --files --sort-files'
+  \ --smart-case --glob "!.git/" --glob "!.venv/" --files --sort-files'
 elseif executable('ag')
-  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git -g ""'
+  let $FZF_DEFAULT_COMMAND = 'ag --hidden --ignore .git --ignore .venv -g ""'
 endif
 let $FZF_DEFAULT_OPTS .= ' --inline-info'
 " let g:fzf_preview_window = ['right:50%', 'ctrl-/']
@@ -1384,8 +1385,8 @@ let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 " All files
 command! -nargs=? -complete=dir AF
   \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
-  \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore .
-  \ '.expand(<q-args>)
+  \ 'source': 'fd --type f --hidden --follow --exclude .git  --exclude .venv
+  \ --no-ignore . '.expand(<q-args>)
   \ })))
 
 let g:fzf_colors =
@@ -1427,8 +1428,8 @@ if executable('fzf') || !empty(glob(fzf_bin_path))
   " map <c-x><c-k> <plug>(fzf-complete-word)
   " imap <c-x><c-f> <plug>(fzf-complete-path)
   inoremap <expr> <c-x><c-f> fzf#vim#complete#path("find .
-    \ -type d \\( -path '*/\.git' \\) -prune -o -print \| LC_ALL=C sort \|
-    \ sed '1d;s:^..::'")
+    \ -type d \\( -path '*/\.git' -o -path '*/\.venv' \\) -prune -o -print \|
+    \ LC_ALL=C sort \| sed '1d;s:^..::'")
   imap <c-x><c-l> <plug>(fzf-complete-line)
 
   " nmap <leader><tab> <plug>(fzf-maps-n)
@@ -1455,7 +1456,8 @@ command! PlugHelp call fzf#run(fzf#wrap({
 
 function! RipgrepFzf(query, fullscreen)
   let command_fmt = 'rg --column --line-number --no-heading --color=always
-  \ --smart-case --hidden --follow --glob "!.git/" %s || true'
+  \ --smart-case --hidden --follow --glob "!.git/" --glob "!.venv/" %s ||
+  \ true'
   let initial_command = printf(command_fmt, shellescape(a:query))
   let reload_command = printf(command_fmt, '{q}')
   let options = {'options': ['--phony', '--query', a:query, '--bind',
@@ -1467,9 +1469,9 @@ endfunction
 command! -nargs=* -bang FZFRG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -bang -nargs=* FZFRg
-  \ call fzf#vim#grep('rg --no-ignore --hidden --glob "!.git/"
-  \ --column --line-number --no-heading --color=always
-  \ --smart-case --follow
+  \ call fzf#vim#grep('rg --no-ignore --hidden \ --column --line-number
+  \ --no-heading --color=always --smart-case --follow
+  \ --glob "!.git/" --glob "!.venv/"
   \ --colors "match:bg:yellow" --colors "match:fg:black"
   \ --colors "match:style:nobold" --colors "path:fg:cyan"
   \ --colors "path:style:bold" --colors "line:fg:yellow"
