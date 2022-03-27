@@ -210,12 +210,12 @@
     {
         "key": "j",
         "command": "list.focusDown",
-        "when": "listFocus"
+        "when": "listFocus && !inputFocus"
     },
     {
         "key": "k",
         "command": "list.focusUp",
-        "when": "listFocus"
+        "when": "listFocus && !inputFocus"
     },
     {
         "key": "enter",
@@ -225,7 +225,7 @@
     {
         "key": "o",
         "command": "list.toggleExpand",
-        "when": "listFocus"
+        "when": "listFocus && !inputFocus"
     },
     {
         "key": "r",
@@ -246,7 +246,7 @@
     {
         "key": "shift+k",
         "command": "editor.action.showHover",
-        "when": "editorTextFocus"
+        "when": "editorTextFocus && vim.mode != 'Insert'"
     },
     // Toggle activity bar
     {
