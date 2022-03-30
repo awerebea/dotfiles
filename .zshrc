@@ -731,7 +731,7 @@ fi
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
   lazy_nvm () {
-    unset -f nvm npm node vim nvim ranger # unset -f == unfunction
+    unset -f nvm npm node vim nvim ranger cdk # unset -f == unfunction
     [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
@@ -742,6 +742,7 @@ if [ -d "$HOME/.nvm" ]; then
   vim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
   nvim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
   ranger () { lazy_nvm; $0 "$@" }
+  cdk () { lazy_nvm; $0 "$@" }
 fi
 
 # Lazy loading rbenv if exists
