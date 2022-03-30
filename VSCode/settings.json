@@ -88,6 +88,15 @@
         {
             "before": ["<leader>", "b"],
             "commands": ["bookmarks.list"]
+        },
+        {
+            "before": ["<leader>", "r", "n"],
+            "commands": ["editor.action.rename"],
+            "when": [
+                "editorHasRenameProvider",
+                "editorTextFocus",
+                "!editorReadonly"
+            ]
         }
     ],
     "vim.normalModeKeyBindingsNonRecursive": [
