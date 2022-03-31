@@ -32,11 +32,11 @@
     // },
     // Icons settings
     "workbench.iconTheme": "vscode-icons",
-    // Wrap long lines at 80th column
-    "editor.rulers": [80, 120],
+    "editor.rulers": [100, 120],
     "editor.wordWrap": "wordWrapColumn",
     "editor.wrappingIndent": "same",
-    "editor.wordWrapColumn": 80,
+    // Wrap long lines at N-th column
+    "editor.wordWrapColumn": 100,
     "[markdown]": {
         "editor.wordWrap": "wordWrapColumn",
         "editor.quickSuggestions": false
