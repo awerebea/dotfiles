@@ -345,5 +345,30 @@
     "window.zoomLevel": 1,
     "python.linting.flake8Args": ["--max-line-length=99"],
     "python.formatting.autopep8Args": ["--max-line-length=99"],
-    "python.linting.pycodestyleArgs": ["--max-line-length=99"]
+    "python.linting.pycodestyleArgs": ["--max-line-length=99"],
+    // Native bracket pair colorization
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    // Custom tags for the parser to use
+    "yaml.customTags": [
+        "!And",
+        "!If",
+        "!Not",
+        "!Equals",
+        "!Or",
+        "!FindInMap sequence",
+        "!Base64",
+        "!Cidr",
+        "!Ref",
+        "!Sub",
+        "!GetAtt",
+        "!GetAZs",
+        "!ImportValue",
+        "!Select",
+        "!Select sequence",
+        "!Split",
+        "!Join sequence"
+    ],
+    // Enable/disable default YAML formatter (requires restart)
+    "yaml.format.enable": true
 }
