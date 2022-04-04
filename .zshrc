@@ -917,6 +917,7 @@ export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
 
 # Create and launch python VENV
 alias activate="python3 -m venv .venv && source .venv/bin/activate"
+alias activate39="virtualenv .venv && source .venv/bin/activate"
 
 # Generate '.clang_complete' for VIM and C/CPP projects
 alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | \
