@@ -1469,7 +1469,7 @@ endfunction
 command! -nargs=* -bang FZFRG call RipgrepFzf(<q-args>, <bang>0)
 
 command! -bang -nargs=* FZFRg
-  \ call fzf#vim#grep('rg --no-ignore --hidden \ --column --line-number
+  \ call fzf#vim#grep('rg --no-ignore --hidden --column --line-number
   \ --no-heading --color=always --smart-case --follow
   \ --glob "!.git/" --glob "!.venv/"
   \ --colors "match:bg:yellow" --colors "match:fg:black"
