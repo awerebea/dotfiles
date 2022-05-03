@@ -12,6 +12,7 @@ AddBind TranslitSelected     Control Alt Break
 
 ExcludeApp KeePass2
 ExcludeApp Microsoft Teams - Preview
+ExcludeApp Microsoft Teams - Insiders
 ExcludeApp Teams-insiders
 ExcludeApp Google-chrome
 ExcludeApp Krdc
