@@ -334,7 +334,6 @@
     "editor.formatOnSave": true,
     "redhat.telemetry.enabled": true,
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
-    "editor.minimap.enabled": false,
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
@@ -370,5 +369,13 @@
         "!Join sequence"
     ],
     // Enable/disable default YAML formatter (requires restart)
-    "yaml.format.enable": true
+    "yaml.format.enable": true,
+    "terminal.integrated.defaultProfile.linux": "my tmux",
+    "terminal.integrated.profiles.linux": {
+        "my tmux": {
+            "path": "/home/andrei/.local/bin/vscode_terminal.sh"
+        }
+    },
+    "editor.minimap.enabled": false,
+    "explorer.confirmDragAndDrop": false
 }

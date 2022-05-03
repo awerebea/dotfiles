@@ -124,7 +124,7 @@
     },
     // Maximaze panel (terminal)
     {
-        "key": "ctrl+a z",
+        "key": "ctrl+b z",
         "command": "workbench.action.toggleMaximizedPanel",
         "when": "terminalFocus"
     },
@@ -246,7 +246,7 @@
     {
         "key": "shift+k",
         "command": "editor.action.showHover",
-        "when": "editorTextFocus && vim.mode != 'Insert'"
+        "when": "editorTextFocus && vim.mode != 'Insert' && vim.mode != 'CommandlineInProgress'"
     },
     // Toggle activity bar
     {
