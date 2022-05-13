@@ -1171,12 +1171,7 @@ zvm_vi_yank () {
 }
 
 # Git. Fetch all origin remote branches
-git-pull-all-remote-branches () {
-  local abranch
-  for abranch in $(git branch -a | grep -v HEAD | grep remotes |
-  sed "s/remotes\/origin\///g"); do git checkout $abranch ; done
-}
-alias glall='git-pull-all-remote-branches'
+alias glall='git branch -r | grep -v "\->" | while read remote; do git branch --track "${remote#origin/}" "$remote"; done'
 
 # Git aliases
 # Git. Amend commit, preserve committer date
