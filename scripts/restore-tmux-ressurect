@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+rm -f ~/.tmux/resurrect/last
+ln -s "$(find ~/.tmux/resurrect -type f | sort | tail -n 1)" ~/.tmux/resurrect/last
