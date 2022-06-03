@@ -75,6 +75,11 @@
         "command": "workbench.action.increaseViewWidth",
         "when": "vim.mode != 'Insert'"
     },
+    {
+        "key": "ctrl+alt+f",
+        "command": "workbench.action.toggleEditorWidths",
+        "when": "vim.mode != 'Insert'"
+    },
     // Resize terminal window
     {
         "key": "ctrl+shift+h",
@@ -246,7 +251,7 @@
     {
         "key": "shift+k",
         "command": "editor.action.showHover",
-        "when": "editorTextFocus && vim.mode != 'Insert' && vim.mode != 'CommandlineInProgress'"
+        "when": "editorTextFocus && vim.mode == 'Normal'"
     },
     // Toggle activity bar
     {

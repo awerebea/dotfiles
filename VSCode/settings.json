@@ -253,6 +253,7 @@
     "python.linting.flake8Enabled": true,
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
+    "python.analysis.typeCheckingMode": "basic", // basic or strict
     // MSSQL db connections
     "mssql.connections": [
         {
@@ -341,7 +342,6 @@
     // Disable default json formatter
     "json.format.enable": false,
     "vim.timeout": 500,
-    "window.zoomLevel": 1,
     "python.linting.flake8Args": ["--max-line-length=99"],
     "python.formatting.autopep8Args": ["--max-line-length=99"],
     "python.linting.pycodestyleArgs": ["--max-line-length=99"],
@@ -377,5 +377,6 @@
         }
     },
     "editor.minimap.enabled": false,
-    "explorer.confirmDragAndDrop": false
+    "explorer.confirmDragAndDrop": false,
+    "window.zoomLevel": 1
 }
