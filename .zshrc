@@ -1250,3 +1250,11 @@ yqc () {
 if [ -f ~/.sitecore_stuff ]; then
     source ~/.sitecore_stuff
 fi
+
+# rclone aliases
+rclone-bisync-google-drive_cobblestone.tlt () {
+  rclone bisync /media/andrei/Data/Clouds/Google\ Drive \
+    google-drive_cobblestone.tlt: \
+    --filters-file /home/andrei/.config/rclone/filter_google-drive_cobblestone.tlt \
+    --log-file /home/andrei/.config/rclone/logs/bisync_google-drive_cobblestone.tlt.log
+}
