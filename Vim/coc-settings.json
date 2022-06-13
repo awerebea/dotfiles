@@ -36,7 +36,7 @@
         }
     },
     "yaml.schemas": {
-        "kubernetes": ["/*.yaml","/*.yml"],
+        // "kubernetes": ["/*.yaml","/*.yml"],
         "https://raw.githubusercontent.com/docker/cli/master/cli/compose/schema/data/config_schema_v3.8.json": "/docker-compose.*yml",
         "http://json.schemastore.org/gitlab-ci": "/.gitlab-ci.yml"
     },
