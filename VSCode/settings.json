@@ -220,6 +220,16 @@
         {
             "before": ["<Leader>", "f", "r"],
             "commands": ["workbench.action.replaceInFiles"]
+        },
+        {
+            "before": ["]", "g"],
+            "commands": ["editor.action.marker.next"],
+            "silent": true
+        },
+        {
+            "before": ["[", "g"],
+            "commands": ["editor.action.marker.prev"],
+            "silent": true
         }
     ],
     // Keybinds in Visual mode
