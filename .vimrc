@@ -100,6 +100,8 @@ Plug 'yegappan/grep'
 " Run Git commands from Vim
 Plug 'tpope/vim-fugitive'
 Plug 'junegunn/gv.vim'
+" Get current git-branch name
+Plug 'itchyny/vim-gitbranch'
 " Vim Git runtime files
 Plug 'tpope/vim-git'
 " A Vim plugin which shows a git diff in the sign column
@@ -807,7 +809,7 @@ endfunction
 
 function! LightlineGitbranch()
   if winwidth(0) > 85 || &filetype == 'nerdtree'
-    return fugitive#head()
+    return gitbranch#name()
   endif
   return ''
 endfunction
