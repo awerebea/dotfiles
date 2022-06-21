@@ -1,7 +1,7 @@
 set nocompatible              " be iMproved, required
 
 " {{{ Set the list of hosts to use the full-featured configuration
-let hosts_list = ["laptop-hp", "laptop-acer", "home-pc"]
+let hosts_list = ["thinkpad", "laptop-hp", "laptop-acer", "home-pc"]
 " Determine current hostname
 let current_host = substitute(system('hostname'), '\n', '', '')
 " Check if the current host is in the list and set the flag variable if it is
