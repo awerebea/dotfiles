@@ -1,0 +1,24 @@
+#! /usr/bin/env bash
+
+function ProgressBar {
+    # Set escape codes
+    local ERASE_SCREEN_AFTER="\033[0J"
+    local ERASE_LINE_BEFORE="\033[1K"
+    # Set progress bar width
+    local bar_width=40
+    # Proccess data
+    local progress=$(( ($1*100*100/$2)/100 ))
+    local done=$(( (progress*bar_width/10)/10 ))
+    local left=$(( bar_width-done ))
+    # Build progressbar string lengths
+    local fill empty
+    fill=$(printf "%${done}s")
+    empty=$(printf "%${left}s")
+    # Output message and progress bar
+    echo -en "$ERASE_LINE_BEFORE" "$ERASE_SCREEN_AFTER" "\r"
+    [ -n "$3" ] && echo "$3"
+    printf "\rProgress : [${fill// /\#}${empty// /-}] ${progress}%%"
+}
+
+[ $# -lt 2 ] && echo "ProgressBar: Not enough arguments." >&2 && exit 1
+ProgressBar "$@"
