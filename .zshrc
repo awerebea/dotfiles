@@ -266,7 +266,7 @@ plugins=(
           git-extra-commands
           git-flow-completion
           gunstage
-          globalias
+          # globalias
           helm
           history-sync
           kafka
