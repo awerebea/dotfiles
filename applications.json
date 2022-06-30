@@ -1,0 +1,166 @@
+[
+    {
+        "displayName": "Internet",
+        "iconName": "applications-internet",
+        "menu": [
+            {
+                "desktopFile": "firefox",
+                "command": "firefox"
+            },
+            {
+                "desktopFile": "google-chrome",
+                "command": "google-chrome"
+            }
+        ]
+    },
+    {
+        "displayName": "Communication",
+        "iconName": "email",
+        "menu": [
+            {
+                "desktopFile": "Keybase"
+            },
+            {
+                "desktopFile": "Franz"
+            },
+            {
+                "desktopFile": "skypeforlinux",
+                "command": "skypeforlinux"
+            },
+            {
+                "desktopFile": "Telegram Desktop",
+                "command": "/home/andrei/.telegram/Telegram -workdir /home/andrei/.local/share/TelegramDesktop/ -- %u",
+                "iconName": "telegram",
+                "displayName": "Telegram Desktop"
+            },
+            {
+                "desktopFile": "slack",
+                "command": "slack"
+            },
+            {
+                "desktopFile": "Teams",
+                "command": "teams %U"
+            },
+            {
+                "displayName": "Zoom",
+                "iconName": "us.zoom.Zoom",
+                "command": "/usr/bin/flatpak run --branch=stable --arch=x86_64 --command=zoom --file-forwarding us.zoom.Zoom @@u %U @@"
+            },
+            {
+                "desktopFile": "thunderbird",
+                "command": "thunderbird"
+            },
+            {
+                "displayName": "Outlook (PWA)",
+                "command": "/opt/google/chrome/google-chrome --profile-directory=Default --app-id=faolnafnngnfdaknnbpnkhgohbobgegn",
+                "iconName": "chrome-faolnafnngnfdaknnbpnkhgohbobgegn-Default"
+            }
+        ]
+    },
+    {
+        "displayName": "Development",
+        "iconName": "applications-development",
+        "menu": [
+            {
+                "desktopFile": "code",
+                "command": "code"
+            },
+            {
+                "desktopFile": "dbeaver-ce",
+                "command": "/usr/share/dbeaver-ce/dbeaver"
+            }
+        ]
+    },
+    {
+        "displayName": "Office",
+        "iconName": "x-office-document",
+        "menu": [
+            {
+                "desktopFile": "notebook",
+                "command": "notebook"
+            },
+            {
+                "desktopFile": "notepadqq",
+                "command": "notepadqq"
+            },
+            {
+                "desktopFile": "goldendict",
+                "command": "goldendict"
+            },
+            {
+                "displayName": "Joplin",
+                "command": "/home/andrei/Applications/Joplin-2.8.8_4030a351986a6eaff99fecbe383e65aa.AppImage",
+                "iconName": "joplin-desktop"
+            },
+            {
+                "desktopFile": "org.gnome.Calculator",
+                "command": "gnome-calculator"
+            }
+        ]
+    },
+    {
+        "displayName": "Graphics",
+        "iconName": "applications-graphics",
+        "menu": [
+            {
+                "displayName": "digiKam",
+                "command": "/home/andrei/Applications/digiKam-7.6.0-x86-64_69f78304eb7f5b3b4c99798ce9ed747c.appimage",
+                "iconName": "appimagekit_08b9633c13ee6110f820e23cc2adf202_digikam"
+            }
+        ]
+    },
+    {
+        "displayName": "System",
+        "iconName": "applications-system",
+        "menu": [
+            {
+                "desktopFile": "keepass2",
+                "command": "keepass2"
+            },
+            {
+                "desktopFile": "PanGPUI"
+            },
+            {
+                "desktopFile": "virt-manager"
+            },
+            {
+                "desktopFile": "virtualbox"
+            },
+            {
+                "desktopFile": "org.remmina.Remmina",
+                "command": "remmina"
+            },
+            {
+                "desktopFile": "timeshift-gtk",
+                "command": "timeshift-launcher"
+            },
+            {
+                "desktopFile": "mintinstall",
+                "command": "mintinstall"
+            },
+            {
+                "desktopFile": "synaptic",
+                "command": "synaptic-pkexec"
+            },
+            {
+                "command": "S"
+            },
+            {
+                "desktopFile": "cinnamon-settings"
+            },
+            {
+                "desktopFile": "gnome-system-monitor"
+            },
+            {
+                "command": "S"
+            },
+            {
+                "desktopFile": "filezilla"
+            },
+            {
+                "desktopFile": "qalculate-gtk"
+            }
+        ]
+    }
+]
+
