@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+restart-copyq
+restart-telegram

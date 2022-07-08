@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+killall Telegram 2>/dev/null
+sleep 1
+/home/andrei/.telegram/Telegram &
+echo "Telegram restarted successfully"
