@@ -106,6 +106,11 @@
                 "displayName": "digiKam",
                 "command": "/home/andrei/Applications/digiKam-7.6.0-x86-64_69f78304eb7f5b3b4c99798ce9ed747c.appimage",
                 "iconName": "appimagekit_08b9633c13ee6110f820e23cc2adf202_digikam"
+            },
+            {
+                "displayName": "Krita",
+                "command": "/home/andrei/Applications/krita-5.0.6-x86_64_f8240055dca87e9998fe111a365b5719.appimage",
+                "iconName": "appimagekit_78906e5f140a94340816205905a43f16_krita"
             }
         ]
     },
