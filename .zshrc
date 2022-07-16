@@ -1248,11 +1248,6 @@ yqc () {
   yq --colors $1 | less -NR -r
 }
 
-# Source Sitecore stuff
-if [ -f ~/.sitecore_stuff ]; then
-    source ~/.sitecore_stuff
-fi
-
 # rclone aliases
 rclone-bisync-google-drive_cobblestone.tlt () {
   rclone bisync /media/andrei/Data/Clouds/Google\ Drive \
