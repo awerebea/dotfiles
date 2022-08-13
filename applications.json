@@ -104,7 +104,7 @@
         "menu": [
             {
                 "displayName": "digiKam",
-                "command": "/home/andrei/Applications/digiKam-7.6.0-x86-64_69f78304eb7f5b3b4c99798ce9ed747c.appimage",
+                "command": "/home/andrei/Applications/digiKam-7.8.0-20220729T111547-x86-64_7f3f87dbfb7a3c7c7354f5517a91c209.appimage -qwindowtitle %c",
                 "iconName": "appimagekit_08b9633c13ee6110f820e23cc2adf202_digikam"
             },
             {
