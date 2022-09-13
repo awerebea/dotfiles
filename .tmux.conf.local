@@ -620,7 +620,8 @@ tmux_conf_theme_prefix_bg="none"
 tmux_conf_theme_prefix_attr="none"
 
 # mouse indicator
-tmux_conf_theme_mouse="🖱"            # U+1F5B1
+# tmux_conf_theme_mouse="🖱️"            # U+1F5B1
+tmux_conf_theme_mouse="🐁"            # U+1F401
 tmux_conf_theme_mouse_fg="none"
 tmux_conf_theme_mouse_bg="none"
 tmux_conf_theme_mouse_attr="bold"
