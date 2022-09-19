@@ -1014,15 +1014,25 @@ ZSH_CUSTOM_AUTOUPDATE_QUIET=false
 # fi
 
 # Lazy activate fzf-marks plugin
-fzm-lazy-load () {
+fzm-hotkey-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  unset -f fzm-lazy-load
+  unset -f fzm-hotkey-lazy-load fzm-lazy-load
   fzm
 }
 # Make a keyboard widget out of the function above.
-zle -N fzm-lazy-load
+zle -N fzm-hotkey-lazy-load
 # Bind the widget to Ctrl-g in the `v` keymap.
-bindkey -v '^g' fzm-lazy-load
+bindkey -v '^g' fzm-hotkey-lazy-load
+fzm-lazy-load () {
+  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
+  unset -f fzm-hotkey-lazy-load fzm-lazy-load
+}
+fzm () { fzm-lazy-load; $0 "$@" }
+mark-lazy-load () {
+  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
+  unset -f fzm-hotkey-lazy-load fzm-lazy-load
+}
+mark () { mark-lazy-load; $0 "$@" }
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
