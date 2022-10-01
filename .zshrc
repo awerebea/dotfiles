@@ -67,9 +67,9 @@ if [[ ! -f "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/fzf-marks"
 fi
 
-if [[ ! -f "$ZSH/custom/plugins/notify/notify.plugin.zsh" ]]; then
-  git clone https://github.com/marzocchi/zsh-notify \
-    "$ZSH/custom/plugins/notify"
+if [[ ! -f "$ZSH/custom/plugins/auto-notify/auto-notify.plugin.zsh" ]]; then
+  git clone https://github.com/MichaelAquilina/zsh-auto-notify \
+    "$ZSH/custom/plugins/auto-notify"
 fi
 
 if [[ ! -f "$ZSH/custom/plugins/zsh-exa/zsh-exa.plugin.zsh" ]]; then
@@ -272,7 +272,7 @@ plugins=(
           kafka
           kubectl
           kubectx
-          notify
+          auto-notify
           pass
           rsync
           sudo
@@ -307,6 +307,10 @@ source "$ZSH/oh-my-zsh.sh"
 export GIT_DOTFILES="$HOME/Github/dotfiles"
 export GIT_WORKSPACE="$HOME/Github/workspace"
 
+if [ -d "$HOME/Library/Python/3.10/bin" ] &&
+  [[ ":$PATH:" != *":$HOME/Library/Python/3.10/bin:"* ]]; then
+    export PATH="$PATH:$HOME/Library/Python/3.10/bin"
+fi
 if [ -d "$HOME/.local/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$PATH:$HOME/.local/bin"
@@ -954,35 +958,14 @@ zvm_after_init () {
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
 
-# notify (https://github.com/marzocchi/zsh-notify)
-# custom title for error and success notifications
-zstyle ':notify:*' error-title "Command failed (in #{time_elapsed} seconds)"
-zstyle ':notify:*' success-title "Command finished (in #{time_elapsed} seconds)"
-# set application name in notification
-zstyle ':notify:*' app-name sh
-# set a expire time in notifications
-zstyle ':notify:*' expire-time 2500
-# notifications icons for failure or success,
-# path to an image, or an URL if you are on macOS
-[[ -f /usr/share/icons/Mint-X/status/32/apport.png ]] && \
-  zstyle ':notify:*' error-icon "/usr/share/icons/Mint-X/status/32/apport.png"
-[[ -f /usr/share/icons/Mint-X/actions/32/gtk-ok.png ]] && \
-  zstyle ':notify:*' success-icon "/usr/share/icons/Mint-X/actions/32/gtk-ok.png"
-# have the terminal come back to front when the notification is posted
-# zstyle ':notify:*' activate-terminal yes
-# timeout for notifications for successful commands
-# (notifications for failed commands are always posted)
-zstyle ':notify:*' command-complete-timeout 15
-# use the time elapsed even when the command fails
-# (by default, command failure notifications are always displayed)
-# zstyle ':notify:*' always-notify-on-failure no
-# blacklist of commands that should never trigger notifications,
-# using grep's extended regular expression syntax
-# zstyle ':notify:*' blacklist-regex 'find|git'
-# Enable when connected over SSH, which is disabled by default.
-zstyle ':notify:*' enable-on-ssh yes
-# force checking of the WINDOWID variable on every command
-# zstyle ':notify:*' always-check-active-window yes
+# Configurarion of auto-notify plugin
+# (https://github.com/MichaelAquilina/zsh-auto-notify#configuration)
+# Set threshold to 20seconds
+export AUTO_NOTIFY_THRESHOLD=20
+# Set notification expiry to 10 seconds
+export AUTO_NOTIFY_EXPIRE_TIME=10000
+# Add command(s) to list of ignored commands
+AUTO_NOTIFY_IGNORE+=("docker")
 
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
