@@ -598,8 +598,13 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[terraform-check] ]] && alias tf-check="terraform-check"
 
 # copy/paste to/from system clipboard
-alias cb='xclip -selection clipboard && echo "\033[0;33mCopied to clipboard:\033[0m $(xclip -o -selection clipboard)"'
-alias pb='xclip -o -selection clipboard'
+if [[ $(uname -s) = Linux ]]; then
+  alias cb='xclip -selection clipboard && echo "\033[0;33mCopied to clipboard:\033[0m $(xclip -o -selection clipboard)"'
+  alias pb='xclip -o -selection clipboard'
+else
+  alias cb='pbcopy && echo "\033[0;33mCopied to clipboard:\033[0m $(pbpaste)"'
+  alias pb='pbpaste'
+fi
 
 # Find (fd) aliases
 alias fdh='fd -H' # search in hidden files too
