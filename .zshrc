@@ -72,8 +72,9 @@ if [[ ! -f "$ZSH/custom/plugins/auto-notify/auto-notify.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/auto-notify"
 fi
 
-if [[ ! -f "$ZSH/custom/plugins/zsh-exa/zsh-exa.plugin.zsh" ]]; then
-  git clone https://github.com/ptavares/zsh-exa "$ZSH/custom/plugins/zsh-exa"
+if [[ ! -f "$ZSH/custom/plugins/zsh-aliases-exa/zsh-aliases-exa.plugin.zsh" ]]; then
+  git clone https://github.com/DarrinTisdale/zsh-aliases-exa \
+    "$ZSH/custom/plugins/zsh-aliases-exa"
 fi
 
 if [[ ! -f "$ZSH/custom/plugins/forgit/forgit.plugin.zsh" ]]; then
@@ -297,7 +298,7 @@ plugins=(
 
 # Load the plugin only if it will work
 if [ $commands[exa] ]; then
-  plugins+=(zsh-exa)
+  plugins+=(zsh-aliases-exa)
 fi
 
 source "$ZSH/oh-my-zsh.sh"
