@@ -1151,9 +1151,9 @@ bindkey '^[^L' emacs-forward-word
 bindkey '^[[1;5D' emacs-backward-word
 # Ctrl+Alt+h to move to the previous word
 bindkey '^[^H' emacs-backward-word
-# Alt+; to accept autosuggestion
+# Alt(Option)+; to accept autosuggestion
 bindkey '^[;' end-of-line
-# Alt+Enter to execute autosuggestion
+# Alt(Option)+Enter to execute autosuggestion
 bindkey '^[^M' autosuggest-execute
 # Home to move to the start of line
 bindkey '^[[H' beginning-of-line
