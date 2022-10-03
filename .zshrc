@@ -971,7 +971,7 @@ export AUTO_NOTIFY_THRESHOLD=20
 # Set notification expiry to 10 seconds
 export AUTO_NOTIFY_EXPIRE_TIME=10000
 # Add command(s) to list of ignored commands
-AUTO_NOTIFY_IGNORE+=("docker")
+AUTO_NOTIFY_IGNORE+=("rr", "ranger", "docker")
 
 # history-substring-search plugin
 bindkey -M vicmd 'k' history-substring-search-up
