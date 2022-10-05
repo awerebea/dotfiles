@@ -130,6 +130,7 @@ create_snapshot() {
 	Documents
 	Downloads
 	Timeshift_exclude/
+	pCloudDrive/
 	vm
 	EOF
 
@@ -311,7 +312,7 @@ if [ -z "${LAST_SNAPSHOT}" ]; then
 else
     if [[ -z ${FORCE} ]]; then
         # Get time of last snapshot and current time for comparison
-        SNAPSHOT_TIME=$(stat --format='%X' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
+        SNAPSHOT_TIME=$(stat --format='%Y' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
         CURRENT_TIME=$(date +%s)
         if (( SNAPSHOT_TIME < ( CURRENT_TIME - SNAPSHOT_TIMEOUT ) )); then
             link_prev_snapshot
