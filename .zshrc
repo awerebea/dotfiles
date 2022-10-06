@@ -597,6 +597,8 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
 [[ $commands[terraform-check] ]] && alias tf-check="terraform-check"
 
+[[ $commands[terragrunt] ]] && alias tg="terragrunt"
+
 # copy/paste to/from system clipboard
 if [[ $(uname -s) = Linux ]]; then
   alias cb='xclip -selection clipboard && echo "\033[0;33mCopied to clipboard:\033[0m $(xclip -o -selection clipboard)"'
