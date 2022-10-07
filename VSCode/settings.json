@@ -393,5 +393,5 @@
     "editor.minimap.enabled": false,
     "explorer.confirmDragAndDrop": false,
     "groovyLint.enable": false,
-    "window.zoomLevel": 1
+    "window.zoomLevel": 3
 }
