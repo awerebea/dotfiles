@@ -1261,3 +1261,7 @@ rclone-bisync-google-drive_cobblestone.tlt () {
     --filters-file /home/andrei/.config/rclone/filter_google-drive_cobblestone.tlt \
     --log-file /home/andrei/.config/rclone/logs/bisync_google-drive_cobblestone.tlt.log
 }
+
+if [[ $commands[aws-vault] ]]; then
+  export AWS_VAULT_BACKEND=file
+fi
