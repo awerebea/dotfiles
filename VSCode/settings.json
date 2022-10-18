@@ -268,6 +268,9 @@
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
     "python.analysis.typeCheckingMode": "basic", // basic or strict
+    "python.analysis.diagnosticSeverityOverrides": {
+        "reportGeneralTypeIssues": "none"
+    },
     // MSSQL db connections
     "mssql.connections": [
         {
