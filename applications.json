@@ -136,6 +136,11 @@
                 "command": "remmina"
             },
             {
+                "displayName": "VMware Horizon Client",
+                "command": "vmware-view %u",
+                "iconName": "/usr/share/icons/vmware-view.png"
+            },
+            {
                 "desktopFile": "timeshift-gtk",
                 "command": "timeshift-launcher"
             },
