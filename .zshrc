@@ -588,6 +588,7 @@ alias 18='cd -18'
 alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
+alias restart-kernel-input-system='sudo udevadm trigger --subsystem-match=input --action=change'
 # To avoid repeating the last command if misspelled when calling the rr alias
 alias r="echo \"Don't use that shit!\""
 # Ripgrep alias to search in hidden files but ignore .git directory
