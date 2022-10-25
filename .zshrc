@@ -644,8 +644,8 @@ omz-update () {
 
 # Store the alias command in a variable to prevent an error using the alias_for
 # function.
-rr='ranger --choosedir=$HOME/.rangerdir; LASTDIR=$(cat $HOME/.rangerdir);'
-rr+=' cd "$LASTDIR" > /dev/null 2>&1'
+rr='ranger --choosedir=$HOME/.rangerdir;'
+rr+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 alias rr=$rr
 unset rr
 alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
