@@ -69,6 +69,8 @@
     ],
     // Plugins and extentions settings
     // Vim plugin settings
+    "vim.smartRelativeLine": false,
+    "editor.lineNumbers": "on",
     "vim.easymotion": true,
     "vim.incsearch": true,
     "vim.useSystemClipboard": true,
@@ -80,7 +82,8 @@
     // In visual mode, start a search with * or # using the current selection
     "vim.visualstar": true,
     // Do not open folds when moving with j/k
-    "vim.foldfix": true,
+    // Switched off, because slows down {count}j/{count}k movements.
+    "vim.foldfix": false,
     // Keybinds in Insert mode
     "vim.insertModeKeyBindings": [],
     // Keybinds in Normal mode
@@ -261,12 +264,16 @@
     "C_Cpp.updateChannel": "Insiders",
     "terminal.external.linuxExec": "/usr/bin/konsole",
     // Python module settings
+    "python.formatting.autopep8Args": ["--max-line-length=99"],
+    "python.formatting.provider": "autopep8", // autopep8 or black
     "python.linting.enabled": true,
-    "python.linting.pylintUseMinimalCheckers": false,
-    "python.linting.pylintEnabled": true,
+    "python.linting.flake8Args": ["--max-line-length=99"],
     "python.linting.flake8Enabled": true,
+    "python.linting.pycodestyleArgs": ["--max-line-length=99"],
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintUseMinimalCheckers": false,
     "python.analysis.typeCheckingMode": "basic", // basic or strict
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
@@ -309,7 +316,7 @@
         }
     ],
     // Custom user words list
-    "cSpell.userWords": [],
+    "cSpell.userWords": ["esbenp"],
     // Editor startup
     "workbench.startupEditor": "newUntitledFile",
     // Indentation settings
@@ -340,17 +347,20 @@
     },
     // Characters that will be used as word separators when doing word related navigations or operations
     "editor.wordSeparators": "_`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
-    "commentAnchors.tags.list": [
-        {
-            "tag": "DEBUG",
+    "commentAnchors.tags.anchors": {
+        "DEBUG": {
             "scope": "file",
             "iconColor": "default",
             "highlightColor": "#D75FFF",
             "styleComment": false
         }
-    ],
+    },
     "editor.formatOnSave": true,
-    "redhat.telemetry.enabled": true,
+    "editor.formatOnSaveMode": "file",
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    "redhat.telemetry.enabled": false,
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -359,9 +369,6 @@
     // Disable default json formatter
     "json.format.enable": false,
     "vim.timeout": 500,
-    "python.linting.flake8Args": ["--max-line-length=99"],
-    "python.formatting.autopep8Args": ["--max-line-length=99"],
-    "python.linting.pycodestyleArgs": ["--max-line-length=99"],
     // Native bracket pair colorization
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
