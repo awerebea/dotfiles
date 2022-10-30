@@ -220,5 +220,8 @@
     "explorer.confirmDragAndDrop": false,
     "groovyLint.enable": false,
     "window.zoomLevel": 1,
-    "editor.minimap.enabled": false
+    "editor.minimap.enabled": false,
+    "code-runner.enableAppInsights": false,
+    "code-runner.ignoreSelection": false, // Incompatible with code-runner.runInTerminal: true
+    "code-runner.runInTerminal": false
 }
