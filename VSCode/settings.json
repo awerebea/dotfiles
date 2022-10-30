@@ -68,194 +68,7 @@
         }
     ],
     // Plugins and extentions settings
-    // Vim plugin settings
-    "vim.smartRelativeLine": false,
     "editor.lineNumbers": "on",
-    "vim.easymotion": true,
-    "vim.incsearch": true,
-    "vim.useSystemClipboard": true,
-    "vim.useCtrlKeys": true,
-    "vim.hlsearch": true,
-    "vim.surround": true,
-    // Disable VSCodeVim extension
-    "vim.disableExtension": false,
-    // In visual mode, start a search with * or # using the current selection
-    "vim.visualstar": true,
-    // Do not open folds when moving with j/k
-    // Switched off, because slows down {count}j/{count}k movements.
-    "vim.foldfix": false,
-    // Keybinds in Insert mode
-    "vim.insertModeKeyBindings": [],
-    // Keybinds in Normal mode
-    "vim.normalModeKeyBindings": [
-        {
-            "before": ["<leader>", "m"],
-            "commands": ["bookmarks.toggle"]
-        },
-        {
-            "before": ["<leader>", "b"],
-            "commands": ["bookmarks.list"]
-        },
-        {
-            "before": ["<leader>", "r", "n"],
-            "commands": ["editor.action.rename"],
-            "when": [
-                "editorHasRenameProvider",
-                "editorTextFocus",
-                "!editorReadonly"
-            ]
-        }
-    ],
-    "vim.normalModeKeyBindingsNonRecursive": [
-        // Turn off search highlighting
-        {
-            "before": ["<C-n>"],
-            "commands": [":nohl"]
-        },
-        {
-            "before": ["<Leader>", "/"],
-            "commands": [":nohl"]
-        },
-        {
-            "before": ["<Esc>", "<Esc>"],
-            "commands": [":nohl"]
-        },
-        // Show commands panel
-        {
-            "before": ["<Leader>", "p"],
-            "commands": ["workbench.action.showCommands"]
-        },
-        // Show symbols in file
-        {
-            "before": ["<Leader>", "t"],
-            "commands": ["workbench.action.gotoSymbol"]
-        },
-        // Show symbols in workspace
-        {
-            "before": ["<Leader>", "a", "t"],
-            "commands": ["workbench.action.showAllSymbols"]
-        },
-        // Easier Tab Handling
-        {
-            "before": ["<Leader>", "t", "t"],
-            "commands": [":tabedit"]
-        },
-        {
-            "before": ["<Leader>", "t", "h"],
-            "commands": [":tabfirst"]
-        },
-        {
-            "before": ["<Leader>", "t", "n"],
-            "commands": [":tabnext"]
-        },
-        {
-            "before": ["<Leader>", "t", "p"],
-            "commands": [":tabprev"]
-        },
-        {
-            "before": ["<Leader>", "t", "l"],
-            "commands": [":tablast"]
-        },
-        {
-            "before": ["<Leader>", "t", "d"],
-            "commands": [":tabclose"]
-        },
-        {
-            "before": ["<Leader>", "t", "o"],
-            "commands": [":tabonly"]
-        },
-        // Show project files list filter
-        {
-            "before": ["<Leader>", "f"],
-            "commands": ["workbench.action.quickOpen"]
-        },
-        // Show all editors by most recently used
-        {
-            "before": ["<Leader>", "<enter>"],
-            "commands": ["workbench.action.showAllEditorsByMostRecentlyUsed"]
-        },
-        // Show all editors by appearance
-        {
-            "before": ["<Leader>", "<Leader>", "<enter>"],
-            "commands": ["workbench.action.showAllEditors"]
-        },
-        // Find[and Replace] text in all files of project
-        {
-            "before": ["<Leader>", "r", "g"],
-            "commands": ["workbench.action.findInFiles"]
-        },
-        // Open file in Vim (fullscreen)
-        {
-            "before": ["<Leader>", "v", "v"],
-            "commands": ["multiCommand.openInVimFullscreen"]
-        },
-        // Toggle auto hard-wrap long lines
-        {
-            "before": ["<Leader>", "a", "w"],
-            "commands": ["rewrap.toggleAutoWrap"]
-        },
-        // Spell checking
-        // Toggle for current workspace
-        {
-            "before": ["<Leader>", "s", "s", "a"],
-            "commands": ["cSpell.toggleEnableSpellChecker"]
-        },
-        // Open quickfix list as top menu
-        {
-            "before": ["z", "="],
-            "commands": ["keyboard-quickfix.openQuickFix"]
-        },
-        // Open file explorer
-        {
-            "before": ["<Leader>", "e"],
-            "commands": ["workbench.view.explorer"]
-        },
-        // Easymotion
-        {
-            "before": ["<Leader>", "<Leader>", "d"],
-            "after": ["<Leader>", "<Leader>", "2", "s"]
-        },
-        // Find and replace in files
-        {
-            "before": ["<Leader>", "f", "f"],
-            "commands": ["workbench.action.findInFiles"]
-        },
-        {
-            "before": ["<Leader>", "f", "r"],
-            "commands": ["workbench.action.replaceInFiles"]
-        },
-        {
-            "before": ["]", "g"],
-            "commands": ["editor.action.marker.next"],
-            "silent": true
-        },
-        {
-            "before": ["[", "g"],
-            "commands": ["editor.action.marker.prev"],
-            "silent": true
-        }
-    ],
-    // Keybinds in Visual mode
-    "vim.visualModeKeyBindingsNonRecursive": [
-        // Paste without overriding the current register
-        {
-            "before": ["p"],
-            "after": ["p", "g", "v", "y"]
-        },
-        // Easymotion
-        {
-            "before": ["<Leader>", "<Leader>", "d"],
-            "after": ["<Leader>", "<Leader>", "2", "s"]
-        }
-    ],
-    // Leader key is '\' (back slash) by default
-    "vim.leader": "<space>",
-    "vim.handleKeys": {
-        "<C-a>": true,
-        "<C-f>": true
-    },
-    // Set a limit on the length of a string
-    "vim.textwidth": 80,
     // Kubernetes plugin settings
     "vs-kubernetes": {
         "vscode-kubernetes.minikube-path.linux": "/home/andrei/.vs-kubernetes/tools/minikube/linux-amd64/minikube",
@@ -361,14 +174,18 @@
         "source.organizeImports": true
     },
     "redhat.telemetry.enabled": false,
+    // VSCode neovim
+    "extensions.experimental.affinity": {
+        "asvetliakov.vscode-neovim": 1
+    },
     "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/vscode-neovim.vim",
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "prettier.tabWidth": 4,
     // Disable default json formatter
     "json.format.enable": false,
-    "vim.timeout": 500,
     // Native bracket pair colorization
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
@@ -400,8 +217,8 @@
             "path": "/home/andrei/.local/bin/vscode_terminal.sh"
         }
     },
-    "editor.minimap.enabled": false,
     "explorer.confirmDragAndDrop": false,
     "groovyLint.enable": false,
-    "window.zoomLevel": 1
+    "window.zoomLevel": 1,
+    "editor.minimap.enabled": false
 }

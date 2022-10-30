@@ -1,11 +1,24 @@
 // vim: ft=jsonc
 // Place your key bindings in this file to override the defaultsauto[]
 [
+    // Neovim keybindings
+    // Always move by screen lines instead of virtual lines with 'j' and 'k'
+    {
+        "command": "vscode-neovim.send",
+        "key": "j",
+        "when": "editorTextFocus && neovim.mode != insert",
+        "args": "gj"
+    },
+    {
+        "command": "vscode-neovim.send",
+        "key": "k",
+        "when": "editorTextFocus && neovim.mode != insert",
+        "args": "gk"
+    },
     // Use CapsLock as Esc
     {
         "key": "capslock",
-        "command": "extension.vim_escape",
-        "when": "editorTextFocus && vim.active && !inDebugRepl"
+        "command": "vscode-neovim.escape"
     },
     // Toggle auto hard-wrap long lines
     {
@@ -27,7 +40,7 @@
     {
         "key": "ctrl+h",
         "command": "workbench.action.navigateLeft",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+h",
@@ -37,7 +50,7 @@
     {
         "key": "ctrl+l",
         "command": "workbench.action.navigateRight",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+l",
@@ -47,38 +60,38 @@
     {
         "key": "ctrl+k",
         "command": "workbench.action.navigateUp",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+j",
         "command": "workbench.action.navigateDown",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     // Resize editor window
     {
         "key": "ctrl+shift+[",
         "command": "workbench.action.decreaseViewHeight",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+shift+]",
         "command": "workbench.action.increaseViewHeight",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+alt+[",
         "command": "workbench.action.decreaseViewWidth",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+alt+]",
         "command": "workbench.action.increaseViewWidth",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     {
         "key": "ctrl+alt+f",
         "command": "workbench.action.toggleEditorWidths",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     // Resize terminal window
     {
@@ -105,7 +118,7 @@
     {
         "key": "alt+m",
         "command": "editor.action.toggleMinimap",
-        "when": "vim.mode != 'Insert'"
+        "when": "neovim.mode != insert"
     },
     // Toggle sidebar
     {
@@ -118,11 +131,6 @@
         "command": "workbench.action.toggleSidebarVisibility",
         "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
     },
-    // {
-    //     "key": "space e",
-    //     "command": "workbench.action.toggleSidebarVisibility",
-    //     "when": "explorerViewletVisible && filesExplorerFocus && !inputFocus"
-    // },
     {
         "key": "ctrl+b",
         "command": "-workbench.action.toggleSidebarVisibility"
@@ -133,74 +141,26 @@
         "command": "workbench.action.toggleMaximizedPanel",
         "when": "terminalFocus"
     },
-    // Use ctrl+j, ctrl+k instead of arrows in lists menus
-    {
-        "key": "ctrl+j",
-        "command": "-workbench.action.togglePanel"
-    },
-    // List. refer to e.g. search and usages lists
-    {
-        "key": "l",
-        "command": "list.expand",
-        "when": "vim.active && listFocus && !inputFocus"
-    },
-    {
-        "key": "h",
-        "command": "list.collapse",
-        "when": "vim.active && listFocus && !inputFocus"
-    },
-    // Code suggestion selection
-    {
-        "key": "ctrl+j",
-        "command": "selectNextSuggestion",
-        "when": "vim.active && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-    },
-    {
-        "key": "ctrl+k",
-        "command": "selectPrevSuggestion",
-        "when": "vim.active && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-    },
-    // Top panel for file search and commands
-    {
-        "key": "ctrl+j",
-        "command": "workbench.action.quickOpenSelectNext",
-        "when": "vim.active && inQuickOpen"
-    },
-    {
-        "key": "ctrl+k",
-        "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "vim.active && inQuickOpen"
-    },
-    {
-        "key": "ctrl+n",
-        "command": "workbench.action.quickOpenSelectNext",
-        "when": "vim.active && inQuickOpen"
-    },
-    {
-        "key": "ctrl+p",
-        "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "vim.active && inQuickOpen"
-    },
     // Move between editors
     {
         "key": "ctrl+alt+l",
         "command": "workbench.action.nextEditor",
-        "when": "vim.mode  == 'Normal'"
+        "when": "neovim.mode == normal"
     },
     {
         "key": "tab",
         "command": "workbench.action.nextEditor",
-        "when": "vim.mode  == 'Normal' && !terminalFocus"
+        "when": "neovim.mode  == normal && !terminalFocus"
     },
     {
         "key": "ctrl+alt+h",
         "command": "workbench.action.previousEditor",
-        "when": "vim.mode  == 'Normal'"
+        "when": "neovim.mode == normal"
     },
     {
         "key": "shift+tab",
         "command": "workbench.action.previousEditor",
-        "when": "vim.mode == 'Normal' && !terminalFocus"
+        "when": "neovim.mode == normal && !terminalFocus"
     },
     // Insert tab
     {
@@ -210,6 +170,22 @@
             "text": "\t"
         },
         "when": "editorTextFocus"
+    },
+    // Use ctrl+j, ctrl+k instead of arrows in lists menus
+    {
+        "key": "ctrl+j",
+        "command": "-workbench.action.togglePanel"
+    },
+    // List. refer to e.g. search and usages lists
+    {
+        "key": "l",
+        "command": "list.expand",
+        "when": "listFocus && !inputFocus"
+    },
+    {
+        "key": "h",
+        "command": "list.collapse",
+        "when": "listFocus && !inputFocus"
     },
     // File-explorer navigation
     {
@@ -247,80 +223,12 @@
         "command": "explorer.newFolder",
         "when": "explorerViewletVisible && filesExplorerFocus && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
     },
-    // Show "hover" documentation
-    {
-        "key": "shift+k",
-        "command": "editor.action.showHover",
-        "when": "editorTextFocus && vim.mode == 'Normal'"
-    },
     // Toggle activity bar
     {
         "key": "ctrl+shift+a",
         "command": "workbench.action.toggleActivityBarVisibility"
     },
-    {
-        "key": "tab",
-        "command": "extension.vim_tab",
-        "when": "editorFocus && vim.active && !inDebugRepl && vim.mode != 'Insert' && editorLangId != 'magit'"
-    },
-    {
-        "key": "tab",
-        "command": "-extension.vim_tab",
-        "when": "editorFocus && vim.active && !inDebugRepl && vim.mode != 'Insert'"
-    },
-    {
-        "key": "x",
-        "command": "magit.discard-at-point",
-        "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/"
-    },
-    {
-        "key": "k",
-        "command": "-magit.discard-at-point"
-    },
-    {
-        "key": "-",
-        "command": "magit.reverse-at-point",
-        "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/"
-    },
-    {
-        "key": "v",
-        "command": "-magit.reverse-at-point"
-    },
-    {
-        "key": "shift+-",
-        "command": "magit.reverting",
-        "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/"
-    },
-    {
-        "key": "shift+v",
-        "command": "-magit.reverting"
-    },
-    {
-        "key": "shift+o",
-        "command": "magit.resetting",
-        "when": "editorTextFocus && editorLangId == 'magit' && vim.mode =~ /^(?!SearchInProgressMode|CommandlineInProgress).*$/"
-    },
-    {
-        "key": "shift+x",
-        "command": "-magit.resetting"
-    },
-    {
-        "key": "x",
-        "command": "-magit.reset-mixed"
-    },
-    {
-        "key": "ctrl+u x",
-        "command": "-magit.reset-hard"
-    },
-    {
-        "key": "y",
-        "command": "-magit.show-refs"
-    },
-    {
-        "key": "y",
-        "command": "vspacecode.showMagitRefMenu",
-        "when": "editorTextFocus && editorLangId == 'magit' && vim.mode == 'Normal'"
-    },
+    // Top panel for file search and commands
     {
         "key": "ctrl+j",
         "command": "workbench.action.quickOpenSelectNext",
