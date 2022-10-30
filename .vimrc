@@ -36,12 +36,8 @@ endif
 " - For Neovim: stdpath('data') . '/plugged'
 " - Avoid using standard Vim directory names like 'plugin'
 call plug#begin('~/.vim/plugged')
-" Improved incremental searching
-Plug 'haya14busa/incsearch.vim'
 " Vim motions on speed!
 Plug 'easymotion/vim-easymotion'
-" Integration between 'haya14busa/incsearch.vim' 'easymotion/vim-easymotion'
-Plug 'haya14busa/incsearch-easymotion.vim'
 " Plugin to toggle, display and navigate marks
 Plug 'kshenoy/vim-signature'
 " Easy swapping of text in Vim
@@ -1012,13 +1008,6 @@ cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
 " {{{ Easymotion
 let g:EasyMotion_smartcase = 1
-" incsearch
-map /  <Plug>(incsearch-forward)
-map ?  <Plug>(incsearch-backward)
-map g/ <Plug>(incsearch-stay)
-map z/ <Plug>(incsearch-easymotion-/)
-map z? <Plug>(incsearch-easymotion-?)
-map zg/ <Plug>(incsearch-easymotion-stay)
 nmap <leader><leader>S <Plug>(easymotion-s2)
 nmap <leader><leader>2s <Plug>(easymotion-s2)
 nmap <leader><leader>d <Plug>(easymotion-s2)
