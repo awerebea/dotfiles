@@ -68,7 +68,7 @@
         }
     ],
     // Plugins and extentions settings
-    "editor.lineNumbers": "on",
+    "editor.lineNumbers": "on", // on or relative
     // Kubernetes plugin settings
     "vs-kubernetes": {
         "vscode-kubernetes.minikube-path.linux": "/home/andrei/.vs-kubernetes/tools/minikube/linux-amd64/minikube",

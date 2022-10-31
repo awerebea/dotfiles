@@ -120,7 +120,6 @@ vmap <C-_> <Plug>NERDCommenterToggle<CR>gv
 nmap <leader>p <Plug>yankstack_substitute_older_paste
 nmap <leader>P <Plug>yankstack_substitute_newer_paste
 
-
 set ignorecase
 set smartcase
 set hlsearch
@@ -270,8 +269,6 @@ vnoremap <leader><leader>re "hy:%s/<C-r>h//gc<left><left><left>
 
 " Rename symbol
 nnoremap <silent> <leader>rn :call VSCodeNotify('editor.action.rename')<CR>
-" Show commands panel
-nnoremap <silent> <leader>p :call VSCodeNotify('workbench.action.showCommands')<CR>
 " Show symbols in file
 nnoremap <silent> <leader>t :call VSCodeNotify('workbench.action.gotoSymbol')<CR>
 " Show symbols in workspace
@@ -287,14 +284,9 @@ nnoremap <silent> <leader>aw :call VSCodeNotify('rewrap.toggleAutoWrap')<CR>
 " Spell checking
 " Toggle for current workspace
 nnoremap <silent> <leader>ssa :call VSCodeNotify('cSpell.toggleEnableSpellChecker')<CR>
-" Open quickfix list as top menu
-nnoremap <silent> z= :call VSCodeNotify('keyboard-quickfix.openQuickFix')<CR>
 " Open file explorer
 nnoremap <silent> <leader>e :call VSCodeNotify('workbench.view.explorer')<CR>
 " Find and replace in files
 nnoremap <silent> <leader>rg :call VSCodeNotify('workbench.action.findInFiles')<CR>
 nnoremap <silent> <leader>ff :call VSCodeNotify('workbench.action.findInFiles')<CR>
 nnoremap <silent> <leader>fr :call VSCodeNotify('workbench.action.replaceInFiles')<CR>
-" Go to problem
-nnoremap <silent> ]g :call VSCodeNotify('editor.action.marker.next')<CR>
-nnoremap <silent> [g :call VSCodeNotify('editor.action.marker.prev')<CR>
