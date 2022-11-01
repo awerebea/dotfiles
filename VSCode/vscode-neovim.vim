@@ -55,8 +55,6 @@ if exists('use_feature')
 " Syntax highlighting for Kitty terminal config files
 Plug 'fladson/vim-kitty'
 endif
-" Vim plugins for visually displaying indent levels in code
-Plug 'Yggdroot/indentLine'
 " Turns default register into a stack, and lets cycle through the items in the
 " stack after doing a paste
 Plug 'maxbrunsfeld/vim-yankstack'
@@ -91,6 +89,8 @@ else " windows
 endif
 
 set undolevels=2048
+
+set textwidth=100
 
 " NERDCommenter
 " Add spaces after comment delimiters
@@ -257,9 +257,6 @@ nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 " Use underscore as word separator
 set iskeyword-=_
 
-" identline settings
-let g:indentLine_char = '│'
-
 " vim-which-key
 set timeoutlen=500       " Keystrokes timeout
 nnoremap <silent> <leader> :call VSCodeNotify('whichkey.show')<CR>
@@ -290,3 +287,19 @@ nnoremap <silent> <leader>e :call VSCodeNotify('workbench.view.explorer')<CR>
 nnoremap <silent> <leader>rg :call VSCodeNotify('workbench.action.findInFiles')<CR>
 nnoremap <silent> <leader>ff :call VSCodeNotify('workbench.action.findInFiles')<CR>
 nnoremap <silent> <leader>fr :call VSCodeNotify('workbench.action.replaceInFiles')<CR>
+" Folding
+nnoremap <silent> zc :call VSCodeNotify('editor.fold')<CR>
+nnoremap <silent> zo :call VSCodeNotify('editor.unfold')<CR>
+nnoremap <silent> zM :call VSCodeNotify('editor.foldAll')<CR>
+nnoremap <silent> zR :call VSCodeNotify('editor.unfoldAll')<CR>
+nnoremap <silent> za :call VSCodeNotify('editor.toggleFold')<CR>
+nnoremap <silent> zx :call VSCodeNotify('editor.foldAllExcept')<CR>
+" QuickFix
+nnoremap <silent> z= :call VSCodeNotify('keyboard-quickfix.openQuickFix')<CR>
+
+" Go to Git changes
+nnoremap <silent> ]c :call VSCodeNotify('workbench.action.editor.nextChange')<CR>
+nnoremap <silent> [c :call VSCodeNotify('workbench.action.editor.previousChange')<CR>
+" Go to problem
+nnoremap <silent> ]g :call VSCodeNotify('editor.action.marker.next')<CR>
+nnoremap <silent> [g :call VSCodeNotify('editor.action.marker.prev')<CR>
