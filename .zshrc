@@ -598,6 +598,14 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
 [[ $commands[terraform-check] ]] && alias tf-check="terraform-check"
 
+# Store the terraform cache in a shared directory between all projects
+if [[ $commands[terraform] ]]; then
+  tf_cache_path="$HOME/.cache/terraform"
+  [ -d "$tf_cache_path" ] || mkdir -p "$tf_cache_path"
+  export TF_PLUGIN_CACHE_DIR="$tf_cache_path"
+  unset tf_cache_path
+fi
+
 [[ $commands[terragrunt] ]] && alias tg="terragrunt"
 
 # copy/paste to/from system clipboard
