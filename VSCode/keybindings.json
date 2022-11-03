@@ -525,69 +525,9 @@
         "when": "!terminalFocus"
     },
     {
-        "key": "ctrl+alt+k ctrl+]",
-        "command": "editor.unfoldRecursively",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+=",
-        "command": "editor.unfoldAllExcept",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+9",
-        "command": "editor.unfoldAllMarkerRegions",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+j",
-        "command": "editor.unfoldAll",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+x",
-        "command": "editor.action.trimTrailingWhitespace",
-        "when": "editorTextFocus && !editorReadonly && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+l",
-        "command": "editor.toggleFold",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
         "key": "ctrl+alt+k ctrl+i",
         "command": "editor.action.showHover",
         "when": "editorTextFocus && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+b",
-        "command": "editor.action.setSelectionAnchor",
-        "when": "editorTextFocus && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+k",
-        "command": "editor.action.selectFromAnchorToCursor",
-        "when": "editorTextFocus && selectionAnchorSet && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+.",
-        "command": "editor.removeManualFoldingRanges",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+u",
-        "command": "editor.action.removeCommentLine",
-        "when": "editorTextFocus && !editorReadonly && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+s",
-        "command": "workbench.action.openGlobalKeybindings",
-        "when": "!terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+t",
-        "command": "workbench.action.selectTheme",
-        "when": "!terminalFocus"
     },
     {
         "key": "ctrl+alt+k ctrl+shift+\\",
@@ -645,19 +585,9 @@
         "when": "isInDiffEditor && !terminalFocus"
     },
     {
-        "key": "ctrl+alt+k ctrl+c",
-        "command": "editor.action.addCommentLine",
-        "when": "editorTextFocus && !editorReadonly && !terminalFocus"
-    },
-    {
         "key": "ctrl+alt+k m",
         "command": "workbench.action.editor.changeLanguageMode",
         "when": "!notebookEditorFocused && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+,",
-        "command": "editor.createFoldingRangeFromSelection",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
     },
     {
         "key": "ctrl+alt+k ctrl+i",
@@ -703,66 +633,6 @@
         "key": "ctrl+alt+k s",
         "command": "workbench.action.files.saveWithoutFormatting",
         "when": "!terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+0",
-        "command": "editor.foldAll",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+/",
-        "command": "editor.foldAllBlockComments",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+8",
-        "command": "editor.foldAllMarkerRegions",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+-",
-        "command": "editor.foldAllExcept",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+1",
-        "command": "editor.foldLevel1",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+2",
-        "command": "editor.foldLevel2",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+3",
-        "command": "editor.foldLevel3",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+4",
-        "command": "editor.foldLevel4",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+5",
-        "command": "editor.foldLevel5",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+6",
-        "command": "editor.foldLevel6",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+7",
-        "command": "editor.foldLevel7",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
-    },
-    {
-        "key": "ctrl+alt+k ctrl+[",
-        "command": "editor.foldRecursively",
-        "when": "editorTextFocus && foldingEnabled && !terminalFocus"
     },
     {
         "key": "ctrl+alt+k ctrl+f",
@@ -1182,6 +1052,10 @@
         "key": "ctrl+k ctrl+i",
         "command": "-workbench.action.showTreeHover",
         "when": "customTreeView && listFocus && !inputFocus"
+    },
+    {
+        "key": "ctrl+alt+k",
+        "command": "-code-runner.runCustomCommand"
     }
     // }}} End of Crtl+k keybinds section
 ]
