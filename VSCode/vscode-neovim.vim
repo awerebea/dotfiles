@@ -294,9 +294,12 @@ nnoremap <silent> zM :call VSCodeNotify('editor.foldAll')<CR>
 nnoremap <silent> zR :call VSCodeNotify('editor.unfoldAll')<CR>
 nnoremap <silent> za :call VSCodeNotify('editor.toggleFold')<CR>
 nnoremap <silent> zx :call VSCodeNotify('editor.foldAllExcept')<CR>
+" map <silent> zf :call VSCodeNotify('multiCommand.customManualFolding')<CR>
+map <silent> zf :call VSCodeNotify('editor.createFoldingRangeFromSelection')<CR>
+map <silent> zF :call VSCodeNotify('editor.removeManualFoldingRanges')<CR>
+vnoremap q <cmd>call VSCodeNotifyVisual('noop', 1)<CR>
 " QuickFix
 nnoremap <silent> z= :call VSCodeNotify('keyboard-quickfix.openQuickFix')<CR>
-
 " Go to Git changes
 nnoremap <silent> ]c :call VSCodeNotify('workbench.action.editor.nextChange')<CR>
 nnoremap <silent> [c :call VSCodeNotify('workbench.action.editor.previousChange')<CR>
