@@ -67,7 +67,7 @@
             ]
         }
     ],
-    // Plugins and extentions settings
+    // Plugins and extensions settings
     "editor.lineNumbers": "on", // on or relative
     // Kubernetes plugin settings
     "vs-kubernetes": {
