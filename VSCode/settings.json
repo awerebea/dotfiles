@@ -78,7 +78,10 @@
     "terminal.external.linuxExec": "/usr/bin/konsole",
     // Python module settings
     "python.formatting.autopep8Args": ["--max-line-length=99"],
-    "python.formatting.provider": "autopep8", // autopep8 or black
+    "python.formatting.provider": "yapf", // yapf or autopep8 or black
+    "python.formatting.yapfArgs": [
+        "--style={based_on_style: google, column_limit: 99, indent_width: 4}"
+    ],
     "python.linting.enabled": true,
     "python.linting.flake8Args": ["--max-line-length=99"],
     "python.linting.flake8Enabled": true,
@@ -86,7 +89,7 @@
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
     "python.linting.pylintEnabled": true,
-    "python.linting.pylintUseMinimalCheckers": false,
+    "python.linting.pylintPath": "pylint",
     "python.analysis.typeCheckingMode": "basic", // basic or strict
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
