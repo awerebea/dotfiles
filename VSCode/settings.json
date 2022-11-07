@@ -274,5 +274,6 @@
         "-workbench.action.unpinEditor",
         "-workbench.files.action.compareWithClipboard",
         "-workbench.files.action.compareWithSaved"
-    ]
+    ],
+    "cSpell.enableFiletypes": ["shellscript"]
 }
