@@ -3,6 +3,7 @@
 for file in "$@"; do
   case "$file" in
       *.7z) 7z x "$file" ;;
+      *.rar) unrar x "$file" ;;
       *.tar) tar -xvf "$file" ;;
       *.tar.bz2) tar -xjvf "$file" ;;
       *.tar.gz | *.tgz) tar -xzvf "$file" ;;
