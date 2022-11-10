@@ -290,9 +290,9 @@ plugins=(
           zsh-interactive-cd
           # zsh-nvm                   # use custom lazy loading function instead
           zsh-sed-sub
-          zsh-syntax-highlighting
           zsh-vi-mode
           history-substring-search
+          zsh-syntax-highlighting
           zsh-bash-completions-fallback
 )
 
