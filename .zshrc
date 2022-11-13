@@ -804,8 +804,8 @@ export_all_ruby_versions_bin_dirs () {
 export_all_ruby_versions_bin_dirs
 
 # Load Homebrew for linux if installed
-if [[ -f "$HOME/.linuxbrew/bin/brew" ]]; then
-  eval "$("$HOME/.linuxbrew/bin/brew" shellenv)"
+if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
+  eval "$("/home/linuxbrew/.linuxbrew/bin/brew" shellenv)"
 fi
 
 # Create eksctl completion file if needed
