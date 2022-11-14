@@ -56,7 +56,7 @@ Plug 'othree/vim-autocomplpop'
 Plug 'preservim/nerdcommenter'
 " Efficient way of using Vim as a Git mergetool
 Plug 'samoshkin/vim-mergetool'
-if exists('use_feature')
+if exists('$TMUX')
 " Make terminal vim and tmux work better together
 Plug 'benmills/vimux'
 Plug 'christoomey/vim-tmux-navigator'
