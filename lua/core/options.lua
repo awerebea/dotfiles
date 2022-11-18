@@ -43,3 +43,32 @@ opt.iskeyword:append("-") -- consider string-string as whole word
 -- Show non-visible white spaces
 vim.opt.list = true
 vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·")
+
+-- {{{ Backup, Undo and Swap files settings
+-- Save your backup files to a less annoying place than the current directory.
+-- If you have .nvim-backup in the current directory, it'll use that.
+-- Otherwise it saves it to ~/.local/state/nvim/backup or in .
+opt.backup = true
+opt.backupdir:remove("~/")
+opt.backupdir:remove(".")
+opt.backupdir:append(".")
+opt.backupdir:prepend(".nvim-backup//")
+
+-- Save your swap files to a less annoying place than the current directory.
+-- If you have .nvim-swap in the current directory, it'll use that.
+-- Otherwise it saves it to ~/.local/state/nvim/swap or .
+opt.swapfile = true
+opt.updatecount = 100
+opt.backupdir:remove(".")
+opt.directory:append(".")
+opt.directory:prepend(".nvim-swap//")
+
+-- Viminfo stores the the state of your previous editing session
+opt.viminfo:append("n" .. os.getenv("HOME") .. "/.local/state/nvim/nviminfo")
+
+-- Save undo history of edited files.
+-- Default files location: ~/.local/state/nvim/undo
+opt.undofile = true
+
+-- Default location of viewdir is ~/.local/state/nvim/view
+-- }}}
