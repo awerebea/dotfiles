@@ -37,4 +37,15 @@ nvimtree.setup({
   -- 	git = {
   -- 		ignore = false,
   -- 	},
+  sort_by = "case_sensitive",
+  view = {
+    adaptive_size = true,
+    mappings = {
+      list = {
+        { key = "u", action = "dir_up" },
+        { key = "h", action = "close_node" },
+        { key = "l", action = "edit" },
+      },
+    },
+  },
 })

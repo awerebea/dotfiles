@@ -59,9 +59,6 @@ return packer.startup(function(use)
   use("josa42/nvim-lightline-lsp")
   use("Rigellute/rigel") -- Lightline theme (for cobalt2)
 
-  -- Get current git-branch name
-  use("itchyny/vim-gitbranch")
-
   -- Automatically save/restore current state of Vim
   use("tpope/vim-obsession")
   use("dhruvasagar/vim-prosession")
@@ -105,12 +102,16 @@ return packer.startup(function(use)
     end,
   })
 
+  -- Indent lines
+  use("lukas-reineke/indent-blankline.nvim")
+
   -- auto closing
   use("windwp/nvim-autopairs") -- autoclose parens, brackets, quotes, etc...
   use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter" }) -- autoclose tags
 
   -- git integration
   use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
+  use("itchyny/vim-gitbranch") -- Get current git-branch name
 
   if packer_bootstrap then
     require("packer").sync()
