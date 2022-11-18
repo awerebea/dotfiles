@@ -1264,6 +1264,13 @@ git-update-all-submodules () {
   cd "$old_pwd" || return 1
 }
 
+# Add neovim installation path, installed by bob
+# https://github.com/MordechaiHadad/bob
+if [ -d "$HOME/.local/share/neovim/bin" ] &&
+        [[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
+    export PATH="$HOME/.local/share/neovim/bin:$PATH"
+fi
+
 # Clean $PATH from duplicates
 if [ -n "$PATH" ]; then
   old_PATH=$PATH:; PATH=
