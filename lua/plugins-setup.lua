@@ -116,6 +116,9 @@ return packer.startup(function(use)
   -- show buffers as tabs
   use("ap/vim-buftabline")
 
+  -- vim motions on speed!
+  use("easymotion/vim-easymotion")
+
   if packer_bootstrap then
     require("packer").sync()
   end
