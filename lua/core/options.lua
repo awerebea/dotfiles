@@ -1,4 +1,5 @@
 local opt = vim.opt -- for conciseness
+local keymap = vim.keymap -- for conciseness
 
 -- line numbers
 opt.relativenumber = true -- show relative line numbers
@@ -139,4 +140,35 @@ function! ToggleTabSwitcherMode()
 endfunction
 nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
 ]])
+-- }}}
+
+-- {{{ toggle relativenumber
+vim.cmd([[
+augroup SmartRelativenumbers
+  autocmd!
+  autocmd InsertEnter * :set norelativenumber
+  autocmd InsertLeave * :set relativenumber
+  autocmd BufLeave * :set norelativenumber
+  autocmd BufEnter * :set relativenumber
+augroup END
+
+function! ToggleSmartRelativenumbers()
+  if !exists('#SmartRelativenumbers#InsertEnter')
+    set relativenumber
+    augroup SmartRelativenumbers
+      autocmd!
+      autocmd InsertEnter * :set norelativenumber
+      autocmd InsertLeave * :set relativenumber
+      autocmd BufLeave * :set norelativenumber
+      autocmd BufEnter * :set relativenumber
+    augroup END
+else
+    set relativenumber!
+    augroup SmartRelativenumbers
+      autocmd!
+    augroup END
+  endif
+endfunction
+]])
+keymap.set("n", "<leader><leader>rn", ":call ToggleSmartRelativenumbers()<CR>", { noremap = true })
 -- }}}
