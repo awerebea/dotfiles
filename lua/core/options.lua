@@ -72,3 +72,71 @@ opt.undofile = true
 
 -- Default location of viewdir is ~/.local/state/nvim/view
 -- }}}
+
+-- {{{ tabs (indentation) settings
+vim.cmd([[
+function! TabsNoExpandByFourSpaces()
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal noexpandtab
+endfunction
+command! TabsNoExpandByFourSpaces call TabsNoExpandByFourSpaces()
+
+function! TabsExpandByFourSpaces()
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal expandtab
+endfunction
+command! TabsNoExpandByFourSpaces call TabsExpandByFourSpaces()
+
+function! TabsExpandByTwoSpaces()
+  setlocal tabstop=2
+  setlocal shiftwidth=2
+  setlocal softtabstop=2
+  setlocal expandtab
+endfunction
+command! TabsExpandByTwoSpaces call TabsExpandByTwoSpaces()
+
+set noexpandtab
+if has("autocmd")
+  augroup filetypeRelatedSettings
+    autocmd!
+    autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+    autocmd BufRead,BufNewFile .yamllint set ft=yaml
+    autocmd FileType bash,sh,json*,dockerfile,python,cmake
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+    autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+    autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm
+      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  augroup END
+endif
+]])
+-- }}}
+
+-- {{{ Tabs navigation
+opt.switchbuf = "usetab,newtab"
+
+-- Smart buffers/tabs switch
+vim.cmd([[
+let s:tab_switcher_mode="buffers"
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+function! ToggleTabSwitcherMode()
+  if s:tab_switcher_mode == "buffers"
+    nnoremap <Tab> :tabnext<CR>
+    nnoremap <S-Tab> :tabprevious<CR>
+    let s:tab_switcher_mode="tabs"
+    echo "Switch tabs"
+  else
+    nnoremap <Tab> :bnext<CR>
+    nnoremap <S-Tab> :bprevious<CR>
+    let s:tab_switcher_mode="buffers"
+    echo "Switch buffers"
+  endif
+endfunction
+nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
+]])
+-- }}}

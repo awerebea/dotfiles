@@ -17,6 +17,7 @@ keymap.set("n", "<leader>nh", ":nohl<CR>")
 keymap.set("n", "x", '"_x')
 -- send changed text segment to blackhole
 keymap.set("n", "c", '"_c')
+keymap.set("n", "C", '"_C')
 -- replace currently selected text with default register without yanking it
 keymap.set("v", "p", '"_dP')
 
@@ -62,3 +63,25 @@ keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>") -- list current c
 
 -- restart lsp server (not on youtube nvim video)
 keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if necessary
+
+-- Tabs navigation
+keymap.set("n", "<leader>o", "sball<CR>", { noremap = true }) -- open all buffers in tab
+keymap.set("n", "<leader><Left>", ":tabprevious<CR>")
+keymap.set("n", "<leader><Right>", ":tabnext<CR>")
+keymap.set("n", "<leader>tp", ":tabprevious<CR>", { noremap = true })
+keymap.set("n", "<leader>tn", ":tabnext<CR>", { noremap = true })
+keymap.set("n", "<leader>th", ":tabfirst<CR>", { noremap = true })
+keymap.set("n", "<leader>tl", ":tablast<CR>", { noremap = true })
+keymap.set("n", "<leader>te", ":tabedit<Space>", { noremap = true })
+keymap.set("n", "<leader>tm", ":tabmove<Space>", { noremap = true })
+keymap.set("n", "<leader>td", ":tabclose<CR>", { noremap = true })
+keymap.set("n", "<leader>to", ":tabonly<CR>", { noremap = true })
+-- Switch to last tab
+vim.cmd([[
+if !exists('g:lasttab')
+  let g:lasttab = 1
+endif
+autocmd TabLeave * let g:lasttab = tabpagenr()
+]])
+keymap.set("n", "<leader>tt", ":exe 'tabn '.g:lasttab<CR>") -- switch to last tab
+keymap.set("n", "gz", ":bdelete<CR>", { noremap = true }) -- close active buffer
