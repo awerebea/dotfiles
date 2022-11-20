@@ -4,6 +4,8 @@ if not status then
   return
 end
 
+vim.g.rigel_lightline = 1
+
 vim.g.lightline = {
   colorscheme = "rigel",
   active = {

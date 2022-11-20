@@ -5,12 +5,6 @@ local keymap = vim.keymap -- for conciseness
 opt.relativenumber = true -- show relative line numbers
 opt.number = true -- shows absolute line number on cursor line (when relative number is on)
 
--- tabs & indentation
-opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
-opt.shiftwidth = 2 -- 2 spaces for indent width
-opt.expandtab = true -- expand tab to spaces
-opt.autoindent = true -- copy indent from current line when starting new one
-
 -- line wrapping
 opt.wrap = false -- disable line wrapping
 
@@ -75,6 +69,12 @@ opt.undofile = true
 -- }}}
 
 -- {{{ tabs (indentation) settings
+-- tabs & indentation
+opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
+opt.shiftwidth = 2 -- 2 spaces for indent width
+opt.expandtab = true -- expand tab to spaces
+opt.autoindent = true -- copy indent from current line when starting new one
+
 vim.cmd([[
 function! TabsNoExpandByFourSpaces()
   setlocal tabstop=4
@@ -172,3 +172,6 @@ endfunction
 ]])
 keymap.set("n", "<leader><leader>rn", ":call ToggleSmartRelativenumbers()<CR>", { noremap = true })
 -- }}}
+
+-- misc
+opt.showcmd = true
