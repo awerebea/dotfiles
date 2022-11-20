@@ -15,6 +15,10 @@ keymap.set("n", "<leader>nh", ":nohl<CR>")
 
 -- delete single character without copying into register
 keymap.set("n", "x", '"_x')
+-- send changed text segment to blackhole
+keymap.set("n", "c", '"_c')
+-- replace currently selected text with default register without yanking it
+keymap.set("v", "p", '"_dP')
 
 -- increment/decrement numbers
 keymap.set("n", "<leader>+", "<C-a>") -- increment
