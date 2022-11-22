@@ -1,6 +1,6 @@
 local status, _ = pcall(vim.cmd, "silent echo gitbranch#name()")
 if not status then
-  print("vim-gibranch plugin not installed!") -- print error if colorscheme not installed
+  print("vim-gibranch plugin not installed!")
   return
 end
 

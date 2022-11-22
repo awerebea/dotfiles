@@ -93,19 +93,17 @@ endfunction
 command! TabsExpandByTwoSpaces call TabsExpandByTwoSpaces()
 
 set noexpandtab
-if has("autocmd")
-  augroup filetypeRelatedSettings
-    autocmd!
-    autocmd BufRead,BufNewFile Chart.yaml set ft=helm
-    autocmd BufRead,BufNewFile .yamllint set ft=yaml
-    autocmd FileType bash,sh,json*,dockerfile,python,cmake
-      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-    autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
-      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-    autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm
-      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  augroup END
-endif
+augroup filetypeRelatedSettings
+  autocmd!
+  autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+  autocmd BufRead,BufNewFile .yamllint set ft=yaml
+  autocmd FileType bash,sh,json*,dockerfile,python,cmake
+    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+  autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
+    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+  autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm
+    \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+augroup END
 ]])
 -- }}}
 
