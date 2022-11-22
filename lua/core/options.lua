@@ -41,22 +41,14 @@ vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space
 
 -- {{{ Backup, Undo and Swap files settings
 -- Save your backup files to a less annoying place than the current directory.
--- If you have .nvim-backup in the current directory, it'll use that.
--- Otherwise it saves it to ~/.local/state/nvim/backup or in .
+-- Default location of backup files is ~/.local/state/nvim/backup
 opt.backup = true
-opt.backupdir:remove("~/")
 opt.backupdir:remove(".")
 opt.backupdir:append(".")
-opt.backupdir:prepend(".nvim-backup//")
 
--- Save your swap files to a less annoying place than the current directory.
--- If you have .nvim-swap in the current directory, it'll use that.
--- Otherwise it saves it to ~/.local/state/nvim/swap or .
+-- Default location of swap files (echo &directory) is ~/.local/state/nvim/swap
 opt.swapfile = true
 opt.updatecount = 100
-opt.backupdir:remove(".")
-opt.directory:append(".")
-opt.directory:prepend(".nvim-swap//")
 
 -- Viminfo stores the the state of your previous editing session
 opt.viminfo:append("n" .. os.getenv("HOME") .. "/.local/state/nvim/nviminfo")
