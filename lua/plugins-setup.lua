@@ -119,6 +119,10 @@ return packer.startup(function(use)
   -- vim motions on speed!
   use("easymotion/vim-easymotion")
 
+  -- Turns default register into a stack, and lets cycle through the items in the
+  -- stack after doing a paste
+  use("maxbrunsfeld/vim-yankstack")
+
   if packer_bootstrap then
     require("packer").sync()
   end
