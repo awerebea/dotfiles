@@ -1,9 +1,17 @@
 -- set colorscheme with protected call in case it isn't installed
-local status, _ = pcall(vim.cmd, "colorscheme cobalt2")
+local status, _ = pcall(vim.cmd, "colorscheme nightfox")
 if not status then
   print("Colorscheme not found!") -- print error if colorscheme not installed
   return
 end
+
+require("nightfox").setup({
+  options = {
+    transparent = true, -- Disable setting background
+  },
+})
+
+vim.cmd("colorscheme nordfox")
 
 -- Common colorschemes options
 -- Transparent background
