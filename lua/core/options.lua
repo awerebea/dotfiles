@@ -163,6 +163,35 @@ endfunction
 keymap.set("n", "<leader><leader>rn", ":call ToggleSmartRelativenumbers()<CR>", { noremap = true })
 -- }}}
 
+-- {{{ Word wrap
+opt.textwidth = 99
+opt.wrapmargin = 0
+opt.colorcolumn = "+1"
+opt.wrap = true
+opt.linebreak = false
+vim.cmd([[
+function! AutoWrapToggle()
+  if &formatoptions =~ 't'
+    setlocal textwidth=0
+    setlocal fo-=t
+    setlocal colorcolumn=
+  else
+    if (&filetype=='python')
+      setlocal textwidth=99
+    else
+      setlocal textwidth=99
+    endif
+    setlocal fo+=t
+    setlocal colorcolumn=+1
+  endif
+endfunction
+]])
+-- Toggle word wrap for current buffer
+keymap.set("n", "<leader>ww", ":setlocal wrap!<CR>")
+-- Toggle wrap at 80 column
+keymap.set("n", "<leader>aw", ":call AutoWrapToggle()<CR>")
+-- }}}
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
