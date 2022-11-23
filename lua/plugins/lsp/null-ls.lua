@@ -25,6 +25,17 @@ null_ls.setup({
         return utils.root_has_file(".eslintrc.js") -- change file extension if you use something else
       end,
     }),
+    -- Python
+    -- formatting.autopep8, -- python formatter
+    formatting.yapf.with({
+      extra_args = {
+        "--style={based_on_style: google, column_limit: 99, indent_width: 4}",
+      },
+    }), -- python formatter
+    diagnostics.pylint,
+    diagnostics.pydocstyle,
+    diagnostics.flake8.with({ extra_args = { "--max-line-length=99" } }),
+    -- diagnostics.pylama,
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)
