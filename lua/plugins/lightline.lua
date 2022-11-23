@@ -34,7 +34,6 @@ vim.g.lightline = {
         "fileformat",
         "filetype",
         "fileencoding",
-        "charvaluehex",
         "spell",
         "indent",
         "linter_hints",
@@ -62,7 +61,6 @@ vim.g.lightline = {
     fileformat = "LightlineFileformat",
     filetype = "LightlineFiletype",
     fileencoding = "LightlineFileencoding",
-    charvaluehex = "LightlineCharvaluehex",
     indent = "LightlineIndent",
     lineinfo = "LightlineLineinfo",
     percent = "LightlinePercent",
@@ -114,6 +112,14 @@ vim.cmd([[
 -- let g:lightline#lsp#indicator_warnings = "\uf071"
 -- let g:lightline#lsp#indicator_errors = "\uf05e"
 -- let g:lightline#lsp#indicator_ok = "\u2713"
+
+-- lightline_gitdiff indicators
+vim.cmd([[
+let g:lightline_gitdiff#indicator_added = '+'
+let g:lightline_gitdiff#indicator_deleted = '-'
+let g:lightline_gitdiff#indicator_modified = '~'
+let g:lightline_gitdiff#min_winwidth = '70'
+]])
 
 vim.cmd([[
   function! LightlineFileName()
@@ -229,15 +235,6 @@ vim.cmd([[
     else
       return ''
     endif
-  endfunction
-
-  function! LightlineCharvaluehex()
-    if winwidth(0) > 110
-      let l:char = char2nr(getline('.')[col('.')-1])
-      let l:fmt = l:char > 0xFF ? '0x%04X' : '0x%02X'
-      return printf(l:fmt, l:char)
-    endif
-    return ''
   endfunction
 ]])
 -- }}}
