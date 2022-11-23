@@ -60,9 +60,7 @@ return packer.startup(function(use)
   use("Rigellute/rigel") -- Lightline theme (for cobalt2)
 
   -- Automatically save/restore current state of Vim
-  use("tpope/vim-obsession")
-  use("dhruvasagar/vim-prosession")
-  use("vim-scripts/restore_view.vim")
+  use("rmagatti/auto-session")
 
   -- fuzzy finding w/ telescope
   use({ "nvim-telescope/telescope-fzf-native.nvim", run = "make" }) -- dependency for better sorting performance
