@@ -110,9 +110,8 @@ return packer.startup(function(use)
   use({ "windwp/nvim-ts-autotag", after = "nvim-treesitter" }) -- autoclose tags
 
   -- git integration
+  use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
   use("itchyny/vim-gitbranch") -- Get current git-branch name
-  use("airblade/vim-gitgutter") -- A Vim plugin to control a git diff
-  use("mhinz/vim-signify") -- A Vim plugin which shows a git diff in the sign column
 
   -- show buffers as tabs
   use("ap/vim-buftabline")
