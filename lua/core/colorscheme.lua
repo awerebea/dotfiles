@@ -26,4 +26,6 @@ vim.api.nvim_set_hl(0, "FoldColumn", { fg = "NONE", bg = "NONE" })
 vim.api.nvim_set_hl(0, "ColorColumn", { bg = "#444444" })
 -- Color of non-printable white spaces, with transparent background
 vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#626262", bg = "NONE" })
+-- Color of split window borders
+vim.api.nvim_set_hl(0, "VertSplit", { fg = "#444c5e", bg = "NONE" })
 vim.api.nvim_set_hl(0, "NonText", { fg = "#626262", bg = "NONE" })

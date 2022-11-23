@@ -165,3 +165,4 @@ keymap.set("n", "<leader><leader>rn", ":call ToggleSmartRelativenumbers()<CR>", 
 
 -- misc
 opt.showcmd = true
+opt.laststatus = 3
