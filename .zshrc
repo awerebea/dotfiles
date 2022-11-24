@@ -7,11 +7,11 @@ if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" 
 fi
 
 # Define default editor nvim, vim, vi or nano
-if [[ $commands[vim] ]]; then
-  export EDITOR='vim'
-elif [[ $commands[nvim] ]]; then
+if [[ $commands[nvim] ]]; then
   export EDITOR='nvim'
-  alias vim="nvim"
+  # alias vim="nvim"
+elif [[ $commands[vim] ]]; then
+  export EDITOR='vim'
 elif [[ $commands[vi] ]]; then
   export EDITOR='vi'
 else
@@ -596,6 +596,8 @@ alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
 alias restart-kernel-input-system='sudo udevadm trigger --subsystem-match=input --action=change'
+alias vv='f -e "$EDITOR"'
+alias v="$EDITOR"
 # To avoid repeating the last command if misspelled when calling the rr alias
 alias r="echo \"Don't use that shit!\""
 # Ripgrep alias to search in hidden files but ignore .git directory
@@ -1156,7 +1158,7 @@ fi
 
 # globalias filter values (commands that should not be expanded)
 export GLOBALIAS_FILTER_VALUES=(
-  f z v
+  f z vv
   grep fgrep egrep
   l ll lle lT llT
   ls
