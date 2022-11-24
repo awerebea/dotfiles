@@ -45,7 +45,7 @@ mason_null_ls.setup({
     -- "autopep8",
     "yapf",
     -- Python linters
-    "flake8",
+    "flake8", -- disabled in lspconfig
     "pydocstyle",
     "pylama",
     "pylint",

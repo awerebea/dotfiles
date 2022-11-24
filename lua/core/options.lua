@@ -12,8 +12,8 @@ opt.wrap = false -- disable line wrapping
 opt.ignorecase = true -- ignore case when searching
 opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
 
--- cursor line
-opt.cursorline = true -- highlight the current cursor line
+-- highlight the current cursor line
+opt.cursorline = false
 
 -- appearance
 
@@ -113,22 +113,28 @@ opt.switchbuf = "usetab,newtab"
 -- Smart buffers/tabs switch
 vim.cmd([[
 let s:tab_switcher_mode="buffers"
-nnoremap <Tab> :bnext<CR>
-nnoremap <S-Tab> :bprevious<CR>
+nnoremap <leader><Tab>  :silent bnext<CR>
+nnoremap gn             :silent bnext<CR>
+nnoremap <S-Tab>        :silent bprevious<CR>
+nnoremap gp             :silent bprevious<CR>
 function! ToggleTabSwitcherMode()
   if s:tab_switcher_mode == "buffers"
-    nnoremap <Tab> :tabnext<CR>
-    nnoremap <S-Tab> :tabprevious<CR>
+    nnoremap <leader><Tab>  :silent tabnext<CR>
+    nnoremap gn             :silent tabnext<CR>
+    nnoremap <S-Tab>        :silent tabprevious<CR>
+    nnoremap gp             :silent tabprevious<CR>
     let s:tab_switcher_mode="tabs"
     echo "Switch tabs"
   else
-    nnoremap <Tab> :bnext<CR>
-    nnoremap <S-Tab> :bprevious<CR>
+    nnoremap <leader><Tab>  :silent bnext<CR>
+    nnoremap gn             :silent bnext<CR>
+    nnoremap <S-Tab>        :silent bprevious<CR>
+    nnoremap gp             :silent bprevious<CR>
     let s:tab_switcher_mode="buffers"
     echo "Switch buffers"
   endif
 endfunction
-nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
+nnoremap <silent> <leader><leader><Tab> :call ToggleTabSwitcherMode()<CR>
 ]])
 -- }}}
 
@@ -222,7 +228,7 @@ endfunction
 augroup vimrcAutoView
     autocmd!
     " Autosave & Load Views.
-		autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
+    autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
     autocmd BufWinEnter ?* if MakeViewCheck() | silent! loadview | endif
 augroup end
 ]])

@@ -7,11 +7,9 @@ local keymap = vim.keymap -- for conciseness
 -- General Keymaps
 ---------------------
 
--- use jk to exit insert mode
-keymap.set("i", "jk", "<ESC>")
-
 -- clear search highlights
-keymap.set("n", "<leader>nh", ":nohl<CR>")
+keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
+keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
 -- delete single character without copying into register
 keymap.set("n", "x", '"_x')
@@ -33,10 +31,6 @@ keymap.set("n", "<leader>to", ":tabnew<CR>") -- open new tab
 keymap.set("n", "<leader>tx", ":tabclose<CR>") -- close current tab
 keymap.set("n", "<leader>tn", ":tabn<CR>") --  go to next tab
 keymap.set("n", "<leader>tp", ":tabp<CR>") --  go to previous tab
-
--- Turn off search highlight by presing space
-keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
-keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
 ----------------------
 -- Plugin Keybinds
@@ -67,7 +61,7 @@ keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>") -- list current c
 keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if necessary
 
 -- Tabs navigation
-keymap.set("n", "<leader>o", "sball<CR>", { noremap = true }) -- open all buffers in tab
+keymap.set("n", "<leader>o", ":tab ball<CR>", { noremap = true }) -- open all buffers in tab
 keymap.set("n", "<leader><Left>", ":tabprevious<CR>")
 keymap.set("n", "<leader><Right>", ":tabnext<CR>")
 keymap.set("n", "<leader>tp", ":tabprevious<CR>", { noremap = true })
