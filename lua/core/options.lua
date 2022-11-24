@@ -231,3 +231,5 @@ augroup end
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
+opt.autoindent = true
+opt.pastetoggle = "<F4>"
