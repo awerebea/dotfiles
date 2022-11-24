@@ -192,6 +192,42 @@ keymap.set("n", "<leader>ww", ":setlocal wrap!<CR>")
 keymap.set("n", "<leader>aw", ":call AutoWrapToggle()<CR>")
 -- }}}
 
+-- {{{ Auto save/load view
+-- List of filenames to skip mkview
+vim.g.skipview_files = { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo" }
+vim.cmd([[
+function! MakeViewCheck()
+    if has('quickfix') && &buftype =~ 'nofile'
+        " Buffer is marked as not a file
+        return 0
+    endif
+    if empty(glob(expand('%:p')))
+        " File does not exist on disk
+        return 0
+    endif
+    if expand('%:p:h') == "/tmp"
+        " We're in a temp dir
+        return 0
+    endif
+    if expand('%:p:h') == "/var/tmp"
+        " Also in temp dir
+        return 0
+    endif
+    if index(g:skipview_files, expand("%:t")) >= 0
+        " File is in skip list
+        return 0
+    endif
+    return 1
+endfunction
+augroup vimrcAutoView
+    autocmd!
+    " Autosave & Load Views.
+		autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
+    autocmd BufWinEnter ?* if MakeViewCheck() | silent! loadview | endif
+augroup end
+]])
+-- }}}
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
