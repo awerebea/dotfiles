@@ -1,6 +1,12 @@
 local opt = vim.opt -- for conciseness
 local keymap = vim.keymap -- for conciseness
 
+-- delete single character without copying into register
+keymap.set({ "n", "v" }, "x", '"_x')
+-- send changed text segment to blackhole
+keymap.set({ "n", "v" }, "c", '"_c')
+keymap.set({ "n", "v" }, "C", '"_C')
+
 -- line numbers
 opt.relativenumber = true -- show relative line numbers
 opt.number = true -- shows absolute line number on cursor line (when relative number is on)
@@ -113,28 +119,22 @@ opt.switchbuf = "usetab,newtab"
 -- Smart buffers/tabs switch
 vim.cmd([[
 let s:tab_switcher_mode="buffers"
-nnoremap <leader><Tab>  :silent bnext<CR>
 nnoremap gn             :silent bnext<CR>
-nnoremap <S-Tab>        :silent bprevious<CR>
 nnoremap gp             :silent bprevious<CR>
 function! ToggleTabSwitcherMode()
   if s:tab_switcher_mode == "buffers"
-    nnoremap <leader><Tab>  :silent tabnext<CR>
     nnoremap gn             :silent tabnext<CR>
-    nnoremap <S-Tab>        :silent tabprevious<CR>
     nnoremap gp             :silent tabprevious<CR>
     let s:tab_switcher_mode="tabs"
     echo "Switch tabs"
   else
-    nnoremap <leader><Tab>  :silent bnext<CR>
     nnoremap gn             :silent bnext<CR>
-    nnoremap <S-Tab>        :silent bprevious<CR>
     nnoremap gp             :silent bprevious<CR>
     let s:tab_switcher_mode="buffers"
     echo "Switch buffers"
   endif
 endfunction
-nnoremap <silent> <leader><leader><Tab> :call ToggleTabSwitcherMode()<CR>
+nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
 ]])
 -- }}}
 

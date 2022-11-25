@@ -11,26 +11,40 @@ local keymap = vim.keymap -- for conciseness
 keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
--- delete single character without copying into register
-keymap.set("n", "x", '"_x')
--- send changed text segment to blackhole
-keymap.set("n", "c", '"_c')
-keymap.set("n", "C", '"_C')
-
 -- increment/decrement numbers
 keymap.set("n", "<leader>+", "<C-a>") -- increment
 keymap.set("n", "<leader>-", "<C-x>") -- decrement
 
 -- window management
-keymap.set("n", "<leader>sv", "<C-w>v") -- split window vertically
-keymap.set("n", "<leader>sh", "<C-w>s") -- split window horizontally
-keymap.set("n", "<leader>se", "<C-w>=") -- make split windows equal width & height
-keymap.set("n", "<leader>sx", ":close<CR>") -- close current split window
-
-keymap.set("n", "<leader>to", ":tabnew<CR>") -- open new tab
+keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
+keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
+keymap.set("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
+keymap.set("n", "<leader>x", ":close<CR>") -- close current split window
+-- buffers management
+keymap.set("n", "gp", ":bprevious<CR>", { noremap = true, silent = true })
+keymap.set("n", "gn", ":bnext<CR>", { noremap = true, silent = true })
+-- tabs management
+keymap.set("n", "<leader>o", ":tab ball<CR>", { noremap = true }) -- open all buffers in tab
+keymap.set("n", "<leader><Left>", ":tabprevious<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader><Right>", ":tabnext<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>tp", ":tabprevious<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>tn", ":tabnext<CR>", { noremap = true, silent = true })
+keymap.set("n", "<leader>th", ":tabfirst<CR>", { noremap = true })
+keymap.set("n", "<leader>tl", ":tablast<CR>", { noremap = true })
+keymap.set("n", "<leader>te", ":tabedit<Space>", { noremap = true })
+keymap.set("n", "<leader>tc", ":tabnew<CR>") -- open new tab
+keymap.set("n", "<leader>tm", ":tabmove<Space>", { noremap = true })
 keymap.set("n", "<leader>tx", ":tabclose<CR>") -- close current tab
-keymap.set("n", "<leader>tn", ":tabn<CR>") --  go to next tab
-keymap.set("n", "<leader>tp", ":tabp<CR>") --  go to previous tab
+keymap.set("n", "<leader>to", ":tabonly<CR>", { noremap = true })
+-- Switch to last tab
+vim.cmd([[
+if !exists('g:lasttab')
+  let g:lasttab = 1
+endif
+autocmd TabLeave * let g:lasttab = tabpagenr()
+]])
+keymap.set("n", "<leader>tt", ":exe 'tabn '.g:lasttab<CR>") -- switch to last tab
+keymap.set("n", "gz", ":bdelete<CR>", { noremap = true }) -- close active buffer
 
 ----------------------
 -- Plugin Keybinds
@@ -54,30 +68,8 @@ keymap.set("n", "<leader>fh", "<cmd>Telescope help_tags<cr>") -- list available 
 -- telescope git commands (not on youtube nvim video)
 keymap.set("n", "<leader>gc", "<cmd>Telescope git_commits<cr>") -- list all git commits (use <cr> to checkout) ["gc" for git commits]
 keymap.set("n", "<leader>gfc", "<cmd>Telescope git_bcommits<cr>") -- list git commits for current file/buffer (use <cr> to checkout) ["gfc" for git file commits]
-keymap.set("n", "<leader>gb", "<cmd>Telescope git_branches<cr>") -- list git branches (use <cr> to checkout) ["gb" for git branch]
+keymap.set("n", "<leader>b", "<cmd>Telescope git_branches<cr>") -- list git branches (use <cr> to checkout) ["gb" for git branch]
 keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>") -- list current changes per file with diff preview ["gs" for git status]
 
 -- restart lsp server (not on youtube nvim video)
 keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if necessary
-
--- Tabs navigation
-keymap.set("n", "<leader>o", ":tab ball<CR>", { noremap = true }) -- open all buffers in tab
-keymap.set("n", "<leader><Left>", ":tabprevious<CR>")
-keymap.set("n", "<leader><Right>", ":tabnext<CR>")
-keymap.set("n", "<leader>tp", ":tabprevious<CR>", { noremap = true })
-keymap.set("n", "<leader>tn", ":tabnext<CR>", { noremap = true })
-keymap.set("n", "<leader>th", ":tabfirst<CR>", { noremap = true })
-keymap.set("n", "<leader>tl", ":tablast<CR>", { noremap = true })
-keymap.set("n", "<leader>te", ":tabedit<Space>", { noremap = true })
-keymap.set("n", "<leader>tm", ":tabmove<Space>", { noremap = true })
-keymap.set("n", "<leader>td", ":tabclose<CR>", { noremap = true })
-keymap.set("n", "<leader>to", ":tabonly<CR>", { noremap = true })
--- Switch to last tab
-vim.cmd([[
-if !exists('g:lasttab')
-  let g:lasttab = 1
-endif
-autocmd TabLeave * let g:lasttab = tabpagenr()
-]])
-keymap.set("n", "<leader>tt", ":exe 'tabn '.g:lasttab<CR>") -- switch to last tab
-keymap.set("n", "gz", ":bdelete<CR>", { noremap = true }) -- close active buffer
