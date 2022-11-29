@@ -7,26 +7,24 @@
 -- end
 
 -- {{{ NERDCommenter
-vim.cmd([[
-  " Add spaces after comment delimiters
-  let g:NERDSpaceDelims = 1
-  " custom formats or override the defaults
-  let g:NERDCustomDelimiters = { 'c': { 'left': '/*','right': '*/' } }
-  let g:NERDCustomDelimiters = { 'vim': { 'left': '"','right': '' } }
-  let g:NERDCustomDelimiters = { 'lua': { 'left': '-- ','right': '' } }
-  " let g:NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
-  let g:NERDCustomDelimiters = { 'Jenkinsfile': { 'left': '//','right': '' } }
-  " Align line-wise comment delimiters flush left instead of following code
-  " indentation (left/both)
-  let g:NERDDefaultAlign = 'both'
-  " Allow commenting and inverting empty lines (useful when commenting a region)
-  " let g:NERDCommentEmptyLines = 1
-  " Use compact syntax for prettified multi-line comments
-  let g:NERDCompactSexyComs = 0
-  " Enable trimming of trailing whitespace when uncommenting
-  let g:NERDTrimTrailingWhitespace = 1
-  let g:NERDDisableTabsInBlockComm = 1
-]])
+-- Add spaces after comment delimiters
+vim.g.NERDSpaceDelims = 1
+-- custom formats or override the defaults
+vim.g.NERDCustomDelimiters = { c = { left = "/*", right = "*/" } }
+vim.g.NERDCustomDelimiters = { vim = { left = '"', right = "" } }
+vim.g.NERDCustomDelimiters = { lua = { left = "-- ", right = "" } }
+-- vim.g.NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
+vim.g.NERDCustomDelimiters = { Jenkinsfile = { left = "//", right = "" } }
+-- Align line-wise comment delimiters flush left instead of following code
+-- indentation (left/both)
+vim.g.NERDDefaultAlign = "both"
+-- Allow commenting and inverting empty lines (useful when commenting a region)
+-- let g:NERDCommentEmptyLines = 1
+-- Use compact syntax for prettified multi-line comments
+vim.g.NERDCompactSexyComs = 0
+-- Enable trimming of trailing whitespace when uncommenting
+vim.g.NERDTrimTrailingWhitespace = 1
+vim.g.NERDDisableTabsInBlockComm = 1
 -- }}}
 
 -- Shorten function name
