@@ -118,7 +118,7 @@ vim.cmd([[
 let g:lightline_gitdiff#indicator_added = '+'
 let g:lightline_gitdiff#indicator_deleted = '-'
 let g:lightline_gitdiff#indicator_modified = '~'
-let g:lightline_gitdiff#min_winwidth = '70'
+let g:lightline_gitdiff#min_winwidth = '88'
 ]])
 
 vim.cmd([[
@@ -161,14 +161,6 @@ vim.cmd([[
         return ''
       endif
   endfunction
-
-  augroup lightline_update
-    autocmd!
-    if has('patch-7.4.786') " 17 Jul 2015 with fixes in 7.4.888, 8.0.0974
-      autocmd OptionSet tabstop,shiftwidth,expandtab :call lightline#update()
-    endif
-    autocmd Filetype * :call lightline#update()
-  augroup END
 
   function! LightlineTabname(n) abort
     let bufnr = tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]
