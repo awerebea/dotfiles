@@ -89,7 +89,7 @@ opt.viminfo:append("n" .. os.getenv("HOME") .. "/.local/state/nvim/nviminfo")
 -- Save undo history of edited files.
 -- Default files location: ~/.local/state/nvim/undo
 opt.undofile = true
-
+opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
 -- }}}
 
@@ -261,8 +261,12 @@ augroup end
 ]])
 -- }}}
 
+-- Change cursor view:
+opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1"
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
 opt.autoindent = true
 opt.pastetoggle = "<F4>"
+opt.whichwrap:append("<,>,[,]")
