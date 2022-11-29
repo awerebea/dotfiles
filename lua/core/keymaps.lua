@@ -13,6 +13,10 @@ keymap.set("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edi
 keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
+-- Always move by screen lines instead of virtual lines with 'j' and 'k'
+keymap.set("n", "j", "gj", { silent = true, noremap = true })
+keymap.set("n", "k", "gk", { silent = true, noremap = true })
+
 -- increment/decrement numbers
 keymap.set("n", "<leader>+", "<C-a>") -- increment
 keymap.set("n", "<leader>-", "<C-x>") -- decrement
