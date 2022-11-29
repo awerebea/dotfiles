@@ -44,6 +44,8 @@ return packer.startup(function(use)
 
   use("norcalli/nvim-colorizer.lua") -- Neovim colorizer
 
+  use("abecodes/tabout.nvim") -- tab out from parentheses, quotes, and similar contexts
+
   -- essential plugins
   use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
   use("tpope/vim-repeat") -- Enable repeating supported plugin maps with '.'
