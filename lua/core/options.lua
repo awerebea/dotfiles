@@ -264,6 +264,50 @@ augroup end
 -- Change cursor view:
 opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1"
 
+-- Folding settings
+-- zc fold block
+-- zo unfold block
+-- zM fold all blocks
+-- zR unfold all blocks
+-- za toggle folding
+-- zf check :set foldmethod=manual
+opt.foldmethod = "manual" -- manual folding
+opt.foldcolumn = "2"
+opt.foldlevel = 2 -- fold levels opened at file opens
+opt.foldlevelstart = 99
+-- opt.foldopen = "all" -- autoopen fold when enter it
+opt.foldnestmax = 3 -- max level of fold
+-- Define folds automatically by indent level, but folds may be also created manually
+vim.cmd([[
+augroup vimrc
+  au BufReadPre * setlocal foldmethod=indent
+  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
+augroup END
+]])
+
+-- A way to delete 'mkview' for current file
+vim.cmd([[
+	function! MyDeleteView()
+  let path = fnamemodify(bufname('%'),':p')
+  " vim's odd =~ escaping for /
+  let path = substitute(path, '=', '==', 'g')
+  if empty($HOME)
+  else
+    let path = substitute(path, '^'.$HOME, '\~', '')
+  endif
+  let path = substitute(path, '/', '=+', 'g') . '='
+  " view directory
+  let path = &viewdir.'/'.path
+  call delete(path)
+  echo "Deleted: ".path
+  " re-open current file
+  edit %
+endfunction
+command! Delview call MyDeleteView()
+" Lower-case user commands: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
+cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
+]])
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
