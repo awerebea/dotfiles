@@ -11,6 +11,32 @@ keymap.set({ "n", "v" }, "C", '"_C')
 opt.relativenumber = true -- show relative line numbers
 opt.number = true -- shows absolute line number on cursor line (when relative number is on)
 
+-- always show minimum n lines after current line
+opt.scrolloff = 5
+
+-- hide "-- INSERT --" text in status
+vim.cmd("set noshowmode")
+
+-- {{{ Wildmenu completion
+opt.wildmenu = true
+opt.wildmode = "full"
+
+opt.wildignore:append(".hg,.git,.svn") -- Version control
+opt.wildignore:append("*.aux,*.out,*.toc") -- LaTeX intermediate files
+opt.wildignore:append("*.jpg,*.bmp,*.gif,*.png,*.jpeg") -- binary images
+opt.wildignore:append("*.o,*.obj,*.exe,*.dll,*.manifest") -- compiled object files
+opt.wildignore:append("*.spl") -- compiled spelling word list
+opt.wildignore:append("*.sw?") -- Vim swap files
+opt.wildignore:append("*.DS_Store") -- OSX bullshit
+opt.wildignore:append("*.luac") -- Lua byte code
+opt.wildignore:append("migrations") -- Django migrations
+opt.wildignore:append("go/pkg") -- Go static files
+opt.wildignore:append("go/bin") -- Go bin files
+opt.wildignore:append("go/bin-vagrant") -- Go bin-vagrant files
+opt.wildignore:append("*.pyc") -- Python byte code
+opt.wildignore:append("*.orig") -- Merge resolution files
+-- }}}
+
 -- line wrapping
 opt.wrap = false -- disable line wrapping
 
@@ -57,6 +83,7 @@ opt.swapfile = true
 opt.updatecount = 100
 
 -- Viminfo stores the the state of your previous editing session
+opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
 opt.viminfo:append("n" .. os.getenv("HOME") .. "/.local/state/nvim/nviminfo")
 
 -- Save undo history of edited files.
