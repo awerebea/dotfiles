@@ -40,6 +40,8 @@ return packer.startup(function(use)
   use("szw/vim-maximizer") -- maximizes and restores current window
   use("simeji/winresizer") -- easy resizing of vim windows
 
+  use("folke/todo-comments.nvim") -- highlight TODO:, BUG:, NOTE: etc.
+
   -- essential plugins
   use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
   use("tpope/vim-repeat") -- Enable repeating supported plugin maps with '.'

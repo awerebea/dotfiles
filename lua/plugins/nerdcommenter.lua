@@ -1,4 +1,4 @@
--- TODO Check if NERDCommenter loaded
+-- TODO: Check if NERDCommenter loaded
 -- local status, _ = pcall(vim.cmd, "echo filter(split(execute(':scriptname'), '\\n'), 'v:val =~? \"cobalt2\"')")
 -- print(status)
 -- if not status then
@@ -25,6 +25,7 @@ vim.g.NERDCompactSexyComs = 0
 -- Enable trimming of trailing whitespace when uncommenting
 vim.g.NERDTrimTrailingWhitespace = 1
 vim.g.NERDDisableTabsInBlockComm = 1
+vim.g.NERDDisableTabsInBlockComm = "#ff0000"
 -- }}}
 
 -- Shorten function name
