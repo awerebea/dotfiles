@@ -1,10 +1,10 @@
--- import comment plugin safely
+-- import plugin safely
 local setup, auto_session = pcall(require, "auto-session")
 if not setup then
   return
 end
 
--- enable comment
+-- enable plugin
 auto_session.setup({
   log_level = "info",
   auto_session_enable_last_session = false,
