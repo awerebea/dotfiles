@@ -42,6 +42,8 @@ return packer.startup(function(use)
 
   use("folke/todo-comments.nvim") -- highlight TODO:, BUG:, NOTE: etc.
 
+  use("norcalli/nvim-colorizer.lua") -- Neovim colorizer
+
   -- essential plugins
   use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
   use("tpope/vim-repeat") -- Enable repeating supported plugin maps with '.'
