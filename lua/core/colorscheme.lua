@@ -29,3 +29,6 @@ vim.api.nvim_set_hl(0, "SpecialKey", { fg = "#626262", bg = "NONE" })
 -- Color of split window borders
 vim.api.nvim_set_hl(0, "VertSplit", { fg = "#444c5e", bg = "NONE" })
 vim.api.nvim_set_hl(0, "NonText", { fg = "#626262", bg = "NONE" })
+
+-- Use italic font for comments
+vim.cmd('highlight Comment cterm=italic gui=italic')
