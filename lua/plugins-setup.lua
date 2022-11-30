@@ -48,7 +48,8 @@ return packer.startup(function(use)
 
   -- essential plugins
   use("tpope/vim-surround") -- add, delete, change surroundings (it's awesome)
-  use("tpope/vim-repeat") -- Enable repeating supported plugin maps with '.'
+  use("tpope/vim-repeat") -- enable repeating supported plugin maps with '.'
+  use("tpope/vim-unimpaired") -- pairs of handy bracket mappings
   use("inkarkat/vim-ReplaceWithRegister") -- replace with register contents using motion (gr + motion)
 
   -- commenting with gc
