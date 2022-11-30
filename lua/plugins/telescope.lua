@@ -14,6 +14,9 @@ end
 telescope.setup({
   -- configure custom mappings
   defaults = {
+    layout_config = {
+      horizontal = { width = 0.999, height = 0.999 },
+    },
     mappings = {
       i = {
         ["<C-k>"] = actions.move_selection_previous, -- move to prev result
