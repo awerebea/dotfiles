@@ -27,6 +27,8 @@ keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
 keymap.set("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
 keymap.set("n", "<leader>x", ":close<CR>") -- close current split window
 -- buffers management
+keymap.set("n", "<M-S-l>", ":bnext<CR>", { noremap = true, silent = true })
+keymap.set("n", "<M-S-h>", ":bprevious<CR>", { noremap = true, silent = true })
 keymap.set("n", "gp", ":bprevious<CR>", { noremap = true, silent = true })
 keymap.set("n", "gn", ":bnext<CR>", { noremap = true, silent = true })
 -- tabs management

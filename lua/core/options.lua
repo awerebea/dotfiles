@@ -144,25 +144,26 @@ augroup END
 opt.switchbuf = "usetab,newtab"
 
 -- Smart buffers/tabs switch
-vim.cmd([[
-let s:tab_switcher_mode="buffers"
-nnoremap <M-S-l>             :silent bnext<CR>
-nnoremap <M-S-h>             :silent bprevious<CR>
-function! ToggleTabSwitcherMode()
-  if s:tab_switcher_mode == "buffers"
-    nnoremap <M-S-l>         :silent tabnext<CR>
-    nnoremap <M-S-h>         :silent tabprevious<CR>
-    let s:tab_switcher_mode="tabs"
-    echo "Switch tabs"
+local tab_switcher_mode = "buffers"
+function ToggleTabSwitcherMode()
+  if tab_switcher_mode == "buffers" then
+    keymap.set("n", "<M-S-l>", ":tabnext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
+    tab_switcher_mode = "tabs"
+    print("Switch tabs")
   else
-    nnoremap <M-S-l>         :silent bnext<CR>
-    nnoremap <M-S-h>         :silent bprevious<CR>
-    let s:tab_switcher_mode="buffers"
-    echo "Switch buffers"
-  endif
-endfunction
-nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
-]])
+    keymap.set("n", "<M-S-l>", ":bnext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", ":bprevious<CR>", { noremap = true, silent = true })
+    tab_switcher_mode = "buffers"
+    print("Switch buffers")
+  end
+end
+keymap.set(
+  "n",
+  "<leader><Tab>",
+  "<CMD>lua ToggleTabSwitcherMode()<CR>",
+  { silent = true, noremap = true }
+)
 -- }}}
 
 -- {{{ toggle relativenumber
