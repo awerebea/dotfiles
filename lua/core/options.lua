@@ -146,17 +146,17 @@ opt.switchbuf = "usetab,newtab"
 -- Smart buffers/tabs switch
 vim.cmd([[
 let s:tab_switcher_mode="buffers"
-nnoremap gn             :silent bnext<CR>
-nnoremap gp             :silent bprevious<CR>
+nnoremap <M-S-l>             :silent bnext<CR>
+nnoremap <M-S-h>             :silent bprevious<CR>
 function! ToggleTabSwitcherMode()
   if s:tab_switcher_mode == "buffers"
-    nnoremap gn             :silent tabnext<CR>
-    nnoremap gp             :silent tabprevious<CR>
+    nnoremap <M-S-l>         :silent tabnext<CR>
+    nnoremap <M-S-h>         :silent tabprevious<CR>
     let s:tab_switcher_mode="tabs"
     echo "Switch tabs"
   else
-    nnoremap gn             :silent bnext<CR>
-    nnoremap gp             :silent bprevious<CR>
+    nnoremap <M-S-l>         :silent bnext<CR>
+    nnoremap <M-S-h>         :silent bprevious<CR>
     let s:tab_switcher_mode="buffers"
     echo "Switch buffers"
   endif
