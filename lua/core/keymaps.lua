@@ -8,7 +8,12 @@ local keymap = vim.keymap -- for conciseness
 ---------------------
 
 -- Save file as sudo on files that require root permission
-keymap.set("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!", { noremap = true })
+keymap.set(
+  "c",
+  "w!!",
+  "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!",
+  { noremap = true }
+)
 -- clear search highlights
 keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
