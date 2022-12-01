@@ -6,6 +6,13 @@ if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" 
   source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
+# Add neovim installation path, installed by bob
+# https://github.com/MordechaiHadad/bob
+if [ -d "$HOME/.local/share/neovim/bin" ] &&
+        [[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
+    export PATH="$HOME/.local/share/neovim/bin:$PATH"
+fi
+
 # Define default editor nvim, vim, vi or nano
 if [[ $commands[nvim] ]]; then
   export EDITOR='nvim'
@@ -1265,13 +1272,6 @@ git-update-all-submodules () {
   git submodule foreach git pull origin
   cd "$old_pwd" || return 1
 }
-
-# Add neovim installation path, installed by bob
-# https://github.com/MordechaiHadad/bob
-if [ -d "$HOME/.local/share/neovim/bin" ] &&
-        [[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
-    export PATH="$HOME/.local/share/neovim/bin:$PATH"
-fi
 
 # Clean $PATH from duplicates
 if [ -n "$PATH" ]; then
