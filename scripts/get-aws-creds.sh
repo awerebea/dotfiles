@@ -7,7 +7,7 @@ creds_temp_dir="$(dirname "$creds_temp")"
 
 mkdir -p "$creds_temp_dir" 2> /dev/null
 echo > "$creds_temp"
-for i in torana-shared torana-dev torana-test torana-stage torana-prod
+for i in torana-audit torana-shared torana-dev torana-test torana-stage torana-prod
 do
   aws-vault exec $i --json > "$creds_temp_dir"/$i.json
   echo "[$i]" >> "$creds_temp"
