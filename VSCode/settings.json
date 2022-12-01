@@ -181,8 +181,8 @@
     "extensions.experimental.affinity": {
         "asvetliakov.vscode-neovim": 1
     },
-    "vscode-neovim.neovimExecutablePaths.linux": "/usr/local/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.linux": "$HOME/.config/nvim/vscode-neovim.vim",
+    "vscode-neovim.neovimExecutablePaths.linux": "/home/andrei/.local/share/neovim/bin/nvim",
+    "vscode-neovim.neovimInitVimPaths.linux": "/home/andrei/Github/dotfiles/VSCode/vscode-neovim.vim",
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
