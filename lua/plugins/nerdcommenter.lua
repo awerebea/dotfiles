@@ -10,11 +10,14 @@
 -- Add spaces after comment delimiters
 vim.g.NERDSpaceDelims = 1
 -- custom formats or override the defaults
-vim.g.NERDCustomDelimiters = { c = { left = "/*", right = "*/" } }
-vim.g.NERDCustomDelimiters = { vim = { left = '"', right = "" } }
-vim.g.NERDCustomDelimiters = { lua = { left = "-- ", right = "" } }
--- vim.g.NERDCustomDelimiters = { 'cpp': { 'left': '/*','right': '*/' } }
-vim.g.NERDCustomDelimiters = { Jenkinsfile = { left = "//", right = "" } }
+vim.g.NERDCustomDelimiters = {
+  c = { left = "/*", right = "*/" },
+  vim = { left = '"', right = "" },
+  lua = { left = "-- ", right = "" },
+  hcl = { left = "# ", right = "" },
+  cpp = { left = "/*", right = "*/" },
+  Jenkinsfile = { left = "//", right = "" },
+}
 -- Align line-wise comment delimiters flush left instead of following code
 -- indentation (left/both)
 vim.g.NERDDefaultAlign = "both"
