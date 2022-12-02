@@ -134,7 +134,7 @@ augroup filetypeRelatedSettings
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
   autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm,lua
+  autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm,lua,hcl
     \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 augroup END
 ]])
