@@ -1129,7 +1129,7 @@ expand_command_line () {
   CYAN='\033[1;36m'
   BLUE='\033[0;34m'
   NC='\033[0m'
-  excluded_commands=("nvim")
+  excluded_commands=(nvim rg)
   first=$(echo "$1" | awk '{print $1;}')
   rest=$(echo ${${1}/"${first}"/})
   if [[ -n "${first//-//}" ]]; then # is not hypen
@@ -1165,7 +1165,7 @@ fi
 # globalias filter values (commands that should not be expanded)
 export GLOBALIAS_FILTER_VALUES=(
   f z vv
-  grep fgrep egrep
+  grep fgrep egrep rg
   l ll lle lT llT
   ls
   tmux
