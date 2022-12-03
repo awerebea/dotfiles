@@ -30,6 +30,8 @@ mason_lspconfig.setup({
     "tsserver",
     -- Python
     "pyright",
+    -- Terraform,
+    "terraformls",
   },
   -- auto-install configured servers (with lspconfig)
   automatic_installation = true, -- not the same as ensure_installed
@@ -49,6 +51,7 @@ mason_null_ls.setup({
     "pydocstyle",
     "pylama",
     "pylint",
+    "tflint",
   },
   -- auto-install configured formatters & linters (with null-ls)
   automatic_installation = true,

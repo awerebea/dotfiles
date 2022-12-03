@@ -21,6 +21,7 @@ treesitter.setup({
     "dockerfile",
     "gitignore",
     "graphql",
+    "hcl",
     "html",
     "javascript",
     "json",
