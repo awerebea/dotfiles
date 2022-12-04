@@ -32,6 +32,8 @@ mason_lspconfig.setup({
     "pyright",
     -- Terraform,
     "terraformls",
+    -- Bash
+    "bashls",
   },
   -- auto-install configured servers (with lspconfig)
   automatic_installation = true, -- not the same as ensure_installed
@@ -52,6 +54,10 @@ mason_null_ls.setup({
     "pylama",
     "pylint",
     "tflint",
+    -- Bash
+    "shellcheck",
+    "shellharden",
+    "beautysh",
   },
   -- auto-install configured formatters & linters (with null-ls)
   automatic_installation = true,

@@ -36,6 +36,9 @@ null_ls.setup({
     diagnostics.pydocstyle,
     diagnostics.flake8.with({ extra_args = { "--max-line-length=99" } }),
     -- diagnostics.pylama,
+    -- Bash
+    formatting.beautysh,
+    formatting.shellharden,
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)
