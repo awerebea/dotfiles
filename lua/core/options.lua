@@ -309,6 +309,38 @@ command! Delview call MyDeleteView()
 cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
 ]])
 
+-- {{{ enable dictionary autocompletion without spell option set
+vim.cmd([[
+function! SpellCheck(...)
+  let s:spell_bad_bckp = split(execute("highlight SpellBad"), " ")
+  let s:spell_cap_bckp = split(execute("highlight SpellCap"), " ")
+  let s:spell_rare_bckp = split(execute("highlight SpellRare"), " ")
+  let s:spell_local_bckp = split(execute("highlight SpellLocal"), " ")
+  let s:spell_bckp = &spell
+  set spell
+  if !s:spell_bckp
+    highlight clear SpellBad
+    highlight clear SpellCap
+    highlight clear SpellRare
+    highlight clear SpellLocal
+  endif
+  augroup restore_spell_option
+    autocmd!
+    autocmd InsertLeave <buffer> let &spell = s:spell_bckp |
+    \ execute "highlight SpellBad " . s:spell_bad_bckp[-2] . " " . s:spell_bad_bckp[-1] |
+    \ execute "highlight SpellCap " . s:spell_cap_bckp[-2] . " " . s:spell_cap_bckp[-1] |
+    \ execute "highlight SpellRare " . s:spell_rare_bckp[-2] . " " . s:spell_rare_bckp[-1] |
+    \ execute "highlight SpellLocal " . s:spell_local_bckp[-2] . " " . s:spell_local_bckp[-1] |
+    \ autocmd! restore_spell_option
+  augroup END
+  return a:0 ? a:1 : ''
+endfunction
+augroup auto_spell_on
+  autocmd InsertEnter <buffer> call SpellCheck()
+augroup END
+ ]])
+-- }}}
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
