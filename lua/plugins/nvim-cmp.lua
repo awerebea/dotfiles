@@ -42,6 +42,7 @@ cmp.setup({
     { name = "luasnip" }, -- snippets
     { name = "buffer" }, -- text within current buffer
     { name = "path" }, -- file system paths
+    { name = "cmdline" }, -- vim's cmdline
   }),
   -- configure lspkind for vs-code like icons
   formatting = {
