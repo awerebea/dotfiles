@@ -43,6 +43,15 @@ cmp.setup({
     { name = "buffer" }, -- text within current buffer
     { name = "path" }, -- file system paths
     { name = "cmdline" }, -- vim's cmdline
+    {
+      name = "spell",
+      option = {
+        keep_all_entries = false,
+        enable_in_context = function()
+          return true
+        end,
+      },
+    }, -- spell dictionary
   }),
   -- configure lspkind for vs-code like icons
   formatting = {
