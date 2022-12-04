@@ -288,7 +288,7 @@ augroup END
 
 -- A way to delete 'mkview' for current file
 vim.cmd([[
-	function! MyDeleteView()
+function! MyDeleteView()
   let path = fnamemodify(bufname('%'),':p')
   " vim's odd =~ escaping for /
   let path = substitute(path, '=', '==', 'g')
