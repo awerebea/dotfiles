@@ -88,3 +88,8 @@ keymap.set("n", "<leader>gs", "<cmd>Telescope git_status<cr>") -- list current c
 
 -- restart lsp server (not on youtube nvim video)
 keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if necessary
+
+-- Toggle spell checking
+keymap.set("n", "<leader>ssa", ":setlocal spell! spelllang=en_us,ru_yo<cr>")
+keymap.set("n", "<leader>sse", ":setlocal spell! spelllang=en_us<cr>")
+keymap.set("n", "<leader>ssr", ":setlocal spell! spelllang=ru_yo<cr>")
