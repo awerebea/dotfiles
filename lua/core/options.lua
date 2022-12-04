@@ -3,7 +3,7 @@ local keymap = vim.keymap -- for conciseness
 
 -- delete single character without copying into register (in visual mode only)
 keymap.set("v", "x", '"_x')
--- send changed text segment to blackhole
+-- send changed text segment to black hole
 keymap.set({ "n", "v" }, "c", '"_c')
 keymap.set({ "n", "v" }, "C", '"_C')
 
@@ -82,7 +82,7 @@ opt.backupdir:append(".")
 opt.swapfile = true
 opt.updatecount = 100
 
--- Viminfo stores the the state of your previous editing session
+-- Viminfo stores the state of your previous editing session
 opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
 opt.viminfo:append("n" .. os.getenv("HOME") .. "/.local/state/nvim/nviminfo")
 opt.sessionoptions:remove({ "folds" })
@@ -91,6 +91,22 @@ opt.sessionoptions:remove({ "folds" })
 opt.undofile = true
 opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
+-- }}}
+
+-- {{{ spell check
+-- opt.spelllang = "en_us"
+-- opt.spell = true
+-- opt.spellfile:append(os.getenv("HOME") .. "/.config/nvim/spell/nvim-config.en.utf-8.add")
+
+-- re-create spl files for additional vocabularies
+vim.cmd([[
+for d in glob('~/.config/nvim/spell/*.add', 1, 1)
+  if filereadable(d) && (!filereadable(d . '.spl') || getftime(d) >
+  \ getftime(d . '.spl'))
+    exec 'mkspell! ' . fnameescape(d)
+  endif
+endfor
+]])
 -- }}}
 
 -- {{{ tabs (indentation) settings
