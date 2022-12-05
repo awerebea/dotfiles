@@ -7,6 +7,9 @@ end
 vim.g.rigel_lightline = 1
 
 vim.g.lightline = {
+  enable = {
+    tabline = 0,
+  },
   colorscheme = "rigel",
   active = {
     left = {

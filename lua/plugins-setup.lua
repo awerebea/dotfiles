@@ -131,7 +131,7 @@ return packer.startup(function(use)
   use("itchyny/vim-gitbranch") -- Get current git-branch name
 
   -- show buffers as tabs
-  use("ap/vim-buftabline")
+  use({ "akinsho/bufferline.nvim" })
 
   -- vim motions on speed!
   use("easymotion/vim-easymotion")

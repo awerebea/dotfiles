@@ -331,3 +331,4 @@ opt.laststatus = 3
 opt.autoindent = true
 opt.pastetoggle = "<F4>"
 opt.whichwrap:append("<,>,[,]")
+opt.mousemoveevent = true
