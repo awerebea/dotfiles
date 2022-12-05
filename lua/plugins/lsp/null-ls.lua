@@ -39,6 +39,8 @@ null_ls.setup({
     -- Bash
     formatting.beautysh,
     formatting.shellharden,
+    -- Terraform
+    formatting.terraform_fmt,
   },
   -- configure format on save
   on_attach = function(current_client, bufnr)

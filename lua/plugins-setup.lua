@@ -140,9 +140,6 @@ return packer.startup(function(use)
   -- stack after doing a paste
   use("maxbrunsfeld/vim-yankstack")
 
-  -- Terraform
-  use("hashivim/vim-terraform")
-
   if packer_bootstrap then
     require("packer").sync()
   end
