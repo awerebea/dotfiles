@@ -64,7 +64,7 @@ keymap.set("n", "gz", ":bdelete<CR>", { noremap = true }) -- close active buffer
 ----------------------
 
 -- vim-maximizer
-keymap.set("n", "<leader><leader>z", ":MaximizerToggle<CR>") -- toggle split window maximization
+keymap.set("n", "<leader>z", ":MaximizerToggle<CR>") -- toggle split window maximization
 
 -- nvim-tree
 keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
