@@ -132,6 +132,7 @@ return packer.startup(function(use)
   -- show buffers as tabs
   use("akinsho/bufferline.nvim")
   use("tiagovla/scope.nvim")
+  use("famiu/bufdelete.nvim")
 
   -- vim motions on speed!
   use("easymotion/vim-easymotion")
