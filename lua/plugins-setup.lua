@@ -60,7 +60,6 @@ return packer.startup(function(use)
   use("inkarkat/vim-ReplaceWithRegister") -- replace with register contents using motion (gr + motion)
 
   -- commenting with gc
-  use("numToStr/Comment.nvim")
   use("preservim/nerdcommenter")
 
   -- file explorer
