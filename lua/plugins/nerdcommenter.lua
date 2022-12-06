@@ -13,6 +13,7 @@ vim.g.NERDSpaceDelims = 1
 vim.g.NERDCustomDelimiters = {
   c = { left = "/*", right = "*/" },
   vim = { left = '"', right = "" },
+  lua = { left = "-- ", right = "" },
   hcl = { left = "# ", right = "" },
   cpp = { left = "/*", right = "*/" },
   Jenkinsfile = { left = "//", right = "" },
