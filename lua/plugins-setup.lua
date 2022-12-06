@@ -143,6 +143,9 @@ return packer.startup(function(use)
   -- a faster version of filetype.vim
   use("nathom/filetype.nvim")
 
+  -- easily manage multiple terminal windows
+  use("akinsho/toggleterm.nvim")
+
   if packer_bootstrap then
     require("packer").sync()
   end
