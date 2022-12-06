@@ -140,6 +140,9 @@ return packer.startup(function(use)
   -- stack after doing a paste
   use("maxbrunsfeld/vim-yankstack")
 
+  -- a faster version of filetype.vim
+  use("nathom/filetype.nvim")
+
   if packer_bootstrap then
     require("packer").sync()
   end
