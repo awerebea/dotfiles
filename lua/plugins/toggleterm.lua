@@ -6,6 +6,13 @@ end
 
 -- enable plugin
 toggleterm.setup({
+  size = function(term)
+    if term.direction == "horizontal" then
+      return 10
+    elseif term.direction == "vertical" then
+      return vim.o.columns * 0.4
+    end
+  end,
   open_mapping = [[<leader>;]],
   hide_numbers = true, -- hide the number column in toggleterm buffers
   autochdir = true, -- when neovim changes it current directory the terminal will change it's own when next it's opened
@@ -30,5 +37,8 @@ vim.keymap.set(
   "<Cmd>ToggleTermToggleAll<CR>",
   { silent = true }
 )
+
+-- toggle vertical terminal
+vim.keymap.set("n", "<leader>v;", "<Cmd>ToggleTerm direction=vertical<CR>", { silent = true })
 
 vim.keymap.set("t", "<C-e>", [[<Cmd>WinResizerStartResize<CR>]], { silent = true })
