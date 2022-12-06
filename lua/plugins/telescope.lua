@@ -16,6 +16,7 @@ telescope.setup({
   defaults = {
     layout_config = {
       horizontal = { width = 0.999, height = 0.999 },
+      vertical = { width = 0.999, height = 0.999 },
     },
     mappings = {
       i = {
@@ -30,6 +31,9 @@ telescope.setup({
     buffers = {
       ignore_current_buffer = true,
       sort_mru = true,
+    },
+    git_commits = {
+      layout_strategy = "vertical",
     },
   },
 })
