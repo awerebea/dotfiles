@@ -20,7 +20,7 @@ bufferline.setup({
         separator = true, -- use a "true" to enable the default, or set your own character
       },
     },
-    max_name_length = 18,
+    max_name_length = 25,
     max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
     tab_size = 10,
     show_buffer_icons = false,
