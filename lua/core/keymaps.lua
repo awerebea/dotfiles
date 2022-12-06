@@ -47,6 +47,8 @@ keymap.set("n", "<leader>tl", ":tablast<CR>", { noremap = true })
 keymap.set("n", "<leader>te", ":tabedit<Space>", { noremap = true })
 keymap.set("n", "<leader>tc", ":tabnew<CR>") -- open new tab
 keymap.set("n", "<leader>tm", ":tabmove<Space>", { noremap = true })
+keymap.set("n", "<leader>tmp", ":-tabmove<CR>", { noremap = true }) -- move current tab left
+keymap.set("n", "<leader>tmn", ":+tabmove<CR>", { noremap = true }) -- move current tab right
 keymap.set("n", "<leader>tx", ":tabclose<CR>") -- close current tab
 keymap.set("n", "<leader>to", ":tabonly<CR>", { noremap = true })
 -- Switch to last tab
