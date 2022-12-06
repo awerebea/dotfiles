@@ -91,38 +91,60 @@ vim.g.lightline = {
     linter_errors = "error",
     linter_ok = "right",
   },
+  -- mode_map copied from:
+  -- https://github.com/nvim-lualine/lualine.nvim/blob/5113cdb32f9d9588a2b56de6d1df6e33b06a554a/lua/lualine/utils/mode.lua
+  mode_map = {
+    ["n"] = "N",
+    ["no"] = "O-PENDING",
+    ["nov"] = "O-PENDING",
+    ["noV"] = "O-PENDING",
+    ["no\22"] = "O-PENDING",
+    ["niI"] = "N",
+    ["niR"] = "N",
+    ["niV"] = "N",
+    ["nt"] = "N",
+    ["v"] = "V",
+    ["vs"] = "V",
+    ["V"] = "VL",
+    ["Vs"] = "VL",
+    ["\22"] = "VB",
+    ["\22s"] = "VB",
+    ["s"] = "SELECT",
+    ["S"] = "SL",
+    ["\19"] = "SB",
+    ["i"] = "I",
+    ["ic"] = "I",
+    ["ix"] = "I",
+    ["R"] = "R",
+    ["Rc"] = "R",
+    ["Rx"] = "R",
+    ["Rv"] = "V-REP",
+    ["Rvc"] = "V-REP",
+    ["Rvx"] = "V-REP",
+    ["c"] = "C",
+    ["cv"] = "EX",
+    ["ce"] = "EX",
+    ["r"] = "R",
+    ["rm"] = "MORE",
+    ["r?"] = "CONFIRM",
+    ["!"] = "SHELL",
+    ["t"] = "T",
+  },
 }
 
--- TODO Change indicators
 -- {{{ Lightline additional settings
-vim.cmd([[
-  let g:lightline.mode_map = {
-  \   'n' : 'N',
-  \   'i' : 'I',
-  \   'R' : 'R',
-  \   'v' : 'V',
-  \   'V' : 'VL',
-  \   "\<C-v>": 'VB',
-  \   'c' : 'C',
-  \   's' : 'S',
-  \   'S' : 'SL',
-  \   "\<C-s>": 'SB',
-  \   't' : 'T',
-  \ }
-]])
--- let g:lightline#lsp#indicator_hints = "\uf002"
--- let g:lightline#lsp#indicator_infos = "\uf129"
--- let g:lightline#lsp#indicator_warnings = "\uf071"
--- let g:lightline#lsp#indicator_errors = "\uf05e"
--- let g:lightline#lsp#indicator_ok = "\u2713"
+-- lightline lsp indicators
+-- vim.g["lightline#lsp#indicator_hints"] = ""
+-- vim.g["lightline#lsp#indicator_infos"] = ""
+-- vim.g["lightline#lsp#indicator_warnings"] = ""
+-- vim.g["lightline#lsp#indicator_errors"] = ""
+-- vim.g["lightline#lsp#indicator_ok"] = ""
 
 -- lightline_gitdiff indicators
-vim.cmd([[
-let g:lightline_gitdiff#indicator_added = '+'
-let g:lightline_gitdiff#indicator_deleted = '-'
-let g:lightline_gitdiff#indicator_modified = '~'
-let g:lightline_gitdiff#min_winwidth = '88'
-]])
+vim.g["lightline_gitdiff#indicator_added"] = "+"
+vim.g["lightline_gitdiff#indicator_deleted"] = "-"
+vim.g["lightline_gitdiff#indicator_modified"] = "~"
+vim.g["lightline_gitdiff#min_winwidth"] = "88"
 
 vim.cmd([[
   function! LightlineFileName()
