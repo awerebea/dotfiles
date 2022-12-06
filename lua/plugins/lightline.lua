@@ -34,8 +34,8 @@ vim.g.lightline = {
         "percent",
       },
       {
-        "fileformat",
         "filetype",
+        "fileformat",
         "fileencoding",
         "spell",
         "indent",
@@ -218,15 +218,15 @@ vim.cmd([[
   endfunction
 
   function! LightlineFileformat()
-    return winwidth(0) > 110 ? &fileformat : ''
+    return winwidth(0) > 130 ? &fileformat : ''
   endfunction
 
   function! LightlineFiletype()
-    return winwidth(0) > 90 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+    return winwidth(0) > 110 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
   endfunction
 
   function! LightlineFileencoding()
-    return winwidth(0) > 90 ? (&fileencoding !=# '' ? &fileencoding : &enc) : ''
+    return winwidth(0) > 120 ? (&fileencoding !=# '' ? &fileencoding : &enc) : ''
   endfunction
 
   function! LightlineGitbranch()
