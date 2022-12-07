@@ -150,8 +150,9 @@ vim.cmd([[
   function! LightlineFileName()
     let filename = expand('%:p:h:t') . '/' . expand('%:t')
 
-    if &filetype !=? 'nerdtree' && filename !=? 'ControlP'
-
+    if &filetype == 'nerdtree' || &filetype == 'NvimTree'
+      return ''
+    else
       if filename ==# ''
         return '[No Name]'
       endif
@@ -164,8 +165,6 @@ vim.cmd([[
       endif
 
       return filename
-    else
-      return ''
     endif
   endfunction
 
@@ -192,6 +191,7 @@ vim.cmd([[
     let fname = expand('#' . bufnr . ':t')
     return fname =~ '__Tagbar__' ? 'Tagbar' :
           \ fname =~ 'NERD_tree' ? 'NERDTree' :
+          \ fname =~ 'NvimTree' ? 'NvimTree' :
           \ ('' != fname ? fname : '[No Name]')
   endfunction
 
@@ -230,7 +230,7 @@ vim.cmd([[
   endfunction
 
   function! LightlineGitbranch()
-    if winwidth(0) > 85 || &filetype == 'nerdtree'
+    if winwidth(0) > 85 || &filetype == 'nerdtree' || &filetype == 'NvimTree'
       return gitbranch#name()
     endif
     return ''
