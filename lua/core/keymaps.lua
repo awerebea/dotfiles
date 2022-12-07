@@ -18,7 +18,11 @@ keymap.set(
 keymap.set("n", "<leader>/", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 keymap.set("n", "<Esc><Esc>", ":<C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
--- Always move by screen lines instead of virtual lines with 'j' and 'k'
+-- keep selection when indenting
+keymap.set("v", "<", "<gv", { silent = true, noremap = true })
+keymap.set("v", ">", ">gv", { silent = true, noremap = true })
+
+-- always move by screen lines instead of virtual lines with 'j' and 'k'
 keymap.set("n", "j", "gj", { silent = true, noremap = true })
 keymap.set("n", "k", "gk", { silent = true, noremap = true })
 
