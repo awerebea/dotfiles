@@ -147,6 +147,9 @@ return packer.startup(function(use)
   -- easily manage multiple terminal windows
   use("akinsho/toggleterm.nvim")
 
+  -- search and replace
+  use("windwp/nvim-spectre")
+
   if packer_bootstrap then
     require("packer").sync()
   end
