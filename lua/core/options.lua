@@ -185,7 +185,7 @@ keymap.set(
 -- {{{ toggle relativenumber
 vim.cmd([[
 augroup SmartRelativenumbers
-  let blacklist = ["toggleterm"]
+  let blacklist = ["toggleterm", "nerdtree"]
   autocmd!
   autocmd InsertEnter * if index(blacklist, &ft) < 0 | :setlocal norelativenumber | endif
   autocmd InsertLeave * if index(blacklist, &ft) < 0 | :setlocal relativenumber | endif

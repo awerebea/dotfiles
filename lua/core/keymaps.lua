@@ -70,8 +70,6 @@ keymap.set("n", "<leader>z", ":MaximizerToggle<CR>") -- toggle split window maxi
 
 -- nvim-tree
 keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>")
-keymap.set("n", "<F2>", ":NvimTreeToggle<CR>")
-keymap.set("n", "<leader><F2>", ":NvimTreeFindFile<CR>")
 
 -- telescope
 keymap.set("n", "<leader>ff", "<cmd>Telescope find_files<cr>") -- find files within current working directory, respects .gitignore

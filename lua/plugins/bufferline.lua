@@ -27,8 +27,6 @@ bufferline.setup({
   },
 })
 
-vim.opt.sessionoptions:append({ "globals" })
-
 local keymap = vim.keymap
 keymap.set("n", "]b", ":BufferLineCycleNext<CR>", { silent = true, noremap = true })
 keymap.set("n", "[b", ":BufferLineCyclePrev<CR>", { silent = true, noremap = true })

@@ -65,6 +65,10 @@ return packer.startup(function(use)
   -- file explorer
   use("nvim-tree/nvim-tree.lua")
   use("kevinhwang91/rnvimr")
+  -- NERDTree
+  use("preservim/nerdtree")
+  use("Xuyuanp/nerdtree-git-plugin")
+  use("ryanoasis/vim-devicons")
 
   -- vs-code like icons
   use("nvim-tree/nvim-web-devicons")
