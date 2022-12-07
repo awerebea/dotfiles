@@ -29,11 +29,49 @@ telescope.setup({
   },
   pickers = {
     buffers = {
+      layout_strategy = "horizontal",
+      layout_config = {
+        preview_cutoff = 110,
+        preview_width = { 0.5, min = 70, max = 100 },
+      },
       ignore_current_buffer = true,
       sort_mru = true,
     },
+    find_files = {
+      layout_strategy = "horizontal",
+      layout_config = {
+        preview_cutoff = 110,
+        preview_width = { 0.5, min = 70, max = 100 },
+      },
+    },
+    live_grep = {
+      layout_strategy = "horizontal",
+      layout_config = {
+        preview_cutoff = 110,
+        preview_width = { 0.5, min = 70, max = 100 },
+      },
+      only_sort_text = true,
+    },
     git_commits = {
       layout_strategy = "vertical",
+      layout_config = {
+        preview_cutoff = 35,
+        preview_height = { 0.5, min = 30, max = 40 },
+      },
+    },
+    git_bcommits = {
+      layout_strategy = "vertical",
+      layout_config = {
+        preview_cutoff = 35,
+        preview_height = { 0.5, min = 30, max = 40 },
+      },
+    },
+    git_status = {
+      layout_strategy = "vertical",
+      layout_config = {
+        preview_cutoff = 35,
+        preview_height = { 0.5, min = 30, max = 40 },
+      },
     },
   },
 })
