@@ -34,7 +34,7 @@ keymap.set("n", "<leader>-", "<C-x>") -- decrement
 keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
 keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
 keymap.set("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
-keymap.set("n", "<leader>x", ":close<CR>") -- close current split window
+keymap.set("n", "<leader>xy", ":close<CR>", { silent = true }) -- close current split window
 -- buffers management
 keymap.set("n", "<M-S-l>", ":bnext<CR>", { noremap = true, silent = true })
 keymap.set("n", "<M-S-h>", ":bprevious<CR>", { noremap = true, silent = true })

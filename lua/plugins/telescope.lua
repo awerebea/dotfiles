@@ -10,6 +10,8 @@ if not actions_setup then
   return
 end
 
+local trouble = require("trouble.providers.telescope")
+
 -- configure telescope
 telescope.setup({
   -- configure custom mappings
@@ -36,7 +38,9 @@ telescope.setup({
         ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
         ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
         ["<esc>"] = actions.close,
+        ["<c-t>"] = trouble.open_with_trouble,
       },
+      n = { ["<c-t>"] = trouble.open_with_trouble },
     },
   },
   pickers = {

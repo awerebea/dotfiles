@@ -150,6 +150,9 @@ return packer.startup(function(use)
   -- search and replace
   use("windwp/nvim-spectre")
 
+  -- a pretty list for showing diagnostics, references, telescope results, quickfix, location lists
+  use("folke/trouble.nvim")
+
   if packer_bootstrap then
     require("packer").sync()
   end
