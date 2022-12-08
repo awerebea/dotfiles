@@ -42,8 +42,12 @@ telescope.setup({
       },
       n = { ["<c-t>"] = trouble.open_with_trouble },
     },
+    file_ignore_patterns = { "^.git/", ".cache/" },
   },
   pickers = {
+    find_files = {
+      hidden = true,
+    },
     buffers = {
       ignore_current_buffer = true,
       sort_mru = true,
