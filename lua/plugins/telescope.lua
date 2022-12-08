@@ -14,64 +14,47 @@ end
 telescope.setup({
   -- configure custom mappings
   defaults = {
+    layout_strategy = "horizontal",
     layout_config = {
-      horizontal = { width = 0.999, height = 0.999 },
-      vertical = { width = 0.999, height = 0.999 },
+      horizontal = {
+        preview_cutoff = 110,
+        preview_width = { 0.5, min = 70, max = 100 },
+        width = 0.999,
+        height = 0.999,
+      },
+      vertical = {
+        preview_cutoff = 25,
+        preview_height = { 0.6, min = 20, max = 40 },
+        width = 0.999,
+        height = 0.999,
+      },
     },
     mappings = {
       i = {
         ["<C-k>"] = actions.move_selection_previous, -- move to prev result
         ["<C-j>"] = actions.move_selection_next, -- move to next result
-        ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
+        ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
+        ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
         ["<esc>"] = actions.close,
       },
     },
   },
   pickers = {
     buffers = {
-      layout_strategy = "horizontal",
-      layout_config = {
-        preview_cutoff = 110,
-        preview_width = { 0.5, min = 70, max = 100 },
-      },
       ignore_current_buffer = true,
       sort_mru = true,
     },
-    find_files = {
-      layout_strategy = "horizontal",
-      layout_config = {
-        preview_cutoff = 110,
-        preview_width = { 0.5, min = 70, max = 100 },
-      },
-    },
     live_grep = {
-      layout_strategy = "horizontal",
-      layout_config = {
-        preview_cutoff = 110,
-        preview_width = { 0.5, min = 70, max = 100 },
-      },
       only_sort_text = true,
     },
     git_commits = {
       layout_strategy = "vertical",
-      layout_config = {
-        preview_cutoff = 35,
-        preview_height = { 0.5, min = 30, max = 40 },
-      },
     },
     git_bcommits = {
       layout_strategy = "vertical",
-      layout_config = {
-        preview_cutoff = 35,
-        preview_height = { 0.5, min = 30, max = 40 },
-      },
     },
     git_status = {
       layout_strategy = "vertical",
-      layout_config = {
-        preview_cutoff = 35,
-        preview_height = { 0.5, min = 30, max = 40 },
-      },
     },
   },
 })
