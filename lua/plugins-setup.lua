@@ -130,9 +130,8 @@ return packer.startup(function(use)
   use("itchyny/vim-gitbranch") -- Get current git-branch name
 
   -- show buffers as tabs
-  use("akinsho/bufferline.nvim")
+  use("romgrk/barbar.nvim")
   use("tiagovla/scope.nvim")
-  use("famiu/bufdelete.nvim")
 
   -- Neovim motions on speed!
   use("phaazon/hop.nvim")
