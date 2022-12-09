@@ -326,6 +326,32 @@ command! Delview call MyDeleteView()
 cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
 ]])
 
+-- Toggle diff view for all visible windows
+local diff_view_active = false
+local opts = { noremap = true, silent = true }
+function ToggleDiffViewMode()
+  if diff_view_active then
+    vim.cmd(":diffoff!")
+    diff_view_active = false
+    print("Diff view deactivated")
+  else
+    vim.cmd([[
+    :NvimTreeClose
+    :windo diffthis
+    ]])
+    diff_view_active = true
+    print("Diff view activated")
+  end
+end
+keymap.set("n", "<leader><F9>", "<CMD>lua ToggleDiffViewMode()<CR>", opts)
+keymap.set("n", "<leader>dg", ":diffget<CR> <bar> :echo 'Get chunk'<CR>", opts)
+keymap.set("n", "<leader>dp", ":diffput<CR> <bar> :echo 'Put chunk'<CR>", opts)
+-- }}}
+
+vim.cmd([[
+
+]])
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
