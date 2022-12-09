@@ -245,7 +245,8 @@ keymap.set("n", "<leader>aw", ":call AutoWrapToggle()<CR>")
 
 -- {{{ Auto save/load view
 -- List of filenames to skip mkview
-vim.g.skipview_files = { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo" }
+vim.g.skipview_files =
+  { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo", "DiffviewFilePanel" }
 vim.cmd([[
 function! MakeViewCheck()
     if has('quickfix') && &buftype =~ 'nofile'
