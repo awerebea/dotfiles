@@ -134,8 +134,8 @@ return packer.startup(function(use)
   use("tiagovla/scope.nvim")
   use("famiu/bufdelete.nvim")
 
-  -- vim motions on speed!
-  use("easymotion/vim-easymotion")
+  -- Neovim motions on speed!
+  use("phaazon/hop.nvim")
 
   -- Turns default register into a stack, and lets cycle through the items in the
   -- stack after doing a paste
