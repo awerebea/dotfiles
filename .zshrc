@@ -3,26 +3,26 @@ zmodload zsh/zprof
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
 if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
 # Add neovim installation path, installed by bob
 # https://github.com/MordechaiHadad/bob
 if [ -d "$HOME/.local/share/neovim/bin" ] &&
-        [[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
+[[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
     export PATH="$HOME/.local/share/neovim/bin:$PATH"
 fi
 
 # Define default editor nvim, vim, vi or nano
 if [[ $commands[nvim] ]]; then
-  export EDITOR='nvim'
-  # alias vim="nvim"
+    export EDITOR='nvim'
+    # alias vim="nvim"
 elif [[ $commands[vim] ]]; then
-  export EDITOR='vim'
+    export EDITOR='vim'
 elif [[ $commands[vi] ]]; then
-  export EDITOR='vi'
+    export EDITOR='vi'
 else
-  export EDITOR='nano'
+    export EDITOR='nano'
 fi
 
 export TERM=xterm-256color
@@ -31,19 +31,19 @@ export ZSH="$HOME/.oh-my-zsh"
 
 # Install oh-my-zsh if it's not there yet.
 if [[ ! -f "$ZSH/oh-my-zsh.sh" ]]; then
-  echo "\033[1;31m!!! ATTENTION !!!\033[0m"
-  echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
-  echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
-  # install oh-my-zsh
-  sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-  # restore config
-  cp "$HOME/.zshrc.pre-oh-my-zsh" "$HOME/.zshrc"
+    echo "\033[1;31m!!! ATTENTION !!!\033[0m"
+    echo -n "\033[1;34mAfter installing \033[1;32moh-my-zsh, \033[1;34mpress "
+    echo "\033[1;33mCTRL+D\033[1;34m to install custom plugins and theme.\033[0m\n"
+    # install oh-my-zsh
+    sh -c "$(curl -fsSL \https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+    # restore config
+    cp "$HOME/.zshrc.pre-oh-my-zsh" "$HOME/.zshrc"
 fi
 
 # Install custom plugins if they aren't there yet.
 if [[ ! -f "$ZSH/custom/plugins/history-sync/history-sync.plugin.zsh" ]]; then
-  git clone https://github.com/wulfgarpro/history-sync \
-    "$ZSH/custom/plugins/history-sync"
+    git clone https://github.com/wulfgarpro/history-sync \
+        "$ZSH/custom/plugins/history-sync"
 fi
 
 if [[ ! -f "$ZSH/custom/plugins/zsh-autosuggestions/\
