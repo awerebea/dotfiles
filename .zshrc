@@ -1312,3 +1312,7 @@ rclone-bisync-google-drive_cobblestone.tlt () {
 if [[ $commands[aws-vault] ]]; then
   export AWS_VAULT_BACKEND=file
 fi
+
+if [[ $commands[direnv] ]]; then
+  eval "$(direnv hook zsh)"
+fi
