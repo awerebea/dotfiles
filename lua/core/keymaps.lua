@@ -103,3 +103,6 @@ keymap.set("n", "<leader>rs", ":LspRestart<CR>") -- mapping to restart lsp if ne
 keymap.set("n", "<leader>ssa", ":setlocal spell! spelllang=en_us,ru_yo<cr>")
 keymap.set("n", "<leader>sse", ":setlocal spell! spelllang=en_us<cr>")
 keymap.set("n", "<leader>ssr", ":setlocal spell! spelllang=ru_yo<cr>")
+
+-- Toggle show non-visible white spaces
+keymap.set("n", "<leader>ll", ":set list!<CR>")
