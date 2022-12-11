@@ -35,9 +35,11 @@ telescope.setup({
       i = {
         ["<C-k>"] = actions.move_selection_previous, -- move to prev result
         ["<C-j>"] = actions.move_selection_next, -- move to next result
+        ["<C-M-j>"] = actions.cycle_history_next,
+        ["<C-M-k>"] = actions.cycle_history_prev,
         ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
         ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
-        ["<esc>"] = actions.close,
+        ["<Esc>"] = actions.close,
         ["<c-t>"] = trouble.open_with_trouble,
       },
       n = { ["<c-t>"] = trouble.open_with_trouble },
