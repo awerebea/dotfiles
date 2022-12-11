@@ -211,7 +211,12 @@ else
   endif
 endfunction
 ]])
-keymap.set("n", "<leader><leader>rn", "<Cmd>call ToggleSmartRelativenumbers()<CR>", { noremap = true })
+keymap.set(
+  "n",
+  "<leader><leader>rn",
+  "<Cmd>call ToggleSmartRelativenumbers()<CR>",
+  { noremap = true }
+)
 -- }}}
 
 -- {{{ Word wrap
