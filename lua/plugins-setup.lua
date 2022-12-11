@@ -140,10 +140,6 @@ return packer.startup(function(use)
   -- Neovim motions on speed!
   use("phaazon/hop.nvim")
 
-  -- Turns default register into a stack, and lets cycle through the items in the
-  -- stack after doing a paste
-  use("maxbrunsfeld/vim-yankstack")
-
   -- a faster version of filetype.vim
   use("nathom/filetype.nvim")
 

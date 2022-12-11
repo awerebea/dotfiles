@@ -1,6 +1,5 @@
 require("plugins-setup")
 require("core.keymaps")
-require("plugins.yankstack") -- must be at the top of the list so that keymaps can be overridden
 require("core.options")
 require("core.colorscheme")
 require("plugins.autopairs")
