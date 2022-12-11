@@ -31,10 +31,6 @@ keymap.set("v", ">", ">gv", { silent = true, noremap = true })
 keymap.set("n", "j", "gj", { silent = true, noremap = true })
 keymap.set("n", "k", "gk", { silent = true, noremap = true })
 
--- increment/decrement numbers
-keymap.set("n", "<leader>+", "<C-a>") -- increment
-keymap.set("n", "<leader>-", "<C-x>") -- decrement
-
 -- window management
 keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
 keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
