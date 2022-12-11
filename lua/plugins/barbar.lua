@@ -74,8 +74,8 @@ keymap.set("n", "<leader>bw", "<Cmd>BufferOrderByWindowNumber<CR>", opts)
 local tab_switcher_mode = "buffers"
 function ToggleTabSwitcherMode()
   if tab_switcher_mode == "buffers" then
-    keymap.set("n", "<M-S-l>", ":tabnext<CR>", opts)
-    keymap.set("n", "<M-S-h>", ":tabprevious<CR>", opts)
+    keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>", opts)
+    keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>", opts)
     tab_switcher_mode = "tabs"
     print("Switch tabs")
   else
@@ -85,7 +85,7 @@ function ToggleTabSwitcherMode()
     print("Switch buffers")
   end
 end
-keymap.set("n", "<leader><Tab>", "<CMD>lua ToggleTabSwitcherMode()<CR>", opts)
+keymap.set("n", "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>", opts)
 -- }}}
 
 -- {{{ nvim-tree integration

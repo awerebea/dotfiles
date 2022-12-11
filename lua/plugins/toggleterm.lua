@@ -20,7 +20,7 @@ toggleterm.setup({
 
 function _G.set_terminal_keymaps()
   local opts = { buffer = 0 }
-  vim.keymap.set("t", "<leader><esc>", [[<C-\><C-n>]], opts)
+  vim.keymap.set("t", "<leader><Esc>", [[<C-\><C-n>]], opts)
   vim.keymap.set("t", "<leader><C-h>", [[<Cmd>wincmd h<CR>]], opts)
   vim.keymap.set("t", "<leader><C-j>", [[<Cmd>wincmd j<CR>]], opts)
   vim.keymap.set("t", "<leader><C-k>", [[<Cmd>wincmd k<CR>]], opts)

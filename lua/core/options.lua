@@ -163,13 +163,13 @@ opt.switchbuf = "usetab,newtab"
 local tab_switcher_mode = "buffers"
 function ToggleTabSwitcherMode()
   if tab_switcher_mode == "buffers" then
-    keymap.set("n", "<M-S-l>", ":tabnext<CR>", { noremap = true, silent = true })
-    keymap.set("n", "<M-S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>", { noremap = true, silent = true })
     tab_switcher_mode = "tabs"
     print("Switch tabs")
   else
-    keymap.set("n", "<M-S-l>", ":bnext<CR>", { noremap = true, silent = true })
-    keymap.set("n", "<M-S-h>", ":bprevious<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-l>", "<Cmd>bnext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", "<Cmd>bprevious<CR>", { noremap = true, silent = true })
     tab_switcher_mode = "buffers"
     print("Switch buffers")
   end
@@ -177,7 +177,7 @@ end
 keymap.set(
   "n",
   "<leader><Tab>",
-  "<CMD>lua ToggleTabSwitcherMode()<CR>",
+  "<Cmd>lua ToggleTabSwitcherMode()<CR>",
   { silent = true, noremap = true }
 )
 -- }}}
@@ -211,7 +211,7 @@ else
   endif
 endfunction
 ]])
-keymap.set("n", "<leader><leader>rn", ":call ToggleSmartRelativenumbers()<CR>", { noremap = true })
+keymap.set("n", "<leader><leader>rn", "<Cmd>call ToggleSmartRelativenumbers()<CR>", { noremap = true })
 -- }}}
 
 -- {{{ Word wrap
@@ -238,9 +238,9 @@ function! AutoWrapToggle()
 endfunction
 ]])
 -- Toggle word wrap for current buffer
-keymap.set("n", "<leader>ww", ":setlocal wrap!<CR>")
+keymap.set("n", "<leader>ww", "<Cmd>setlocal wrap!<CR>")
 -- Toggle wrap at 80 column
-keymap.set("n", "<leader>aw", ":call AutoWrapToggle()<CR>")
+keymap.set("n", "<leader>aw", "<Cmd>call AutoWrapToggle()<CR>")
 -- }}}
 
 -- {{{ Auto save/load view
@@ -344,9 +344,9 @@ function ToggleDiffViewMode()
     print("Diff view activated")
   end
 end
-keymap.set("n", "<leader><F9>", "<CMD>lua ToggleDiffViewMode()<CR>", opts)
-keymap.set("n", "<leader>dg", ":diffget<CR> <bar> :echo 'Get chunk'<CR>", opts)
-keymap.set("n", "<leader>dp", ":diffput<CR> <bar> :echo 'Put chunk'<CR>", opts)
+keymap.set("n", "<leader><F9>", "<Cmd>lua ToggleDiffViewMode()<CR>", opts)
+keymap.set("n", "<leader>dg", "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>", opts)
+keymap.set("n", "<leader>dp", "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>", opts)
 -- }}}
 
 vim.cmd([[

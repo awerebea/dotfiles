@@ -1,4 +1,4 @@
-vim.keymap.set("n", "<leader>rr", ":RnvimrToggle<CR>", { silent = true })
+vim.keymap.set("n", "<leader>rr", "<Cmd>RnvimrToggle<CR>", { silent = true })
 -- Fullscreen for initial layout
 vim.cmd([[
 let g:rnvimr_layout = {

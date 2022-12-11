@@ -8,9 +8,14 @@ spectre.setup()
 
 local keymap = vim.keymap
 local opts = { silent = true, noremap = true }
-keymap.set("n", "<leader>S", ":lua require('spectre').open()<cr>", opts)
+keymap.set("n", "<leader>S", "<Cmd>lua require('spectre').open()<CR>", opts)
 -- search current word
-keymap.set("n", "<leader>sw", ":lua require('spectre').open_visual({select_word=true})<cr>", opts)
-keymap.set("v", "<leader>s", "<esc>:lua require('spectre').open_visual()<cr>", opts)
+keymap.set(
+  "n",
+  "<leader>sw",
+  "<Cmd>lua require('spectre').open_visual({select_word=true})<CR>",
+  opts
+)
+keymap.set("v", "<leader>s", "<Esc><Cmd>lua require('spectre').open_visual()<CR>", opts)
 -- search in current file
-keymap.set("n", "<leader>sp", ":lua require('spectre').open_file_search()<cr>", opts)
+keymap.set("n", "<leader>sp", "<Cmd>lua require('spectre').open_file_search()<CR>", opts)
