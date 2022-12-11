@@ -139,6 +139,7 @@ return packer.startup(function(use)
 
   -- Neovim motions on speed!
   use("phaazon/hop.nvim")
+  use("justinmk/vim-sneak")
   use("unblevable/quick-scope")
 
   -- a faster version of filetype.vim
