@@ -20,7 +20,7 @@ local packer_bootstrap = ensure_packer() -- true if packer was just installed
 
 -- autocommand that reloads neovim and installs/updates/removes plugins
 -- when file is saved
-vim.cmd([[ 
+vim.cmd([[
   augroup packer_user_config
     autocmd!
     autocmd BufWritePost plugins-setup.lua source <afile> | PackerSync
@@ -152,6 +152,9 @@ return packer.startup(function(use)
 
   -- a pretty list for showing diagnostics, references, telescope results, quickfix, location lists
   use("folke/trouble.nvim")
+
+  -- displays a popup with possible keybindings of the command you started typing
+  use("folke/which-key.nvim")
 
   if packer_bootstrap then
     require("packer").sync()

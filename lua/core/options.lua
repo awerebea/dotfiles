@@ -365,3 +365,4 @@ opt.autoindent = true
 opt.pastetoggle = "<F4>"
 opt.whichwrap:append("<,>,[,]")
 opt.mousemoveevent = true
+opt.timeoutlen = 300
