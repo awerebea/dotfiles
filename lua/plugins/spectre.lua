@@ -18,4 +18,4 @@ keymap.set(
 )
 keymap.set("v", "<leader>s", "<Esc><Cmd>lua require('spectre').open_visual()<CR>", opts)
 -- search in current file
-keymap.set("n", "<leader>sp", "<Cmd>lua require('spectre').open_file_search()<CR>", opts)
+keymap.set("n", "<leader>sf", "<Cmd>lua require('spectre').open_file_search()<CR>", opts)
