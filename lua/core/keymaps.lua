@@ -18,6 +18,11 @@ keymap.set(
 keymap.set("n", "<leader>/", "<Cmd><C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 keymap.set("n", "<Esc><Esc>", "<Cmd><C-u>nohlsearch<CR><C-l>", { silent = true, noremap = true })
 
+-- paste over without overwriting register
+vim.cmd([[
+  xnoremap <expr> p 'pgv"'.v:register.'y'
+]])
+
 -- keep selection when indenting
 keymap.set("v", "<", "<gv", { silent = true, noremap = true })
 keymap.set("v", ">", ">gv", { silent = true, noremap = true })
