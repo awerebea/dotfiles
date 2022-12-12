@@ -159,6 +159,9 @@ return packer.startup(function(use)
   -- automatically highlighting other uses of the word under the cursor
   use("RRethy/vim-illuminate")
 
+  -- Markdown preview
+  use("davidgranstrom/nvim-markdown-preview")
+
   if packer_bootstrap then
     require("packer").sync()
   end
