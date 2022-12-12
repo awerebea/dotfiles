@@ -8,4 +8,7 @@ whichkey.setup({
     border = "single", -- none, single, double, shadow
     position = "bottom", -- bottom, top
   },
+  triggers_blacklist = {
+    i = { "<leader>" },
+  },
 })
