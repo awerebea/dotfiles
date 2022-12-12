@@ -156,6 +156,9 @@ return packer.startup(function(use)
   -- displays a popup with possible keybindings of the command you started typing
   use("folke/which-key.nvim")
 
+  -- automatically highlighting other uses of the word under the cursor
+  use("RRethy/vim-illuminate")
+
   if packer_bootstrap then
     require("packer").sync()
   end
