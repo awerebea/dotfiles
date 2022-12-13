@@ -16,9 +16,14 @@ if not typescript_setup then
   return
 end
 
+-- import nvim-navic plugin safely
+local navic_setup, navic = pcall(require, "nvim-navic")
+if not navic_setup then
+  return
+end
+
 local keymap = vim.keymap -- for conciseness
 
--- enable keybinds only for when lsp server available
 local on_attach = function(client, bufnr)
   -- keybind options
   local opts = { noremap = true, silent = true, buffer = bufnr }
@@ -42,6 +47,11 @@ local on_attach = function(client, bufnr)
     keymap.set("n", "<leader>rf", "<Cmd>TypescriptRenameFile<CR>") -- rename file and update imports
     keymap.set("n", "<leader>oi", "<Cmd>TypescriptOrganizeImports<CR>") -- organize imports (not in youtube nvim video)
     keymap.set("n", "<leader>ru", "<Cmd>TypescriptRemoveUnused<CR>") -- remove unused variables (not in youtube nvim video)
+  end
+
+  -- attach nvim-navic winbar
+  if client.server_capabilities.documentSymbolProvider then
+    navic.attach(client, bufnr)
   end
 end
 

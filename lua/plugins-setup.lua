@@ -162,6 +162,9 @@ return packer.startup(function(use)
   -- Markdown preview
   use("davidgranstrom/nvim-markdown-preview")
 
+  -- winbar
+  use("SmiteshP/nvim-navic")
+
   if packer_bootstrap then
     require("packer").sync()
   end
