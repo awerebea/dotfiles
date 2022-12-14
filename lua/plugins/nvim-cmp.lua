@@ -34,11 +34,10 @@ cmp.setup({
     ["<C-f>"] = cmp.mapping.scroll_docs(4),
     ["<C-Space>"] = cmp.mapping.complete(), -- show completion suggestions
     ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-    ["<Esc>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    ["<CR>"] = cmp.mapping.confirm({ select = false }),
   }),
   experimental = {
-    ghost_text = true, -- this feature conflict with copilot.vim's preview.
+    ghost_text = false, -- this feature conflict with copilot.vim's preview.
   },
   -- sources for autocompletion
   sources = cmp.config.sources({
