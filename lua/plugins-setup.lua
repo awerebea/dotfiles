@@ -174,11 +174,9 @@ return packer.startup(function(use)
   -- automatically highlighting other uses of the word under the cursor
   use("RRethy/vim-illuminate")
 
-  -- Markdown preview
-  use("davidgranstrom/nvim-markdown-preview")
+  use("davidgranstrom/nvim-markdown-preview") -- markdown preview
 
-  -- winbar
-  use("SmiteshP/nvim-navic")
+  use("SmiteshP/nvim-navic") -- winbar
 
   use("lewis6991/impatient.nvim") -- improve startup time for Neovim
 
