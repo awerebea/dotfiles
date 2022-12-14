@@ -193,6 +193,9 @@ return packer.startup(function(use)
   -- a legend for keymaps, commands, and autocmds, with which-key.nvim integration
   use({ "mrjones2014/legendary.nvim", requires = { "stevearc/dressing.nvim" } })
 
+  -- clipboard manager neovim plugin with telescope integration
+  use("AckslD/nvim-neoclip.lua")
+
   if packer_bootstrap then
     require("packer").sync()
   end

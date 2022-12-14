@@ -91,6 +91,9 @@ keymap.set("n", "<leader><CR>", "<Cmd>Telescope buffers<CR>", default_opts)
 
 keymap.set("n", "<leader>fh", "<Cmd>Telescope help_tags<CR>", default_opts)
 
+-- list of items copied to clipboard
+keymap.set("n", "<leader>fc", "<Cmd>Telescope neoclip<CR>", default_opts)
+
 -- telescope git commands (not on youtube nvim video)
 keymap.set(
   "n",
