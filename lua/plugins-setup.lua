@@ -190,6 +190,9 @@ return packer.startup(function(use)
   -- improve the default vim.ui interfaces
   use("stevearc/dressing.nvim")
 
+  -- a legend for keymaps, commands, and autocmds, with which-key.nvim integration
+  use({ "mrjones2014/legendary.nvim", requires = { "stevearc/dressing.nvim" } })
+
   if packer_bootstrap then
     require("packer").sync()
   end
