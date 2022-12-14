@@ -88,6 +88,13 @@ treesitter.setup({
       },
     },
   },
+  textsubjects = {
+    enable = true,
+    keymaps = {
+      ["."] = "textsubjects-smart",
+      [";"] = "textsubjects-container-outer",
+    },
+  },
   context_commentstring = { enable = true },
 })
 

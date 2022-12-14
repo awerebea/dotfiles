@@ -122,6 +122,7 @@ return packer.startup(function(use)
     end,
   })
   use("nvim-treesitter/nvim-treesitter-textobjects")
+  use("RRethy/nvim-treesitter-textsubjects")
   use("nvim-treesitter/nvim-treesitter-refactor")
   use("romgrk/nvim-treesitter-context")
   use("p00f/nvim-ts-rainbow")
