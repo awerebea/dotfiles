@@ -39,7 +39,7 @@ telescope.setup({
         ["<C-M-k>"] = actions.cycle_history_prev,
         ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
         ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
-        ["<Esc>"] = actions.close,
+        ["<Esc><Esc>"] = actions.close,
         ["<c-t>"] = trouble.open_with_trouble,
       },
       n = { ["<c-t>"] = trouble.open_with_trouble },
