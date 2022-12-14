@@ -9,6 +9,7 @@ whichkey.setup({
     position = "bottom", -- bottom, top
   },
   triggers_blacklist = {
+    n = { "y" },
     i = { "<leader>" },
   },
 })
