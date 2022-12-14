@@ -187,6 +187,9 @@ return packer.startup(function(use)
     end,
   }) -- peek lines just when you intend
 
+  -- improve the default vim.ui interfaces
+  use("stevearc/dressing.nvim")
+
   if packer_bootstrap then
     require("packer").sync()
   end
