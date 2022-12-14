@@ -126,6 +126,14 @@ return packer.startup(function(use)
   use("romgrk/nvim-treesitter-context")
   use("p00f/nvim-ts-rainbow")
 
+  use({
+    "mfussenegger/nvim-treehopper",
+    config = function()
+      vim.cmd([[omap     <silent> m :<C-U>lua require('tsht').nodes()<CR>]])
+      vim.cmd([[vnoremap <silent> m :lua require('tsht').nodes()<CR>]])
+    end,
+  }) -- Region selection with hints on the AST nodes of a document powered by treesitter
+
   -- Indent lines
   use("lukas-reineke/indent-blankline.nvim")
 
