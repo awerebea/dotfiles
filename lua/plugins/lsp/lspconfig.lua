@@ -42,6 +42,11 @@ local on_attach = function(client, bufnr)
   keymap.set("n", "K", "<Cmd>Lspsaga hover_doc<CR>", opts) -- show documentation for what is under cursor
   keymap.set("n", "<leader>ou", "<Cmd>LSoutlineToggle<CR>", opts) -- see outline on right hand side
 
+  -- pyright specific keymaps
+  if client.name == "pyright" then
+    keymap.set("n", "<leader>oi", "<Cmd>PyrightOrganizeImports<CR>") -- organize imports (not in youtube nvim video)
+  end
+
   -- typescript specific keymaps (e.g. rename file and update imports)
   if client.name == "tsserver" then
     keymap.set("n", "<leader>rf", "<Cmd>TypescriptRenameFile<CR>") -- rename file and update imports
