@@ -84,6 +84,8 @@ return packer.startup(function(use)
 
   use("ThePrimeagen/harpoon") -- getting you where you want with the fewest keystrokes
 
+  use("kiyoon/telescope-insert-path.nvim") -- insert file path on the current buffer using telescope
+
   -- autocompletion
   use("hrsh7th/nvim-cmp") -- completion plugin
   use("hrsh7th/cmp-buffer") -- source for text in buffer

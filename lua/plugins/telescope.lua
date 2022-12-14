@@ -11,6 +11,7 @@ if not actions_setup then
 end
 
 local trouble = require("trouble.providers.telescope")
+local path_actions = require("telescope_insert_path")
 
 -- configure telescope
 telescope.setup({
@@ -42,7 +43,46 @@ telescope.setup({
         ["<Esc><Esc>"] = actions.close,
         ["<c-t>"] = trouble.open_with_trouble,
       },
-      n = { ["<c-t>"] = trouble.open_with_trouble },
+      n = {
+        ["<c-t>"] = trouble.open_with_trouble,
+        ["[i"] = path_actions.insert_relpath_i_visual,
+        ["[I"] = path_actions.insert_relpath_I_visual,
+        ["[a"] = path_actions.insert_relpath_a_visual,
+        ["[A"] = path_actions.insert_relpath_A_visual,
+        ["[o"] = path_actions.insert_relpath_o_visual,
+        ["[O"] = path_actions.insert_relpath_O_visual,
+        ["]i"] = path_actions.insert_abspath_i_visual,
+        ["]I"] = path_actions.insert_abspath_I_visual,
+        ["]a"] = path_actions.insert_abspath_a_visual,
+        ["]A"] = path_actions.insert_abspath_A_visual,
+        ["]o"] = path_actions.insert_abspath_o_visual,
+        ["]O"] = path_actions.insert_abspath_O_visual,
+        -- Additionally, there's insert and normal mode mappings for the same actions:
+        ["{i"] = path_actions.insert_relpath_i_insert,
+        ["{I"] = path_actions.insert_relpath_I_insert,
+        ["{a"] = path_actions.insert_relpath_a_insert,
+        ["{A"] = path_actions.insert_relpath_A_insert,
+        ["{o"] = path_actions.insert_relpath_o_insert,
+        ["{O"] = path_actions.insert_relpath_O_insert,
+        ["}i"] = path_actions.insert_abspath_i_insert,
+        ["}I"] = path_actions.insert_abspath_I_insert,
+        ["}a"] = path_actions.insert_abspath_a_insert,
+        ["}A"] = path_actions.insert_abspath_A_insert,
+        ["}o"] = path_actions.insert_abspath_o_insert,
+        ["}O"] = path_actions.insert_abspath_O_insert,
+        ["-i"] = path_actions.insert_relpath_i_normal,
+        ["-I"] = path_actions.insert_relpath_I_normal,
+        ["-a"] = path_actions.insert_relpath_a_normal,
+        ["-A"] = path_actions.insert_relpath_A_normal,
+        ["-o"] = path_actions.insert_relpath_o_normal,
+        ["-O"] = path_actions.insert_relpath_O_normal,
+        ["+i"] = path_actions.insert_abspath_i_normal,
+        ["+I"] = path_actions.insert_abspath_I_normal,
+        ["+a"] = path_actions.insert_abspath_a_normal,
+        ["+A"] = path_actions.insert_abspath_A_normal,
+        ["+o"] = path_actions.insert_abspath_o_normal,
+        ["+O"] = path_actions.insert_abspath_O_normal,
+      },
     },
     file_ignore_patterns = { "^.git/", ".cache/" },
   },
