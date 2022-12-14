@@ -90,3 +90,10 @@ treesitter.setup({
   },
   context_commentstring = { enable = true },
 })
+
+local status_treesitter_context, treesitter_context = pcall(require, "treesitter-context.config")
+if not status_treesitter_context then
+  return
+end
+
+treesitter_context.setup({ enable = true })
