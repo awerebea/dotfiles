@@ -146,6 +146,7 @@ return packer.startup(function(use)
   use("lewis6991/gitsigns.nvim") -- show line modifications on left hand side
   use("itchyny/vim-gitbranch") -- get current git-branch name
   use("sindrets/diffview.nvim") -- easily cycling through diffs
+  use("rhysd/git-messenger.vim")
 
   -- show buffers as tabs
   use("romgrk/barbar.nvim")
