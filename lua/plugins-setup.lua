@@ -182,6 +182,13 @@ return packer.startup(function(use)
 
   use("lewis6991/impatient.nvim") -- improve startup time for Neovim
 
+  use({
+    "nacro90/numb.nvim",
+    config = function()
+      require("numb").setup()
+    end,
+  }) -- peek lines just when you intend
+
   if packer_bootstrap then
     require("packer").sync()
   end
