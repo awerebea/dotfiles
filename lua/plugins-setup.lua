@@ -180,6 +180,8 @@ return packer.startup(function(use)
   -- winbar
   use("SmiteshP/nvim-navic")
 
+  use("lewis6991/impatient.nvim") -- improve startup time for Neovim
+
   if packer_bootstrap then
     require("packer").sync()
   end
