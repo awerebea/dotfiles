@@ -195,6 +195,8 @@ return packer.startup(function(use)
   -- clipboard manager neovim plugin with telescope integration
   use("AckslD/nvim-neoclip.lua")
 
+  use("chentoast/marks.nvim")
+
   if packer_bootstrap then
     require("packer").sync()
   end

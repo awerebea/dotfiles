@@ -380,3 +380,4 @@ opt.pastetoggle = "<F4>"
 opt.whichwrap:append("<,>,[,]")
 opt.mousemoveevent = true
 opt.timeoutlen = 300
+opt.signcolumn = "yes:2" -- Always show signcolumn, max width 2
