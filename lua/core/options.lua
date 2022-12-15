@@ -91,6 +91,7 @@ opt.sessionoptions:remove({ "folds" })
 opt.undofile = true
 opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
+opt.viewoptions:remove({ "folds" })
 -- }}}
 
 -- {{{ spell check
@@ -294,20 +295,14 @@ opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1"
 -- zM fold all blocks
 -- zR unfold all blocks
 -- za toggle folding
--- zf check :set foldmethod=manual
-opt.foldmethod = "manual" -- manual folding
+-- zf create manual fold, check :set foldmethod=manual
+opt.foldmethod = "expr" -- "manual" for manual folds
+opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter to generate folds
 opt.foldcolumn = "2"
 opt.foldlevel = 2 -- fold levels opened at file opens
 opt.foldlevelstart = 99
 -- opt.foldopen = "all" -- autoopen fold when enter it
 opt.foldnestmax = 3 -- max level of fold
--- Define folds automatically by indent level, but folds may be also created manually
-vim.cmd([[
-augroup vimrc
-  au BufReadPre * setlocal foldmethod=indent
-  au BufWinEnter * if &fdm == 'indent' | setlocal foldmethod=manual | endif
-augroup END
-]])
 
 -- A way to delete 'mkview' for current file
 vim.cmd([[
