@@ -197,6 +197,12 @@ return packer.startup(function(use)
 
   use("chentoast/marks.nvim")
 
+  use({
+    "filipdutescu/renamer.nvim",
+    branch = "master",
+    requires = { { "nvim-lua/plenary.nvim" } },
+  })
+
   if packer_bootstrap then
     require("packer").sync()
   end
