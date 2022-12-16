@@ -153,6 +153,7 @@ return packer.startup(function(use)
 
   -- Neovim motions on speed!
   use("phaazon/hop.nvim")
+  use("ggandor/leap.nvim")
 
   -- a faster version of filetype.vim
   use("nathom/filetype.nvim")

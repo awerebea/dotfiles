@@ -1,8 +1,6 @@
 local opt = vim.opt -- for conciseness
 local keymap = vim.keymap -- for conciseness
 
--- delete single character without copying into register (in visual mode only)
-keymap.set("v", "x", '"_x')
 -- send changed text segment to black hole
 keymap.set({ "n", "v" }, "c", '"_c')
 keymap.set({ "n", "v" }, "C", '"_C')
