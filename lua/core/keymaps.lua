@@ -91,6 +91,9 @@ keymap.set("n", "<leader><CR>", "<Cmd>Telescope buffers<CR>", default_opts)
 
 keymap.set("n", "<leader>fh", "<Cmd>Telescope help_tags<CR>", default_opts)
 
+-- repeat last telescope command and query
+keymap.set("n", "<leader>fr", ":Telescope resume<CR>", default_opts)
+
 -- list of items copied to clipboard
 keymap.set("n", "<leader>fc", "<Cmd>Telescope neoclip<CR>", default_opts)
 
