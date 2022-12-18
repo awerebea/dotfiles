@@ -370,6 +370,11 @@ vim.cmd([[
   augroup END
 ]])
 
+-- Highlight copied text
+vim.cmd([[
+  autocmd TextYankPost * silent! lua vim.highlight.on_yank { higroup="IncSearch", timeout=500 }
+]])
+
 -- misc
 opt.showcmd = true
 opt.laststatus = 3
