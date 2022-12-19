@@ -197,12 +197,6 @@ return packer.startup(function(use)
 
   use("chentoast/marks.nvim")
 
-  use({
-    "filipdutescu/renamer.nvim",
-    branch = "master",
-    requires = { { "nvim-lua/plenary.nvim" } },
-  })
-
   use({ "kevinhwang91/nvim-bqf", ft = "qf" }) -- better quickfix window
 
   use({
