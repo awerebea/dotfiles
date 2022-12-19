@@ -203,6 +203,15 @@ return packer.startup(function(use)
     requires = { { "nvim-lua/plenary.nvim" } },
   })
 
+  use({ "kevinhwang91/nvim-bqf", ft = "qf" }) -- better quickfix window
+
+  use({
+    "junegunn/fzf",
+    run = function()
+      vim.fn["fzf#install"]()
+    end,
+  })
+
   if packer_bootstrap then
     require("packer").sync()
   end
