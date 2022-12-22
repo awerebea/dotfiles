@@ -147,8 +147,9 @@ return packer.startup(function(use)
   use("rhysd/git-messenger.vim")
 
   -- show buffers as tabs
-  use("romgrk/barbar.nvim")
+  use("akinsho/bufferline.nvim")
   use("tiagovla/scope.nvim")
+  use("famiu/bufdelete.nvim")
 
   -- Neovim motions on speed!
   use("phaazon/hop.nvim")
