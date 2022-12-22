@@ -1,1 +1,1 @@
-vim.keymap.set("n", "gz", ":Bdelete<CR>", { noremap = true }) -- close active buffer
+vim.keymap.set("n", "gz", "<Cmd>Bdelete<CR>", { noremap = true }) -- close active buffer

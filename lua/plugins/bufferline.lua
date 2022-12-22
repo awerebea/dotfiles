@@ -30,27 +30,27 @@ bufferline.setup({
 vim.opt.sessionoptions:append({ "globals" })
 
 local keymap = vim.keymap
-keymap.set("n", "]b", ":BufferLineCycleNext<CR>", { silent = true, noremap = true })
-keymap.set("n", "[b", ":BufferLineCyclePrev<CR>", { silent = true, noremap = true })
-keymap.set("n", "<leader>]b", ":BufferLineMoveNext<CR>", { silent = true, noremap = true })
-keymap.set("n", "<leader>[b", ":BufferLineMovePrev<CR>", { silent = true, noremap = true })
+keymap.set("n", "]b", "<Cmd>BufferLineCycleNext<CR>", { silent = true, noremap = true })
+keymap.set("n", "[b", "<Cmd>BufferLineCyclePrev<CR>", { silent = true, noremap = true })
+keymap.set("n", "<leader>]b", "<Cmd>BufferLineMoveNext<CR>", { silent = true, noremap = true })
+keymap.set("n", "<leader>[b", "<Cmd>BufferLineMovePrev<CR>", { silent = true, noremap = true })
 
-keymap.set("n", "<M-S-l>", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
-keymap.set("n", "<M-S-h>", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
-keymap.set("n", "<C-M-S-l>", ":BufferLineMoveNext<CR>", { silent = true, noremap = true })
-keymap.set("n", "<C-M-S-h>", ":BufferLineMovePrev<CR>", { silent = true, noremap = true })
+keymap.set("n", "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { noremap = true, silent = true })
+keymap.set("n", "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { noremap = true, silent = true })
+keymap.set("n", "<C-M-S-l>", "<Cmd>BufferLineMoveNext<CR>", { silent = true, noremap = true })
+keymap.set("n", "<C-M-S-h>", "<Cmd>BufferLineMovePrev<CR>", { silent = true, noremap = true })
 
 -- {{{ Smart buffers/tabs switch
 local tab_switcher_mode = "buffers"
 function ToggleTabSwitcherMode()
   if tab_switcher_mode == "buffers" then
-    keymap.set("n", "<M-S-l>", ":tabnext<CR>", { noremap = true, silent = true })
-    keymap.set("n", "<M-S-h>", ":tabprevious<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>", { noremap = true, silent = true })
     tab_switcher_mode = "tabs"
     print("Switch tabs")
   else
-    keymap.set("n", "<M-S-l>", ":BufferLineCycleNext<CR>", { noremap = true, silent = true })
-    keymap.set("n", "<M-S-h>", ":BufferLineCyclePrev<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { noremap = true, silent = true })
+    keymap.set("n", "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { noremap = true, silent = true })
     tab_switcher_mode = "buffers"
     print("Switch buffers")
   end
