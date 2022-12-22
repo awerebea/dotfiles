@@ -10,7 +10,7 @@ vim.g.lightline = {
   enable = {
     tabline = 0,
   },
-  colorscheme = "rigel",
+  colorscheme = "tokyonight",
   active = {
     left = {
       {
