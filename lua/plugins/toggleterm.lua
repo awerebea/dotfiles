@@ -13,6 +13,7 @@ toggleterm.setup({
       return vim.o.columns * 0.4
     end
   end,
+  shade_terminals = false,
   open_mapping = [[<leader>;]],
   hide_numbers = true, -- hide the number column in toggleterm buffers
   autochdir = true, -- when neovim changes it current directory the terminal will change it's own when next it's opened
