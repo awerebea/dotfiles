@@ -552,25 +552,25 @@ tmux_conf_copy_to_os_clipboard=true
 # -- display -------------------------------------------------------------------
 # pane borders colours:
 tmux_conf_theme_pane_border='#444444'                   # gray
-tmux_conf_theme_pane_active_border='#87d75f'            # my green
+tmux_conf_theme_pane_active_border='#9ece6a'            # my green
 
 # pane indicator colours
-tmux_conf_theme_pane_indicator='#87d75f'                # my green
-tmux_conf_theme_pane_active_indicator='#87d75f'         # my green
+tmux_conf_theme_pane_indicator='#9ece6a'                # my green
+tmux_conf_theme_pane_active_indicator='#9ece6a'         # my green
 
 # status line style
 tmux_conf_theme_message_fg='#000000'                    # black
-tmux_conf_theme_message_bg='#ffd200'                    # my yellow
+tmux_conf_theme_message_bg='#e0af68'                    # my yellow
 tmux_conf_theme_message_attr='bold'
 
 # status line command style (<prefix> : Escape)
-tmux_conf_theme_message_command_fg='#ffd200'            # my yellow
+tmux_conf_theme_message_command_fg='#e0af68'            # my yellow
 tmux_conf_theme_message_command_bg='#000000'            # black
 tmux_conf_theme_message_command_attr='bold'
 
 # window modes style
 tmux_conf_theme_mode_fg='#000000'                       # black
-tmux_conf_theme_mode_bg='#ffd200'                       # my yellow
+tmux_conf_theme_mode_bg='#e0af68'                       # my yellow
 tmux_conf_theme_mode_attr='bold'
 
 # status line style
@@ -586,7 +586,7 @@ tmux_conf_theme_window_status_format='#I #W#{?window_bell_flag,🔔,}#{?window_z
 
 # window current status style
 tmux_conf_theme_window_status_current_fg='#000000'      # black
-tmux_conf_theme_window_status_current_bg='#87d75f'      # my green
+tmux_conf_theme_window_status_current_bg='#9ece6a'      # my green
 tmux_conf_theme_window_status_current_attr='bold'
 tmux_conf_theme_window_status_current_format='#I #W#{?window_zoomed_flag, 🔍,}'
 
@@ -596,7 +596,7 @@ tmux_conf_theme_window_status_bell_bg='default'
 tmux_conf_theme_window_status_bell_attr='blink,bold'
 
 # window last status style
-tmux_conf_theme_window_status_last_fg='#87d75f'         # my green
+tmux_conf_theme_window_status_last_fg='#9ece6a'         # my green
 tmux_conf_theme_window_status_last_bg='default'
 tmux_conf_theme_window_status_last_attr='bold'
 
@@ -606,7 +606,7 @@ tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-ta
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
-tmux_conf_theme_status_left_bg='#87afaf,#87afaf,#4e4e4e,#00afff'
+tmux_conf_theme_status_left_bg='#87afaf,#a9b1d6,#4e4e4e,#00afff'
 tmux_conf_theme_status_left_attr='bold,none,none'
 
 # status right style
@@ -652,10 +652,10 @@ set -g @sysstat_mem_medium_threshold "50"
 set -g @sysstat_mem_stress_threshold "80"
 set -g @sysstat_mem_size_unit "M"
 
-set -g @sysstat_cpu_color_low "#87d75f default default"
+set -g @sysstat_cpu_color_low "#9ece6a default default"
 set -g @sysstat_cpu_color_medium "#d7af5f default default"
 set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
-set -g @sysstat_mem_color_low "#87d75f default default"
+set -g @sysstat_mem_color_low "#9ece6a default default"
 set -g @sysstat_mem_color_medium "#d7af5f default default"
 set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
 
@@ -861,3 +861,21 @@ set -g @save-complete-history-path "$HOME/.tmux/logs"
 
 # Create a new window preserving the path of the current pane
 bind-key c run-shell 'MyCWD="#{pane_current_path}"; tmux new-window -c "$MyCWD"'
+
+# tmux-mode-indicator settings
+# prompt to display when tmux prefix key is pressed
+set -g @mode_indicator_prefix_prompt ' WAIT '
+# prompt to display when tmux is in copy mode
+set -g @mode_indicator_copy_prompt ' COPY '
+# prompt to display when tmux has synchronized panes
+set -g @mode_indicator_sync_prompt ' SYNC '
+# prompt to display when tmux is in normal mode
+set -g @mode_indicator_empty_prompt ' TMUX '
+# style values for prefix prompt
+set -g @mode_indicator_prefix_mode_style 'bg=#bb9af7,fg=#16161e'
+# style values for copy prompt
+set -g @mode_indicator_copy_mode_style 'bg=#e0af68,fg=#16161e'
+# style values for sync prompt
+set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
+# style values for empty prompt
+set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
