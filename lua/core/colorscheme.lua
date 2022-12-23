@@ -14,6 +14,9 @@ require("tokyonight").setup({
     comments = { italic = true },
     keywords = { italic = false },
   },
+  on_colors = function(colors)
+    colors.comment = "#6b77ac"
+  end,
 })
 
 vim.cmd("colorscheme tokyonight")
