@@ -75,6 +75,15 @@ vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space
 opt.backup = true
 opt.backupdir:remove(".")
 opt.backupdir:append(".")
+-- Try to create a backup directory in the default location if it doesn't exist
+vim.cmd([[
+  if !isdirectory($HOME."/.local/state/nvim/backup")
+    try
+      silent call mkdir ($HOME."/.local/state/nvim/backup", "p")
+    catch
+    endtry
+  endif
+]])
 
 -- Default location of swap files (echo &directory) is ~/.local/state/nvim/swap
 opt.swapfile = true
