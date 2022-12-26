@@ -16,6 +16,7 @@ require("tokyonight").setup({
   },
   on_colors = function(colors)
     colors.comment = "#6b77ac"
+    colors.fg_gutter = "#4e567f"
   end,
 })
 
