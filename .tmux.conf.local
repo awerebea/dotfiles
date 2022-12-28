@@ -464,6 +464,9 @@ set -g status-interval 1      # redraw status line every 1 second
 
 # split current window vertically
 bind "\\" split-window -h
+bind M-\\ split-window -hb # create new pane left of current-pane
+# split current window horizontally
+bind M-- split-window -vb # create new pane above current-pane
 # split current pane full width into two, left and right
 bind | split-window -fhb # create new pane left of target-pane
 bind M-| split-window -fh
@@ -823,7 +826,7 @@ bind-key -T marked-pane-actions M select-pane -M
 bind-key -T marked-pane-actions g switch-client -t '{marked}'
 # swap the current pane with the marked
 bind-key -T marked-pane-actions s swap-pane
-# swap the current window with the one containing the marked panel
+# swap the current window with the one containing the marked pane
 bind-key -T marked-pane-actions w swap-window
 # join(move) the marked pane to the current window next to the current pane
 bind-key -T marked-pane-actions j join-pane
