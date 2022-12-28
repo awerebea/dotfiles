@@ -293,7 +293,7 @@ plugins=(
           sudo
           systemd
           terraform
-          tmux
+          # tmux
           tmux-vim-integration
           ubuntu
           vagrant
@@ -604,6 +604,9 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
 alias vv='f -e "$EDITOR"'
 alias v="$EDITOR"
+# tmux aliases
+alias tksv='tmux kill-server'
+alias tksa='tmux kill-session -a' # kill other sessions except the current one
 # To avoid repeating the last command if misspelled when calling the rr alias
 alias r="echo \"Don't use that shit!\""
 # Ripgrep alias to search in hidden files but ignore .git directory
