@@ -176,10 +176,21 @@ vim.cmd([[
       if winwidth(0) > 50
         let l:current_line = printf('%2s', line('.'))
         let l:max_line = printf('%-2s', line('$'))
-        let l:current_col = printf('%3s', col('.'))
-        let l:virt_col = printf('%-2s', virtcol('.'))
-        let l:lineinfo = l:current_line . '/' . l:max_line . ' '
-    \ . l:current_col . '/' . l:virt_col
+        let l:current_col = col('.')
+        let l:current_virt_col = virtcol('.')
+        let l:total_col = col('$')
+        let l:total_virt_col = virtcol('$')
+        if l:current_col != l:current_virt_col
+          let l:col_num = printf('%2s(%s)', l:current_col, l:current_virt_col)
+        else
+          let l:col_num = printf('%2s', l:current_col)
+        endif
+        if l:total_col != l:total_virt_col
+          let l:total_col = printf('%s(%s)', l:total_col, l:total_virt_col)
+        else
+          let l:total_col = printf('%-2s', l:total_col)
+        endif
+        let l:lineinfo = l:current_line . '/' . l:max_line . ' ' . l:col_num . '/' . l:total_col
         return l:lineinfo
       else
         return ''
