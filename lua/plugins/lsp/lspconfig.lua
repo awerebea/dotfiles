@@ -71,12 +71,6 @@ for type, icon in pairs(signs) do
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 end
 
--- configure html server
-lspconfig["html"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
 -- configure typescript server with plugin
 typescript.setup({
   server = {
@@ -85,71 +79,56 @@ typescript.setup({
   },
 })
 
--- configure css server
-lspconfig["cssls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+-- Configure servers
+local servers = {
+  "bashls",
+  "cssls",
+  "emmet_ls",
+  "gopls",
+  "html",
+  "pyright",
+  "rust_analyzer",
+  "sumneko_lua",
+  "tailwindcss",
+  "terraformls",
+  "tflint",
+  "tsserver",
+}
 
--- configure tailwindcss server
-lspconfig["tailwindcss"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+for _, lsp in ipairs(servers) do
+  local args = {
+    capabilities = capabilities,
+    on_attach = on_attach,
+  }
 
--- configure emmet language server
-lspconfig["emmet_ls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  filetypes = {
-    "html",
-    "typescriptreact",
-    "javascriptreact",
-    "css",
-    "sass",
-    "scss",
-    "less",
-    "svelte",
-  },
-})
-
--- configure lua server (with special settings)
-lspconfig["sumneko_lua"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-  settings = { -- custom settings for lua
-    Lua = {
-      -- make the language server recognize "vim" global
-      diagnostics = {
-        globals = { "vim" },
-      },
-      workspace = {
-        -- make language server aware of runtime files
-        library = {
-          [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-          [vim.fn.stdpath("config") .. "/lua"] = true,
+  if lsp == "emmet_ls" then
+    args.filetypes = {
+      "css",
+      "html",
+      "javascriptreact",
+      "less",
+      "sass",
+      "scss",
+      "svelte",
+      "typescriptreact",
+    }
+  elseif lsp == "sumneko_lua" then
+    args.settings = { -- custom settings for lua
+      Lua = {
+        -- make the language server recognize "vim" global
+        diagnostics = {
+          globals = { "vim" },
+        },
+        workspace = {
+          -- make language server aware of runtime files
+          library = {
+            [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+            [vim.fn.stdpath("config") .. "/lua"] = true,
+          },
         },
       },
-    },
-  },
-})
+    }
+  end
 
-lspconfig["pyright"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
-lspconfig["terraformls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
-lspconfig["tflint"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
-
-lspconfig["bashls"].setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
-})
+  lspconfig[lsp].setup(args)
+end
