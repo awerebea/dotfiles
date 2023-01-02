@@ -1168,6 +1168,7 @@ fi
 
 # globalias filter values (commands that should not be expanded)
 export GLOBALIAS_FILTER_VALUES=(
+  diff
   f z vv
   grep fgrep egrep rg
   l ll lle lT llT
