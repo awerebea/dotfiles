@@ -839,6 +839,9 @@ set -g @easy-motion-prefix "Space"
 # highlight all word beginnings (bidirectional)
 # set -g @easy-motion-default-motion "bd-w"
 
+# Start rectangle (block) selection in copy-mode
+bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
+
 # tmux-menus plugin settings
 set -g @menus_trigger '@'
 
