@@ -1320,3 +1320,21 @@ fi
 if [[ $commands[direnv] ]]; then
   eval "$(direnv hook zsh)"
 fi
+
+# Repeat given char N times using shell function
+rep(){
+  local start=1
+  local end=${1:-80}
+  local str="${2:-=}"
+  printf "$str%0.s" {$start..$end}
+}
+
+# Go to the given number of levels up
+up(){
+  local num=${1:-1}
+  if [[ ! $num =~ ^[0-9]+$ ]]; then
+    echo "Invalid input of the number of levels to go up."
+    return
+  fi
+  eval "$(echo -n 'cd '; rep $num '../')"
+}
