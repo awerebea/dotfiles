@@ -187,20 +187,7 @@ return packer.startup(function(use)
   }) -- peek lines just when you intend
 
   -- improve the default vim.ui interfaces
-  use({
-    "stevearc/dressing.nvim",
-    config = function()
-      require("dressing").setup({
-        input = {
-          override = function(conf)
-            conf.col = -1
-            conf.row = 0
-            return conf
-          end,
-        },
-      })
-    end,
-  })
+  use("stevearc/dressing.nvim")
 
   -- a legend for keymaps, commands, and autocmds, with which-key.nvim integration
   use({ "mrjones2014/legendary.nvim", requires = { "stevearc/dressing.nvim" } })
@@ -222,9 +209,7 @@ return packer.startup(function(use)
   use({
     "smjonas/inc-rename.nvim",
     config = function()
-      require("inc_rename").setup({
-        input_buffer_type = "dressing",
-      })
+      require("inc_rename").setup()
     end,
   }) -- incremental LSP renaming based on Neovim's command-preview feature
 
