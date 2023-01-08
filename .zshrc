@@ -1339,3 +1339,7 @@ up(){
   fi
   eval "$(echo -n 'cd '; rep $num '../')"
 }
+
+ if [[ "$(< /proc/sys/kernel/osrelease)" == *Microsoft ]]; then
+  export DISPLAY="$(echo -n $(hostname -I)):0"
+ fi
