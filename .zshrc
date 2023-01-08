@@ -288,7 +288,7 @@ plugins=(
           kafka
           kubectl
           kubectx
-          auto-notify
+          # auto-notify
           pass
           rsync
           sudo
