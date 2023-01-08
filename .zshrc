@@ -1,4 +1,5 @@
 zmodload zsh/zprof
+zstyle ':omz:update' mode disabled
 
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
 
