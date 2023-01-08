@@ -44,3 +44,5 @@ SwitchToApp(appTitle, appPath)
 <#g::SwitchToApp("Telegram.exe", "D:\Distrib\_Personal Software\Telegram\Telegram.exe")
 ; Firefox
 <#f::SwitchToApp("firefox.exe", "C:\Program Files\Mozilla Firefox\firefox.exe")
+; Qalculate
+<#q::SwitchToApp("qalculate-gtk.exe", "D:\Distrib\_Personal Software\qalculate\qalculate-gtk.exe")
