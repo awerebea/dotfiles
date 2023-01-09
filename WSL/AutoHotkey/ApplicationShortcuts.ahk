@@ -46,3 +46,5 @@ SwitchToApp(appTitle, appPath)
 <#f::SwitchToApp("firefox.exe", "C:\Program Files\Mozilla Firefox\firefox.exe")
 ; Qalculate
 <#q::SwitchToApp("qalculate-gtk.exe", "D:\Distrib\_Personal Software\qalculate\qalculate-gtk.exe")
+; Total Commander
+<#t::SwitchToApp("TOTALCMD64.EXE", "D:\Distrib\_Personal Software\Total Commander\TOTALCMD64.EXE")
