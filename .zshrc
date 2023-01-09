@@ -1340,6 +1340,6 @@ up(){
   eval "$(echo -n 'cd '; rep $num '../')"
 }
 
- if [[ "$(< /proc/sys/kernel/osrelease)" == *Microsoft ]]; then
-  export DISPLAY="$(echo -n $(hostname -I)):0"
+ if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
+  export DISPLAY="$(ip route show default | sed -n 's/.*via \([^ ]\+\).*$/\1/p'):0"
  fi
