@@ -1340,6 +1340,15 @@ up(){
   eval "$(echo -n 'cd '; rep $num '../')"
 }
 
+# WSL specific settings
  if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
   export DISPLAY="$(ip route show default | sed -n 's/.*via \([^ ]\+\).*$/\1/p'):0"
+  if [[ -n $(pgrep ssh-agent) ]]; then
+    if [[ -z $SSH_AGENT_PID ]]; then
+      export SSH_AGENT_PID=$(pgrep ssh-agent | head -n1)
+      export SSH_AUTH_SOCK=$(find /tmp/ -type s -name "agent.$((SSH_AGENT_PID-1))")
+    fi
+  else
+      eval $(ssh-agent -s) > /dev/null
+  fi
  fi
