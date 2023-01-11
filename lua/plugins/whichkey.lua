@@ -11,5 +11,6 @@ whichkey.setup({
   triggers_blacklist = {
     n = { "y" },
     i = { "<leader>" },
+    c = { "w" },
   },
 })
