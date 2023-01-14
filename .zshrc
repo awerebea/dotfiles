@@ -1329,4 +1329,11 @@ up(){
   else
       eval $(ssh-agent -s) > /dev/null
   fi
+  # Fix long Ranger startup in Tmux
+  clean_path='PATH=$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")'
+  rr="$clean_path ranger --choosedir=\$HOME/.rangerdir;"
+  rr+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+  alias rr=$rr
+  alias ranger="$clean_path ranger"
+  unset rr clean_path
  fi
