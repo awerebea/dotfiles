@@ -652,10 +652,7 @@ omz-update () {
 
 # Store the alias command in a variable to prevent an error using the alias_for
 # function.
-rr='ranger --choosedir=$HOME/.rangerdir;'
-rr+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
-alias rr=$rr
-unset rr
+alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 
 # Define exa aliases conditionally
