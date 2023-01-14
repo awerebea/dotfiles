@@ -1115,20 +1115,20 @@ expand_command_line () {
   CYAN='\033[1;36m'
   BLUE='\033[0;34m'
   NC='\033[0m'
-  excluded_commands=(nvim rg)
+  excluded_aliases=(nvim rg rr ranger)
   first=$(echo "$1" | awk '{print $1;}')
-  rest=$(echo ${${1}/"${first}"/})
-  if [[ -n "${first//-//}" ]]; then # is not hypen
-    full_cmd="$(alias_for "${first}")"
-    # Check if expanded command string heve more than one word (have spaces)
-    # to avoid alias=command output
-    if [[ ! "$full_cmd" =~ ' ' ]]; then
-      full_cmd="$(cut -d "=" -f2- <<< "$full_cmd")"
-    fi
-    # Check if there's a command for the alias
-    if [[ -n "$full_cmd" ]]; then # If there was
-      # Check if the command is not in the exluded list
-      if [[ ! "${excluded_commands[*]}" =~ "${full_cmd%% *}" ]]; then
+  # Check if the alias is not in the exluded list
+  if [[ ! "${excluded_aliases[*]}" =~ "$first" ]]; then
+    rest=$(echo ${${1}/"${first}"/})
+    if [[ -n "${first//-//}" ]]; then # is not hypen
+      full_cmd="$(alias_for "${first}")"
+      # Check if expanded command string heve more than one word (have spaces)
+      # to avoid alias=command output
+      if [[ ! "$full_cmd" =~ ' ' ]]; then
+        full_cmd="$(cut -d "=" -f2- <<< "$full_cmd")"
+      fi
+      # Check if there's a command for the alias
+      if [[ -n "$full_cmd" ]]; then # If there was
         echo "  $CYAN↳$NC $BLUE${full_cmd} $NC${rest:1}" # Print it
       fi
     fi
