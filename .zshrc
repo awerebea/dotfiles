@@ -178,24 +178,6 @@ if [[ ! -f "$ZSH/custom/plugins/fzf-fasd/fzf-fasd.plugin.zsh" ]]; then
   git clone https://github.com/wookayin/fzf-fasd "$ZSH/custom/plugins/fzf-fasd"
 fi
 
-# fzf-tab
-if [[ ! -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
-  git clone https://github.com/Aloxaf/fzf-tab "$ZSH/custom/plugins/fzf-tab"
-fi
-if [[ -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
-  # disable sort when completing `git checkout`
-  zstyle ':completion:*:git-checkout:*' sort false
-  zstyle ':completion:*:git-branch:*' sort false
-  # set descriptions format to enable group support
-  zstyle ':completion:*:descriptions' format '[%d]'
-  # switch group using `,` and `.`
-  zstyle ':fzf-tab:*' switch-group ',' '.'
-  # set list-colors to enable filename colorizing
-  zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-  # preview directory's content with exa when completing cd
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
-fi
-
 # kafka
 if [[ ! -f "$ZSH/custom/plugins/kafka/kafka.plugin.zsh" ]]; then
   git clone https://github.com/Dabz/kafka-zsh-completions \
@@ -276,7 +258,6 @@ plugins=(
           fasd
           forgit
           fzf-fasd
-          fzf-tab
           git-flow
           git
           git-extra-commands
