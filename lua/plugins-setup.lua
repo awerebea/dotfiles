@@ -213,6 +213,13 @@ return packer.startup(function(use)
     end,
   }) -- incremental LSP renaming based on Neovim's command-preview feature
 
+  use({
+    "adoyle-h/lsp-toggle.nvim",
+    config = function()
+      require("lsp-toggle").setup()
+    end,
+  })
+
   if packer_bootstrap then
     require("packer").sync()
   end
