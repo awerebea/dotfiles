@@ -7,19 +7,14 @@ creds_temp_dir="$(dirname "$creds_temp")"
 
 mkdir -p "$creds_temp_dir" 2> /dev/null
 echo > "$creds_temp"
-for i in torana-audit torana-shared torana-dev torana-test torana-stage torana-prod
+for i in torana-audit torana-shared torana-dev torana-test torana-stage torana-prod torana-p2dev
 do
-  aws-vault exec $i --json > "$creds_temp_dir"/$i.json
-  echo "[$i]" >> "$creds_temp"
-  echo -n aws_access_key_id= >> "$creds_temp"
-  cat "$creds_temp_dir"/$i.json | jq .AccessKeyId >> "$creds_temp"
-  echo >> "$creds_temp"
-  echo -n aws_secret_access_key= >> "$creds_temp"
-  cat "$creds_temp_dir"/$i.json | jq .SecretAccessKey >> "$creds_temp"
-  echo >> "$creds_temp"
-  echo -n aws_session_token= >> "$creds_temp"
-  cat "$creds_temp_dir"/$i.json | jq .SessionToken >> "$creds_temp"
-  echo >> "$creds_temp"
+    aws-vault exec "$i" --json > "$creds_temp_dir/$i.json"
+    { echo "[$i]"; \
+            echo -n aws_access_key_id=; jq .AccessKeyId "$creds_temp_dir/$i.json"; echo; \
+            echo -n aws_secret_access_key=; jq .SecretAccessKey "$creds_temp_dir/$i.json"; echo; \
+        echo -n aws_session_token=; jq .SessionToken "$creds_temp_dir/$i.json"; echo; } \
+        >> "$creds_temp"
 done
 cp "$creds_temp" "$creds"
 
