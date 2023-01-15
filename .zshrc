@@ -671,7 +671,6 @@ omz-update () {
 
 # Store the alias command in a variable to prevent an error using the alias_for
 # function.
-alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 
 # Define exa aliases conditionally
@@ -768,7 +767,8 @@ fi
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
   lazy_nvm () {
-    unset -f nvm npm node vim nvim ranger cdk # unset -f == unfunction
+    unset -f nvm npm node vim nvim cdk 2>/dev/null # unset -f == unfunction
+    [[ ! "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]] && unset -f ranger rr
     [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
@@ -778,8 +778,14 @@ if [ -d "$HOME/.nvm" ]; then
   node () { lazy_nvm; $0 "$@" }
   vim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
   nvim () { lazy_nvm; $0 "$@" } # for node-dependent plugins to work in (n)vim
-  ranger () { lazy_nvm; $0 "$@" }
   cdk () { lazy_nvm; $0 "$@" }
+  ranger () { lazy_nvm; $0 "$@" }
+  rr () {
+    lazy_nvm
+    alias_def='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+    alias rr=$alias_def
+    eval $alias_def "$@"
+  }
 fi
 
 # Lazy loading rbenv if exists
@@ -1358,10 +1364,41 @@ bindkey '^I' fzf-tab-complete-wrapper
       eval $(ssh-agent -s) > /dev/null
   fi
   # Fix long Ranger startup in Tmux
-  clean_path='PATH=$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")'
-  rr="$clean_path ranger --choosedir=\$HOME/.rangerdir;"
-  rr+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
-  alias rr=$rr
-  alias ranger="$clean_path ranger"
-  unset rr clean_path
+  if [ -d "$HOME/.nvm" ]; then
+    ranger () {
+      lazy_nvm
+      unset -f ranger rr
+      clean_path='PATH=$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")'
+      # rr
+      alias_def="$clean_path ranger --choosedir=\$HOME/.rangerdir;"
+      alias_def+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+      alias rr=$alias_def
+      # ranger
+      alias_def="$clean_path ranger"
+      alias ranger=$alias_def
+      # launch ranger
+      eval $clean_path $alias_def "$@"
+    }
+    rr () {
+      lazy_nvm
+      unset -f ranger rr
+      clean_path='PATH=$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")'
+      # ranger
+      alias_def="$clean_path ranger"
+      alias ranger=$alias_def
+      # rr
+      alias_def="$clean_path ranger --choosedir=\$HOME/.rangerdir;"
+      alias_def+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+      alias rr=$alias_def
+      # launch rr
+      eval $clean_path $alias_def "$@"
+    }
+  else
+    clean_path='PATH=$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")'
+    alias ranger="$clean_path ranger"
+    alias_def="$clean_path ranger --choosedir=\$HOME/.rangerdir;"
+    alias_def+=' cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+    alias rr=$alias_def
+    unset alias_def clean_path
+  fi
  fi
