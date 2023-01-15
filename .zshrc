@@ -1337,6 +1337,15 @@ up(){
   eval "$(echo -n 'cd '; rep $num '../')"
 }
 
+# {{{ Fix fzf-tab plugin halt on ../<tab> in git repo
+# https://stackoverflow.com/a/41420448/14110650
+function fzf-tab-complete-wrapper() {
+    zle fzf-tab-complete
+}
+zle -N fzf-tab-complete-wrapper
+bindkey '^I' fzf-tab-complete-wrapper
+# }}}
+
 # WSL specific settings
  if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
   export DISPLAY="$(ip route show default | sed -n 's/.*via \([^ ]\+\).*$/\1/p'):0"
