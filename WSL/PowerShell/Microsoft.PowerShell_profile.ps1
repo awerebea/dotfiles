@@ -96,6 +96,8 @@ Remove-Alias -Force -Name grba 2>&1 | out-null; function grba() { git rebase --a
 Remove-Alias -Force -Name grbc 2>&1 | out-null; function grbc() { git rebase --continue $args }
 Remove-Alias -Force -Name grbi 2>&1 | out-null; function grbi() { git rebase -i $args }
 Remove-Alias -Force -Name grbipd 2>&1 | out-null; function grbipd() { git rebase -i --committer-date-is-author-date $args }
+Remove-Alias -Force -Name grbpd 2>&1 | out-null; function grbpd() { git rebase --committer-date-is-author-date $args }
+Remove-Alias -Force -Name grbpdrm 2>&1 | out-null; function grbpd() { git rebase --committer-date-is-author-date --rebase-merges $args }
 Remove-Alias -Force -Name grev 2>&1 | out-null; function grev() { git revert $args }
 Remove-Alias -Force -Name grh 2>&1 | out-null; function grh() { git reset $args }
 Remove-Alias -Force -Name grhh 2>&1 | out-null; function grhh() { git reset --hard $args }
@@ -114,5 +116,6 @@ Remove-Alias -Force -Name gsts 2>&1 | out-null; function gsts() { git stash show
 Remove-Alias -Force -Name gsu 2>&1 | out-null; function gsu() { git submodule update $args }
 Remove-Alias -Force -Name gsw 2>&1 | out-null; function gsw() { git switch $args }
 Remove-Alias -Force -Name gswc 2>&1 | out-null; function gswc() { git switch -c $args }
+Remove-Alias -Force -Name gupv 2>&1 | out-null; function gupv() { git pull --rebase -v $args }
 
 New-Alias v nvim
