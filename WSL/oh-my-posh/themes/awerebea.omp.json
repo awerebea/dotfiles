@@ -161,7 +161,7 @@
             "always_enabled": true
           },
           "style": "plain",
-          "template": " {{ if gt .Code 0 }} \u2718 {{ .Meaning }} ({{ .Code }}){{ else }}\u2714{{ end }} ",
+          "template": " {{ if gt .Code 0 }} \u2718 {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }} ",
           "type": "exit"
         },
         {
