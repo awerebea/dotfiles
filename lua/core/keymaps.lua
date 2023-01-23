@@ -133,3 +133,11 @@ keymap.set("n", "<leader>ssr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", defau
 
 -- Toggle show non-visible white spaces
 keymap.set("n", "<leader>ll", "<Cmd>set list!<CR>", default_opts)
+
+-- Remove duplicate lines (leave only the last occurrence)
+keymap.set(
+  "n",
+  "<leader>rd",
+  "<Cmd>g/^\\(.*\\)\\ze\\n\\%(.*\\n\\)*\\1$/d<CR>",
+  vim.tbl_extend("force", default_opts, { desc = "Remove duplicarte lines" })
+)
