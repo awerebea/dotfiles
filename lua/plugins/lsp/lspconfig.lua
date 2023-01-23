@@ -36,7 +36,7 @@ local on_attach = function(client, bufnr)
   keymap.set("n", "<leader>ca", "<Cmd>Lspsaga code_action<CR>", opts) -- see available code actions
   keymap.set("n", "<leader>rn", function()
     return ":IncRename " .. vim.fn.expand("<cword>")
-  end, { expr = true, noremap = true, silent = true, buffer = bufnr })
+  end, vim.tbl_extend("force", opts, { expr = true, desc = "Rename symbol" }))
   keymap.set("n", "<leader>dl", "<Cmd>Lspsaga show_line_diagnostics<CR>", opts) -- show  diagnostics for line
   keymap.set("n", "<leader>dc", "<Cmd>Lspsaga show_cursor_diagnostics<CR>", opts) -- show diagnostics for cursor
   keymap.set("n", "[g", "<Cmd>Lspsaga diagnostic_jump_prev<CR>", opts) -- jump to previous diagnostic in buffer
