@@ -367,7 +367,7 @@ if [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   # Home macOS
   alias o='a -e open' # quick opening files with open
   alias sudo='sudo '
-  alias sudoedit="sudo vim"
+  alias sudoedit="sudo $EDITOR"
   if [ -d "$HOME/Library/Python/3.7/bin" ] &&
     [[ ":$PATH:" != *":$HOME/Library/Python/3.7/bin:"* ]]; then
       export PATH="$PATH:$HOME/Library/Python/3.7/bin"
@@ -572,10 +572,10 @@ unset BR_SCRIPT
 [[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
 # Personal aliases
-alias zshconfig="vim ~/.zshrc"
-alias vimconfig="vim ~/.vimrc"
-alias rangerconfig="vim ~/.config/ranger/rc.conf"
-alias zhistedit="vim ~/.zsh_history"
+alias zshconfig="$EDITOR ~/.zshrc"
+alias vimconfig="$EDITOR ~/.vimrc"
+alias rangerconfig="$EDITOR ~/.config/ranger/rc.conf"
+alias zhistedit="$EDITOR ~/.zsh_history"
 alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 alias cls="clear"
 alias -g B='| bat -n'
@@ -904,9 +904,9 @@ setopt CORRECT_ALL
 export RANGER_LOAD_DEFAULT_RC=FALSE
 export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 
-# set vim as the default pager for man pages
+# set $EDITOR as the default pager for man pages
 export MANPAGER="/bin/sh -c \"col -b | \
-  vim -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
+  $EDITOR -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
 
 # Set Bat theme
 export BAT_THEME="TwoDark"
@@ -1131,7 +1131,7 @@ expand_command_line () {
   CYAN='\033[1;36m'
   BLUE='\033[0;34m'
   NC='\033[0m'
-  excluded_aliases=(nvim rg rr ranger)
+  excluded_aliases=(grep nvim ranger rg rr)
   first=$(echo "$1" | awk '{print $1;}')
   # Check if the alias is not in the exluded list
   if [[ ! "${excluded_aliases[*]}" =~ "$first" ]]; then
@@ -1215,8 +1215,8 @@ bindkey '^[^M' autosuggest-execute
 bindkey '^[[H' beginning-of-line
 # End to move to the start of line
 bindkey '^[[F' end-of-line
-# Ctrl+x,Ctrl+v to open file in vim using fzf
-bindkey -s '^x^v' 'vim $(fzf)^M'
+# Ctrl+x,Ctrl+v to open file in $EDITOR using fzf
+bindkey -s '^x^v' '$EDITOR $(fzf)^M'
 
 bindkey '^[y' yank-pop
 
