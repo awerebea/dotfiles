@@ -119,7 +119,7 @@ return {
     Tab = "",
     Table = "",
     Target = "",
-    Telescope = "",
+    Telescope = "🔍",
     Text = "",
     Tree = "",
     Triangle = "契",

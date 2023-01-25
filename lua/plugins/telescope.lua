@@ -138,13 +138,8 @@ return {
         pickers = {
           find_files = {
             hidden = true,
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
           },
-          -- find_files = {
-          --   theme = "dropdown",
-          --   previewer = false,
-          --   hidden = true,
-          --   find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
-          -- },
           live_grep = {
             only_sort_text = true,
           },
@@ -189,6 +184,7 @@ return {
       telescope.load_extension "project"
       telescope.load_extension "projects"
       telescope.load_extension "aerial"
+      telescope.load_extension "neoclip"
     end,
   },
   {
