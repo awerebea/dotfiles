@@ -377,7 +377,7 @@ vim.opt.timeoutlen = 300
 
 vim.o.formatoptions = "jcroqlnt"
 vim.opt.breakindent = true
-vim.opt.cmdheight = 0
+vim.opt.cmdheight = 1
 vim.opt.completeopt = "menuone,noselect"
 vim.opt.conceallevel = 3
 vim.opt.confirm = true

@@ -98,4 +98,12 @@ return {
     "szw/vim-maximizer",
     keys = { { "<leader>z", "<Cmd>MaximizerToggle<CR>", mode = { "n", "v" } } },
   },
+  {
+    "simeji/winresizer",
+    cmd = { "WinResizerStartResize" },
+    keys = { { "<C-e>" } },
+    config = function(_, _)
+      vim.g.winresizer_finish_with_escape = 1
+    end,
+  },
 }
