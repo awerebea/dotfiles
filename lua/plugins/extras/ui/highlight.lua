@@ -2,7 +2,20 @@ return {
   {
     "RRethy/vim-illuminate",
     event = "BufReadPost",
-    opts = { delay = 200 },
+    opts = {
+      providers = {
+        "regex",
+        "lsp",
+        "treesitter",
+      },
+      filetypes_denylist = {
+        "dirvish",
+        "fugitive",
+        "NvimTree",
+      },
+      delay = 100,
+      min_count_to_highlight = 2,
+    },
     config = function(_, opts)
       require("illuminate").configure(opts)
     end,
