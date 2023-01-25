@@ -2,15 +2,25 @@ return {
   "nvim-tree/nvim-tree.lua",
   cmd = { "NvimTreeToggle" },
   keys = {
-    { "<leader>fe", "<cmd>NvimTreeToggle<cr>", desc = "Explorer" },
+    { "<leader>e", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
+    { "<F2>", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
+    { "<leader><F2>", "<Cmd>NvimTreeFindFile<CR>", desc = "Explorer" },
   },
   opts = {
     disable_netrw = false,
     hijack_netrw = true,
     respect_buf_cwd = true,
     view = {
-      number = true,
-      relativenumber = true,
+      --  number = true,
+      --  relativenumber = true,
+      adaptive_size = true,
+      mappings = {
+        list = {
+          { key = "u", action = "dir_up" },
+          { key = "h", action = "close_node" },
+          { key = "l", action = "edit" },
+        },
+      },
     },
     filters = {
       custom = { ".git" },
@@ -23,7 +33,24 @@ return {
     actions = {
       open_file = {
         quit_on_open = true,
+        window_picker = {
+          enable = false,
+        },
       },
     },
+    renderer = {
+      icons = {
+        glyphs = {
+          folder = {
+            arrow_closed = "", -- arrow when folder is closed
+            arrow_open = "", -- arrow when folder is open
+          },
+        },
+      },
+    },
+    sort_by = "case_sensitive",
+    --  git = {
+    --    ignore = false,
+    --  },
   },
 }
