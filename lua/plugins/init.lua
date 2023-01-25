@@ -122,4 +122,8 @@ return {
       require("colorizer").setup()
     end,
   },
+  {
+    "inkarkat/vim-ReplaceWithRegister",
+    event = "VeryLazy",
+  },
 }
