@@ -102,34 +102,6 @@ keymap("n", "<leader>e", "<Cmd>NvimTreeToggle<CR>", default_opts)
 keymap("n", "<F2>", "<Cmd>NvimTreeToggle<CR>", default_opts)
 keymap("n", "<leader><F2>", "<Cmd>NvimTreeFindFile<CR>", default_opts)
 
--- telescope
--- find files within current working directory, respects .gitignore
-keymap("n", "<leader>ff", "<Cmd>Telescope find_files<CR>", default_opts)
--- find files within current working directory, respects .gitignore
-keymap("n", "<C-p>", "<Cmd>Telescope find_files<CR>", default_opts)
--- find string in current working directory as you type
-keymap("n", "<leader>fg", "<Cmd>Telescope live_grep<CR>", default_opts)
--- find word under cursor in current working directory
-keymap("n", "<leader>fw", "<Cmd>Telescope grep_string<CR>", default_opts)
--- list open buffers in current neovim instance
-keymap("n", "<leader>fb", "<Cmd>Telescope buffers<CR>", default_opts)
--- list open buffers in current neovim instance
-keymap("n", "<leader><CR>", "<Cmd>Telescope buffers<CR>", default_opts)
-
-keymap("n", "<leader>fh", "<Cmd>Telescope help_tags<CR>", default_opts)
-
--- repeat last telescope command and query
-keymap("n", "<leader>fr", "<Cmd>Telescope resume<CR>", default_opts)
-
--- list of items copied to clipboard
-keymap("n", "<leader>fc", "<Cmd>Telescope neoclip<CR>", default_opts)
-
--- telescope git commands (not on youtube nvim video)
-keymap("n", "<leader>glg", "<Cmd>echo 'Git commits'<CR> <Cmd>Telescope git_commits<CR>", default_opts)
-keymap("n", "<leader>glgf", "<Cmd>echo 'Git commits of the current file'<CR> <Cmd>Telescope git_bcommits<CR>", default_opts)
-keymap("n", "<leader>gb", "<Cmd>echo 'Git branches'<CR> <Cmd>Telescope git_branches<CR>", default_opts)
-keymap("n", "<leader>gst", "<Cmd>echo 'Git status'<CR> <Cmd>Telescope git_status<CR>", default_opts)
-
 -- restart lsp server (not on youtube nvim video)
 keymap("n", "<leader>rs", "<Cmd>LspRestart<CR>", default_opts) -- mapping to restart lsp if necessary
 
