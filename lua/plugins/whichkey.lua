@@ -20,8 +20,17 @@ return {
       wk.setup {
         show_help = true,
         plugins = { spelling = true },
-        key_labels = { ["<leader>"] = "SPC" },
+        key_labels = { ["<leader>"] = "Leader" },
         triggers = "auto",
+        window = {
+          border = "single", -- none, single, double, shadow
+          position = "bottom", -- bottom, top
+        },
+        triggers_blacklist = {
+          n = { "y" },
+          i = { "<leader>" },
+          c = { "w" },
+        },
       }
       wk.register({
         w = { "<cmd>update!<CR>", "Save" },
