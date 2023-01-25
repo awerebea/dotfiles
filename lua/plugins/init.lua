@@ -87,4 +87,11 @@ return {
       require("auto-session").setup(opts)
     end,
   },
+  {
+    "adoyle-h/lsp-toggle.nvim",
+    cmd = { "ToggleLSP", "ToggleNullLSP" },
+    config = function()
+      require("lsp-toggle").setup()
+    end,
+  },
 }
