@@ -68,4 +68,5 @@ return {
       require("Comment").setup(opts)
     end,
   },
+  { "christoomey/vim-tmux-navigator", event = { "VimEnter" } },
 }
