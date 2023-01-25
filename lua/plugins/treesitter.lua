@@ -17,25 +17,44 @@ end)()
 return {
   {
     "nvim-treesitter/nvim-treesitter",
-    dependencies = { "nvim-treesitter/nvim-treesitter-textobjects", "JoosepAlviste/nvim-ts-context-commentstring" },
+    dependencies = {
+      "JoosepAlviste/nvim-ts-context-commentstring",
+      "nvim-treesitter/nvim-treesitter-textobjects",
+      "p00f/nvim-ts-rainbow",
+      "windwp/nvim-ts-autotag",
+    },
     build = ":TSUpdate",
     event = "BufReadPost",
     opts = {
       sync_install = false,
       ensure_installed = {
         "bash",
+        "css",
         "dockerfile",
+        "gitignore",
+        "graphql",
+        "hcl",
         "help",
         "html",
+        "javascript",
+        "json",
         "lua",
         "markdown",
         "markdown_inline",
+        "python",
         "query",
         "regex",
+        "rust",
+        "svelte",
+        "tsx",
+        "typescript",
         "vim",
         "yaml",
       },
-      highlight = { enable = true },
+      highlight = {
+        enable = true,
+        disable = { "gitcommit" },
+      },
       indent = { enable = true, disable = { "python" } },
       context_commentstring = { enable = true },
       incremental_selection = {
@@ -86,10 +105,24 @@ return {
           swap_next = swap_next,
           swap_previous = swap_prev,
         },
+        -- TODO: check if I need it
+        lsp_interop = {
+          enable = true,
+          border = "none",
+          peek_definition_code = {
+            ["<leader>pf"] = "@function.outer",
+            ["<leader>pc"] = "@class.outer",
+          },
+        },
       },
       matchup = {
         enable = true,
       },
+      rainbow = {
+        enable = true,
+        extended_mode = true,
+      },
+      autotag = { enable = true },
     },
     config = function(_, opts)
       require("nvim-treesitter.configs").setup(opts)
