@@ -1,8 +1,9 @@
--- import plugin safely
-local setup, tabout = pcall(require, "tabout")
-if not setup then
-  return
-end
-
--- enable plugin
-tabout.setup()
+return {
+  "abecodes/tabout.nvim",
+  event = "VeryLazy",
+  dependencies = {
+    "nvim-treesitter/nvim-treesitter",
+    "hrsh7th/nvim-cmp",
+  },
+  config = true,
+}

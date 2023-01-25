@@ -1,114 +1,113 @@
--- import telescope plugin safely
-local telescope_setup, telescope = pcall(require, "telescope")
-if not telescope_setup then
-  return
-end
-
--- import telescope actions safely
-local actions_setup, actions = pcall(require, "telescope.actions")
-if not actions_setup then
-  return
-end
-
-local trouble = require("trouble.providers.telescope")
-local path_actions = require("telescope_insert_path")
-
--- configure telescope
-telescope.setup({
-  -- configure custom mappings
-  defaults = {
-    layout_strategy = "horizontal",
-    layout_config = {
-      horizontal = {
-        preview_cutoff = 110,
-        preview_width = { 0.5, min = 70, max = 100 },
-        width = 0.999,
-        height = 0.999,
-      },
-      vertical = {
-        preview_cutoff = 25,
-        preview_height = { 0.6, min = 20, max = 40 },
-        width = 0.999,
-        height = 0.999,
-      },
+return {
+  {
+    "nvim-telescope/telescope.nvim",
+    dependencies = {
+      { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+      "nvim-telescope/telescope-file-browser.nvim",
+      "nvim-telescope/telescope-project.nvim",
+      "ahmedkhalf/project.nvim",
+      "cljoly/telescope-repo.nvim",
+      "stevearc/aerial.nvim",
     },
-    mappings = {
-      i = {
-        ["<C-k>"] = actions.move_selection_previous, -- move to prev result
-        ["<C-j>"] = actions.move_selection_next, -- move to next result
-        ["<C-M-j>"] = actions.cycle_history_next,
-        ["<C-M-k>"] = actions.cycle_history_prev,
-        ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
-        ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
-        ["<Esc><Esc>"] = actions.close,
-        ["<c-t>"] = trouble.open_with_trouble,
+    cmd = "Telescope",
+    keys = {
+      { "<leader><space>", require("utils").find_files, desc = "Find Files" },
+      { "<leader>ff", require("utils").find_files, desc = "Find Files" },
+      { "<leader>fo", "<cmd>Telescope oldfiles<cr>", desc = "Recent" },
+      { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Buffers" },
+      { "<leader>fr", "<cmd>Telescope file_browser<cr>", desc = "Browser" },
+      { "<leader>ps", "<cmd>Telescope repo list<cr>", desc = "Search" },
+      { "<leader>hs", "<cmd>Telescope help_tags<cr>", desc = "Search" },
+      {
+        "<leader>pp",
+        function()
+          require("telescope").extensions.project.project { display_type = "minimal" }
+        end,
+        desc = "List",
       },
-      n = {
-        ["<c-t>"] = trouble.open_with_trouble,
-        ["[i"] = path_actions.insert_relpath_i_visual,
-        -- ["[I"] = path_actions.insert_relpath_I_visual,
-        -- ["[a"] = path_actions.insert_relpath_a_visual,
-        -- ["[A"] = path_actions.insert_relpath_A_visual,
-        -- ["[o"] = path_actions.insert_relpath_o_visual,
-        -- ["[O"] = path_actions.insert_relpath_O_visual,
-        ["]i"] = path_actions.insert_abspath_i_visual,
-        -- ["]I"] = path_actions.insert_abspath_I_visual,
-        -- ["]a"] = path_actions.insert_abspath_a_visual,
-        -- ["]A"] = path_actions.insert_abspath_A_visual,
-        -- ["]o"] = path_actions.insert_abspath_o_visual,
-        -- ["]O"] = path_actions.insert_abspath_O_visual,
-        -- Additionally, there's insert and normal mode mappings for the same actions:
-        -- ["{i"] = path_actions.insert_relpath_i_insert,
-        -- ["{I"] = path_actions.insert_relpath_I_insert,
-        -- ["{a"] = path_actions.insert_relpath_a_insert,
-        -- ["{A"] = path_actions.insert_relpath_A_insert,
-        -- ["{o"] = path_actions.insert_relpath_o_insert,
-        -- ["{O"] = path_actions.insert_relpath_O_insert,
-        -- ["}i"] = path_actions.insert_abspath_i_insert,
-        -- ["}I"] = path_actions.insert_abspath_I_insert,
-        -- ["}a"] = path_actions.insert_abspath_a_insert,
-        -- ["}A"] = path_actions.insert_abspath_A_insert,
-        -- ["}o"] = path_actions.insert_abspath_o_insert,
-        -- ["}O"] = path_actions.insert_abspath_O_insert,
-        -- ["-i"] = path_actions.insert_relpath_i_normal,
-        -- ["-I"] = path_actions.insert_relpath_I_normal,
-        -- ["-a"] = path_actions.insert_relpath_a_normal,
-        -- ["-A"] = path_actions.insert_relpath_A_normal,
-        -- ["-o"] = path_actions.insert_relpath_o_normal,
-        -- ["-O"] = path_actions.insert_relpath_O_normal,
-        -- ["+i"] = path_actions.insert_abspath_i_normal,
-        -- ["+I"] = path_actions.insert_abspath_I_normal,
-        -- ["+a"] = path_actions.insert_abspath_a_normal,
-        -- ["+A"] = path_actions.insert_abspath_A_normal,
-        -- ["+o"] = path_actions.insert_abspath_o_normal,
-        -- ["+O"] = path_actions.insert_abspath_O_normal,
+      { "<leader>sw", "<cmd>Telescope live_grep<cr>", desc = "Workspace" },
+      {
+        "<leader>sb",
+        function()
+          require("telescope.builtin").current_buffer_fuzzy_find()
+        end,
+        desc = "Buffer",
       },
+      { "<leader>vo", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
     },
-    file_ignore_patterns = { "^.git/", ".cache/" },
+    config = function(_, _)
+      local telescope = require "telescope"
+      local icons = require "config.icons"
+      local actions = require "telescope.actions"
+      local actions_layout = require "telescope.actions.layout"
+      local mappings = {
+        i = {
+          ["<C-j>"] = actions.move_selection_next,
+          ["<C-k>"] = actions.move_selection_previous,
+          ["<C-n>"] = actions.cycle_history_next,
+          ["<C-p>"] = actions.cycle_history_prev,
+          ["?"] = actions_layout.toggle_preview,
+        },
+      }
+
+      local opts = {
+        defaults = {
+          prompt_prefix = icons.ui.Telescope .. " ",
+          selection_caret = icons.ui.Forward .. " ",
+          mappings = mappings,
+          border = {},
+          borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+          color_devicons = true,
+        },
+        pickers = {
+          find_files = {
+            theme = "dropdown",
+            previewer = false,
+            hidden = true,
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
+          },
+          git_files = {
+            theme = "dropdown",
+            previewer = false,
+          },
+          buffers = {
+            theme = "dropdown",
+            previewer = false,
+          },
+        },
+        extensions = {
+          file_browser = {
+            theme = "dropdown",
+            previewer = false,
+            hijack_netrw = true,
+            mappings = mappings,
+          },
+          project = {
+            hidden_files = false,
+            theme = "dropdown",
+          },
+        },
+      }
+      telescope.setup(opts)
+      telescope.load_extension "fzf"
+      telescope.load_extension "file_browser"
+      telescope.load_extension "project"
+      telescope.load_extension "projects"
+      telescope.load_extension "aerial"
+    end,
   },
-  pickers = {
-    find_files = {
-      hidden = true,
-    },
-    buffers = {
-      ignore_current_buffer = true,
-      sort_mru = true,
-    },
-    live_grep = {
-      only_sort_text = true,
-    },
-    git_commits = {
-      layout_strategy = "vertical",
-    },
-    git_bcommits = {
-      layout_strategy = "vertical",
-    },
-    git_status = {
-      layout_strategy = "vertical",
-    },
+  {
+    "stevearc/aerial.nvim",
+    config = true,
   },
-})
-
-telescope.load_extension("fzf")
-telescope.load_extension("harpoon")
-telescope.load_extension("neoclip")
+  {
+    "ahmedkhalf/project.nvim",
+    config = function()
+      require("project_nvim").setup {
+        detection_methods = { "pattern", "lsp" },
+        patterns = { ".git" },
+        ignore_lsp = { "null-ls" },
+      }
+    end,
+  },
+}
