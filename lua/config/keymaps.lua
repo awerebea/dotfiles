@@ -93,10 +93,6 @@ keymap("n", "gz", "<Cmd>bdelete<CR>", default_opts) -- close active buffer
 -- Plugin Keybinds
 ----------------------
 
--- vim-maximizer
--- toggle split window maximization
-keymap("n", "<leader>z", "<Cmd>MaximizerToggle<CR>", default_opts)
-
 -- restart lsp server (not on youtube nvim video)
 keymap("n", "<leader>rs", "<Cmd>LspRestart<CR>", default_opts) -- mapping to restart lsp if necessary
 

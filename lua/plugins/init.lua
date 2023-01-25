@@ -94,4 +94,8 @@ return {
       require("lsp-toggle").setup()
     end,
   },
+  {
+    "szw/vim-maximizer",
+    keys = { { "<leader>z", "<Cmd>MaximizerToggle<CR>", mode = { "n", "v" } } },
+  },
 }
