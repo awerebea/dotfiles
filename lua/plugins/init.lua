@@ -132,4 +132,9 @@ return {
     "inkarkat/vim-ReplaceWithRegister",
     event = "VeryLazy",
   },
+  {
+    "tiagovla/scope.nvim",
+    event = "VeryLazy",
+    config = true,
+  },
 }
