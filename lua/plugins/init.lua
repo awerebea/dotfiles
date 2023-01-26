@@ -133,4 +133,9 @@ return {
     event = "VeryLazy",
     config = true,
   },
+  {
+    "famiu/bufdelete.nvim",
+    cmd = "Bdelete",
+    keys = { { "gz", "<Cmd>Bdelete<CR>" } },
+  },
 }

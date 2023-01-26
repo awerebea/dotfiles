@@ -85,7 +85,7 @@ endif
 autocmd TabLeave * let g:lasttab = tabpagenr()
 ]]
 keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>", { silent = true }) -- switch to last tab
-keymap("n", "gz", "<Cmd>bdelete<CR>", { silent = true }) -- close active buffer
+-- keymap("n", "gz", "<Cmd>bdelete<CR>", { silent = true }) -- override keymap by bufdelete plugin
 
 ----------------------
 -- Plugin Keybinds
