@@ -37,15 +37,28 @@ return {
   },
   {
     "monaqa/dial.nvim",
-    keys = { "<C-a>", "<C-x>", { "<C-a>", "v" }, { "<C-x>", "v" }, { "g<C-a>", "v" }, { "g<C-x>", "v" } },
+    keys = {
+      "<C-a>",
+      "<C-x>",
+      { "<C-a>", "v" },
+      { "<C-x>", "v" },
+      { "g<C-a>", "v" },
+      { "g<C-x>", "v" },
+    },
     -- stylua: ignore
     init = function()
-      vim.api.nvim_set_keymap("n", "<C-a>", require("dial.map").inc_normal(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap("n", "<C-x>", require("dial.map").dec_normal(), { desc = "Decrement", noremap = true })
-      vim.api.nvim_set_keymap("v", "<C-a>", require("dial.map").inc_visual(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap("v", "<C-x>", require("dial.map").dec_visual(), { desc = "Decrement", noremap = true })
-      vim.api.nvim_set_keymap("v", "g<C-a>", require("dial.map").inc_gvisual(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap("v", "g<C-x>", require("dial.map").dec_gvisual(), { desc = "Decrement", noremap = true })
+      vim.api.nvim_set_keymap(
+        "n", "<C-a>", require("dial.map").inc_normal(), { desc = "Increment", noremap = true })
+      vim.api.nvim_set_keymap(
+        "n", "<C-x>", require("dial.map").dec_normal(), { desc = "Decrement", noremap = true })
+      vim.api.nvim_set_keymap(
+        "v", "<C-a>", require("dial.map").inc_visual(), { desc = "Increment", noremap = true })
+      vim.api.nvim_set_keymap(
+        "v", "<C-x>", require("dial.map").dec_visual(), { desc = "Decrement", noremap = true })
+      vim.api.nvim_set_keymap(
+        "v", "g<C-a>", require("dial.map").inc_gvisual(), { desc = "Increment", noremap = true })
+      vim.api.nvim_set_keymap(
+        "v", "g<C-x>", require("dial.map").dec_gvisual(), { desc = "Decrement", noremap = true })
     end,
   },
   {
@@ -74,27 +87,22 @@ return {
   {
     "rmagatti/auto-session",
     event = { "VimEnter" },
-    config = function(_, _)
-      local opts = {
-        log_level = "info",
-        auto_session_enable_last_session = false,
-        auto_session_root_dir = vim.fn.stdpath "data" .. "/sessions/",
-        auto_session_enabled = true,
-        auto_save_enabled = nil,
-        auto_restore_enabled = nil,
-        auto_session_suppress_dirs = nil,
-        auto_session_use_git_branch = nil,
-        bypass_session_save_file_types = nil,
-      }
-      require("auto-session").setup(opts)
-    end,
+    opts = {
+      log_level = "info",
+      auto_session_enable_last_session = false,
+      auto_session_root_dir = vim.fn.stdpath "data" .. "/sessions/",
+      auto_session_enabled = true,
+      auto_save_enabled = nil,
+      auto_restore_enabled = nil,
+      auto_session_suppress_dirs = nil,
+      auto_session_use_git_branch = nil,
+      bypass_session_save_file_types = nil,
+    },
   },
   {
     "adoyle-h/lsp-toggle.nvim",
     cmd = { "ToggleLSP", "ToggleNullLSP" },
-    config = function()
-      require("lsp-toggle").setup()
-    end,
+    config = true,
   },
   {
     "szw/vim-maximizer",
@@ -111,9 +119,7 @@ return {
   {
     "folke/todo-comments.nvim",
     event = "VeryLazy",
-    config = function()
-      require("todo-comments").setup()
-    end,
+    config = true,
   },
   {
     "norcalli/nvim-colorizer.lua",
