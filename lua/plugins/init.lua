@@ -138,4 +138,5 @@ return {
     cmd = "Bdelete",
     keys = { { "gz", "<Cmd>Bdelete<CR>" } },
   },
+  { "nathom/filetype.nvim", event = "VimEnter" },
 }
