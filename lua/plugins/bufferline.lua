@@ -1,37 +1,60 @@
 return {
   "akinsho/nvim-bufferline.lua",
   event = "VeryLazy",
+  keys = {
+    { "]b", "<Cmd>BufferLineCycleNext<CR>", { silent = true } },
+    { "[b", "<Cmd>BufferLineCyclePrev<CR>", { silent = true } },
+    { "<leader>]b", "<Cmd>BufferLineMoveNext<CR>", { silent = true } },
+    { "<leader>[b", "<Cmd>BufferLineMovePrev<CR>", { silent = true } },
+    { "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { silent = true } },
+    { "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { silent = true } },
+    { "<M-S-k>", "<Cmd>BufferLineMoveNext<CR>", { silent = true } },
+    { "<M-S-j>", "<Cmd>BufferLineMovePrev<CR>", { silent = true } },
+    { "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>", { silent = true } },
+  },
   opts = {
     options = {
-      mode = "tabs", -- tabs or buffers
-      numbers = "buffer_id",
-      diagnostics = "nvim_lsp",
-      always_show_bufferline = false,
-      separator_style = "slant" or "padded_slant",
-      show_tab_indicators = true,
-      show_buffer_close_icons = false,
-      show_close_icon = false,
-      color_icons = true,
+      middle_mouse_command = "bdelete! %d", -- can be a string | function, see "Mouse actions"
+      hover = {
+        enabled = true,
+        delay = 200,
+        reveal = { "close" },
+      },
+      offsets = {
+        {
+          filetype = "NvimTree",
+          text = "File Explorer",
+          highlight = "Directory",
+          separator = true, -- use a "true" to enable the default, or set your own character
+        },
+      },
+      max_name_length = 25,
+      max_prefix_length = 15, -- prefix used when a buffer is de-duplicated
+      tab_size = 10,
+      show_buffer_icons = false,
       enforce_regular_tabs = false,
-      custom_filter = function(buf_number, _)
-        local tab_num = 0
-        for _ in pairs(vim.api.nvim_list_tabpages()) do
-          tab_num = tab_num + 1
-        end
-
-        if tab_num > 1 then
-          if not not vim.api.nvim_buf_get_name(buf_number):find(vim.fn.getcwd(), 0, true) then
-            return true
-          end
-        else
-          return true
-        end
-      end,
-      sort_by = function(buffer_a, buffer_b)
-        local mod_a = ((vim.loop.fs_stat(buffer_a.path) or {}).mtime or {}).sec or 0
-        local mod_b = ((vim.loop.fs_stat(buffer_b.path) or {}).mtime or {}).sec or 0
-        return mod_a > mod_b
-      end,
     },
   },
+  config = function(_, opts)
+    require("bufferline").setup(opts)
+    vim.opt.sessionoptions:append { "globals" }
+
+    -- {{{ Smart buffers/tabs switch
+    local keymap = vim.keymap.set
+    local tab_switcher_mode = "buffers"
+    function ToggleTabSwitcherMode()
+      if tab_switcher_mode == "buffers" then
+        keymap("n", "<M-S-l>", "<Cmd>tabnext<CR>", { silent = true })
+        keymap("n", "<M-S-h>", "<Cmd>tabprevious<CR>", { silent = true })
+        tab_switcher_mode = "tabs"
+        print "Switch tabs"
+      else
+        keymap("n", "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { silent = true })
+        keymap("n", "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { silent = true })
+        tab_switcher_mode = "buffers"
+        print "Switch buffers"
+      end
+    end
+    -- }}}
+  end,
 }

@@ -58,8 +58,8 @@ keymap("n", "<leader>-", "<C-w>s") -- split window horizontally
 keymap("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
 keymap("n", "<leader>xy", "<Cmd>close<CR>", { silent = true }) -- close current split window
 -- buffers management
-keymap("n", "<M-S-l>", "<Cmd>bnext<CR>", { silent = true })
-keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>", { silent = true })
+-- keymap("n", "<M-S-l>", "<Cmd>bnext<CR>", { silent = true }) -- override by byfferline plugin
+-- keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>", { silent = true }) -- override by byfferline plugin
 keymap("n", "gp", "<Cmd>bprevious<CR>", { silent = true })
 keymap("n", "gn", "<Cmd>bnext<CR>", { silent = true })
 -- tabs management
