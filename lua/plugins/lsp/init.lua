@@ -4,9 +4,12 @@ return {
     event = "BufReadPre",
     dependencies = {
       { "folke/neoconf.nvim", cmd = "Neoconf", config = true },
-      { "folke/neodev.nvim", opts = {
-        library = { plugins = { "neotest" }, types = true },
-      } },
+      {
+        "folke/neodev.nvim",
+        opts = {
+          library = { plugins = { "neotest" }, types = true },
+        },
+      },
       { "j-hui/fidget.nvim", config = true },
       { "smjonas/inc-rename.nvim", config = true },
       "williamboman/mason.nvim",
@@ -31,6 +34,16 @@ return {
           },
         },
         dockerls = {},
+        cssls = {},
+        emmet_ls = {},
+        html = {},
+        tailwindcss = {},
+        tsserver = {},
+        pyright = {},
+        terraformls = {},
+        bashls = {},
+        rust_analyzer = {},
+        gopls = {},
       },
       setup = {},
     },
@@ -44,7 +57,19 @@ return {
     keys = { { "<leader>cm", "<Cmd>Mason<CR>", desc = "Mason" } },
     opts = {
       ensure_installed = {
+        "prettier",
         "stylua",
+        "eslint_d",
+        -- "autopep8",
+        "flake8",
+        "yapf",
+        "pydocstyle",
+        -- "pylama",
+        "pylint",
+        "tflint",
+        "shellcheck",
+        "shellharden",
+        "beautysh",
         "ruff",
       },
     },
@@ -67,8 +92,28 @@ return {
       local nls = require "null-ls"
       nls.setup {
         sources = {
-          nls.builtins.formatting.stylua,
-          nls.builtins.diagnostics.ruff.with { extra_args = { "--max-line-length=180" } },
+          nls.builtins.formatting.prettier,
+          nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
+          nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
+            -- only enable eslint if root has .eslintrc.js
+            condition = function(utils)
+              return utils.root_has_file ".eslintrc.js" -- change file extension if you use something else
+            end,
+          },
+          nls.builtins.formatting.yapf.with {
+            extra_args = {
+              "--style={based_on_style: google, column_limit: 99, indent_width: 4}",
+            },
+          },
+          -- nls.builtins.formatting.autopep8,
+          -- nls.builtins.diagnostics.pylama,
+          nls.builtins.diagnostics.pylint,
+          nls.builtins.diagnostics.pydocstyle,
+          nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=99" } },
+          nls.builtins.formatting.terraform_fmt,
+          nls.builtins.formatting.beautysh,
+          nls.builtins.formatting.shellharden,
+          nls.builtins.diagnostics.ruff.with { extra_args = { "--max-line-length=99" } },
         },
       }
     end,
