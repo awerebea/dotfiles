@@ -6,6 +6,126 @@ return {
     config = function()
       local components = require "plugins.statusline.components"
 
+      vim.cmd [[
+        function! LightlineFileName()
+          let filename = expand('%:p:h:t') . '/' . expand('%:t')
+
+          if &filetype == 'nerdtree' || &filetype == 'NvimTree'
+            return ''
+          else
+            if filename ==# ''
+              return '[No Name]'
+            endif
+
+            let parts = split(filename, ':')
+
+            " Show the shell with full path as filename
+            if parts[0] ==# 'term'
+              return parts[-1]
+            endif
+
+            return filename
+          endif
+        endfunction
+
+        function! LightlinePercent() abort
+              return winwidth(0) > 50 ? (100 * line('.') / line('$')) . '%' : ''
+        endfunction
+
+        function! LightlineLineinfo() abort
+            if winwidth(0) > 50
+              let l:current_line = printf('%2s', line('.'))
+              let l:max_line = printf('%-2s', line('$'))
+              let l:current_col = col('.')
+              let l:current_virt_col = virtcol('.')
+              let l:total_col = col('$')
+              let l:total_virt_col = virtcol('$')
+              if l:current_col != l:current_virt_col
+                let l:col_num = printf('%2s(%s)', l:current_col, l:current_virt_col)
+              else
+                let l:col_num = printf('%2s', l:current_col)
+              endif
+              if l:total_col != l:total_virt_col
+                let l:total_col = printf('%s(%s)', l:total_col, l:total_virt_col)
+              else
+                let l:total_col = printf('%-2s', l:total_col)
+              endif
+              let l:lineinfo = l:current_line . '/' . l:max_line . ' ' . l:col_num . '/' . l:total_col
+              return l:lineinfo
+            else
+              return ''
+            endif
+        endfunction
+
+        function! LightlineTabname(n) abort
+          let bufnr = tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]
+          let fname = expand('#' . bufnr . ':t')
+          return fname =~ '__Tagbar__' ? 'Tagbar' :
+                \ fname =~ 'NERD_tree' ? 'NERDTree' :
+                \ fname =~ 'NvimTree' ? 'NvimTree' :
+                \ ('' != fname ? fname : '[No Name]')
+        endfunction
+
+        function! LightlineIndent()
+            if winwidth(0) < 91
+                return ''
+            elseif &tabstop == &softtabstop && &tabstop == &shiftwidth && !&expandtab
+              return '⇆'.&tabstop."↹"
+            elseif &tabstop && !&softtabstop && !&shiftwidth && !&expandtab
+              return '⇆'.&tabstop."↹"
+            elseif &tabstop && !&softtabstop && &tabstop == &shiftwidth && !&expandtab
+              return '⇆'.&tabstop."↹"
+            elseif &tabstop && !&softtabstop && !&shiftwidth && &expandtab
+              return '⇆'.&tabstop."␣"
+            elseif &tabstop == &softtabstop && &shiftwidth == &softtabstop && &expandtab
+              return '⇆'.&tabstop."␣"
+            elseif &tabstop != &softtabstop && &shiftwidth && &expandtab
+              return '⇆'.&shiftwidth."␣"
+            elseif &tabstop != &softtabstop && !&shiftwidth && &expandtab
+              return '⇆'.&tabstop."␣"
+            elseif &tabstop != &softtabstop && &shiftwidth && !&expandtab
+              return '⇆'.&shiftwidth."␣".&tabstop."↹"
+            endif
+        endfunction
+
+        function! LightlineFileformat()
+          return winwidth(0) > 130 ? &fileformat : ''
+        endfunction
+
+        function! LightlineFiletype()
+          return winwidth(0) > 110 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
+        endfunction
+
+        function! LightlineFileencoding()
+          return winwidth(0) > 120 ? (&fileencoding !=# '' ? &fileencoding : &enc) : ''
+        endfunction
+
+        function! LightlineGitbranch()
+          if winwidth(0) > 85 || &filetype == 'nerdtree' || &filetype == 'NvimTree'
+            return gitbranch#name()
+          endif
+          return ''
+        endfunction
+
+        function! LightlineSpell()
+          if &spell
+            if &spelllang == 'ru_yo,en_us' || &spelllang == 'ru_ru,en_us'
+              return 'ru,en'
+            elseif &spelllang == 'en_us,ru_yo' || &spelllang == 'en_us,ru_ru'
+              return 'en,ru'
+            elseif &spelllang == 'en_us' || &spelllang == 'en_uk'
+            \ || &spelllang == 'en_en'
+              return 'en'
+            elseif &spelllang == 'ru_yo' || &spelllang == 'ru_ru'
+              return 'ru'
+            endif
+              return &spelllang
+          else
+            return ''
+          endif
+        endfunction
+      ]]
+
       require("lualine").setup {
         options = {
           icons_enabled = true,
@@ -24,7 +144,14 @@ return {
           globalstatus = true,
         },
         sections = {
-          lualine_a = { "mode" },
+          lualine_a = {
+            {
+              "mode",
+              fmt = function(str)
+                return str:sub(1, 1)
+              end,
+            },
+          },
           lualine_b = { components.git_repo, "branch" },
           lualine_c = {
             components.diff,
@@ -34,9 +161,17 @@ return {
             components.separator,
             components.lsp_client,
           },
-          lualine_x = { "filename", components.spaces, "encoding", "fileformat", "filetype", "progress" },
+          lualine_x = {
+            "LightlineFileName",
+            "LightlineSpell",
+            "LightlineIndent",
+            "encoding",
+            "fileformat",
+            "filetype",
+            "progress",
+          },
           lualine_y = {},
-          lualine_z = { "location" },
+          lualine_z = { "LightlineLineinfo" },
         },
         inactive_sections = {
           lualine_a = {},
