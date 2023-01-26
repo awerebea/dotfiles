@@ -63,7 +63,7 @@ return {
   },
   {
     "andymass/vim-matchup",
-    event = { "BufReadPost" },
+    event = "BufReadPost",
     config = function()
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
@@ -83,10 +83,10 @@ return {
       require("Comment").setup(opts)
     end,
   },
-  { "christoomey/vim-tmux-navigator", event = { "VimEnter" } },
+  { "christoomey/vim-tmux-navigator", event = "VimEnter" },
   {
     "rmagatti/auto-session",
-    event = { "VimEnter" },
+    event = "VimEnter",
     opts = {
       log_level = "info",
       auto_session_enable_last_session = false,
@@ -110,8 +110,8 @@ return {
   },
   {
     "simeji/winresizer",
-    cmd = { "WinResizerStartResize" },
-    keys = { { "<C-e>" } },
+    cmd = "WinResizerStartResize",
+    keys = { "<C-e>" },
     config = function(_, _)
       vim.g.winresizer_finish_with_escape = 1
     end,
