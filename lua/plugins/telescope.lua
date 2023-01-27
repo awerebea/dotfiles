@@ -201,4 +201,29 @@ return {
       }
     end,
   },
+  {
+    "AckslD/nvim-neoclip.lua",
+    event = "VeryLazy",
+    opts = {
+      default_register = "+",
+      keys = {
+        telescope = {
+          i = {
+            select = "<CR>",
+            paste = "<C-p>",
+            paste_behind = "<C-M-p>",
+            replay = "<C-q>", -- replay a macro
+            delete = "<C-d>", -- delete an entry
+          },
+          n = {
+            select = "<CR>",
+            paste = { "p", "<C-p>" },
+            paste_behind = { "P", "<C-M-p>" },
+            replay = "q",
+            delete = "d",
+          },
+        },
+      },
+    },
+  },
 }
