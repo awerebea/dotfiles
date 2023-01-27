@@ -12,7 +12,12 @@ return {
   },
   {
     "echasnovski/mini.jump",
-    opts = {},
+    opts = {
+      delay = {
+        highlight = 2500,
+        idle_stop = 5000,
+      },
+    },
     keys = { "f", "F", "t", "T" },
     config = function(_, opts)
       require("mini.jump").setup(opts)
