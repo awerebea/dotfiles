@@ -14,16 +14,23 @@ return {
     },
     cmd = "Telescope",
     keys = {
-      -- { "<leader><space>", require("utils").find_files, desc = "Find Files" },
+      -- find files within current working directory, respects .gitignore
       { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
+      -- { "<leader><space>", require("utils").find_files, desc = "Find Files" },
+      -- find string in current workspace as you type
       { "<leader>fg", "<Cmd>Telescope live_grep<CR>", desc = "Workspace" },
+      -- find word under cursor in current working directory
       { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Word under cursor" },
-      { "<leader>fo", "<Cmd>Telescope oldfiles<cr>", desc = "Recent" },
+      -- list open buffers in current neovim instance
       { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
       { "<leader><CR>", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
+
       { "<leader>fh", "<Cmd>Telescope help_tags<cr>", desc = "Help tags" },
+
+      -- repeat last telescope command and query
       { "<leader>fr", "<Cmd>Telescope resume<CR>", desc = "Resume" },
+      { "<leader>fo", "<Cmd>Telescope oldfiles<cr>", desc = "Recent" },
       { "<leader>fab", "<Cmd>Telescope file_browser<cr>", desc = "File browser" },
       { "<leader>far", "<Cmd>Telescope repo list<cr>", desc = "Search" },
       {
@@ -41,11 +48,30 @@ return {
         desc = "Buffer",
       },
       { "<leader>fao", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
+
+      -- list of items copied to clipboard
       { "<leader>fc", "<Cmd>Telescope neoclip<CR>", desc = "Clipboard" },
-      { "<leader>glg", "<Cmd>echo 'Git commits'<CR> <Cmd>Telescope git_commits<CR>", desc = "Commits" },
-      { "<leader>glgf", "<Cmd>echo 'Git commits of the current file'<CR> <Cmd>Telescope git_bcommits<CR>", desc = "Commits of current file" },
-      { "<leader>gb", "<Cmd>echo 'Git branches'<CR> <Cmd>Telescope git_branches<CR>", desc = "Branches" },
-      { "<leader>gst", "<Cmd>echo 'Git status'<CR> <Cmd>Telescope git_status<CR>", desc = "Status" },
+      -- git commands
+      {
+        "<leader>glg",
+        "<Cmd>echo 'Git commits'<CR> <Cmd>Telescope git_commits<CR>",
+        desc = "Commits",
+      },
+      {
+        "<leader>glgf",
+        "<Cmd>echo 'Git commits of the current file'<CR> <Cmd>Telescope git_bcommits<CR>",
+        desc = "Commits of current file",
+      },
+      {
+        "<leader>gb",
+        "<Cmd>echo 'Git branches'<CR> <Cmd>Telescope git_branches<CR>",
+        desc = "Branches",
+      },
+      {
+        "<leader>gst",
+        "<Cmd>echo 'Git status'<CR> <Cmd>Telescope git_status<CR>",
+        desc = "Status",
+      },
     },
     config = function(_, _)
       local telescope = require "telescope"
@@ -58,10 +84,12 @@ return {
         i = {
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
-          ["<C-n>"] = actions.cycle_history_next,
-          ["<C-p>"] = actions.cycle_history_prev,
-          -- ["<C-M-j>"] = actions.cycle_history_next,
-          -- ["<C-M-k>"] = actions.cycle_history_prev,
+          ["<C-n>"] = actions.move_selection_next,
+          ["<C-p>"] = actions.move_selection_previous,
+          ["<M-j>"] = actions.cycle_history_next,
+          ["<M-k>"] = actions.cycle_history_prev,
+          ["<M-n>"] = actions.cycle_history_next,
+          ["<M-p>"] = actions.cycle_history_prev,
           ["?"] = actions_layout.toggle_preview,
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
