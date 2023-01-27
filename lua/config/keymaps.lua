@@ -87,13 +87,6 @@ autocmd TabLeave * let g:lasttab = tabpagenr()
 keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>", { silent = true }) -- switch to last tab
 -- keymap("n", "gz", "<Cmd>bdelete<CR>", { silent = true }) -- override keymap by bufdelete plugin
 
-----------------------
--- Plugin Keybinds
-----------------------
-
--- restart lsp server (not on youtube nvim video)
-keymap("n", "<leader>rs", "<Cmd>LspRestart<CR>", { silent = true }) -- mapping to restart lsp if necessary
-
 -- Toggle spell checking
 keymap("n", "<leader>ssa", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { silent = true })
 keymap("n", "<leader>sse", "<Cmd>setlocal spell! spelllang=en_us<CR>", { silent = true })
