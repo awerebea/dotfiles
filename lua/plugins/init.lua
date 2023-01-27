@@ -158,4 +158,9 @@ return {
     ft = "qf",
     dependencies = { "junegunn/fzf" },
   },
+  {
+    "chentoast/marks.nvim",
+    event = "VeryLazy",
+    opts = { force_write_shada = true },
+  },
 }
