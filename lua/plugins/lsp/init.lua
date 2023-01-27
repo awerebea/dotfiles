@@ -128,4 +128,45 @@ return {
     },
     config = true,
   },
+  {
+    url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    event = "VeryLazy",
+    -- config = true,
+    config = function()
+      require("lsp_lines").setup()
+      vim.diagnostic.config {
+        severity_sort = true,
+        virtual_text = false,
+        virtual_lines = true,
+        float = {
+          header = false,
+          border = "rounded",
+          focusable = false,
+          format = function(diagnostic)
+            return string.format(
+              "%s\n%s: %s",
+              diagnostic.message,
+              diagnostic.source,
+              diagnostic.code
+            )
+          end,
+        },
+      }
+      -- toggle diagnostic lines
+      local diagnostics_mode = 1
+      function ToggleDiagnosticsMode()
+        if diagnostics_mode == 0 then
+          vim.diagnostic.config { virtual_text = false, virtual_lines = true }
+          diagnostics_mode = 1
+        elseif diagnostics_mode == 1 then
+          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+          diagnostics_mode = 2
+        elseif diagnostics_mode == 2 then
+          vim.diagnostic.config { virtual_text = false, virtual_lines = false }
+          diagnostics_mode = 0
+        end
+      end
+      vim.keymap.set("n", "<leader>td", "<Cmd>lua ToggleDiagnosticsMode()<CR>")
+    end,
+  },
 }
