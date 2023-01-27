@@ -153,4 +153,8 @@ return {
       vim.g.git_messenger_floating_win_opts = { border = "single" }
     end,
   },
+  {
+    "kevinhwang91/nvim-bqf",
+    ft = "qf",
+  },
 }
