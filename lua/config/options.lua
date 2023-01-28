@@ -13,8 +13,8 @@ vim.cmd "set noshowmode"
 
 -- {{{ Wildmenu completion
 vim.opt.wildmenu = true
-vim.opt.wildmode = "full"
--- vim.opt.wildmode = "longest:full,full"
+-- vim.opt.wildmode = "full"
+vim.opt.wildmode = "longest:full,full"
 
 vim.opt.wildignore:append ".hg,.git,.svn" -- Version control
 vim.opt.wildignore:append "*.aux,*.out,*.toc" -- LaTeX intermediate files
@@ -181,7 +181,7 @@ function ToggleTabSwitcherMode()
     print "Switch buffers"
   end
 end
-vim.keymap.set("n", "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>", { silent = true, noremap = true })
+vim.keymap.set("n", "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>")
 -- }}}
 
 -- {{{ toggle relativenumber
@@ -213,7 +213,12 @@ else
   endif
 endfunction
 ]]
-vim.keymap.set("n", "<leader><leader>rn", "<Cmd>call ToggleSmartRelativenumbers()<CR>", { noremap = true })
+vim.keymap.set(
+  "n",
+  "<leader><leader>rn",
+  "<Cmd>call ToggleSmartRelativenumbers()<CR>",
+  { noremap = true }
+)
 -- }}}
 
 -- {{{ Word wrap
@@ -247,7 +252,8 @@ vim.keymap.set("n", "<leader>aw", "<Cmd>call AutoWrapToggle()<CR>")
 
 -- {{{ Auto save/load view
 -- List of filenames to skip mkview
-vim.g.skipview_files = { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo", "DiffviewFilePanel" }
+vim.g.skipview_files =
+  { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo", "DiffviewFilePanel" }
 vim.cmd [[
 function! MakeViewCheck()
     if has('quickfix') && &buftype =~ 'nofile'
@@ -324,7 +330,6 @@ cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delvie
 
 -- Toggle diff view for all visible windows
 local diff_view_active = false
-local opts = { noremap = true, silent = true }
 function ToggleDiffViewMode()
   if diff_view_active then
     vim.cmd ":diffoff!"
@@ -339,9 +344,9 @@ function ToggleDiffViewMode()
     print "Diff view activated"
   end
 end
-vim.keymap.set("n", "<leader><F9>", "<Cmd>lua ToggleDiffViewMode()<CR>", opts)
-vim.keymap.set("n", "<leader>dg", "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>", opts)
-vim.keymap.set("n", "<leader>dp", "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>", opts)
+vim.keymap.set("n", "<leader><F9>", "<Cmd>lua ToggleDiffViewMode()<CR>")
+vim.keymap.set("n", "<leader>dg", "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>")
+vim.keymap.set("n", "<leader>dp", "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>")
 -- }}}
 
 -- Easily search and replace using quickfix window
@@ -366,6 +371,21 @@ vim.cmd [[
       autocmd BufWinEnter quickfix call QuickfixMapping()
   augroup END
 ]]
+
+-- {{{ Colors for words that failed spell check
+-- Word not recognized
+vim.api.nvim_set_hl(0, "SpellBad", {})
+vim.api.nvim_set_hl(0, "SpellBad", { undercurl = true, fg = "#00bfff" })
+-- Word not capitalized
+vim.api.nvim_set_hl(0, "SpellCap", {})
+vim.api.nvim_set_hl(0, "SpellCap", { undercurl = true, fg = "#ff4500" })
+-- Word is rare
+vim.api.nvim_set_hl(0, "SpellRare", {})
+vim.api.nvim_set_hl(0, "SpellRare", { undercurl = true, fg = "#32cd32" })
+-- Wrong spelling for selected region
+vim.api.nvim_set_hl(0, "SpellLocal", {})
+vim.api.nvim_set_hl(0, "SpellLocal", { undercurl = true, fg = "#ffb90f" })
+-- }}}
 
 -- misc
 vim.opt.showcmd = true
