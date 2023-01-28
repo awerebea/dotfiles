@@ -143,7 +143,25 @@ return {
     cmd = "Bdelete",
     keys = { { "gz", "<Cmd>Bdelete<CR>" } },
   },
-  { "nathom/filetype.nvim", event = "VimEnter" },
+  {
+    "nathom/filetype.nvim",
+    event = "VimEnter",
+    opts = {
+      overrides = {
+        extensions = {
+          hcl = "terraform",
+          tf = "terraform",
+          tfvars = "terraform",
+          tfstate = "json",
+        },
+        complex = {
+          -- Set the filetype of any full filename matching the regex
+          [".terraformrc"] = "terraform",
+          ["terraform.rc"] = "terraform",
+        },
+      },
+    },
+  },
   {
     "rhysd/git-messenger.vim",
     cmd = "GitMessenger",
