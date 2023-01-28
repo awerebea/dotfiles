@@ -11,9 +11,10 @@ keymap("n", "g,", "g,zvzz")
 keymap("n", "g;", "g;zvzz")
 
 -- Add undo break-points
-keymap("i", ",", ",<c-g>u")
-keymap("i", ".", ".<c-g>u")
-keymap("i", ";", ";<c-g>u")
+keymap("i", ",", "<c-g>u,")
+keymap("i", ".", "<c-g>u.")
+keymap("i", ";", "<c-g>u;")
+keymap("i", ":", "<c-g>u:")
 
 -- Move Lines
 keymap("n", "<A-j>", ":m .+1<CR>==")
