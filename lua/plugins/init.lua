@@ -181,4 +181,17 @@ return {
       vim.g.undotree_SetFocusWhenToggle = 1
     end,
   },
+  {
+    "windwp/nvim-spectre",
+    cmd = { "Spectre" },
+    keys = {
+      { "<leader>S", "<Cmd>Spectre<CR>", { desc = "Find and replace with Spectre" } },
+      -- search current word
+      { "<leader>sw", "<Cmd>lua require('spectre').open_visual({select_word=true})<CR>" },
+      { "<leader>s", "<Esc><Cmd>lua require('spectre').open_visual()<CR>", mode = "v" },
+      -- search in current file
+      { "<leader>sf", "<Cmd>lua require('spectre').open_file_search()<CR>" },
+    },
+    config = true,
+  },
 }
