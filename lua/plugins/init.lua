@@ -52,6 +52,29 @@ return {
     },
     -- stylua: ignore
     init = function()
+      local augend = require("dial.augend")
+      require("dial.config").augends:register_group{
+        default = {
+          augend.constant.alias.bool,
+          augend.integer.alias.decimal_int,
+          augend.integer.alias.hex,
+          augend.date.alias["%Y/%m/%d"],
+          augend.date.alias["%Y-%m-%d"],
+          augend.date.alias["%m/%d"],
+          augend.date.alias["%H:%M"],
+          augend.semver.alias.semver,
+          augend.constant.new{
+            elements = {"and", "or"},
+            word = true, -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
+            cyclic = true,  -- "or" is incremented into "and".
+          },
+          augend.constant.new{
+            elements = {"&&", "||"},
+            word = false,
+            cyclic = true,
+          },
+        },
+      }
       vim.api.nvim_set_keymap(
         "n", "<C-a>", require("dial.map").inc_normal(), { desc = "Increment", noremap = true })
       vim.api.nvim_set_keymap(
