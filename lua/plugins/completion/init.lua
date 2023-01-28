@@ -9,6 +9,7 @@ return {
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
       "onsails/lspkind.nvim",
+      "f3fora/cmp-spell",
     },
     config = function()
       local cmp = require "cmp"
@@ -75,6 +76,15 @@ return {
           { name = "buffer" },
           { name = "path" },
           { name = "cmdline" },
+          {
+            name = "spell",
+            option = {
+              keep_all_entries = false,
+              enable_in_context = function()
+                return true
+              end,
+            },
+          }, -- spell dictionary
         },
         formatting = {
           fields = { "kind", "abbr", "menu" },
