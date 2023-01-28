@@ -223,4 +223,8 @@ return {
     },
     config = true,
   },
+  {
+    cmd = { "DiffviewOpen" },
+    "sindrets/diffview.nvim",
+  },
 }
