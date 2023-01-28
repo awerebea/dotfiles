@@ -51,6 +51,23 @@ keymap({ "n", "v" }, "C", '"_C')
 -- window management
 keymap("n", "<leader>\\", "<C-w>v") -- split window vertically
 keymap("n", "<leader>-", "<C-w>s") -- split window horizontally
+
+-- split left
+SplitLeft = function()
+  vim.opt.splitright = false
+  vim.cmd "vsplit"
+  vim.opt.splitright = true
+end
+keymap("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
+
+-- split above
+SplitAbove = function()
+  vim.opt.splitbelow = false
+  vim.cmd "split"
+  vim.opt.splitbelow = true
+end
+keymap("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
+
 keymap("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
 keymap("n", "<leader>xy", "<Cmd>close<CR>", { silent = true }) -- close current split window
 -- buffers management
