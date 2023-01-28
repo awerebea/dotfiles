@@ -136,8 +136,8 @@ return {
       require("lsp_lines").setup()
       vim.diagnostic.config {
         severity_sort = true,
-        virtual_text = false,
-        virtual_lines = true,
+        virtual_text = true,
+        virtual_lines = false,
         float = {
           header = false,
           border = "rounded",
@@ -153,7 +153,7 @@ return {
         },
       }
       -- toggle diagnostic lines
-      local diagnostics_mode = 1
+      local diagnostics_mode = 0
       function ToggleDiagnosticsMode()
         if diagnostics_mode == 0 then
           vim.diagnostic.config { virtual_text = false, virtual_lines = true }
