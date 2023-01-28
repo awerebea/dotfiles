@@ -239,8 +239,8 @@ return {
     "ThePrimeagen/harpoon",
     keys = {
       { "<leader><leader>m", '<Cmd>lua require("harpoon.mark").add_file()<CR>' },
-      { "]m", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
-      { "[m", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
+      { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
+      { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
       { "<leader>m", '<Cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>' },
       { "<leader>fm", "<Cmd>Telescope harpoon marks<CR>" },
     },
