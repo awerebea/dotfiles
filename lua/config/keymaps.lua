@@ -48,10 +48,6 @@ vim.cmd [[
 keymap({ "n", "v" }, "c", '"_c')
 keymap({ "n", "v" }, "C", '"_C')
 
--- -- TODO: always move by screen lines instead of virtual lines with 'j' and 'k'
--- keymap("n", "j", "gj", { silent = true })
--- keymap("n", "k", "gk", { silent = true })
-
 -- window management
 keymap("n", "<leader>\\", "<C-w>v") -- split window vertically
 keymap("n", "<leader>-", "<C-w>s") -- split window horizontally
