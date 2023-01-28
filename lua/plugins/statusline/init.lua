@@ -4,32 +4,22 @@ return {
     event = "VeryLazy",
 
     config = function()
-      local components = require "plugins.statusline.components"
-
       vim.cmd [[
         function! LightlineFileName()
           let filename = expand('%:p:h:t') . '/' . expand('%:t')
-
           if &filetype == 'nerdtree' || &filetype == 'NvimTree'
             return ''
           else
             if filename ==# ''
               return '[No Name]'
             endif
-
             let parts = split(filename, ':')
-
             " Show the shell with full path as filename
             if parts[0] ==# 'term'
               return parts[-1]
             endif
-
             return filename
           endif
-        endfunction
-
-        function! LightlinePercent() abort
-              return winwidth(0) > 50 ? (100 * line('.') / line('$')) . '%' : ''
         endfunction
 
         function! LightlineLineinfo() abort
@@ -57,15 +47,6 @@ return {
             endif
         endfunction
 
-        function! LightlineTabname(n) abort
-          let bufnr = tabpagebuflist(a:n)[tabpagewinnr(a:n) - 1]
-          let fname = expand('#' . bufnr . ':t')
-          return fname =~ '__Tagbar__' ? 'Tagbar' :
-                \ fname =~ 'NERD_tree' ? 'NERDTree' :
-                \ fname =~ 'NvimTree' ? 'NvimTree' :
-                \ ('' != fname ? fname : '[No Name]')
-        endfunction
-
         function! LightlineIndent()
             if winwidth(0) < 91
                 return ''
@@ -88,25 +69,6 @@ return {
             endif
         endfunction
 
-        function! LightlineFileformat()
-          return winwidth(0) > 130 ? &fileformat : ''
-        endfunction
-
-        function! LightlineFiletype()
-          return winwidth(0) > 110 ? (&filetype !=# '' ? &filetype : 'no ft') : ''
-        endfunction
-
-        function! LightlineFileencoding()
-          return winwidth(0) > 120 ? (&fileencoding !=# '' ? &fileencoding : &enc) : ''
-        endfunction
-
-        function! LightlineGitbranch()
-          if winwidth(0) > 85 || &filetype == 'nerdtree' || &filetype == 'NvimTree'
-            return gitbranch#name()
-          endif
-          return ''
-        endfunction
-
         function! LightlineSpell()
           if &spell
             if &spelllang == 'ru_yo,en_us' || &spelllang == 'ru_ru,en_us'
@@ -125,6 +87,8 @@ return {
           endif
         endfunction
       ]]
+
+      local components = require "plugins.statusline.components"
 
       require("lualine").setup {
         options = {
@@ -152,7 +116,8 @@ return {
               end,
             },
           },
-          lualine_b = { components.git_repo, "branch" },
+          -- lualine_b = { components.git_repo, "branch" },
+          lualine_b = { "branch" },
           lualine_c = {
             components.diff,
             components.diagnostics,
@@ -168,9 +133,10 @@ return {
             "encoding",
             "fileformat",
             "filetype",
+          },
+          lualine_y = {
             "progress",
           },
-          lualine_y = {},
           lualine_z = { "LightlineLineinfo" },
         },
         inactive_sections = {
