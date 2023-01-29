@@ -19,7 +19,7 @@ return {
       local wk = require "which-key"
       wk.setup {
         show_help = true,
-        plugins = { spelling = true },
+        plugins = { spelling = false },
         key_labels = { ["<leader>"] = "Leader" },
         triggers = "auto",
         window = {
