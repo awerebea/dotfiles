@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+killall slack 2>/dev/null
+sleep 1
+slack &
+echo "Slack restarted successfully"
