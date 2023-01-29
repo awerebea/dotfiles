@@ -15,11 +15,11 @@ return {
     cmd = "Telescope",
     keys = {
       -- find files within current working directory, respects .gitignore
-      { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
+      { "<leader>fg", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
-      -- { "<leader><space>", require("utils").find_files, desc = "Find Files" },
+      { "<leader>ff", require("utils").find_files, desc = "Find Files" },
       -- find string in current workspace as you type
-      { "<leader>fg", "<Cmd>Telescope live_grep<CR>", desc = "Workspace" },
+      { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Workspace" },
       -- find word under cursor in current working directory
       { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Word under cursor" },
       -- list open buffers in current neovim instance
@@ -181,17 +181,13 @@ return {
             layout_strategy = "vertical",
           },
           git_files = {
-            theme = "dropdown",
-            previewer = false,
+            hidden = true,
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
           },
           buffers = {
             ignore_current_buffer = true,
             sort_mru = true,
           },
-          -- buffers = {
-          --   theme = "dropdown",
-          --   previewer = false,
-          -- },
         },
         extensions = {
           file_browser = {
@@ -212,6 +208,7 @@ return {
       telescope.load_extension "project"
       telescope.load_extension "projects"
       telescope.load_extension "aerial"
+      telescope.load_extension "dap"
       telescope.load_extension "neoclip"
     end,
   },
