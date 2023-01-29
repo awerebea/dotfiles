@@ -71,6 +71,8 @@ return {
         "shellharden",
         "beautysh",
         "ruff",
+        "debugpy",
+        "codelldb",
       },
     },
     config = function(_, opts)
@@ -159,10 +161,10 @@ return {
           vim.diagnostic.config { virtual_text = false, virtual_lines = true }
           diagnostics_mode = 1
         elseif diagnostics_mode == 1 then
-          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+          vim.diagnostic.config { virtual_text = false, virtual_lines = false }
           diagnostics_mode = 2
         elseif diagnostics_mode == 2 then
-          vim.diagnostic.config { virtual_text = false, virtual_lines = false }
+          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
           diagnostics_mode = 0
         end
       end
