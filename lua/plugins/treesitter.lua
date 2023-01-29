@@ -19,6 +19,7 @@ return {
     "nvim-treesitter/nvim-treesitter",
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
+      "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/nvim-treesitter-textobjects",
       "p00f/nvim-ts-rainbow",
       "windwp/nvim-ts-autotag",
@@ -116,6 +117,9 @@ return {
         },
       },
       matchup = {
+        enable = true,
+      },
+      endwise = {
         enable = true,
       },
       rainbow = {
