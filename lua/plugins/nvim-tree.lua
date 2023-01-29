@@ -11,8 +11,8 @@ return {
     hijack_netrw = true,
     respect_buf_cwd = true,
     view = {
-      --  number = true,
-      --  relativenumber = true,
+      number = true,
+      relativenumber = true,
       adaptive_size = true,
       mappings = {
         list = {
