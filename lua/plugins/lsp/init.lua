@@ -45,7 +45,21 @@ return {
         rust_analyzer = {},
         gopls = {},
       },
-      setup = {},
+      setup = {
+        sumneko_lua = function(_, _)
+          local lsp_utils = require "plugins.lsp.utils"
+          lsp_utils.on_attach(function(client, buffer)
+            if client.name == "sumneko_lua" then
+              vim.keymap.set("n", "<leader>dX", function()
+                require("osv").run_this()
+              end, { buffer = buffer, desc = "OSV Run" })
+              vim.keymap.set("n", "<leader>dL", function()
+                require("osv").launch { port = 8086 }
+              end, { buffer = buffer, desc = "OSV Launch" })
+            end
+          end)
+        end,
+      },
     },
     config = function(plugin, opts)
       require("plugins.lsp.servers").setup(plugin, opts)
@@ -136,24 +150,6 @@ return {
     -- config = true,
     config = function()
       require("lsp_lines").setup()
-      vim.diagnostic.config {
-        severity_sort = true,
-        virtual_text = true,
-        virtual_lines = false,
-        float = {
-          header = false,
-          border = "rounded",
-          focusable = false,
-          format = function(diagnostic)
-            return string.format(
-              "%s\n%s: %s",
-              diagnostic.message,
-              diagnostic.source,
-              diagnostic.code
-            )
-          end,
-        },
-      }
       -- toggle diagnostic lines
       local diagnostics_mode = 0
       function ToggleDiagnosticsMode()
@@ -164,11 +160,32 @@ return {
           vim.diagnostic.config { virtual_text = false, virtual_lines = false }
           diagnostics_mode = 2
         elseif diagnostics_mode == 2 then
-          vim.diagnostic.config { virtual_text = true, virtual_lines = false }
+          vim.diagnostic.config {
+            virtual_text = { severity = { min = vim.diagnostic.severity.ERROR } },
+            virtual_lines = false,
+          }
           diagnostics_mode = 0
         end
       end
       vim.keymap.set("n", "<leader>td", "<Cmd>lua ToggleDiagnosticsMode()<CR>")
     end,
+  },
+  {
+    "folke/trouble.nvim",
+    cmd = { "TroubleToggle", "Trouble" },
+    opts = { use_diagnostic_signs = true },
+    keys = {
+      { "<leader>xx", "<Cmd>TroubleToggle<CR>" },
+      { "<leader>xw", "<Cmd>TroubleToggle workspace_diagnostics<CR>" },
+      { "<leader>xd", "<Cmd>TroubleToggle document_diagnostics<CR>" },
+      { "<leader>xl", "<Cmd>TroubleToggle loclist<CR>" },
+      { "<leader>xq", "<Cmd>TroubleToggle quickfix<CR>" },
+      { "gR", "<Cmd>TroubleToggle lsp_references<CR>" },
+    },
+    {
+      "glepnir/lspsaga.nvim",
+      event = "VeryLazy",
+      config = true,
+    },
   },
 }

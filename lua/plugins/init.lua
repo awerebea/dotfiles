@@ -205,17 +205,6 @@ return {
     opts = { force_write_shada = true },
   },
   {
-    "folke/trouble.nvim",
-    keys = {
-      { "<leader>xx", "<Cmd>TroubleToggle<CR>" },
-      { "<leader>xw", "<Cmd>TroubleToggle workspace_diagnostics<CR>" },
-      { "<leader>xd", "<Cmd>TroubleToggle document_diagnostics<CR>" },
-      { "<leader>xl", "<Cmd>TroubleToggle loclist<CR>" },
-      { "<leader>xq", "<Cmd>TroubleToggle quickfix<CR>" },
-      { "gR", "<Cmd>TroubleToggle lsp_references<CR>" },
-    },
-  },
-  {
     "mbbill/undotree",
     keys = { { "<leader>u", "<Cmd>UndotreeToggle<CR>" } },
     config = function()
