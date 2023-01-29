@@ -372,21 +372,6 @@ vim.cmd [[
   augroup END
 ]]
 
--- {{{ Colors for words that failed spell check
--- Word not recognized
-vim.api.nvim_set_hl(0, "SpellBad", {})
-vim.api.nvim_set_hl(0, "SpellBad", { undercurl = true, fg = "#00bfff" })
--- Word not capitalized
-vim.api.nvim_set_hl(0, "SpellCap", {})
-vim.api.nvim_set_hl(0, "SpellCap", { undercurl = true, fg = "#ff4500" })
--- Word is rare
-vim.api.nvim_set_hl(0, "SpellRare", {})
-vim.api.nvim_set_hl(0, "SpellRare", { undercurl = true, fg = "#32cd32" })
--- Wrong spelling for selected region
-vim.api.nvim_set_hl(0, "SpellLocal", {})
-vim.api.nvim_set_hl(0, "SpellLocal", { undercurl = true, fg = "#ffb90f" })
--- }}}
-
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3
