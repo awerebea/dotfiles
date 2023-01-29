@@ -33,7 +33,6 @@ return {
         },
       }
       wk.register({
-        w = { "<cmd>update!<CR>", "Save" },
         q = { "<cmd>lua require('utils').quit()<CR>", "Quit" },
         b = { name = "+Buffer" },
         d = { name = "+Debug" },
