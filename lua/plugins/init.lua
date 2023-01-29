@@ -96,9 +96,9 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
-  { "tpope/vim-surround", event = "BufReadPre" },
-  { "tpope/vim-repeat", event = "BufReadPre" },
-  { "tpope/vim-unimpaired", event = "BufReadPre" },
+  { "tpope/vim-surround", event = "VeryLazy" },
+  { "tpope/vim-repeat", event = "VeryLazy" },
+  { "tpope/vim-unimpaired", event = "VeryLazy" },
   {
     "numToStr/Comment.nvim",
     dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
