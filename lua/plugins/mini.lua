@@ -11,19 +11,6 @@ return {
     end,
   },
   {
-    "echasnovski/mini.jump",
-    opts = {
-      delay = {
-        highlight = 2500,
-        idle_stop = 5000,
-      },
-    },
-    keys = { "f", "F", "t", "T" },
-    config = function(_, opts)
-      require("mini.jump").setup(opts)
-    end,
-  },
-  {
     "echasnovski/mini.move",
     opts = {},
     keys = { "<<M-h>", "<M-l>", "<M-j>", "<M-k>" },
