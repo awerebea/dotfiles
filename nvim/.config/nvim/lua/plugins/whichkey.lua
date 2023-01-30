@@ -27,22 +27,22 @@ return {
           position = "bottom", -- bottom, top
         },
         triggers_blacklist = {
-          n = { "y" },
+          n = { "y", ">", "<" },
           i = { "<leader>" },
           c = { "w" },
         },
       }
       wk.register({
-        q = {
-          name = "Quit",
-          q = {
-            function()
-              require("utils").quit()
-            end,
-            "Quit",
-          },
-          t = { "<cmd>tabclose<cr>", "Close Tab" },
-        },
+        -- q = {
+        --   name = "Quit",
+        --   q = {
+        --     function()
+        --       require("utils").quit()
+        --     end,
+        --     "Quit",
+        --   },
+        --   t = { "<cmd>tabclose<cr>", "Close Tab" },
+        -- },
         b = { name = "+Buffer" },
         d = { name = "+Debug" },
         f = { name = "+File" },
