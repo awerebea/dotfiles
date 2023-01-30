@@ -4,7 +4,9 @@
 *.pyc
 .DS_store
 .ignore
-ranger/bookmarks
-ranger/copy_buffer
-ranger/history
-ranger/tagged
+ranger/.config/ranger/bookmarks
+ranger/.config/ranger/copy_buffer
+ranger/.config/ranger/history
+ranger/.config/ranger/tagged
+ranger/.config/ranger/**/__init__.py
+!ranger/.config/ranger/plugins/ranger_devicons/__init__.py
