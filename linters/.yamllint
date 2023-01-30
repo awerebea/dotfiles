@@ -4,5 +4,5 @@ extends: default
 rules:
   document-start: disable  # Don't require "---" at start of file.
   line-length:
-    max: 120
+    max: 99
     level: warning
