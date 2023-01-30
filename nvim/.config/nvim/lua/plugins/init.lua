@@ -73,6 +73,11 @@ return {
             word = false,
             cyclic = true,
           },
+          augend.constant.new{
+            elements = {"False", "True"},
+            word = true,
+            cyclic = true,
+          },
         },
       }
       vim.api.nvim_set_keymap(
