@@ -1248,7 +1248,20 @@ alias grbpd='git rebase --committer-date-is-author-date'
 # Rebase interactively preserving committer date
 alias grbipd='git rebase -i --committer-date-is-author-date'
 alias glpf='git log --pretty=fuller'
-alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status'
+alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
+
+# Execute any alias or command in dotfiles repo
+dots() {
+  location="$PWD"
+  cd "$GIT_DOTFILES"
+  cmd=($(alias "$1" | cut -d"'" -f2))
+  if [ ${#cmd[@]} -gt 0 ]; then
+    "${cmd[@]}" "${@:2}"
+  else
+    "$@"
+  fi
+  cd "$location"
+}
 
 # Restart cinnamon from tty when black screen after wake up from suspend
 restart-cinnamon () {
