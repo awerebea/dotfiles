@@ -240,21 +240,51 @@ return {
     end,
   },
   {
-    "folke/persistence.nvim",
-    event = "BufReadPre",
-    keys = { "<leader>qs", "<leader>ql", "<leader>qd" },
-    -- module = "persistence",
+    "Shatur/neovim-session-manager",
+    event = "VimEnter",
     config = function()
-      require("persistence").setup()
-      vim.keymap.set("n", "<leader>qs", function()
-        require("persistence").load()
-      end, { desc = "Restore the session for the current directory" })
-      vim.keymap.set("n", "<leader>ql", function()
-        require("persistence").load { last = true }
-      end, { desc = "Restore the last session" })
-      vim.keymap.set("n", "<leader>qd", function()
-        require("persistence").stop()
-      end, { desc = "Stop Persistence => session won't be saved on exit" })
+      require("session_manager").setup {
+        -- Disabled, CurrentDir, LastSession
+        autoload_mode = require("session_manager.config").AutoloadMode.CurrentDir,
+        path_replacer = "@_@",
+        colon_replacer = "@+@",
+        autosave_last_session = true,
+        -- Do not save when no buffers are opened, or all of them aren't writable or listed.
+        autosave_ignore_not_normal = true,
+        autosave_ignore_dirs = {},
+        autosave_ignore_filetypes = {
+          "gitcommit",
+          "gitrebase",
+          "toggleterm",
+        },
+        autosave_ignore_buftypes = {},
+        autosave_only_in_session = false,
+        max_path_length = 80,
+      }
+      vim.keymap.set(
+        "n",
+        "<leader>qs",
+        "<Cmd>SessionManager load_current_dir_session<CR>",
+        { desc = "Restore the session for the current directory" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>qq",
+        "<Cmd>SessionManager load_session<CR>",
+        { desc = "Select and restore the session" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>ql",
+        "<Cmd>SessionManager load_last_session<CR>",
+        { desc = "Restore the last session" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>qd",
+        "<Cmd>SessionManager delete_session<CR>",
+        { desc = "Delete session" }
+      )
     end,
   },
 }
