@@ -182,7 +182,7 @@
         "asvetliakov.vscode-neovim": 1
     },
     "vscode-neovim.neovimExecutablePaths.linux": "/home/andrei/.local/share/neovim/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.linux": "/home/andrei/Github/dotfiles/VSCode/vscode-neovim.vim",
+    "vscode-neovim.neovimInitVimPaths.linux": "/home/andrei/.config/Code/User/vscode-neovim.vim",
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
