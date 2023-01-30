@@ -197,7 +197,10 @@ return {
             mappings = mappings,
           },
           project = {
-            hidden_files = false,
+            order_by = "asc",
+            search_by = "title",
+            sync_with_nvim_tree = true, -- default false
+            hidden_files = true, -- default: false
             theme = "dropdown",
           },
         },
@@ -218,10 +221,13 @@ return {
   },
   {
     "ahmedkhalf/project.nvim",
+    cmd = "ProjectRoot",
     config = function()
       require("project_nvim").setup {
+        manual_mode = false,
+        silent_chdir = true,
         detection_methods = { "pattern", "lsp" },
-        patterns = { ".git" },
+        patterns = { ".project", ".git" },
         ignore_lsp = { "null-ls" },
       }
     end,
