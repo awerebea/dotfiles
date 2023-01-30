@@ -118,21 +118,6 @@ return {
   },
   { "christoomey/vim-tmux-navigator", event = "VimEnter" },
   {
-    "rmagatti/auto-session",
-    event = "VimEnter",
-    opts = {
-      log_level = "info",
-      auto_session_enable_last_session = false,
-      auto_session_root_dir = vim.fn.stdpath "data" .. "/sessions/",
-      auto_session_enabled = true,
-      auto_save_enabled = nil,
-      auto_restore_enabled = nil,
-      auto_session_suppress_dirs = nil,
-      auto_session_use_git_branch = nil,
-      bypass_session_save_file_types = nil,
-    },
-  },
-  {
     "adoyle-h/lsp-toggle.nvim",
     cmd = { "ToggleLSP", "ToggleNullLSP" },
     config = true,
@@ -252,6 +237,24 @@ return {
         highlight_on_key = true,
         dim = true,
       }
+    end,
+  },
+  {
+    "folke/persistence.nvim",
+    event = "BufReadPre",
+    keys = { "<leader>qs", "<leader>ql", "<leader>qd" },
+    -- module = "persistence",
+    config = function()
+      require("persistence").setup()
+      vim.keymap.set("n", "<leader>qs", function()
+        require("persistence").load()
+      end, { desc = "Restore the session for the current directory" })
+      vim.keymap.set("n", "<leader>ql", function()
+        require("persistence").load { last = true }
+      end, { desc = "Restore the last session" })
+      vim.keymap.set("n", "<leader>qd", function()
+        require("persistence").stop()
+      end, { desc = "Stop Persistence => session won't be saved on exit" })
     end,
   },
 }
