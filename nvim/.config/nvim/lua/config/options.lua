@@ -395,7 +395,7 @@ vim.opt.pumblend = 10
 vim.opt.pumheight = 10
 vim.opt.shiftround = true
 vim.opt.showmode = false
-vim.opt.smartindent = true
+vim.opt.smartindent = false
 vim.opt.updatetime = 200
 
 vim.g.mapleader = " "
