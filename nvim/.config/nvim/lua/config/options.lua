@@ -153,7 +153,7 @@ augroup filetypeRelatedSettings
   autocmd!
   autocmd BufRead,BufNewFile Chart.yaml set ft=helm
   autocmd BufRead,BufNewFile .yamllint set ft=yaml
-  autocmd BufRead,BufNewFile *.hcl,*.tf,*.tfvars,.terraformrc,terraform.rc set ft=terraform
+  autocmd BufRead,BufNewFile *.hcl,*.tfvars,.terraformrc,terraform.rc set ft=terraform
   autocmd BufRead,BufNewFile *.tfstate set ft=json
   autocmd FileType bash,sh,json*,dockerfile,python,cmake
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab

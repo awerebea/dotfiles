@@ -47,6 +47,7 @@ return {
         "regex",
         "rust",
         "svelte",
+        "terraform",
         "tsx",
         "typescript",
         "vim",
