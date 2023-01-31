@@ -15,9 +15,9 @@ return {
     cmd = "Telescope",
     keys = {
       -- find files within current working directory, respects .gitignore
-      { "<leader>fg", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
+      { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
-      { "<leader>ff", require("utils").find_files, desc = "Find Files" },
+      { "<leader>fg", require("utils").find_files, desc = "Find Files" },
       -- find string in current workspace as you type
       { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Workspace" },
       -- find word under cursor in current working directory
