@@ -54,6 +54,7 @@ return {
       },
       highlight = {
         enable = true,
+        additional_vim_regex_highlighting = true,
         disable = { "gitcommit" },
       },
       indent = { enable = true, disable = { "python" } },
