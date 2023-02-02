@@ -35,10 +35,10 @@ keymap("n", "<S-Right>", "<cmd>vertical resize +2<CR>")
 ---------------------
 
 -- Save file as sudo on files that require root permission
-keymap("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!", { silent = true })
+keymap("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!")
 -- clear search highlights
-keymap("n", "<leader>/", "<Cmd>nohlsearch<CR>", { silent = true })
-keymap("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>", { silent = true })
+keymap("n", "<leader>/", "<Cmd>nohlsearch<CR>")
+keymap("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
 
 -- paste over without overwriting register
 vim.cmd [[
@@ -70,27 +70,27 @@ end
 keymap("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
 
 keymap("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
-keymap("n", "<leader>xy", "<Cmd>close<CR>", { silent = true }) -- close current split window
+keymap("n", "<leader>xy", "<Cmd>close<CR>") -- close current split window
 -- buffers management
--- keymap("n", "<M-S-l>", "<Cmd>bnext<CR>", { silent = true }) -- override by byfferline plugin
--- keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>", { silent = true }) -- override by byfferline plugin
-keymap("n", "gp", "<Cmd>bprevious<CR>", { silent = true })
-keymap("n", "gn", "<Cmd>bnext<CR>", { silent = true })
+-- keymap("n", "<M-S-l>", "<Cmd>bnext<CR>") -- override by byfferline plugin
+-- keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>") -- override by byfferline plugin
+keymap("n", "gp", "<Cmd>bprevious<CR>")
+keymap("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
-keymap("n", "<leader>o", "<Cmd>tab ball<CR>", { silent = true }) -- open all buffers in tab
-keymap("n", "<leader><Left>", "<Cmd>tabprevious<CR>", { silent = true })
-keymap("n", "<leader><Right>", "<Cmd>tabnext<CR>", { silent = true })
-keymap("n", "<leader>tp", "<Cmd>tabprevious<CR>", { silent = true })
-keymap("n", "<leader>tn", "<Cmd>tabnext<CR>", { silent = true })
-keymap("n", "<leader>th", "<Cmd>tabfirst<CR>", { silent = true })
-keymap("n", "<leader>tl", "<Cmd>tablast<CR>", { silent = true })
-keymap("n", "<leader>te", "<Cmd>tabedit<Space>", { silent = true })
-keymap("n", "<leader>tc", "<Cmd>tabnew<CR>", { silent = true }) -- open new tab
-keymap("n", "<leader>tm", "<Cmd>tabmove<Space>", { silent = true })
-keymap("n", "<leader>tmp", "<Cmd>-tabmove<CR>", { silent = true }) -- move current tab left
-keymap("n", "<leader>tmn", "<Cmd>+tabmove<CR>", { silent = true }) -- move current tab right
-keymap("n", "<leader>tx", "<Cmd>tabclose<CR>", { silent = true }) -- close current tab
-keymap("n", "<leader>to", "<Cmd>tabonly<CR>", { silent = true })
+keymap("n", "<leader>o", "<Cmd>tab ball<CR>") -- open all buffers in tab
+keymap("n", "<leader><Left>", "<Cmd>tabprevious<CR>")
+keymap("n", "<leader><Right>", "<Cmd>tabnext<CR>")
+keymap("n", "<leader>tp", "<Cmd>tabprevious<CR>")
+keymap("n", "<leader>tn", "<Cmd>tabnext<CR>")
+keymap("n", "<leader>th", "<Cmd>tabfirst<CR>")
+keymap("n", "<leader>tl", "<Cmd>tablast<CR>")
+keymap("n", "<leader>te", "<Cmd>tabedit<Space>")
+keymap("n", "<leader>tc", "<Cmd>tabnew<CR>") -- open new tab
+keymap("n", "<leader>tm", "<Cmd>tabmove<Space>")
+keymap("n", "<leader>tmp", "<Cmd>-tabmove<CR>") -- move current tab left
+keymap("n", "<leader>tmn", "<Cmd>+tabmove<CR>") -- move current tab right
+keymap("n", "<leader>tx", "<Cmd>tabclose<CR>") -- close current tab
+keymap("n", "<leader>to", "<Cmd>tabonly<CR>")
 -- Switch to last tab
 vim.cmd [[
 if !exists('g:lasttab')
@@ -98,23 +98,23 @@ if !exists('g:lasttab')
 endif
 autocmd TabLeave * let g:lasttab = tabpagenr()
 ]]
-keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>", { silent = true }) -- switch to last tab
--- keymap("n", "gz", "<Cmd>bdelete<CR>", { silent = true }) -- override keymap by bufdelete plugin
+keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>") -- switch to last tab
+-- keymap("n", "gz", "<Cmd>bdelete<CR>") -- override keymap by bufdelete plugin
 
 -- Toggle spell checking
-keymap("n", "<leader>ssa", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { silent = true })
-keymap("n", "<leader>sse", "<Cmd>setlocal spell! spelllang=en_us<CR>", { silent = true })
-keymap("n", "<leader>ssr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", { silent = true })
+keymap("n", "<leader>ssa", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>")
+keymap("n", "<leader>sse", "<Cmd>setlocal spell! spelllang=en_us<CR>")
+keymap("n", "<leader>ssr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>")
 
 -- Toggle show non-visible white spaces
-keymap("n", "<leader>ll", "<Cmd>set list!<CR>", { silent = true })
+keymap("n", "<leader>ll", "<Cmd>set list!<CR>")
 
 -- Remove duplicate lines (leave only the last occurrence)
 keymap(
   "n",
   "<leader>rd",
   "<Cmd>g/^\\(.*\\)\\ze\\n\\%(.*\\n\\)*\\1$/d<CR>",
-  { silent = true, desc = "Remove duplicarte lines" }
+  { desc = "Remove duplicarte lines" }
 )
 
 keymap("n", "<leader>e", "<Cmd>edit<CR>")

@@ -7,12 +7,12 @@ local file_type = ""
 
 local function default_on_open(term)
   vim.cmd "stopinsert"
-  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true })
 end
 
 local function cht_on_open(term)
   vim.cmd "stopinsert"
-  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true, silent = true })
+  vim.api.nvim_buf_set_keymap(term.bufnr, "n", "q", "<cmd>close<CR>", { noremap = true })
   vim.api.nvim_buf_set_name(term.bufnr, "cheatsheet-" .. term.bufnr)
   vim.api.nvim_buf_set_option(term.bufnr, "filetype", "cheat")
   vim.api.nvim_buf_set_option(term.bufnr, "syntax", lang)

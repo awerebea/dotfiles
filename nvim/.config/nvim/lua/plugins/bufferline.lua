@@ -2,15 +2,15 @@ return {
   "akinsho/nvim-bufferline.lua",
   event = "VeryLazy",
   keys = {
-    { "]b", "<Cmd>BufferLineCycleNext<CR>", { silent = true } },
-    { "[b", "<Cmd>BufferLineCyclePrev<CR>", { silent = true } },
-    { "<leader>]b", "<Cmd>BufferLineMoveNext<CR>", { silent = true } },
-    { "<leader>[b", "<Cmd>BufferLineMovePrev<CR>", { silent = true } },
-    { "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { silent = true } },
-    { "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { silent = true } },
-    { "<M-S-k>", "<Cmd>BufferLineMoveNext<CR>", { silent = true } },
-    { "<M-S-j>", "<Cmd>BufferLineMovePrev<CR>", { silent = true } },
-    { "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>", { silent = true } },
+    { "]b", "<Cmd>BufferLineCycleNext<CR>" },
+    { "[b", "<Cmd>BufferLineCyclePrev<CR>" },
+    { "<leader>]b", "<Cmd>BufferLineMoveNext<CR>" },
+    { "<leader>[b", "<Cmd>BufferLineMovePrev<CR>" },
+    { "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>" },
+    { "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>" },
+    { "<M-S-k>", "<Cmd>BufferLineMoveNext<CR>" },
+    { "<M-S-j>", "<Cmd>BufferLineMovePrev<CR>" },
+    { "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>" },
   },
   opts = {
     options = {
@@ -44,13 +44,13 @@ return {
     local tab_switcher_mode = "buffers"
     function ToggleTabSwitcherMode()
       if tab_switcher_mode == "buffers" then
-        keymap("n", "<M-S-l>", "<Cmd>tabnext<CR>", { silent = true })
-        keymap("n", "<M-S-h>", "<Cmd>tabprevious<CR>", { silent = true })
+        keymap("n", "<M-S-l>", "<Cmd>tabnext<CR>")
+        keymap("n", "<M-S-h>", "<Cmd>tabprevious<CR>")
         tab_switcher_mode = "tabs"
         print "Switch tabs"
       else
-        keymap("n", "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>", { silent = true })
-        keymap("n", "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>", { silent = true })
+        keymap("n", "<M-S-l>", "<Cmd>BufferLineCycleNext<CR>")
+        keymap("n", "<M-S-h>", "<Cmd>BufferLineCyclePrev<CR>")
         tab_switcher_mode = "buffers"
         print "Switch buffers"
       end
