@@ -172,13 +172,13 @@ vim.opt.switchbuf = "usetab,newtab"
 local tab_switcher_mode = "buffers"
 function ToggleTabSwitcherMode()
   if tab_switcher_mode == "buffers" then
-    vim.keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>", { noremap = true, silent = true })
-    vim.keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>", { noremap = true, silent = true })
+    vim.keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>")
+    vim.keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>")
     tab_switcher_mode = "tabs"
     print "Switch tabs"
   else
-    vim.keymap.set("n", "<M-S-l>", "<Cmd>bnext<CR>", { noremap = true, silent = true })
-    vim.keymap.set("n", "<M-S-h>", "<Cmd>bprevious<CR>", { noremap = true, silent = true })
+    vim.keymap.set("n", "<M-S-l>", "<Cmd>bnext<CR>")
+    vim.keymap.set("n", "<M-S-h>", "<Cmd>bprevious<CR>")
     tab_switcher_mode = "buffers"
     print "Switch buffers"
   end
@@ -402,4 +402,4 @@ vim.opt.updatetime = 200
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
-vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>", { silent = true })
+vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>")

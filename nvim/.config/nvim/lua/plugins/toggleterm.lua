@@ -42,16 +42,11 @@ return {
     vim.cmd "autocmd! TermOpen term://* lua SetTerminalKeymaps()"
 
     -- toggle all terminals at once
-    vim.keymap.set(
-      { "n", "t" },
-      "<leader><leader>;",
-      "<Cmd>ToggleTermToggleAll<CR>",
-      { silent = true }
-    )
+    vim.keymap.set({ "n", "t" }, "<leader><leader>;", "<Cmd>ToggleTermToggleAll<CR>")
 
     -- toggle vertical terminal
-    vim.keymap.set("n", "<leader>v;", "<Cmd>ToggleTerm direction=vertical<CR>", { silent = true })
+    vim.keymap.set("n", "<leader>v;", "<Cmd>ToggleTerm direction=vertical<CR>")
 
-    vim.keymap.set("t", "<C-e>", [[<Cmd>WinResizerStartResize<CR>]], { silent = true })
+    vim.keymap.set("t", "<C-e>", [[<Cmd>WinResizerStartResize<CR>]])
   end,
 }
