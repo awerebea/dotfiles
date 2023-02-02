@@ -116,3 +116,5 @@ keymap(
   "<Cmd>g/^\\(.*\\)\\ze\\n\\%(.*\\n\\)*\\1$/d<CR>",
   { silent = true, desc = "Remove duplicarte lines" }
 )
+
+keymap("n", "<leader>e", "<Cmd>edit<CR>")
