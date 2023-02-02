@@ -24,11 +24,11 @@ return {
     filters = {
       custom = { ".git" },
     },
-    sync_root_with_cwd = false,
+    sync_root_with_cwd = true,
     prefer_startup_root = true,
     update_focused_file = {
-      enable = false,
-      update_root = false,
+      enable = true,
+      update_root = true,
     },
     actions = {
       open_file = {
