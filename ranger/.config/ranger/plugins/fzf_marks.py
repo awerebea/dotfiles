@@ -7,14 +7,14 @@ from ranger.api.commands import Command
 
 
 class FzfMarksBase(Command):
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fzf_cmd = os.environ.get("FZF_MARKS_CMD", "fzf")
         # https://github.com/urbainvaes/fzf-marks
         self.bookmark_file = os.environ.get("FZF_MARKS_FILE") or os.path.join(
-            os.environ.get("HOME", os.path.expanduser("~")), ".fzf-marks"
-        )
+            os.environ.get("HOME", os.path.expanduser("~")), ".fzf-marks")
 
 
 class fmark(FzfMarksBase):
@@ -24,13 +24,14 @@ class fmark(FzfMarksBase):
     """
 
     def execute(self):
-        if not self.arg(1):
-            self.fm.notify(
-                "A keyword must be given for the current bookmark!", bad=True
-            )
-            return
+        #  if not self.arg(1):
+        #      self.fm.notify("A keyword must be given for the current bookmark!", bad=True)
+        #      return
 
-        item = "{} : {}".format(self.arg(1), self.fm.thisdir.path)
+        if not self.arg(1):
+            item = "{} : {}".format(os.path.basename(os.getcwd()), self.fm.thisdir.path)
+        else:
+            item = "{} : {}".format(self.arg(1), self.fm.thisdir.path)
 
         if not os.path.exists(self.bookmark_file):
             with open(self.bookmark_file, "a") as f:
@@ -39,9 +40,8 @@ class fmark(FzfMarksBase):
         with open(self.bookmark_file, "r") as f:
             for line in f.readlines():
                 if line.split(":")[1].strip() == self.fm.thisdir.path:
-                    self.fm.notify(
-                        "Fzf bookmark already exists: {}".format(line.strip()), bad=True
-                    )
+                    self.fm.notify("Fzf bookmark already exists: {}".format(line.strip()),
+                                   bad=True)
                     return
 
         with open(self.bookmark_file, "a") as f:
@@ -75,13 +75,10 @@ class dmark(FzfMarksBase):
             return
 
         # TODO: batch deletion
-        command = '< "{2}" sort -f | {0} {1} --query="{3}"'.format(
-            self.fzf_cmd, self.fzf_opts, self.bookmark_file, query
-        )
+        command = '< "{2}" sort -f | {0} {1} --query="{3}"'.format(self.fzf_cmd, self.fzf_opts,
+                                                                   self.bookmark_file, query)
 
-        process = self.fm.execute_command(
-            command, universal_newlines=True, stdout=subprocess.PIPE
-        )
+        process = self.fm.execute_command(command, universal_newlines=True, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             items = stdout.rstrip().split("\n")
@@ -125,13 +122,10 @@ class fzm(FzfMarksBase):
             self.fm.notify("No fzf bookmark is created yet!", bad=True)
             return
 
-        command = '< "{2}" sort -f | {0} {1} --query "{3}"'.format(
-            self.fzf_cmd, self.fzf_opts, self.bookmark_file, query
-        )
+        command = '< "{2}" sort -f | {0} {1} --query "{3}"'.format(self.fzf_cmd, self.fzf_opts,
+                                                                   self.bookmark_file, query)
 
-        process = self.fm.execute_command(
-            command, universal_newlines=True, stdout=subprocess.PIPE
-        )
+        process = self.fm.execute_command(command, universal_newlines=True, stdout=subprocess.PIPE)
         stdout, stderr = process.communicate()
         if process.returncode == 0:
             key, target = stdout.rstrip().split(" : ", 1)
@@ -144,6 +138,4 @@ class fzm(FzfMarksBase):
         elif os.path.isfile(target):
             self.fm.select_file(target)
         else:
-            self.fm.notify(
-                "Invalid fzf bookmark location: {} : {}".format(key, target), True
-            )
+            self.fm.notify("Invalid fzf bookmark location: {} : {}".format(key, target), True)
