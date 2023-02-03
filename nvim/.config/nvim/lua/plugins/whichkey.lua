@@ -27,7 +27,7 @@ return {
           position = "bottom", -- bottom, top
         },
         triggers_blacklist = {
-          n = { "y", ">", "<" },
+          n = { "y", ">", "<", "v" },
           i = { "<leader>" },
           c = { "w" },
         },
