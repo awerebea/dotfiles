@@ -82,6 +82,7 @@ return {
       local path_actions = require "telescope_insert_path"
       local mappings = {
         i = {
+          ["<C-x>"] = require("telescope.actions").delete_buffer,
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
           ["<C-n>"] = actions.move_selection_next,
@@ -97,6 +98,7 @@ return {
           ["<c-t>"] = trouble.open_with_trouble,
         },
         n = {
+          ["dd"] = require("telescope.actions").delete_buffer,
           ["<c-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
           -- ["[I"] = path_actions.insert_relpath_I_visual,
