@@ -14,7 +14,7 @@ return {
     "echasnovski/mini.jump",
     opts = {
       delay = {
-        highlight = 2500,
+        highlight = 100000,
         idle_stop = 5000,
       },
     },
