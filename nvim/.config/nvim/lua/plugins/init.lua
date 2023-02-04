@@ -135,11 +135,6 @@ return {
     end,
   },
   {
-    "folke/todo-comments.nvim",
-    event = "VeryLazy",
-    config = true,
-  },
-  {
     "norcalli/nvim-colorizer.lua",
     event = "VeryLazy",
     config = function()
