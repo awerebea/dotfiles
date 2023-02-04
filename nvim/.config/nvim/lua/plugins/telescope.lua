@@ -54,7 +54,7 @@ return {
         end,
         desc = "Buffer",
       },
-      { "<leader>fao", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
+      { "<leader>vo", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
 
       -- list of items copied to clipboard
       { "<leader>fc", "<Cmd>Telescope neoclip<CR>", desc = "Clipboard" },
