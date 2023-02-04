@@ -1,19 +1,3 @@
-local swap_next, swap_prev = (function()
-  local swap_objects = {
-    p = "@parameter.inner",
-    f = "@function.outer",
-    c = "@class.outer",
-  }
-
-  local n, p = {}, {}
-  for key, obj in pairs(swap_objects) do
-    n[string.format("<leader>cx%s", key)] = obj
-    p[string.format("<leader>cX%s", key)] = obj
-  end
-
-  return n, p
-end)()
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -105,8 +89,16 @@ return {
         },
         swap = {
           enable = true,
-          swap_next = swap_next,
-          swap_previous = swap_prev,
+          swap_next = {
+            ["<leader>cxp"] = "@parameter.inner",
+            ["<leader>cxf"] = "@function.outer",
+            ["<leader>cxc"] = "@class.outer",
+          },
+          swap_previous = {
+            ["<leader>cxP"] = "@parameter.inner",
+            ["<leader>cxF"] = "@function.outer",
+            ["<leader>cxC"] = "@class.outer",
+          },
         },
         -- TODO: check if I need it
         lsp_interop = {
