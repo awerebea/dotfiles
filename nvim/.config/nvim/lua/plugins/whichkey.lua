@@ -51,22 +51,6 @@ return {
         p = { name = "+Project" },
         t = { name = "+Test", N = { name = "Neotest" }, o = { "Overseer" } },
         v = { name = "+View" },
-        s = {
-          name = "+Search",
-          c = {
-            function()
-              require("utils.cht").cht()
-            end,
-            "Cheatsheets",
-          },
-          s = {
-            function()
-              require("utils.cht").stack_overflow()
-            end,
-            "Stack Overflow",
-          },
-          -- n = { name = "+Noice" },
-        },
         c = {
           name = "+Code",
           x = {
