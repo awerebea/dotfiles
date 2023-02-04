@@ -175,6 +175,9 @@ return {
     keys = { { "<leader>u", "<Cmd>UndotreeToggle<CR>" } },
     config = function()
       vim.g.undotree_SetFocusWhenToggle = 1
+      vim.g.undotree_WindowLayout = 2
+      vim.g.undotree_ShortIndicators = 1
+      vim.g.undotree_DiffpanelHeight = 15
     end,
   },
   {
@@ -220,7 +223,7 @@ return {
     "mfussenegger/nvim-treehopper",
     event = "VeryLazy",
     config = function()
-      vim.keymap.set("o", "<leader>m", [[:<C-U>lua require("tsht").nodes()<CR>]])
+      vim.keymap.set("o", "<leader>m", [[:<C-U>lua require('tsht').nodes()<CR>]])
       vim.keymap.set("v", "m", [[:lua require("tsht").nodes()<CR>]])
     end,
   },
