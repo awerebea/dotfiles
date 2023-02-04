@@ -216,4 +216,12 @@ return {
       { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
     },
   },
+  {
+    "mfussenegger/nvim-treehopper",
+    event = "VeryLazy",
+    config = function()
+      vim.keymap.set("o", "<leader>m", [[:<C-U>lua require("tsht").nodes()<CR>]])
+      vim.keymap.set("v", "m", [[:lua require("tsht").nodes()<CR>]])
+    end,
+  },
 }
