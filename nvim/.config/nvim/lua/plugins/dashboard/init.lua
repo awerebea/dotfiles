@@ -10,6 +10,8 @@ return {
       dashboard.button("r", " " .. " Recent files", ":Telescope oldfiles <CR>"),
       dashboard.button("g", " " .. " Find text", ":Telescope live_grep <CR>"),
       dashboard.button("c", " " .. " Config", ":e $MYVIMRC <CR>"),
+      -- stylua: ignore
+      dashboard.button("s", "勒" .. " Restore Session", [[:lua require("persistence").load() <cr>]]),
       dashboard.button("l", "鈴" .. " Lazy", ":Lazy<CR>"),
       dashboard.button("q", " " .. " Quit", ":qa<CR>"),
     }
@@ -39,6 +41,7 @@ return {
         local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
 
         -- local now = os.date "%d-%m-%Y %H:%M:%S"
+        -- stylua: ignore
         local version = "   v" .. vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch
         local fortune = require "alpha.fortune"
         local quote = table.concat(fortune(), "\n")
