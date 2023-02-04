@@ -27,6 +27,13 @@ return {
       { "<leader><CR>", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
 
       { "<leader>fh", "<Cmd>Telescope help_tags<cr>", desc = "Help tags" },
+      {
+        "<leader><leader>c",
+        function()
+          require("telescope.builtin").colorscheme { enable_preview = true }
+        end,
+        desc = "Colorscheme",
+      },
 
       -- repeat last telescope command and query
       { "<leader>fr", "<Cmd>Telescope resume<CR>", desc = "Resume" },
