@@ -85,6 +85,7 @@
                 "source": "Windows.Terminal.PowershellCore"
             },
             {
+                "bellStyle": "taskbar",
                 "closeOnExit": "graceful",
                 "colorScheme": "Tokyo Night",
                 "cursorShape": "filledBox",
