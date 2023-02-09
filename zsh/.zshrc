@@ -1249,7 +1249,7 @@ alias grbpd='git rebase --committer-date-is-author-date'
 alias grbipd='git rebase -i --committer-date-is-author-date'
 alias glpf='git log --pretty=fuller'
 alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
-
+alias glsa='git ls-files $(git rev-parse --show-toplevel)'
 # Execute any alias or command in dotfiles repo
 dots() {
   location="$PWD"

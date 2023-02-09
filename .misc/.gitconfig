@@ -67,3 +67,5 @@ trustExitCode = true
 	line-numbers-plus-style = 34
 [init]
 	defaultBranch = main
+[alias]
+	ls-files-root = ! git ls-files
