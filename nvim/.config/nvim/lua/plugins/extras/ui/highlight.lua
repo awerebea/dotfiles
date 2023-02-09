@@ -15,6 +15,7 @@ return {
       },
       delay = 100,
       min_count_to_highlight = 2,
+      under_cursor = false,
     },
     config = function(_, opts)
       require("illuminate").configure(opts)
