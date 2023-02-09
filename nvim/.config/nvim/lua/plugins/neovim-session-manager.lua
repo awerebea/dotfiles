@@ -25,13 +25,19 @@ return {
       vim.keymap.set(
         "n",
         "<leader>qs",
+        "<Cmd>lua require('session_manager').save_current_session()<CR>",
+        { desc = "Save the session for the current directory" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>qr",
         "<Cmd>SessionManager load_current_dir_session<CR>",
         { desc = "Restore the session for the current directory" }
       )
       vim.keymap.set(
         "n",
         "<leader>qq",
-        "<Cmd>SessionManager load_session<CR>",
+        "<Cmd>lua require('session_manager').save_current_session()<CR> <bar> <Cmd>SessionManager load_session<CR>",
         { desc = "Select and restore the session" }
       )
       vim.keymap.set(
@@ -64,17 +70,6 @@ return {
           if vim.bo.filetype ~= "git" and not vim.bo.filetype ~= "gitcommit" then
             vim.api.nvim_set_current_dir(vim.g.CWD_initial)
             require("session_manager").save_current_session()
-          end
-        end,
-      })
-      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
-        group = config_group,
-        callback = function()
-          if vim.bo.filetype ~= "git" and not vim.bo.filetype ~= "gitcommit" then
-            vim.g.cwd_bckp = vim.fn.getcwd(-1, -1)
-            vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-            require("session_manager").save_current_session()
-            vim.api.nvim_set_current_dir(vim.g.cwd_bckp)
           end
         end,
       })
