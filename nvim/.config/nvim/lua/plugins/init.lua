@@ -209,15 +209,52 @@ return {
     "sindrets/diffview.nvim",
   },
   {
-    "folke/persistence.nvim",
-    event = "BufReadPre",
-    opts = { options = { "buffers", "curdir", "tabpages", "winsize", "help" } },
-    -- stylua: ignore
-    keys = {
-      { "<leader>qs", function() require("persistence").load() end, desc = "Restore Session" },
-      { "<leader>ql", function() require("persistence").load({ last = true }) end, desc = "Restore Last Session" },
-      { "<leader>qd", function() require("persistence").stop() end, desc = "Don't Save Current Session" },
-    },
+    "Shatur/neovim-session-manager",
+    event = "VimEnter",
+    config = function()
+      require("session_manager").setup {
+        -- Disabled, CurrentDir, LastSession
+        autoload_mode = require("session_manager.config").AutoloadMode.CurrentDir,
+        path_replacer = "@_@",
+        colon_replacer = "@+@",
+        autosave_last_session = true,
+        -- Do not save when no buffers are opened, or all of them aren't writable or listed.
+        autosave_ignore_not_normal = true,
+        autosave_ignore_dirs = {},
+        autosave_ignore_filetypes = {
+          "gitcommit",
+          "gitrebase",
+          "toggleterm",
+        },
+        autosave_ignore_buftypes = {},
+        autosave_only_in_session = false,
+        max_path_length = 80,
+      }
+      vim.keymap.set(
+        "n",
+        "<leader>qs",
+        "<Cmd>SessionManager load_current_dir_session<CR>",
+        { desc = "Restore the session for the current directory" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>qq",
+        "<Cmd>SessionManager load_session<CR>",
+        { desc = "Select and restore the session" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>ql",
+        "<Cmd>SessionManager load_last_session<CR>",
+        { desc = "Restore the last session" }
+      )
+      vim.keymap.set(
+        "n",
+        "<leader>qd",
+        "<Cmd>SessionManager delete_session<CR>",
+        { desc = "Delete session" }
+      )
+    end,
   },
   {
     "mfussenegger/nvim-treehopper",
