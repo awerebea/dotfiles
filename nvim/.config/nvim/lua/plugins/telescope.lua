@@ -16,6 +16,7 @@ return {
     keys = {
       -- find files within current working directory, respects .gitignore
       { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
+      { "<leader>fi", require("utils").find_ignored_files, desc = "Find Files including ignored" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
       { "<leader>fg", require("utils").find_files, desc = "Find Files" },
       -- find string in current workspace as you type

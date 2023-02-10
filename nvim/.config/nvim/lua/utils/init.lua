@@ -27,4 +27,11 @@ function M.find_files()
   end
 end
 
+function M.find_ignored_files()
+  local opts = {
+    find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv", "--no-ignore" },
+  }
+  require("telescope.builtin").find_files(opts)
+end
+
 return M
