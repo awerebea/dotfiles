@@ -1173,6 +1173,19 @@ export GLOBALIAS_FILTER_VALUES=(
   ls
   tmux
 )
+# Swap space keybind behavior for globalias plugin
+function globalias-wrapper() {
+    zle globalias
+    zle backward-delete-char
+    zle -U " "
+}
+zle -N globalias-wrapper
+# control-space expands all aliases, including global
+bindkey -M emacs "^ " globalias-wrapper
+bindkey -M viins "^ " globalias-wrapper
+# space makes a normal space
+bindkey -M emacs " " magic-space
+bindkey -M viins " " magic-space
 
 # fasd + fzf
 zd () {
