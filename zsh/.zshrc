@@ -1224,6 +1224,19 @@ bindkey -s '^x^v' '$EDITOR $(fzf)^M'
 
 bindkey '^[y' yank-pop
 
+# Ctrl+delete to delete until the end of the word
+bindkey '^[[3;5~' kill-word
+# Ctrl+Shift+delete to delete until the end of the line
+bindkey '^[[3;6~' kill-line
+
+# Edit the current command line in $EDITOR
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey '\C-x\C-e' edit-command-line
+
+# Alt+m to duplicate the last WORD on the command line
+bindkey "^[m" copy-prev-shell-word
+
 # Yank from vim's visual selection mode to the system clipboard
 zvm_vi_yank () {
   zvm_yank
