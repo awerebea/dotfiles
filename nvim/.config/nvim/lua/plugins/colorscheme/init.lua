@@ -31,6 +31,11 @@ return {
           colors.fg_gutter = "#4e567f"
           colors.border = "#4e567f"
         end,
+        on_highlights = function(highlights)
+          highlights.Folded = {
+            bg = "#15161e",
+          }
+        end,
       }
       tokyonight.load()
 
