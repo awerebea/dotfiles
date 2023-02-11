@@ -73,6 +73,13 @@ return {
       { "<leader>bD", function() require("mini.bufremove").delete(0, true) end, desc = "Delete Buffer (Force)" },
     },
   },
+  {
+    "echasnovski/mini.trailspace",
+    event = "BufReadPost",
+    config = function()
+      require("mini.trailspace").setup()
+    end,
+  },
   -- {
   --   "echasnovski/mini.comment",
   --   event = "VeryLazy",
