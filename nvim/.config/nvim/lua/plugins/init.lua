@@ -224,4 +224,17 @@ return {
       require("scrollbar").setup(otps)
     end,
   },
+  {
+    "luukvbaal/statuscol.nvim",
+    event = "VeryLazy",
+    opts = {
+      foldfunc = "builtin",
+      setopt = true,
+    },
+    config = function(_, opts)
+      if vim.fn.has "nvim-0.9" == 1 then
+        require("statuscol").setup(opts)
+      end
+    end,
+  },
 }
