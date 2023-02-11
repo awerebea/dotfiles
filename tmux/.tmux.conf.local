@@ -863,7 +863,7 @@ set -g @screen-capture-path "$HOME/.tmux/logs"
 set -g @save-complete-history-path "$HOME/.tmux/logs"
 
 # Create a new window preserving the path of the current pane
-bind-key c run-shell 'MyCWD="#{pane_current_path}"; tmux new-window -c "$MyCWD"'
+bind-key c run-shell 'tmux new-window -c "$(echo "#{pane_current_path}")"'
 
 # tmux-mode-indicator settings
 # prompt to display when tmux prefix key is pressed
