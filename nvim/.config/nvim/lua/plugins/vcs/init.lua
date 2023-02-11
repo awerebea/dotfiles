@@ -23,6 +23,7 @@ return {
   },
   {
     "lewis6991/gitsigns.nvim",
+    dependencies = { "petertriho/nvim-scrollbar" },
     event = "BufReadPre",
     opts = {
       signs = {
@@ -146,6 +147,10 @@ return {
         map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select Hunk" })
       end,
     },
+    config = function(_, opts)
+      require("gitsigns").setup(opts)
+      require("scrollbar.handlers.gitsigns").setup()
+    end,
   },
   {
     "mattn/vim-gist",
