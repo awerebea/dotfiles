@@ -54,6 +54,10 @@ return {
     "catppuccin/nvim",
     lazy = false,
     name = "catppuccin",
+    config = function()
+      require("catppuccin").setup()
+      -- require("catppuccin").load()
+    end,
   },
   {
     "ellisonleao/gruvbox.nvim",
