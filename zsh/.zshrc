@@ -1164,15 +1164,6 @@ if [[ -f "$ZSH/custom/plugins/tipz/tipz.zsh" ]]; then
   export TIPZ_TEXT='  \033[1;33m↳\033[0m'
 fi
 
-# globalias filter values (commands that should not be expanded)
-export GLOBALIAS_FILTER_VALUES=(
-  diff
-  f z vv
-  grep fgrep egrep rg
-  l ll lle lT llT
-  ls
-  tmux
-)
 # Swap space keybind behavior for globalias plugin
 function globalias-wrapper() {
     zle globalias
