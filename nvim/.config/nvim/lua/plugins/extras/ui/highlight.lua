@@ -42,4 +42,26 @@ return {
       end,
     },
   },
+  {
+    "kevinhwang91/nvim-hlslens",
+    dependencies = { "petertriho/nvim-scrollbar" },
+    event = "BufReadPost",
+    keys = {
+      {
+        "n",
+        [[<Cmd>execute('normal! ' . v:count1 . 'n')<CR><Cmd>lua require('hlslens').start()<CR>]],
+      },
+      {
+        "N",
+        [[<Cmd>execute('normal! ' . v:count1 . 'N')<CR><Cmd>lua require('hlslens').start()<CR>]],
+      },
+      { "*", [[*<Cmd>lua require('hlslens').start()<CR>]] },
+      { "#", [[#<Cmd>lua require('hlslens').start()<CR>]] },
+      { "g*", [[g*<Cmd>lua require('hlslens').start()<CR>]] },
+      { "g#", [[g#<Cmd>lua require('hlslens').start()<CR>]] },
+    },
+    config = function()
+      require("scrollbar.handlers.search").setup()
+    end,
+  },
 }
