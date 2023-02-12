@@ -2,6 +2,7 @@ return {
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
+      "nvim-lua/plenary.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-project.nvim",
@@ -11,6 +12,7 @@ return {
       "folke/trouble.nvim",
       "kiyoon/telescope-insert-path.nvim",
       "AckslD/nvim-neoclip.lua",
+      "nvim-telescope/telescope-hop.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -88,6 +90,18 @@ return {
       local actions_layout = require "telescope.actions.layout"
       local trouble = require "trouble.providers.telescope"
       local path_actions = require "telescope_insert_path"
+
+      -- "hot-reloaded functions", required by hop extension
+      -- https://github.com/nvim-telescope/telescope-hop.nvim
+      if pcall(require, "plenary") then
+        RELOAD = require("plenary.reload").reload_module
+
+        R = function(name)
+          RELOAD(name)
+          return require(name)
+        end
+      end
+
       local mappings = {
         i = {
           ["<C-x>"] = require("telescope.actions").delete_buffer,
@@ -104,6 +118,15 @@ return {
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
           ["<Esc><Esc>"] = actions.close,
           ["<c-t>"] = trouble.open_with_trouble,
+          ["<C-h>"] = R("telescope").extensions.hop.hop, -- hop.hop or hop.hop_toggle_selection
+          -- custom hop loop to multi selects and sending selected entries to quickfix list
+          ["<C-l>"] = function(prompt_bufnr)
+            local opts = {
+              callback = actions.toggle_selection,
+              loop_callback = actions.send_selected_to_qflist,
+            }
+            require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
+          end,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -213,6 +236,30 @@ return {
             hidden_files = true, -- default: false
             theme = "dropdown",
           },
+          hop = {
+          --stylua: ignore
+            keys = {
+              "a", "s", "d", "f", "g", "h", "j", "k", "l", ";",
+              "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
+              "z", "x", "c", "v", "b", "n", "m",
+              "A", "S", "D", "F", "G", "H", "J", "K", "L", ":",
+              "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
+              "Z", "X", "C", "V", "B", "N", "M",
+            },
+            -- Highlight groups to link to signs and lines; the below configuration refers to demo
+            -- sign_hl typically only defines foreground to possibly be combined with line_hl
+            sign_hl = { "WarningMsg", "Title" },
+            -- optional, typically a table of two highlight groups that are alternated between
+            line_hl = { "CursorLine", "Normal" },
+            -- options specific to `hop_loop`
+            -- true temporarily disables Telescope selection highlighting
+            clear_selection_hl = false,
+            -- highlight hopped to entry with telescope selection highlight
+            -- note: mutually exclusive with `clear_selection_hl`
+            trace_entry = true,
+            -- jump to entry where hoop loop was started from
+            reset_selection = true,
+          },
         },
       }
       telescope.setup(opts)
@@ -223,6 +270,7 @@ return {
       telescope.load_extension "aerial"
       telescope.load_extension "dap"
       telescope.load_extension "neoclip"
+      telescope.load_extension "hop"
     end,
   },
   {
