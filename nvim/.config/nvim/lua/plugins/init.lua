@@ -124,7 +124,15 @@ return {
   },
   {
     "szw/vim-maximizer",
-    keys = { { "<leader>z", "<Cmd>MaximizerToggle<CR>", mode = { "n", "v" } } },
+    event = "VeryLazy",
+    config = function()
+      vim.keymap.set(
+        { "n", "v" },
+        "<leader>z",
+        "<Cmd>MaximizerToggle<CR>",
+        { desc = "Maximize window toggle" }
+      )
+    end,
   },
   {
     "simeji/winresizer",
@@ -184,12 +192,11 @@ return {
     "windwp/nvim-spectre",
     cmd = { "Spectre" },
     keys = {
-      { "<leader>S", "<Cmd>Spectre<CR>", { desc = "Find and replace with Spectre" } },
+      { "<leader>Ss", "<Cmd>Spectre<CR>" },
       -- search current word
-      { "<leader>sw", "<Cmd>lua require('spectre').open_visual({select_word=true})<CR>" },
-      { "<leader>s", "<Esc><Cmd>lua require('spectre').open_visual()<CR>", mode = "v" },
+      { "<leader>Sw", "<Cmd>lua require('spectre').open_visual({select_word=true})<CR>" },
       -- search in current file
-      { "<leader>sf", "<Cmd>lua require('spectre').open_file_search()<CR>" },
+      { "<leader>Sf", "<Cmd>lua require('spectre').open_file_search()<CR>" },
     },
     config = true,
   },
