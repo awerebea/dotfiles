@@ -40,3 +40,4 @@ luac.out
 *.hex
 
 lua/scopes.lua
+lazy-lock.json
