@@ -102,9 +102,12 @@ keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>") -- switch to last ta
 -- keymap("n", "gz", "<Cmd>bdelete<CR>") -- override keymap by bufdelete plugin
 
 -- Toggle spell checking
-keymap("n", "<leader>ssa", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>")
-keymap("n", "<leader>sse", "<Cmd>setlocal spell! spelllang=en_us<CR>")
-keymap("n", "<leader>ssr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>")
+--stylua: ignore
+keymap("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
+--stylua: ignore
+keymap("n", "<leader>sce", "<Cmd>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spellcheck English" })
+--stylua: ignore
+keymap("n", "<leader>scr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", { desc = "Toggle spellcheck Russian" })
 
 -- Toggle show non-visible white spaces
 keymap("n", "<leader>ll", "<Cmd>set list!<CR>")
