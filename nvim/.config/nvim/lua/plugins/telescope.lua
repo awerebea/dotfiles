@@ -21,11 +21,9 @@ return {
       { "<leader>fi", require("utils").find_ignored_files, desc = "Find files including ignored" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
       { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
-      -- find string in current workspace as you type
       { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
-      -- find word under cursor in current working directory
+      { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
       { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Find word under cursor" },
-      -- list open buffers in current neovim instance
       { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
       { "<leader><CR>", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
 

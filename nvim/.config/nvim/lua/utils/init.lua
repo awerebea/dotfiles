@@ -34,4 +34,11 @@ function M.find_ignored_files()
   require("telescope.builtin").find_files(opts)
 end
 
+function M.grep_ignored_files()
+  local opts = {
+    additional_args = { "--no-ignore" },
+  }
+  require("telescope.builtin").live_grep(opts)
+end
+
 return M
