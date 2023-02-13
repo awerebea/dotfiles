@@ -33,24 +33,17 @@ return {
         },
       }
       wk.register({
-        -- q = {
-        --   name = "Quit",
-        --   q = {
-        --     function()
-        --       require("utils").quit()
-        --     end,
-        --     "Quit",
-        --   },
-        --   t = { "<cmd>tabclose<cr>", "Close Tab" },
-        -- },
         b = { name = "Buffer" },
         d = { name = "Debug" },
-        f = { name = "File" },
-        h = { name = "Help" },
+        f = { name = "Telescope" },
         g = { name = "Git" },
+        h = { name = "Help" },
         p = { name = "Project" },
         t = { name = "Test", N = { name = "Neotest" }, o = { "Overseer" } },
         v = { name = "View" },
+        q = { name = "Session manager" },
+        m = "Select Harpoon mark",
+        u = "Toggle Undo-tree",
         c = {
           name = "Code",
           x = {
@@ -72,7 +65,22 @@ return {
           w = "Replace word under curson in workplace",
           f = "Replace in current file",
         },
-        s = { name = "spellcheck, neoscope", c = "+Spellcheck" },
+        s = { name = "Spellcheck, Neoscope", c = "+Spellcheck" },
+        ["<space>"] = {
+          name = "Hop, Harpoon",
+          m = "Add Harpoon mark",
+          ["2"] = { name = "Hop" },
+        },
+        ["["] = {
+          name = "Harpoon, Bufferline, ToDo-comments",
+          b = "Move Bufferline tab left",
+          h = "Go to prev Harpoon mark",
+        },
+        ["]"] = {
+          name = "Harpoon, Bufferline, ToDo-comments",
+          b = "Move Bufferline tab right",
+          h = "Go to next Harpoon mark",
+        },
       }, { prefix = "<leader>" })
     end,
   },

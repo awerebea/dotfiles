@@ -77,20 +77,20 @@ keymap("n", "<leader>xy", "<Cmd>close<CR>") -- close current split window
 keymap("n", "gp", "<Cmd>bprevious<CR>")
 keymap("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
-keymap("n", "<leader>o", "<Cmd>tab ball<CR>") -- open all buffers in tab
-keymap("n", "<leader><Left>", "<Cmd>tabprevious<CR>")
-keymap("n", "<leader><Right>", "<Cmd>tabnext<CR>")
-keymap("n", "<leader>tp", "<Cmd>tabprevious<CR>")
-keymap("n", "<leader>tn", "<Cmd>tabnext<CR>")
-keymap("n", "<leader>th", "<Cmd>tabfirst<CR>")
-keymap("n", "<leader>tl", "<Cmd>tablast<CR>")
-keymap("n", "<leader>te", "<Cmd>tabedit<Space>")
-keymap("n", "<leader>tc", "<Cmd>tabnew<CR>") -- open new tab
-keymap("n", "<leader>tm", "<Cmd>tabmove<Space>")
-keymap("n", "<leader>tmp", "<Cmd>-tabmove<CR>") -- move current tab left
-keymap("n", "<leader>tmn", "<Cmd>+tabmove<CR>") -- move current tab right
-keymap("n", "<leader>tx", "<Cmd>tabclose<CR>") -- close current tab
-keymap("n", "<leader>to", "<Cmd>tabonly<CR>")
+keymap("n", "<leader>o", "<Cmd>tab ball<CR>", { desc = "Open all buffers in separate tabs" })
+keymap("n", "<leader><Left>", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
+keymap("n", "<leader><Right>", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+keymap("n", "<leader>tp", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
+keymap("n", "<leader>tn", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+keymap("n", "<leader>th", "<Cmd>tabfirst<CR>", { desc = "First tab" })
+keymap("n", "<leader>tl", "<Cmd>tablast<CR>", { desc = "Last tab" })
+keymap("n", "<leader>te", ":tabedit<Space>", { desc = "Tab .. N" })
+keymap("n", "<leader>tc", "<Cmd>tabnew<CR>", { desc = "Open new tab" })
+keymap("n", "<leader>tm", ":tabmove<Space>", { desc = "Move tab to position .. N" })
+keymap("n", "<leader>tmp", "<Cmd>-tabmove<CR>", { desc = "Move current tab left" })
+keymap("n", "<leader>tmn", "<Cmd>+tabmove<CR>", { desc = "Move current tab right" })
+keymap("n", "<leader>tx", "<Cmd>tabclose<CR>", { desc = "Close current tab" })
+keymap("n", "<leader>tz", "<Cmd>tabonly<CR>", { desc = "Close all tabs except the current one" })
 -- Switch to last tab
 vim.cmd [[
 if !exists('g:lasttab')
@@ -98,8 +98,8 @@ if !exists('g:lasttab')
 endif
 autocmd TabLeave * let g:lasttab = tabpagenr()
 ]]
-keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>") -- switch to last tab
--- keymap("n", "gz", "<Cmd>bdelete<CR>") -- override keymap by bufdelete plugin
+keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>", { desc = "Switch to last tab" })
+-- keymap("n", "gz", "<Cmd>bdelete<CR>") -- overriden by bufdelete plugin
 
 -- Toggle spell checking
 --stylua: ignore
@@ -117,7 +117,7 @@ keymap(
   "n",
   "<leader>rd",
   "<Cmd>g/^\\(.*\\)\\ze\\n\\%(.*\\n\\)*\\1$/d<CR>",
-  { desc = "Remove duplicarte lines" }
+  { desc = "Remove duplicate lines, keep last occurrence" }
 )
 
 keymap("n", "<leader>e", "<Cmd>edit<CR>")
