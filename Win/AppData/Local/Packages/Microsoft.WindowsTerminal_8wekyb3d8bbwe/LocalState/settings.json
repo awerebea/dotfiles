@@ -37,6 +37,10 @@
         {
             "command": "unbound",
             "keys": "alt+enter"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+shift+minus"
         }
     ],
     "copyFormatting": "none",
@@ -371,5 +375,6 @@
         }
     ],
     "startOnUserLogin": true,
+    "themes": [],
     "windowingBehavior": "useExisting"
 }
