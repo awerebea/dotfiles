@@ -1,5 +1,6 @@
 !.vimprj/
 !.vimprj/*
+**/.project
 *.log
 *.pyc
 .DS_store
