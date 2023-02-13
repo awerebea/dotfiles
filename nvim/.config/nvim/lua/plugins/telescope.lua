@@ -17,14 +17,14 @@ return {
     cmd = "Telescope",
     keys = {
       -- find files within current working directory, respects .gitignore
-      { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
-      { "<leader>fi", require("utils").find_ignored_files, desc = "Find Files including ignored" },
-      { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find Files" },
-      { "<leader>fg", require("utils").find_files, desc = "Find Files" },
+      { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
+      { "<leader>fi", require("utils").find_ignored_files, desc = "Find files including ignored" },
+      { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
+      { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
       -- find string in current workspace as you type
-      { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Workspace" },
+      { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
       -- find word under cursor in current working directory
-      { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Word under cursor" },
+      { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Find word under cursor" },
       -- list open buffers in current neovim instance
       { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
       { "<leader><CR>", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
