@@ -91,17 +91,6 @@ return {
       local trouble = require "trouble.providers.telescope"
       local path_actions = require "telescope_insert_path"
 
-      -- "hot-reloaded functions", required by hop extension
-      -- https://github.com/nvim-telescope/telescope-hop.nvim
-      if pcall(require, "plenary") then
-        RELOAD = require("plenary.reload").reload_module
-
-        R = function(name)
-          RELOAD(name)
-          return require(name)
-        end
-      end
-
       local mappings = {
         i = {
           ["<C-x>"] = require("telescope.actions").delete_buffer,
@@ -118,7 +107,9 @@ return {
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
           ["<Esc><Esc>"] = actions.close,
           ["<c-t>"] = trouble.open_with_trouble,
-          ["<C-h>"] = R("telescope").extensions.hop.hop, -- hop.hop or hop.hop_toggle_selection
+          ["<C-h>"] = function(prompt_bufnr)
+            telescope.extensions.hop.hop(prompt_bufnr)
+          end, -- hop.hop or hop.hop_toggle_selection
           -- custom hop loop to multi selects and sending selected entries to quickfix list
           ["<C-l>"] = function(prompt_bufnr)
             local opts = {
