@@ -44,7 +44,7 @@ return {
       { "<leader>fab", "<Cmd>Telescope file_browser<cr>", desc = "File browser" },
       { "<leader>far", "<Cmd>Telescope repo list<cr>", desc = "Search" },
       {
-        "<leader>fap",
+        "<leader>fp",
         function()
           require("telescope").extensions.project.project { display_type = "minimal" }
         end,
