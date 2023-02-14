@@ -160,4 +160,18 @@ return {
       vim.g.gist_open_browser_after_post = 1
     end,
   },
+  {
+    "akinsho/git-conflict.nvim",
+    cmd = {
+      "GitConflictRefresh",
+      "GitConflictListQf",
+    },
+    keys = {
+      { "<leader>gcr", "<Cmd>GitConflictRefresh<CR>" },
+      { "<leader>gcq", "<Cmd>GitConflictListQf<CR>" },
+    },
+    config = function()
+      require("git-conflict").setup()
+    end,
+  },
 }
