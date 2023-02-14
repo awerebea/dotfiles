@@ -299,7 +299,7 @@ vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1
 -- zR unfold all blocks
 -- za toggle folding
 -- zf create manual fold, check :set foldmethod=manual
-vim.opt.foldmethod = "expr" -- "manual" for manual folds
+vim.opt.foldmethod = "manual" -- "manual" for manual folds; "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter to generate folds
 vim.opt.foldcolumn = "1"
 vim.opt.foldlevel = 2 -- fold levels opened at file opens
