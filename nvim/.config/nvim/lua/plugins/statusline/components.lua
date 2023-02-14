@@ -117,4 +117,13 @@ return {
     end,
     color = fg "Statement",
   },
+  noice_search = {
+    function()
+      return require("noice").api.status.search.get()
+    end,
+    cond = function()
+      return package.loaded["noice"] and require("noice").api.status.search.has()
+    end,
+    color = { fg = "#ff9e64" },
+  },
 }
