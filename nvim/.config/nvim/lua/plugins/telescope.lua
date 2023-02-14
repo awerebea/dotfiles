@@ -13,6 +13,7 @@ return {
       "kiyoon/telescope-insert-path.nvim",
       "AckslD/nvim-neoclip.lua",
       "nvim-telescope/telescope-hop.nvim",
+      "nvim-telescope/telescope-live-grep-args.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -21,7 +22,12 @@ return {
       { "<leader>fi", require("utils").find_ignored_files, desc = "Find files including ignored" },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
       { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
-      { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
+      -- { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
+      {
+        "<leader>f/",
+        "<Cmd>lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
+        { desc = "Live grep in workspace" },
+      },
       { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
       { "<leader>fw", "<Cmd>Telescope grep_string<CR>", desc = "Find word under cursor" },
       { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
@@ -88,6 +94,7 @@ return {
       local actions_layout = require "telescope.actions.layout"
       local trouble = require "trouble.providers.telescope"
       local path_actions = require "telescope_insert_path"
+      local lga_actions = require "telescope-live-grep-args.actions"
 
       local mappings = {
         i = {
@@ -116,6 +123,9 @@ return {
             }
             require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
+          ["<C-a>"] = lga_actions.quote_prompt(),
+          ["<C-g>"] = lga_actions.quote_prompt { postfix = " --iglob " },
+          ["<C-i>"] = lga_actions.quote_prompt { postfix = " --no-ignore " },
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -260,6 +270,7 @@ return {
       telescope.load_extension "dap"
       telescope.load_extension "neoclip"
       telescope.load_extension "hop"
+      telescope.load_extension "live_grep_args"
     end,
   },
   {
