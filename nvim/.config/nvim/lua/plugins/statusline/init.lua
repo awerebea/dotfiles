@@ -123,6 +123,7 @@ return {
             components.diagnostics,
             components.noice_command,
             components.noice_mode,
+            components.noice_search,
             components.separator,
             components.lsp_client,
           },
