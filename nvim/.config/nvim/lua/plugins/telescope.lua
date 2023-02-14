@@ -111,7 +111,7 @@ return {
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
           ["<Esc><Esc>"] = actions.close,
-          ["<c-t>"] = trouble.open_with_trouble,
+          ["<C-t>"] = trouble.open_with_trouble,
           ["<C-h>"] = function(prompt_bufnr)
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
@@ -129,7 +129,7 @@ return {
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
-          ["<c-t>"] = trouble.open_with_trouble,
+          ["<C-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
           -- ["[I"] = path_actions.insert_relpath_I_visual,
           -- ["[a"] = path_actions.insert_relpath_a_visual,
