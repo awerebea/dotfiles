@@ -667,7 +667,10 @@ set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
 bind Escape copy-mode
 
 # Log output to a text file on demand
-bind C-q pipe-pane -o "mkdir -p ~/.tmux/logs && cat >>~/.tmux/logs/#W-#P.log" \; display " Toggled logging to ~/.tmux/logs/#W-#P.log"
+bind C-q {
+  pipe-pane -o "mkdir -p ~/.tmux/logs && cat >>~/.tmux/logs/#W-#P.log"
+  display " Toggled logging to ~/.tmux/logs/#W-#P.log"
+}
 
 # tmux-sidebar plugin settings
 # Toggle sidebar-tree and do not move focus to tree pane
@@ -806,13 +809,17 @@ set -g @sidebar-plus-layout-key 'g'
 set -g @sidebar-plus-position 'left'
 
 # toggle mouse
-bind-key M set-option -gF mouse "#{?mouse,off,on}" \; \
-display-message "#{?mouse,Mouse: ON,Mouse: OFF}"
+bind-key M {
+  set-option -gF mouse "#{?mouse,off,on}"
+  display-message "#{?mouse,Mouse: ON,Mouse: OFF}"
+}
 
 # Pane actions
 # binding to enter marked-pane-actions prefix
-bind-key m switch-client -T marked-pane-actions \; \
-display-message "Marked pane actions mode"
+bind-key m {
+  switch-client -T marked-pane-actions
+  display-message "Marked pane actions mode"
+}
 # mark/unmark the active pane
 bind-key -T marked-pane-actions m select-pane -m
 # unmark the marked pane from any window/pane
