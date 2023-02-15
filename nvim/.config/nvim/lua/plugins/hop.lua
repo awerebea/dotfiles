@@ -3,9 +3,10 @@ return {
   branch = "fix-some-bugs",
   -- "phaazon/hop.nvim",
   event = "VeryLazy",
-  config = function()
+  opts = { keys = "asdfghjklqwertyuiopzxcvbnm;" },
+  config = function(_, opts)
     local hop = require "hop"
-    hop.setup()
+    hop.setup(opts)
 
     vim.api.nvim_command "highlight HopNextKey cterm=bold gui=bold guifg=#ff0000"
     vim.api.nvim_command "highlight HopNextKey1 cterm=bold gui=bold guifg=#ffb400"
@@ -62,7 +63,7 @@ return {
 
     local keymap = vim.keymap.set
 
-    keymap("", "<leader>w", "<Cmd>HopWord<CR>")
+    keymap("", "<leader><leader><leader>", "<Cmd>HopWord<CR>")
     keymap("", "<leader><leader>W", "<Cmd>HopWordMW<CR>")
     keymap("", "<leader><leader>w", "<Cmd>HopWordAC<CR>")
     keymap("", "<leader><leader>b", "<Cmd>HopWordBC<CR>")
