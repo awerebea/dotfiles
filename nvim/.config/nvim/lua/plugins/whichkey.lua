@@ -44,6 +44,7 @@ return {
         q = { name = "Session manager" },
         m = "Select Harpoon mark",
         u = "Toggle Undo-tree",
+        w = "Pick a window",
         c = {
           name = "Code",
           x = {
