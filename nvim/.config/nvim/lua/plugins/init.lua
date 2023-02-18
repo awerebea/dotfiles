@@ -244,4 +244,12 @@ return {
       end
     end,
   },
+  {
+    "m4xshen/smartcolumn.nvim",
+    event = "VeryLazy",
+    opts = {
+      colorcolumn = 100,
+    },
+    config = true,
+  },
 }
