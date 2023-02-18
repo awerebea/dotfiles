@@ -268,4 +268,5 @@ return {
       end, { desc = "Pick a window" })
     end,
   },
+  { "machakann/vim-swap", event = "VeryLazy" },
 }
