@@ -27,6 +27,21 @@ return {
       end
     end
 
+    local count_windows = function()
+      local wc = 0
+      local windows = vim.api.nvim_tabpage_list_wins(0)
+
+      for _, v in pairs(windows) do
+        local cfg = vim.api.nvim_win_get_config(v)
+        local ft = vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(v), "filetype")
+
+        if (cfg.relative == "" or cfg.external == true) and ft ~= "qf" then
+          wc = wc + 1
+        end
+      end
+      return wc
+    end
+
     local tabline = {
       hl = "TabLineFill",
       layout = "active_tab_with_wins",
@@ -38,7 +53,7 @@ return {
               .. vim.api.nvim_tabpage_get_number(tabid)
               .. " " .. get_parent()
               .. "/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-              .. " [" .. #vim.api.nvim_tabpage_list_wins(tabid) .. "] ",
+              .. " [" .. count_windows() .. "] ",
             hl = { fg = hl_tab_active.fg, bg = hl_tab_active.bg, style = "bold" },
           }
         end,
