@@ -8,7 +8,7 @@ return {
 
     local hl_tabline_fill = util.extract_nvim_hl "TabLineFill"
     local hl_tab_active = { fg = "#c0caf5", bg = "#3d59a1" }
-    local hl_tab_inactive = { fg = "#737aa2", bg = "#202e53" }
+    local hl_tab_inactive = { fg = "#8a8fb0", bg = "#273967" }
     local hl_win_active = { fg = "#c0caf5", bg = "#3b4261" }
     local hl_win_inactive = { fg = "#737aa2", bg = "#292e42" }
 
