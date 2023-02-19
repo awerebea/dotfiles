@@ -72,8 +72,10 @@ keymap("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
 keymap("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
 keymap("n", "<leader>xy", "<Cmd>close<CR>") -- close current split window
 -- buffers management
--- keymap("n", "<M-S-l>", "<Cmd>bnext<CR>") -- override by byfferline plugin
--- keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>") -- override by byfferline plugin
+keymap("n", "<M-S-l>", "<Cmd>bnext<CR>")
+keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>")
+keymap("n", "<M-S-k>", "<Cmd>tabnext<CR>")
+keymap("n", "<M-S-j>", "<Cmd>tabprevious<CR>")
 keymap("n", "gp", "<Cmd>bprevious<CR>")
 keymap("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
@@ -151,3 +153,31 @@ vim.cmd [[
 vim.keymap.set("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
 --stylua: ignore
 vim.keymap.set("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
+
+vim.keymap.set(
+  "n",
+  "<leader><Tab>",
+  "<Cmd>lua ToggleTabSwitcherMode()<CR>",
+  { desc = "Toggle Tab switcher mode." }
+)
+vim.keymap.set(
+  "n",
+  "<leader><leader>rn",
+  "<Cmd>call ToggleSmartRelativenumbers()<CR>",
+  { desc = "Toggle smart relative numbers." }
+)
+
+-- Toggle word wrap for current buffer
+vim.keymap.set(
+  "n",
+  "<leader>ww",
+  "<Cmd>setlocal wrap!<CR> <bar> <Cmd>echo 'wordwrap!'<CR>",
+  { desc = "Toggle visual wrapping of long lines." }
+)
+-- Toggle wrap at textwidth column
+vim.keymap.set(
+  "n",
+  "<leader>aw",
+  "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
+  { desc = "Toggle automatic wrapping of long lines." }
+)
