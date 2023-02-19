@@ -269,4 +269,20 @@ return {
     end,
   },
   { "machakann/vim-swap", event = "VeryLazy" },
+  {
+    "Wansmer/treesj",
+    dependencies = { "nvim-treesitter" },
+    opts = {
+      use_default_keymaps = false,
+      max_join_length = 120,
+    },
+    keys = {
+      { "<leader>gS", "<Cmd>TSJSplit<CR>" },
+      { "<leader>gJ", "<Cmd>TSJJoin<CR>" },
+      { "<leader>gT", "<Cmd>TSJToggle<CR>" },
+    },
+    config = function(_, opts)
+      require("treesj").setup(opts)
+    end,
+  },
 }
