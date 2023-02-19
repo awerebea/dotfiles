@@ -49,11 +49,10 @@ return {
         label = function(tabid)
           return {
             -- stylua: ignore
-            " "
-              .. vim.api.nvim_tabpage_get_number(tabid)
+              vim.api.nvim_tabpage_get_number(tabid)
               .. " " .. get_parent()
               .. "/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-              .. " [" .. count_windows() .. "] ",
+              .. " [" .. count_windows() .. "]",
             hl = { fg = hl_tab_active.fg, bg = hl_tab_active.bg, style = "bold" },
           }
         end,
@@ -64,12 +63,11 @@ return {
         label = function(tabid)
           return {
             -- stylua: ignore
-            " "
-              .. vim.api.nvim_tabpage_get_number(tabid)
+              vim.api.nvim_tabpage_get_number(tabid)
               .. " " .. filename.unique(vim.api.nvim_tabpage_get_win(tabid))
               .. " ["
               .. #vim.api.nvim_tabpage_list_wins(tabid)
-              .. "] ",
+              .. "]",
             hl = { fg = hl_tab_inactive.fg, bg = hl_tab_inactive.bg, style = "bold" },
           }
         end,
@@ -79,15 +77,14 @@ return {
       top_win = {
         label = function(winid)
           return {
-            " "
+            filename.unique(winid)
+              .. " ("
               .. vim.api.nvim_win_get_buf(winid)
-              .. ": "
-              .. filename.unique(winid)
-              .. " "
+              .. ")"
               .. (
                 vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(winid), "modified")
                   -- and "[●]"
-                  and "[+]"
+                  and " [+]"
                 or ""
               ),
             hl = { fg = hl_win_active.fg, bg = hl_win_active.bg },
@@ -99,14 +96,13 @@ return {
       win = {
         label = function(winid)
           return {
-            " "
+            filename.unique(winid)
+              .. " ("
               .. vim.api.nvim_win_get_buf(winid)
-              .. ": "
-              .. filename.unique(winid)
-              .. " "
+              .. ")"
               .. (
                 vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(winid), "modified")
-                  and "[+]"
+                  and " [+]"
                 or ""
               ),
             hl = { fg = hl_win_inactive.fg, bg = hl_win_inactive.bg },
