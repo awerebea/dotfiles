@@ -183,7 +183,13 @@ function ToggleTabSwitcherMode()
     print "Switch buffers"
   end
 end
-vim.keymap.set("n", "<leader><Tab>", "<Cmd>lua ToggleTabSwitcherMode()<CR>")
+-- this keymap is defined in config/keymaps.lua
+-- vim.keymap.set(
+--   "n",
+--   "<leader><Tab>",
+--   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
+--   { desc = "Toggle Tab switcher mode." }
+-- )
 -- }}}
 
 -- {{{ toggle relativenumber
@@ -215,12 +221,13 @@ else
   endif
 endfunction
 ]]
-vim.keymap.set(
-  "n",
-  "<leader><leader>rn",
-  "<Cmd>call ToggleSmartRelativenumbers()<CR>",
-  { noremap = true }
-)
+-- this keymap is defined in config/keymaps.lua
+-- vim.keymap.set(
+--   "n",
+--   "<leader><leader>rn",
+--   "<Cmd>call ToggleSmartRelativenumbers()<CR>",
+--   { desc = "Toggle smart relative numbers." }
+-- )
 -- }}}
 
 -- {{{ Word wrap
@@ -247,9 +254,19 @@ function! AutoWrapToggle()
 endfunction
 ]]
 -- Toggle word wrap for current buffer
-vim.keymap.set("n", "<leader>ww", "<Cmd>setlocal wrap!<CR>")
--- Toggle wrap at 80 column
-vim.keymap.set("n", "<leader>aw", "<Cmd>call AutoWrapToggle()<CR>")
+-- vim.keymap.set( -- this keymap is defined in config/keymaps.lua
+--   "n",
+--   "<leader>ww",
+--   "<Cmd>setlocal wrap!<CR> <bar> <Cmd>echo 'wordwrap!'<CR>",
+--   { desc = "Toggle visual wrapping of long lines." }
+-- )
+-- Toggle wrap at textwidth column
+-- vim.keymap.set( -- this keymap is defined in config/keymaps.lua
+--   "n",
+--   "<leader>aw",
+--   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
+--   { desc = "Toggle automatic wrapping of long lines." }
+-- )
 -- }}}
 
 -- {{{ Auto save/load view
