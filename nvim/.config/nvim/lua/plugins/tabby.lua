@@ -7,9 +7,9 @@ return {
     local util = require "tabby.util"
 
     local hl_tabline_fill = util.extract_nvim_hl "TabLineFill"
-    local hl_tab_active = { fg = "#15161e", bg = "#7aa2f7" }
-    local hl_tab_inactive = { fg = "#c0caf5", bg = "#3d59a1" }
-    local hl_win_active = util.extract_nvim_hl "BufferCurrent"
+    local hl_tab_active = { fg = "#c0caf5", bg = "#3d59a1" }
+    local hl_tab_inactive = { fg = "#737aa2", bg = "#202e53" }
+    local hl_win_active = { fg = "#c0caf5", bg = "#3b4261" }
     local hl_win_inactive = { fg = "#737aa2", bg = "#292e42" }
 
     local get_parent = function()
@@ -63,8 +63,10 @@ return {
       inactive_tab = {
         label = function(tabid)
           return {
+            -- stylua: ignore
             " "
               .. vim.api.nvim_tabpage_get_number(tabid)
+              .. " " .. filename.unique(vim.api.nvim_tabpage_get_win(tabid))
               .. " ["
               .. #vim.api.nvim_tabpage_list_wins(tabid)
               .. "] ",
