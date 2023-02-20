@@ -536,7 +536,8 @@ bind -n C-l run "($is_vim && tmux send-keys C-l) || tmux select-pane -R"
 bind -n 'C-\' if-shell "$is_vim" "send-keys 'C-\\'" "select-pane -l"
 
 # clear both screen and history
-bind -n M-l send-keys C-l \; run 'sleep 0.1' \; clear-history
+bind -n M-l run "($is_vim && tmux send-keys M-l) || \
+                    (tmux send-keys C-l; sleep 0.1; tmux clear-history)"
 
 # focus events enabled for terminals that support them
 set -g focus-events on
