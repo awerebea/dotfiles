@@ -56,8 +56,8 @@ return {
             hl = { fg = hl_tab_active.fg, bg = hl_tab_active.bg, style = "bold" },
           }
         end,
-        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_active.bg } },
-        right_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_active.bg } },
+        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_active.bg } },
+        right_sep = { " █", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_active.bg } },
       },
       inactive_tab = {
         label = function(tabid)
@@ -71,8 +71,8 @@ return {
             hl = { fg = hl_tab_inactive.fg, bg = hl_tab_inactive.bg, style = "bold" },
           }
         end,
-        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_inactive.bg } },
-        right_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_inactive.bg } },
+        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_inactive.bg } },
+        right_sep = { " █", hl = { fg = hl_tabline_fill.bg, bg = hl_tab_inactive.bg } },
       },
       top_win = {
         label = function(winid)
@@ -90,8 +90,8 @@ return {
             hl = { fg = hl_win_active.fg, bg = hl_win_active.bg },
           }
         end,
-        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_active.bg } },
-        right_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_active.bg } },
+        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_active.bg } },
+        right_sep = { " █", hl = { fg = hl_tabline_fill.bg, bg = hl_win_active.bg } },
       },
       win = {
         label = function(winid)
@@ -108,8 +108,8 @@ return {
             hl = { fg = hl_win_inactive.fg, bg = hl_win_inactive.bg },
           }
         end,
-        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_inactive.bg } },
-        right_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_inactive.bg } },
+        left_sep = { " ", hl = { fg = hl_tabline_fill.bg, bg = hl_win_inactive.bg } },
+        right_sep = { " █", hl = { fg = hl_tabline_fill.bg, bg = hl_win_inactive.bg } },
       },
     }
 
