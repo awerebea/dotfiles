@@ -10,7 +10,8 @@ return {
       dashboard.button("r", " " .. " Recent files", ":Telescope oldfiles <CR>"),
       dashboard.button("g", " " .. " Find text", ":Telescope live_grep <CR>"),
       dashboard.button("c", " " .. " Config", ":e $MYVIMRC <CR>"),
-      dashboard.button("l", "鈴" .. " Lazy", ":Lazy<CR>"),
+      dashboard.button("s", " " .. " Load CWD session", ":lua LoadCurrentCwdSession()<CR>"),
+      dashboard.button("l", "鈴 " .. " Lazy", ":Lazy<CR>"),
       dashboard.button("q", " " .. " Quit", ":qa<CR>"),
     }
     for _, button in ipairs(dashboard.section.buttons.val) do
@@ -39,7 +40,12 @@ return {
         local ms = (math.floor(stats.startuptime * 100 + 0.5) / 100)
 
         -- local now = os.date "%d-%m-%Y %H:%M:%S"
-        local version = "   v" .. vim.version().major .. "." .. vim.version().minor .. "." .. vim.version().patch
+        local version = "   v"
+          .. vim.version().major
+          .. "."
+          .. vim.version().minor
+          .. "."
+          .. vim.version().patch
         local fortune = require "alpha.fortune"
         local quote = table.concat(fortune(), "\n")
         local plugins = "⚡Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
