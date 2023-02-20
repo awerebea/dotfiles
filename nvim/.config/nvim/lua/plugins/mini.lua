@@ -2,7 +2,7 @@ return {
   {
     "echasnovski/mini.move",
     opts = {},
-    keys = { "<<M-h>", "<M-l>", "<M-j>", "<M-k>" },
+    keys = { "<M-h>", "<M-l>", "<M-j>", "<M-k>" },
     config = function(_, opts)
       require("mini.move").setup(opts)
     end,
