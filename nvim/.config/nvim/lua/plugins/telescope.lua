@@ -32,14 +32,14 @@ return {
       {
         "<leader>f/",
         "<Cmd> lua require('telescope').extensions.menufacture.live_grep()<CR>",
-        { desc = "Live grep in workspace with custom args" },
+        { desc = "Live grep in workspace" },
       },
       {
         "<leader>f?",
         "<Cmd> lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
-        { desc = "Live grep in workspace" },
+        { desc = "Live grep in workspace with custom args" },
       },
-      { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
+      -- { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
       {
         "<leader>fw",
         "<Cmd> lua require('telescope').extensions.menufacture.grep_string()<CR>",
