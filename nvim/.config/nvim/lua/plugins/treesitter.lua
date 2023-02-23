@@ -147,4 +147,32 @@ return {
       }
     end,
   },
+  {
+    "bennypowers/nvim-regexplainer",
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter",
+      "MunifTanjim/nui.nvim",
+    },
+    event = "VeryLazy",
+    opts = {
+      auto = true,
+      filetypes = {
+        "sh",
+        "cjs",
+        "cjsx",
+        "html",
+        "js",
+        "jsx",
+        "lua",
+        "mjs",
+        "mjsx",
+        "ts",
+        "tsx",
+      },
+      debug = true,
+    },
+    config = function(_, opts)
+      require("regexplainer").setup(opts)
+    end,
+  },
 }
