@@ -45,7 +45,9 @@ return {
       }
     end
     _G.neoscopes_live_grep = function()
-      require("telescope.builtin").live_grep { search_dirs = scopes.get_current_dirs() }
+      require("telescope").extensions.live_grep_args.live_grep_args {
+        search_dirs = scopes.get_current_dirs(),
+      }
     end
 
     -- stylua: ignore
