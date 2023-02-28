@@ -285,20 +285,4 @@ return {
       require("treesj").setup(opts)
     end,
   },
-  {
-    "TheSafdarAwan/find-extender.nvim",
-    event = "VeryLazy",
-    opts = {
-      enable = true,
-      chars_length = 2,
-      timeout = 500,
-      start_timeout_after_chars = 1,
-      keymaps = {
-        modes = "nv",
-        till = { "T", "t" },
-        find = { "F", "f" },
-      },
-    },
-    config = true,
-  },
 }
