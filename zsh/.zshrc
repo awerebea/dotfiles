@@ -1038,7 +1038,6 @@ ZSH_CUSTOM_AUTOUPDATE_QUIET=false
 # Lazy activate fzf-marks plugin
 fzm-hotkey-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  mark () { mark_assistant "$@" }
   unset -f fzm-hotkey-lazy-load fzm-lazy-load
   fzm
 }
@@ -1048,7 +1047,6 @@ zle -N fzm-hotkey-lazy-load
 bindkey -v '^g' fzm-hotkey-lazy-load
 fzm-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  mark () { mark_assistant "$@" }
   unset -f fzm-hotkey-lazy-load fzm-lazy-load
 }
 fzm () { fzm-lazy-load; $0 "$@" }
@@ -1056,27 +1054,7 @@ mark-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
   unset -f fzm-hotkey-lazy-load fzm-lazy-load
 }
-
-# Set the base name of the current directory as the default mark name
-mark_assistant () {
-  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  if [ -z "$1" ]; then
-    mark "$(basename "$(pwd)")"
-  else
-    mark "$@"
-  fi
-  mark () { mark_assistant "$@" }
-}
-
-mark () {
-  mark-lazy-load
-  if [ -z "$1" ]; then
-    $0  "$(basename "$(pwd)")"
-  else
-    $0 "$@"
-  fi
-  mark () { mark_assistant "$@" }
-}
+mark () { mark-lazy-load; $0 "$@" }
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
