@@ -36,7 +36,7 @@ return {
         b = { name = "Buffer" },
         d = { name = "Debug" },
         f = { name = "Telescope" },
-        g = { name = "Git" },
+        g = { name = "Git", c = { name = "Conflicts", r = "refresh", q = "to quickfix list" } },
         h = { name = "Help" },
         p = { name = "Project" },
         t = { name = "Test", N = { name = "Neotest" }, o = { "Overseer" } },
