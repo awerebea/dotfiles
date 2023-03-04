@@ -22,10 +22,10 @@ trustExitCode = true
 	tool = vimdiff
 
 [pager]
-	diff = delta | menos -iFMRSX --pattern='^(commit|diff)'
-	log = delta | menos -iFMRSX --pattern='^(commit|diff)'
-	show = delta | menos -iFMRSX --pattern='^(commit|diff)'
-	whatchanged = delta | menos -iFMRSX --pattern='^(commit|diff)'
+	diff = delta
+	log = delta
+	show = delta
+	whatchanged = delta
 	show-branch = true
 	status = true
 
