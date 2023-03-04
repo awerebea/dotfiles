@@ -87,7 +87,7 @@ return {
         desc = "Commits",
       },
       {
-        "<leader>glgf",
+        "<leader>glf",
         "<Cmd>echo 'Git commits of the current file'<CR> <Cmd>Telescope git_bcommits<CR>",
         desc = "Commits of current file",
       },
