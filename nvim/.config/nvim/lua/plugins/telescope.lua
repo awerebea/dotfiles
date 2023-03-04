@@ -15,6 +15,7 @@ return {
       "nvim-telescope/telescope-hop.nvim",
       { "nvim-telescope/telescope-live-grep-args.nvim", branch = "weeman1337/search-dirs" },
       "molecule-man/telescope-menufacture",
+      "aaronhallaert/advanced-git-search.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -101,8 +102,27 @@ return {
         "<Cmd>echo 'Git status'<CR> <Cmd>Telescope git_status<CR>",
         desc = "Status",
       },
+      -- advanced-git-search
+      { "<leader>gcl", ":DiffCommitLine<CR>", mode = "v", { noremap = true } },
+      {
+        "<leader>gbf",
+        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_branch_file()<CR>",
+        { noremap = true },
+      },
+      {
+        "<leader>gcf",
+        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_commit_file()<CR>",
+        { noremap = true },
+      },
     },
     config = function(_, _)
+      -- advanced-git-search
+      vim.api.nvim_create_user_command(
+        "DiffCommitLine",
+        "lua require('telescope').extensions.advanced_git_search.diff_commit_line()",
+        { range = true }
+      )
+
       local telescope = require "telescope"
       local icons = require "config.icons"
       local actions = require "telescope.actions"
@@ -286,6 +306,7 @@ return {
       telescope.load_extension "neoclip"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
+      telescope.load_extension "advanced_git_search"
     end,
   },
   {
@@ -328,36 +349,6 @@ return {
           },
         },
       },
-    },
-  },
-  {
-    "aaronhallaert/advanced-git-search.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("telescope").load_extension "advanced_git_search"
-      vim.api.nvim_create_user_command(
-        "DiffCommitLine",
-        "lua require('telescope').extensions.advanced_git_search.diff_commit_line()",
-        { range = true }
-      )
-
-      vim.keymap.set("v", "<leader>gcl", ":DiffCommitLine<CR>", { noremap = true })
-      vim.keymap.set(
-        "n",
-        "<leader>gbf",
-        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_branch_file()<CR>",
-        { noremap = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>gcf",
-        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_commit_file()<CR>",
-        { noremap = true }
-      )
-    end,
-    dependencies = {
-      "nvim-telescope/telescope.nvim",
-      "tpope/vim-fugitive",
     },
   },
 }
