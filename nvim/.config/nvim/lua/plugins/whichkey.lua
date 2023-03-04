@@ -36,7 +36,16 @@ return {
         b = { name = "Buffer" },
         d = { name = "Debug" },
         f = { name = "Telescope" },
-        g = { name = "Git", c = { name = "Conflicts", r = "refresh", q = "to quickfix list" } },
+        g = {
+          name = "Git",
+          c = {
+            name = "Conflicts, Advanced Git search",
+            r = "refresh",
+            q = "to quickfix list",
+            f = "current file Git history",
+          },
+          b = { name = "Advanced Git search", f = "current file diff against other branch" },
+        },
         h = { name = "Help" },
         p = { name = "Project" },
         t = { name = "Test", N = { name = "Neotest" }, o = { "Overseer" } },
