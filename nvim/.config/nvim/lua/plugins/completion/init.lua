@@ -8,7 +8,6 @@ return {
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
       "hrsh7th/cmp-cmdline",
-      "onsails/lspkind.nvim",
       "f3fora/cmp-spell",
       "danymat/neogen",
     },
@@ -16,7 +15,6 @@ return {
       local cmp = require "cmp"
       local luasnip = require "luasnip"
       local icons = require "config.icons"
-      local lspkind = require "lspkind"
       local neogen = require "neogen"
 
       local has_words_before = function()
@@ -94,10 +92,29 @@ return {
         },
         formatting = {
           fields = { "kind", "abbr", "menu" },
-          format = lspkind.cmp_format { -- lspkind for vs-code like icons
-            maxwidth = 50,
-            ellipsis_char = "...",
-          },
+          format = function(entry, item)
+            local max_width = 0
+            local source_names = {
+              nvim_lsp = "(LSP)",
+              path = "(Path)",
+              luasnip = "(Snippet)",
+              buffer = "(Buffer)",
+            }
+            local duplicates = {
+              buffer = 1,
+              path = 1,
+              nvim_lsp = 0,
+              luasnip = 1,
+            }
+            local duplicates_default = 0
+            if max_width ~= 0 and #item.abbr > max_width then
+              item.abbr = string.sub(item.abbr, 1, max_width - 1) .. icons.ui.Ellipsis
+            end
+            item.kind = icons.kind[item.kind]
+            item.menu = source_names[entry.source.name]
+            item.dup = duplicates[entry.source.name] or duplicates_default
+            return item
+          end,
         },
       }
       -- Auto pairs
