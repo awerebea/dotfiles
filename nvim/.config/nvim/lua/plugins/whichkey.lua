@@ -92,6 +92,12 @@ return {
           h = "Go to next Harpoon mark",
         },
       }, { prefix = "<leader>" })
+      wk.register({
+        g = {
+          name = "Git",
+          c = { name = "Advanced Git search", l = "current line Git history" },
+        },
+      }, { mode = "v", prefix = "<leader>" })
     end,
   },
 }
