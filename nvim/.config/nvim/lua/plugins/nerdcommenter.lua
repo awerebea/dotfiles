@@ -1,8 +1,11 @@
 return {
+  enabled = false,
   "preservim/nerdcommenter",
   cmd = { "NERDCommenterToggle" },
   keys = {
+    -- stylua: ignore
     { "<C-_>", "<Plug>NERDCommenterToggle", desc = "Toggle comment for current line" },
+    -- stylua: ignore
     { "<C-_>", "<Plug>NERDCommenterToggle<CR>gv", mode = "v", desc = "Toggle comment for current line" },
     { "<leader>c$" },
     { "<leader>cA" },
