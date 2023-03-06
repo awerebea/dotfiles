@@ -106,8 +106,10 @@ return {
     dependencies = { "mason.nvim" },
     config = function()
       local nls = require "null-ls"
+      local refurb = require "plugins.lsp.refurb"
       nls.setup {
         sources = {
+          refurb,
           nls.builtins.formatting.prettier,
           nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
           nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
