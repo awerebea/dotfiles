@@ -32,6 +32,10 @@ return {
           c = { "w" },
         },
       }
+
+      local bufnr = vim.api.nvim_get_current_buf()
+      local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
+
       wk.register({
         b = { name = "Buffer" },
         d = { name = "Debug" },
@@ -67,6 +71,13 @@ return {
             f = "Function",
             p = "Parameter",
             c = "Class",
+          },
+          r = {
+            name = "refurb",
+            i = {
+              "<cmd>cexpr system('refurb --quiet ' . shellescape(expand('%'))) | copen<cr>",
+              "Inspect",
+            },
           },
         },
         S = {
