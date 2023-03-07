@@ -44,11 +44,9 @@ return {
           name = "Git",
           c = {
             name = "Conflicts, Advanced Git search",
-            r = "refresh",
-            q = "to quickfix list",
-            f = "current file Git history",
+            r = "Conflicts refresh",
+            q = "Conflicts to quickfix list",
           },
-          b = { name = "Advanced Git search", f = "current file diff against other branch" },
         },
         h = { name = "Help" },
         p = { name = "Project" },
@@ -106,7 +104,7 @@ return {
       wk.register({
         g = {
           name = "Git",
-          c = { name = "Advanced Git search", l = "current line Git history" },
+          c = { name = "Advanced Git search" },
         },
       }, { mode = "v", prefix = "<leader>" })
     end,

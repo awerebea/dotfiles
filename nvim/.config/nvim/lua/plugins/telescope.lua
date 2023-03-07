@@ -138,9 +138,13 @@ return {
             }
             require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
-          ["<C-a>"] = lga_actions.quote_prompt(),
-          ["<C-g>"] = lga_actions.quote_prompt { postfix = " --iglob " },
-          ["<C-i>"] = lga_actions.quote_prompt { postfix = " --no-ignore " },
+          ["<M-a>"] = lga_actions.quote_prompt(),
+          ["<M-g>"] = lga_actions.quote_prompt { postfix = " --iglob " },
+          ["<M-i>"] = lga_actions.quote_prompt { postfix = " --no-ignore " },
+          ["<C-o>"] = function(prompt_bufnr)
+            require("telescope.actions").select_default(prompt_bufnr)
+            require("telescope.builtin").resume()
+          end,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -286,6 +290,29 @@ return {
       telescope.load_extension "neoclip"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
+
+      vim.cmd [[
+        function!   QuickFixOpenAll()
+            if empty(getqflist())
+                return
+            endif
+            let s:prev_val = ""
+            for d in getqflist()
+                let s:curr_val = bufname(d.bufnr)
+                if (s:curr_val != s:prev_val)
+                    exec "edit " . s:curr_val
+                endif
+                let s:prev_val = s:curr_val
+            endfor
+        endfunction
+      ]]
+
+      vim.keymap.set(
+        "n",
+        "<leader>ka",
+        ":call QuickFixOpenAll()<CR>",
+        { noremap = true, silent = false }
+      )
     end,
   },
   {
@@ -341,18 +368,23 @@ return {
         { range = true }
       )
 
-      vim.keymap.set("v", "<leader>gcl", ":DiffCommitLine<CR>", { noremap = true })
+      vim.keymap.set(
+        "v",
+        "<leader>gcl",
+        ":DiffCommitLine<CR>",
+        { desc = "current line Git history", noremap = true }
+      )
       vim.keymap.set(
         "n",
-        "<leader>gbf",
+        "<leader>gcb",
         "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_branch_file()<CR>",
-        { noremap = true }
+        { desc = "current file diff against other branch", noremap = true }
       )
       vim.keymap.set(
         "n",
         "<leader>gcf",
         "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_commit_file()<CR>",
-        { noremap = true }
+        { desc = "current file Git history", noremap = true }
       )
     end,
     dependencies = {
