@@ -391,6 +391,11 @@ vim.cmd [[
   augroup END
 ]]
 
+-- Disable formatting when saving file (disable autocommands)
+vim.cmd [[
+  command! WriteNoFormat noautocmd write
+  cabbrev wnf <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'WriteNoFormat' : 'wnf')<CR>
+]]
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3
