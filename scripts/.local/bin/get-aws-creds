@@ -1,5 +1,20 @@
 #!/usr/bin/env bash
 
+if [ "$#" -lt 1 ]; then
+    echo "The desired profile(s) must be passed as the first argument." >&2
+    exit 1
+fi
+
+read -ra envs <<< "$(echo "$1" | tr ";,/" " ")"
+VALID_ENVS=(dev test stage prod audit shared p2dev)
+
+for env in "${envs[@]}"; do
+    if [[ ! "${VALID_ENVS[*]}" =~ $env ]]; then
+        echo "Invalid environment passed." >&2
+        exit 1
+    fi
+done
+
 creds="$HOME/.aws/credentials"
 creds_temp="$HOME/.aws/tmp-creds/tmp.credentials"
 creds_addon="$HOME/.aws/credentials_addon"
@@ -7,8 +22,8 @@ creds_temp_dir="$(dirname "$creds_temp")"
 
 mkdir -p "$creds_temp_dir" 2> /dev/null
 echo > "$creds_temp"
-for i in torana-audit torana-shared torana-dev torana-test torana-stage torana-prod torana-p2dev
-do
+for i in "${envs[@]}"; do
+    i="torana-$i"
     aws-vault exec "$i" --json > "$creds_temp_dir/$i.json"
     { echo "[$i]"; \
             echo -n aws_access_key_id=; jq .AccessKeyId "$creds_temp_dir/$i.json"; echo; \
