@@ -1245,6 +1245,14 @@ alias grbipd='git rebase -i --committer-date-is-author-date'
 alias glpf='git log --pretty=fuller'
 alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
 alias glsa='git ls-files $(git rev-parse --show-toplevel)'
+alias -g GR='$(git rev-parse --show-toplevel)'
+cleanup-git-branches() {
+  git fetch -p && \
+    for branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads | \
+    awk '$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'); do
+      git branch -D $branch
+    done
+}
 # Execute any alias or command in dotfiles repo
 dots() {
   location="$PWD"
