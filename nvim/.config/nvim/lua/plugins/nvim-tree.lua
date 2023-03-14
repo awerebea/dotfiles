@@ -3,7 +3,11 @@ return {
   cmd = { "NvimTreeToggle" },
   keys = {
     { "<F2>", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
-    { "<leader><F2>", "<Cmd>NvimTreeFindFile<CR>", desc = "Explorer" },
+    {
+      "<leader><F2>",
+      "<Cmd>NvimTreeFindFile <CR> <bar> <Cmd>NvimTreeFocus<CR>",
+      desc = "Explorer",
+    },
   },
   opts = {
     disable_netrw = false,
