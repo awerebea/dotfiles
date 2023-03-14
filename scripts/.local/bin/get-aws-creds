@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 if [ "$#" -lt 1 ]; then
-    echo "The desired profile(s) must be passed as the first argument." >&2
+    printf "The desired AWS profile(s) or environment (env) must be passed as a delimited list \
+in the first argument.\nValid delimeters: , ; / <SPACE>\n" >&2
     exit 1
 fi
 
@@ -9,7 +10,8 @@ read -ra envs <<< "$(echo "$1" | tr ";,/" " ")"
 VALID_ENVS=(dev test stage prod audit shared p2dev)
 
 for env in "${envs[@]}"; do
-    if [[ ! "${VALID_ENVS[*]}" =~ $env ]]; then
+    # shellcheck disable=SC2076
+    if [[ ! "${VALID_ENVS[*]}" =~ "${env/torana-/}" ]]; then
         echo "Invalid environment passed." >&2
         exit 1
     fi
@@ -23,7 +25,7 @@ creds_temp_dir="$(dirname "$creds_temp")"
 mkdir -p "$creds_temp_dir" 2> /dev/null
 echo > "$creds_temp"
 for i in "${envs[@]}"; do
-    i="torana-$i"
+    i="torana-${i/torana-/}"
     aws-vault exec "$i" --json > "$creds_temp_dir/$i.json"
     { echo "[$i]"; \
             echo -n aws_access_key_id=; jq .AccessKeyId "$creds_temp_dir/$i.json"; echo; \
