@@ -156,6 +156,27 @@ keymap("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { si
 --stylua: ignore
 keymap("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
+-- Insert empty line above/below (functions from vim-unimpaired)
+vim.cmd [[
+function! UnimpairedBlankUp() abort
+  let cmd = 'put!=repeat(nr2char(10), v:count1)|silent '']+'
+  if &modifiable
+    let cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-up)", v:count1)'
+  endif
+  return cmd
+endfunction
+
+function! UnimpairedBlankDown() abort
+  let cmd = 'put =repeat(nr2char(10), v:count1)|silent ''[-'
+  if &modifiable
+    let cmd .= '|silent! call repeat#set("\<Plug>(unimpaired-blank-down)", v:count1)'
+  endif
+  return cmd
+endfunction
+]]
+keymap("n", "[<Space>", ":<C-U>exe UnimpairedBlankUp()<CR>")
+keymap("n", "]<Space>", ":<C-U>exe UnimpairedBlankDown()<CR>")
+
 keymap(
   "n",
   "<leader><Tab>",
