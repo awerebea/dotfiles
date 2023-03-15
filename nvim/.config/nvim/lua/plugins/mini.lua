@@ -45,6 +45,13 @@ return {
       require("mini.trailspace").setup()
     end,
   },
+  {
+    "echasnovski/mini.bracketed",
+    event = "BufReadPost",
+    config = function()
+      require("mini.bracketed").setup()
+    end,
+  },
   -- {
   --   "echasnovski/mini.comment",
   --   event = "VeryLazy",
