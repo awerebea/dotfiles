@@ -103,7 +103,6 @@ return {
   },
   { "tpope/vim-surround", event = "VeryLazy" },
   { "tpope/vim-repeat", event = "VeryLazy" },
-  { "tpope/vim-unimpaired", event = "VeryLazy" },
   { "christoomey/vim-tmux-navigator", event = "VimEnter" },
   {
     "adoyle-h/lsp-toggle.nvim",
