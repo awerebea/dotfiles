@@ -9,6 +9,8 @@ keymap("n", "n", "nzzzv")
 keymap("n", "N", "Nzzzv")
 keymap("n", "g,", "g,zvzz")
 keymap("n", "g;", "g;zvzz")
+keymap("n", "<C-d>", "<C-d>zvzz")
+keymap("n", "<C-u>", "<C-u>zvzz")
 
 -- Add undo break-points
 keymap("i", ",", "<c-g>u,")
@@ -150,17 +152,17 @@ vim.cmd [[
 ]]
 
 --stylua: ignore
-vim.keymap.set("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
+keymap("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
 --stylua: ignore
-vim.keymap.set("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
+keymap("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
-vim.keymap.set(
+keymap(
   "n",
   "<leader><Tab>",
   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
   { desc = "Toggle Tab switcher mode." }
 )
-vim.keymap.set(
+keymap(
   "n",
   "<leader><leader>rn",
   "<Cmd>call ToggleSmartRelativenumbers()<CR>",
@@ -168,14 +170,14 @@ vim.keymap.set(
 )
 
 -- Toggle word wrap for current buffer
-vim.keymap.set(
+keymap(
   "n",
   "<leader>ww",
   "<Cmd>setlocal wrap!<CR> <bar> <Cmd>echo 'wordwrap!'<CR>",
   { desc = "Toggle visual wrapping of long lines." }
 )
 -- Toggle wrap at textwidth column
-vim.keymap.set(
+keymap(
   "n",
   "<leader>aw",
   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
