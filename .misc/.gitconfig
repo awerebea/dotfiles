@@ -69,3 +69,5 @@ trustExitCode = true
 	defaultBranch = main
 [alias]
 	ls-files-root = ! git ls-files
+	log-merge = "!f() { git log --stat \"$1^..$1\"; }; f"
+	log-merge-short = "!f() { git log --pretty=oneline \"$1^..$1\"; }; f"
