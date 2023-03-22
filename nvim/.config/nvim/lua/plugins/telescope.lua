@@ -13,7 +13,7 @@ return {
       "kiyoon/telescope-insert-path.nvim",
       "AckslD/nvim-neoclip.lua",
       "nvim-telescope/telescope-hop.nvim",
-      { "nvim-telescope/telescope-live-grep-args.nvim", branch = "weeman1337/search-dirs" },
+      { "nvim-telescope/telescope-live-grep-args.nvim" },
       "molecule-man/telescope-menufacture",
     },
     cmd = "Telescope",
