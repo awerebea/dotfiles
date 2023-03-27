@@ -285,4 +285,14 @@ return {
     },
     config = true,
   },
+  {
+    "b0o/incline.nvim",
+    event = "VeryLazy",
+    opts = {
+      hide = {
+        cursorline = "focused_win",
+      },
+    },
+    config = true,
+  },
 }
