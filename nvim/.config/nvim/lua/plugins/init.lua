@@ -268,4 +268,5 @@ return {
       require("treesj").setup(opts)
     end,
   },
+  { "Bekaboo/deadcolumn.nvim", event = "VeryLazy" },
 }
