@@ -44,7 +44,7 @@ return {
 
     local tabline = {
       hl = "TabLineFill",
-      layout = "active_tab_with_wins",
+      layout = "active_wins_at_tail",
       active_tab = {
         label = function(tabid)
           return {
