@@ -236,14 +236,6 @@ return {
     end,
   },
   {
-    "m4xshen/smartcolumn.nvim",
-    event = "VeryLazy",
-    opts = {
-      colorcolumn = 100,
-    },
-    config = true,
-  },
-  {
     "s1n7ax/nvim-window-picker",
     keys = { "<leader>w" },
     opts = {
