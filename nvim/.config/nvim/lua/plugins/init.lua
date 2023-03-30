@@ -191,6 +191,11 @@ return {
       { "<leader>m", '<Cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>' },
       { "<leader>fm", "<Cmd>Telescope harpoon marks<CR>" },
     },
+    opts = {
+      menu = {
+        width = vim.api.nvim_win_get_width(0) - 4,
+      },
+    },
     config = true,
   },
   {
