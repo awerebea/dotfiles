@@ -48,3 +48,5 @@ SwitchToApp(appTitle, appPath)
 <#q::SwitchToApp("qalculate-gtk.exe", "D:\Distrib\_Personal Software\qalculate\qalculate-gtk.exe")
 ; Total Commander
 <#t::SwitchToApp("TOTALCMD64.EXE", "D:\Distrib\_Personal Software\Total Commander\TOTALCMD64.EXE")
+; Foobar2000
+<#b::SwitchToApp("foobar2000.exe", "D:\Distrib\_Personal Software\Foobar2000\foobar2000.exe")
