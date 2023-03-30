@@ -34,6 +34,14 @@ function M.find_ignored_files()
   require("telescope.builtin").find_files(opts)
 end
 
+function M.find_ignored_files_vert()
+  local opts = {
+    layout_strategy = "vertical",
+    find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv", "--no-ignore" },
+  }
+  require("telescope.builtin").find_files(opts)
+end
+
 function M.grep_ignored_files()
   local opts = {
     additional_args = { "--no-ignore" },

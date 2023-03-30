@@ -25,7 +25,17 @@ return {
         "<Cmd> lua require('telescope').extensions.menufacture.find_files()<CR>",
         desc = "Find files",
       },
+      {
+        "<leader>ffv",
+        "<Cmd> lua require('telescope').extensions.menufacture.find_files({layout_strategy='vertical'})<CR>",
+        desc = "Find files, vertical layout",
+      },
       { "<leader>fi", require("utils").find_ignored_files, desc = "Find files including ignored" },
+      {
+        "<leader>fiv",
+        require("utils").find_ignored_files_vert,
+        desc = "Find files including ignored, vertical layout",
+      },
       { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
       { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
       -- { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
@@ -35,9 +45,19 @@ return {
         { desc = "Live grep in workspace" },
       },
       {
+        "<leader>f/v",
+        "<Cmd> lua require('telescope').extensions.menufacture.live_grep({layout_strategy='vertical'})<CR>",
+        { desc = "Live grep in workspace, vertical layout" },
+      },
+      {
         "<leader>f?",
         "<Cmd> lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
         { desc = "Live grep in workspace with custom args" },
+      },
+      {
+        "<leader>f?v",
+        "<Cmd> lua require('telescope').extensions.live_grep_args.live_grep_args({layout_strategy='vertical'})<CR>",
+        { desc = "Live grep in workspace with custom args, vertical layout" },
       },
       -- { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
       {
