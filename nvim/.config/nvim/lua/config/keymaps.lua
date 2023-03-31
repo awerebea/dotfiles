@@ -39,7 +39,6 @@ keymap("n", "<S-Right>", "<cmd>vertical resize +2<CR>")
 -- Save file as sudo on files that require root permission
 keymap("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!")
 -- clear search highlights
-keymap("n", "<leader>/", "<Cmd>nohlsearch<CR>")
 keymap("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
 
 -- paste over without overwriting register
