@@ -90,11 +90,18 @@ return {
         desc = "List",
       },
       {
-        "<leader>faf",
+        "<leader>/",
         function()
           require("telescope.builtin").current_buffer_fuzzy_find()
         end,
         desc = "Buffer",
+      },
+      {
+        "<leader>fd",
+        function()
+          require("telescope.builtin").diagnostics()
+        end,
+        desc = "Diagnostics",
       },
       { "<leader>vo", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
 
