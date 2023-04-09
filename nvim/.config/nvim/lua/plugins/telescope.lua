@@ -15,6 +15,7 @@ return {
       "nvim-telescope/telescope-hop.nvim",
       { "nvim-telescope/telescope-live-grep-args.nvim" },
       "molecule-man/telescope-menufacture",
+      "kdheepak/lazygit.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -327,6 +328,7 @@ return {
       telescope.load_extension "neoclip"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
+      telescope.load_extension "lazygit"
 
       vim.cmd [[
         function!   QuickFixOpenAll()

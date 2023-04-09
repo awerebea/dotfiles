@@ -187,4 +187,10 @@ return {
       require("git-conflict").setup()
     end,
   },
+  {
+    "kdheepak/lazygit.nvim",
+    keys = {
+      { "<leader>gg", "<Cmd>LazyGit<CR>", desc = "LazyGit" },
+    },
+  },
 }
