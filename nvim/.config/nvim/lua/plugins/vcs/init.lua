@@ -1,7 +1,20 @@
 return {
   {
     "sindrets/diffview.nvim",
-    cmd = { "DiffviewOpen", "DiffviewClose", "DiffviewToggleFiles", "DiffviewFocusFiles" },
+    cmd = {
+      "DiffviewClose",
+      "DiffviewFileHistory",
+      "DiffviewFocusFiles",
+      "DiffviewOpen",
+      "DiffviewToggleFiles",
+    },
+    keys = {
+      { "<leader>gdc", "<Cmd>DiffviewClose<CR>", desc = "DiffviewClose" },
+      { "<leader>gdf", "<Cmd>DiffviewFileHistory %<CR>", desc = "DiffviewFileHistory" },
+      { "<leader>gdF", ":DiffviewFileHistory ", desc = "DiffviewFileHistory" },
+      { "<leader>gdo", "<Cmd>DiffviewOpen<CR>", desc = "DiffviewOpen" },
+      { "<leader>gdO", ":DiffviewOpen ", desc = "DiffviewOpen" },
+    },
     config = true,
   },
   {
