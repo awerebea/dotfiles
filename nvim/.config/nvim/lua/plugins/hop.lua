@@ -1,6 +1,6 @@
 return {
-  "aznhe21/hop.nvim",
-  branch = "fix-some-bugs",
+  "yanshay/hop.nvim",
+  branch = "fix-cursor-on-empty-line",
   -- "phaazon/hop.nvim",
   event = "VeryLazy",
   opts = { keys = "asdfghjklqwertyuiopzxcvbnm;" },
