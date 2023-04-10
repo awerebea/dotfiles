@@ -1,12 +1,12 @@
 return {
   {
     "nvim-tree/nvim-tree.lua",
-    cmd = { "NvimTreeToggle" },
+    cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
     keys = {
       { "<F2>", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
       {
         "<leader><F2>",
-        "<Cmd>NvimTreeFindFile <CR> <bar> <Cmd>NvimTreeFocus<CR>",
+        "<Cmd>NvimTreeFindFileToggle<CR>",
         desc = "Explorer",
       },
     },
@@ -31,7 +31,7 @@ return {
         "-",
       },
       filters = {
-        custom = { ".git" },
+        custom = { "^\\.git$" },
       },
       sync_root_with_cwd = true,
       prefer_startup_root = true,
@@ -48,6 +48,7 @@ return {
         },
       },
       renderer = {
+        group_empty = true,
         icons = {
           glyphs = {
             folder = {
@@ -78,7 +79,7 @@ return {
       vim.api.nvim_create_autocmd("FileType", {
         pattern = "NvimTree",
         callback = function()
-          vim.keymap.set({ "n", "x" }, "-", "<Plug>(tmuxsend-smart)", { buffer = true })
+          vim.keymap.set({ "n", "x" }, "-", "<Plug>(tmuxsend-smart)")
           vim.keymap.set({ "n", "x" }, "_", "<Plug>(tmuxsend-plain)", { buffer = true })
           vim.keymap.set({ "n", "x" }, "<space>-", "<Plug>(tmuxsend-uid-smart)", { buffer = true })
           vim.keymap.set({ "n", "x" }, "<space>_", "<Plug>(tmuxsend-uid-plain)", { buffer = true })
