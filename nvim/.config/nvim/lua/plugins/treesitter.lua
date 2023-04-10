@@ -19,7 +19,6 @@ return {
         "gitignore",
         "graphql",
         "hcl",
-        "help",
         "html",
         "javascript",
         "json",
@@ -35,6 +34,7 @@ return {
         "tsx",
         "typescript",
         "vim",
+        "vimdoc",
         "yaml",
       },
       highlight = {
