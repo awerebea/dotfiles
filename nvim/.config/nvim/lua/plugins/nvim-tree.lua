@@ -22,8 +22,12 @@ return {
           { key = "u", action = "dir_up" },
           { key = "h", action = "close_node" },
           { key = "l", action = "edit" },
+          { key = "<F1>", action = "toggle_file_info" },
         },
       },
+    },
+    remove_keymaps = {
+      "-",
     },
     filters = {
       custom = { ".git" },
