@@ -509,7 +509,7 @@ set -g @tpm_plugins '                 \
 
 # treemux
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
-set -g @treemux-tree 'Bspace'
+# set -g @treemux-tree 'Bspace'
 set -g @treemux-tree-focus 'Tab'
 
 # tmux.nvim
@@ -698,6 +698,8 @@ set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
 set -g @sidebar-tree-width '60'
 
 # extracto
+set -g @extrakto_key "Bspace"
+set -g @extrakto_filter_order "line word all"
 set -g @extrakto_grab_area recent
 set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 
