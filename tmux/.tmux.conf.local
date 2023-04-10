@@ -488,6 +488,7 @@ set -g @tpm_plugins '                 \
   tmux-plugins/tmux-sidebar           \
   samoshkin/tmux-plugin-sysstat       \
   CrispyConductor/tmux-copy-toolkit   \
+  laktak/extrakto                     \
   olimorris/tmux-pomodoro-plus        \
   tmux-plugins/tmux-yank              \
   MunifTanjim/tmux-mode-indicator     \
@@ -695,6 +696,10 @@ set -g @sidebar-tree-focus 'F2'
 set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
 # The default sidebar width
 set -g @sidebar-tree-width '60'
+
+# extracto
+set -g @extrakto_grab_area recent
+set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 
 # Add keybinds with modifiers to use the original with other commands
 bind-key 'M-s' choose-session -Z
