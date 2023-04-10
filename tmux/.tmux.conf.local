@@ -502,7 +502,24 @@ set -g @tpm_plugins '                 \
   jaclu/tmux-menus                    \
   roosta/tmux-fuzzback                \
   tmux-plugins/tmux-logging           \
+  kiyoon/treemux                      \
+  aserowy/tmux.nvim                   \
 '
+
+# treemux
+set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
+set -g @treemux-tree 'Bspace'
+set -g @treemux-tree-focus 'Tab'
+
+# tmux.nvim
+set -g @tmux-nvim-navigation false
+set -g @tmux-nvim-resize false
+
+# Show pane details.
+set -g pane-border-status top
+# Add in setting below to indicate: #D - Unique pane ID, #{pane_current_command} - running command
+set -g pane-border-format '[#[bold]#{?pane_active,#[fg=green],#[fg=#9e9e9e]}#P#[fg=default,nobold]]'
+
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
 
 # unbind C-l # conflicts with pane movements
