@@ -30,6 +30,7 @@ return {
               hint = {
                 enable = false,
               },
+              diagnostics = { globals = { "vim" } },
             },
           },
         },
