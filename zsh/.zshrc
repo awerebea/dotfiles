@@ -613,6 +613,7 @@ alias r="echo \"Don't use that shit!\""
 # Ripgrep alias to search in hidden files but ignore .git directory
 [[ $commands[rg] ]] && alias rg="rg --hidden --glob '!.git/'"
 [[ $commands[lazygit] ]] && alias lg="lazygit"
+[[ $commands[rover] ]] && alias rv="rover"
 
 # terraform lint scripts
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
