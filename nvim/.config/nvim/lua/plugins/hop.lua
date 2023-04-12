@@ -77,6 +77,7 @@ return {
     keymap("", "<leader><leader>gE", "<Cmd>lua HopAfterEndWordBw()<CR>")
     keymap("", "<leader><leader>s", "<Cmd>HopChar1<CR>")
     keymap("", "<leader><leader>S", "<Cmd>HopChar2<CR>")
+    keymap("", "<C-s>", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>2s", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>d", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>J", "<Cmd>HopLineAC<CR>")
