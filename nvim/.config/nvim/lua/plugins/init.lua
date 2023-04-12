@@ -291,12 +291,4 @@ return {
     },
     config = true,
   },
-  {
-    "roy2220/easyjump.tmux",
-    event = "VeryLazy",
-    config = function()
-      vim.g.easyjump_smart_case = true
-      vim.keymap.set({ "n", "i", "v", "o" }, "<C-s>", "<Plug>EasyJump")
-    end,
-  },
 }
