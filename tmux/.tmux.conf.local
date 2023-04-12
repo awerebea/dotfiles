@@ -505,6 +505,7 @@ set -g @tpm_plugins '                 \
   tmux-plugins/tmux-logging           \
   kiyoon/treemux                      \
   aserowy/tmux.nvim                   \
+  roy2220/easyjump.tmux               \
 '
 
 # treemux
@@ -707,13 +708,18 @@ set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 bind-key 'M-s' choose-session -Z
 bind-key 'M-w' choose-window -Z
 
+# easyjump.tmux
+set-option -g @easyjump-key-binding "s"
+set-option -g @easyjump-auto-begin-selection "off"
+set-option -g @easyjump-smart-case "on"
+
 # tmux-copy-toolkit
 set -g @copytk-no-default-binds on
 set -g @copytk-copy-command 'tmux load-buffer - && tmux save-buffer - | \
 xclip -selection clipboard && \
 tmux display-message "Copied to the system clipboard!"'
 # copytk prefix: easymotion action bindings
-bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+# bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1" # map is used by easyjump.tmux
 bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
 bind-key -T prefix d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
 bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
