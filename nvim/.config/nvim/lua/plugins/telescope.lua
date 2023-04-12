@@ -51,14 +51,14 @@ return {
         { desc = "Live grep in workspace, vertical layout" },
       },
       {
-        "<leader>f/o",
+        "<leader>f//",
         "<Cmd> lua require('telescope').extensions.menufacture.live_grep({grep_open_files=true})<CR>",
-        { desc = "Live grep in workspace" },
+        { desc = "Live grep in open files" },
       },
       {
-        "<leader>f/vo",
+        "<leader>f//v",
         "<Cmd> lua require('telescope').extensions.menufacture.live_grep({layout_strategy='vertical', grep_open_files=true})<CR>",
-        { desc = "Live grep in workspace, vertical layout" },
+        { desc = "Live grep in open files, vertical layout" },
       },
       {
         "<leader>f?",
