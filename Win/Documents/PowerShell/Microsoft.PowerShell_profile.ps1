@@ -120,6 +120,8 @@ Remove-Alias -Force -Name gupv 2>&1 | out-null; function gupv() { git pull --reb
 
 New-Alias v nvim
 
+New-Alias lg lazygit
+
 # gmom='git merge origin/$(git_main_branch)'
 # gmtl='git mergetool --no-prompt'
 # gmtlvim='git mergetool --no-prompt --tool=vimdiff'
