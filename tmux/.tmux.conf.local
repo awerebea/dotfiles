@@ -542,6 +542,9 @@ is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
 is_fzf="ps -o state= -o comm= -t '#{pane_tty}' \
   | grep -iqE '^[^TXZ ]+ +(\\S+\\/)?fzf$'"
 
+# Jump to pane by index
+bind-key C-j command-prompt -p "Jump to pane index:" "select-pane -t '%%'"
+
 bind -n C-h run "($is_vim && tmux send-keys C-h) || tmux select-pane -L"
 
 bind -n C-j run "($is_vim && tmux send-keys C-j)  || \
