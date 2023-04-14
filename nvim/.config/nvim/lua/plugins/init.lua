@@ -301,4 +301,18 @@ return {
     },
     config = true,
   },
+  {
+    "IndianBoy42/fuzzy_slash.nvim",
+    dependencies = {
+      {
+        "IndianBoy42/fuzzy.nvim",
+        dependencies = { { "nvim-telescope/telescope-fzf-native.nvim", build = "make" } },
+      },
+    },
+    event = "VeryLazy",
+    config = function(opts)
+      require("fuzzy_slash").setup(opts)
+      vim.keymap.set("n", "<leader>/", ":Fz ", { desc = "Fuzzy slash" })
+    end,
+  },
 }

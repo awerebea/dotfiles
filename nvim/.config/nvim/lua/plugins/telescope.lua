@@ -101,7 +101,7 @@ return {
         desc = "List",
       },
       {
-        "<leader>/",
+        "<leader>//",
         function()
           require("telescope.builtin").current_buffer_fuzzy_find()
         end,
