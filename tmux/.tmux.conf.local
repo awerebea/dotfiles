@@ -920,3 +920,5 @@ set -g @mode_indicator_copy_mode_style 'bg=#e0af68,fg=#16161e'
 set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
 # style values for empty prompt
 set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
+
+bind-key -r i run-shell "tmux neww tmux-cht.sh"
