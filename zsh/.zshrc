@@ -17,6 +17,7 @@ fi
 # Define default editor nvim, vim, vi or nano
 if [[ $commands[nvim] ]]; then
     export EDITOR='nvim'
+    alias vimdiff="nvim -d"
     # alias vim="nvim"
 elif [[ $commands[vim] ]]; then
     export EDITOR='vim'
@@ -614,6 +615,9 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[rg] ]] && alias rg="rg --hidden --glob '!.git/'"
 [[ $commands[lazygit] ]] && alias lg="lazygit"
 [[ $commands[rover] ]] && alias rv="rover"
+
+vf() { v "$(fzf)" }
+vs() { find $GIT_DOTFILES/scripts -type f | fzf | xargs -I {} -r $EDITOR '{}' }
 
 # terraform lint scripts
 [[ $commands[terraform-watch] ]] && alias tf-watch="terraform-watch"
