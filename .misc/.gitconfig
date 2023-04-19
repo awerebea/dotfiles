@@ -71,3 +71,4 @@ trustExitCode = true
 	ls-files-root = ! git ls-files
 	log-merge = "!f() { git log --stat \"$1^..$1\"; }; f"
 	log-merge-short = "!f() { git log --pretty=oneline \"$1^..$1\"; }; f"
+	fixup = ! git add --update && git commit --fixup=${1:-$(git rev-parse HEAD)} && GIT_EDITOR=true git rebase --interactive --autosquash ${1:-$(git rev-parse HEAD~2)}~1
