@@ -7,7 +7,7 @@ in the first argument.\nValid delimeters: , ; / <SPACE>\n" >&2
 fi
 
 read -ra envs <<< "$(echo "$1" | tr ";,/" " ")"
-VALID_ENVS=(dev test stage prod audit shared p2dev)
+VALID_ENVS=(dev test stage prod audit shared p2dev p2test)
 
 for env in "${envs[@]}"; do
     # shellcheck disable=SC2076
