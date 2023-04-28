@@ -44,6 +44,7 @@ local aucmd_dict = {
         "toggleterm",
         "tsplayground",
         "vim",
+        "neoai-input",
       },
       callback = function(event)
         vim.bo[event.buf].buflisted = false
