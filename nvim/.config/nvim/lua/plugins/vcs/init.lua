@@ -24,7 +24,7 @@ return {
       integrations = { diffview = true },
     },
     keys = {
-      { "<leader>gs", "<cmd>Neogit kind=tab<cr>", desc = "Status" },
+      { "<leader>gsn", "<cmd>Neogit kind=tab<cr>", desc = "Status" },
     },
   },
   {

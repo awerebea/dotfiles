@@ -266,9 +266,9 @@ return {
       max_join_length = 120,
     },
     keys = {
-      { "<leader>gS", "<Cmd>TSJSplit<CR>" },
-      { "<leader>gJ", "<Cmd>TSJJoin<CR>" },
-      { "<leader>gT", "<Cmd>TSJToggle<CR>" },
+      { "<leader>gS", "<Cmd>TSJSplit<CR>", desc = "TreeSJ Split" },
+      { "<leader>gJ", "<Cmd>TSJJoin<CR>", desc = "TreeSJ Join" },
+      { "<leader>gT", "<Cmd>TSJToggle<CR>", desc = "TreeSJ Toggle" },
     },
     config = function(_, opts)
       require("treesj").setup(opts)
