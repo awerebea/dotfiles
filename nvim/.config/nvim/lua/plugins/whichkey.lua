@@ -35,18 +35,19 @@ return {
 
       local bufnr = vim.api.nvim_get_current_buf()
       local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
-
+      local chatgpt = require "chatgpt"
       wk.register({
         b = { name = "Buffer" },
         d = { name = "Debug" },
         f = { name = "Telescope" },
         g = {
-          name = "Git",
+          name = "Git, ChatGPT",
           c = {
             name = "Conflicts, Advanced Git search",
             r = "Conflicts refresh",
             q = "Conflicts to quickfix list",
           },
+          p = { name = "ChatGPT", r = "Run command" },
         },
         h = { name = "Help" },
         p = { name = "Project" },
@@ -103,8 +104,9 @@ return {
       }, { prefix = "<leader>" })
       wk.register({
         g = {
-          name = "Git",
+          name = "Git, ChatGPT",
           c = { name = "Advanced Git search" },
+          p = { name = "ChatGPT", r = "Run command" },
         },
       }, { mode = "v", prefix = "<leader>" })
     end,
