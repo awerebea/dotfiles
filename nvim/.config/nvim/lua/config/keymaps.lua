@@ -203,3 +203,12 @@ keymap(
   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
   { desc = "Toggle automatic wrapping of long lines." }
 )
+
+-- Auto Indent the Current Empty Line
+keymap("n", "i", function()
+  if #vim.fn.getline "." == 0 then
+    return [["_cc]]
+  else
+    return "i"
+  end
+end, { expr = true })

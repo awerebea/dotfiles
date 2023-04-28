@@ -7,7 +7,7 @@ return {
       {
         "folke/neodev.nvim",
         opts = {
-          library = { plugins = { "neotest" }, types = true },
+          library = { plugins = { "neotest", "nvim-dap-ui" }, types = true },
         },
       },
       { "j-hui/fidget.nvim", config = true },
@@ -40,11 +40,31 @@ return {
         html = {},
         tailwindcss = {},
         tsserver = {},
-        pyright = {},
+        pyright = {
+          settings = {
+            python = {
+              analysis = {
+                typeCheckingMode = "on",
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = "workspace",
+              },
+            },
+          },
+        },
         terraformls = {},
         bashls = {},
         rust_analyzer = {},
         gopls = {},
+        ruff_lsp = {
+          init_options = {
+            settings = {
+              -- Any extra CLI arguments for `ruff` go here.
+              args = { "--line-length=99" },
+            },
+          },
+        },
+        marksman = {},
       },
       setup = {
         lua_ls = function(_, _)
@@ -85,7 +105,6 @@ return {
         "shellcheck",
         "shellharden",
         "beautysh",
-        "ruff",
         "debugpy",
         "codelldb",
       },
@@ -132,7 +151,6 @@ return {
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
-          nls.builtins.diagnostics.ruff.with { extra_args = { "--max-line-length=99" } },
         },
       }
     end,
