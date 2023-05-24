@@ -1876,7 +1876,7 @@ endfun
 nnoremap <Leader>J :call <SID>join_spaceless()<CR>
 
 " Use underscore as word separator
-set iskeyword-=_
+" set iskeyword-=_
 
 if exists('use_feature')
 " {{{ ale settings
