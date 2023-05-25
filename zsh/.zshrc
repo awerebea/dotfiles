@@ -964,11 +964,11 @@ export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
 export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
 
 # Create and launch python VENV
-alias activate="virtualenv .venv && source .venv/bin/activate"
-alias activate38="virtualenv3.8 .venv && source .venv/bin/activate"
-alias activate39="virtualenv3.9 .venv && source .venv/bin/activate"
-alias activate310="virtualenv3.10 .venv && source .venv/bin/activate"
-alias activate311="virtualenv3.11 .venv && source .venv/bin/activate"
+alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
+alias activate38="python3.8 -m venv .venv && source .venv/bin/activate"
+alias activate39="python3.9 -m venv .venv && source .venv/bin/activate"
+alias activate310="python3.10 -m venv .venv && source .venv/bin/activate"
+alias activate311="python3.11 -m venv .venv && source .venv/bin/activate"
 
 # Generate '.clang_complete' for VIM and C/CPP projects
 alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | \
