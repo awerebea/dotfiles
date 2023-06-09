@@ -63,7 +63,6 @@ Remove-Alias -Force -Name gbd 2>&1 | out-null; function gbd() { git branch -d $a
 Remove-Alias -Force -Name gc 2>&1 | out-null; function gc() { git commit -v $args }
 Remove-Alias -Force -Name gc! 2>&1 | out-null; function gc!() { git commit -v --amend $args }
 Remove-Alias -Force -Name gcl 2>&1 | out-null; function gcl() { git clone --recurse-submodules $args }
-Remove-Alias -Force -Name gcm 2>&1 | out-null; function gcm() { git checkout $(git_main_branch) $args }
 Remove-Alias -Force -Name gcn! 2>&1 | out-null; function gcn!() { git commit -v --no-edit --amend $args }
 Remove-Alias -Force -Name gco 2>&1 | out-null; function gco() { git checkout $args }
 Remove-Alias -Force -Name gcp 2>&1 | out-null; function gcp() { git cherry-pick $args }
@@ -118,9 +117,30 @@ Remove-Alias -Force -Name gsw 2>&1 | out-null; function gsw() { git switch $args
 Remove-Alias -Force -Name gswc 2>&1 | out-null; function gswc() { git switch -c $args }
 Remove-Alias -Force -Name gupv 2>&1 | out-null; function gupv() { git pull --rebase -v $args }
 
+Remove-Alias -Force -Name gcm 2>&1 | out-null; function gcm() { git checkout main || git checkout master }
+
 New-Alias v nvim
 
 New-Alias lg lazygit
+
+# Python Virtual Environment activation
+function Activate-VirtualEnvironment {
+    param (
+        [string]$venvName = ".venv"
+    )
+
+    # Create the virtual environment
+    python -m venv $venvName
+
+    # Activate the virtual environment
+    $activateScript = Join-Path $venvName "Scripts\Activate.ps1"
+    if (Test-Path $activateScript) {
+        . $activateScript
+    } else {
+        Write-Error "Failed to find Activate.ps1 script in the virtual environment."
+    }
+}
+Set-Alias -Name activate -Value Activate-VirtualEnvironment
 
 # gmom='git merge origin/$(git_main_branch)'
 # gmtl='git mergetool --no-prompt'
