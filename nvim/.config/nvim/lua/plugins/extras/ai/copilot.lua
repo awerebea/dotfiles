@@ -10,9 +10,9 @@ return {
       keymap = {
         jump_prev = "[[",
         jump_next = "]]",
-        accept = "<CR>",
+        accept = "<M-CR>",
         refresh = "gr",
-        open = "<M-CR>",
+        open = "<S-CR>",
       },
       layout = {
         position = "bottom", -- | top | left | right
