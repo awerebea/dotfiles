@@ -1,10 +1,23 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 
-if [ $# -lt 1 ]; then
-    echo "The AWS torana-* profile or environment must be specified by the cmdline argument."
+if [ "$#" -lt 1 ]; then
+    printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
     exit 1
 fi
 
-aws sso login --profile="torana-${1/torana-/}" 2>&1 | \
-    stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" | \
+envs=("$@")
+VALID_ENVS=(torana-{dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
+
+for env in "${envs[@]}"; do
+    # shellcheck disable=SC2076
+    if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
+        echo "Invalid environment passed." >&2
+        exit 1
+    fi
+done
+
+for i in "${envs[@]}"; do
+    aws sso login --profile="$i" 2>/dev/null |
+    stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
     stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
+done
