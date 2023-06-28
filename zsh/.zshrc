@@ -353,6 +353,10 @@ if [ ! -d "$HOME/.fzf/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.vim/plugged/fzf/bin:"* ]]; then
     export PATH="$HOME/.vim/plugged/fzf/bin:$PATH"
 fi
+if [ -d "$HOME/.tfenv" ] &&
+  [[ ":$PATH:" != *":$HOME/.tfenv:"* ]]; then
+    export PATH="$HOME/.tfenv/bin:$PATH"
+fi
 
 # Detect and setup current environment
 if [[ `uname` == "Linux" ]]; then
