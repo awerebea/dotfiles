@@ -326,32 +326,32 @@ export GIT_WORKSPACE="$HOME/Github/workspace"
 
 if [ -d "$HOME/Library/Python/3.10/bin" ] &&
   [[ ":$PATH:" != *":$HOME/Library/Python/3.10/bin:"* ]]; then
-    export PATH="$PATH:$HOME/Library/Python/3.10/bin"
+    export PATH="$HOME/Library/Python/3.10/bin:$PATH"
 fi
 if [ -d "$HOME/.local/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$PATH:$HOME/.local/bin"
+    export PATH="$HOME/.local/bin:$PATH"
 fi
 if [ -d "/var/lib/gems/2.7.0" ] &&
   [[ ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]]; then
-    export PATH="$PATH:/var/lib/gems/2.7.0"
+    export PATH="/var/lib/gems/2.7.0:$PATH"
 fi
 if [ -d "/opt/mssql-tools/bin" ] &&
   [[ ":$PATH:" != *":/opt/mssql-tools/bin:"* ]]; then
-    export PATH="$PATH:/opt/mssql-tools/bin"
+    export PATH="/opt/mssql-tools/bin:$PATH"
 fi
 if [ -d "/usr/local/go/bin" ] &&
   [[ ":$PATH:" != *":/usr/local/go/bin:"* ]]; then
-    export PATH="$PATH:/usr/local/go/bin"
+    export PATH="/usr/local/go/bin:$PATH"
 fi
 if [ -d "$HOME/go/bin" ] &&
   [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
-    export PATH="$PATH:$HOME/go/bin"
+    export PATH="$HOME/go/bin:$PATH"
 fi
 if [ ! -d "$HOME/.fzf/bin" ] &&
   [ -d "$HOME/.vim/plugged/fzf/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.vim/plugged/fzf/bin:"* ]]; then
-    export PATH="$PATH:$HOME/.vim/plugged/fzf/bin"
+    export PATH="$HOME/.vim/plugged/fzf/bin:$PATH"
 fi
 
 # Detect and setup current environment
@@ -371,7 +371,7 @@ if [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   alias sudoedit="sudo $EDITOR"
   if [ -d "$HOME/Library/Python/3.7/bin" ] &&
     [[ ":$PATH:" != *":$HOME/Library/Python/3.7/bin:"* ]]; then
-      export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+      export PATH="$HOME/Library/Python/3.7/bin:$PATH"
   fi
   # Use manually installed vim
   if [ -x "$HOME/.local/bin/vim" ]; then
