@@ -635,7 +635,13 @@ if [[ $commands[terraform] ]]; then
   unset tf_cache_path
 fi
 
-[[ $commands[terragrunt] ]] && alias tg="terragrunt"
+if [[ $commands[terragrunt] ]]; then
+  alias tg="terragrunt"
+  alias tgp="terragrunt plan"
+  alias tga="terragrunt apply"
+  alias tgsl="terragrunt state list"
+  alias tgss="terragrunt state show"
+fi
 
 # copy/paste to/from system clipboard
 if [[ $(uname -s) = Linux ]]; then
