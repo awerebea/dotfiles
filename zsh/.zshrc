@@ -632,6 +632,7 @@ if [[ $commands[terraform] ]]; then
   tf_cache_path="$HOME/.cache/terraform"
   [ -d "$tf_cache_path" ] || mkdir -p "$tf_cache_path"
   export TF_PLUGIN_CACHE_DIR="$tf_cache_path"
+  export TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true
   unset tf_cache_path
 fi
 
