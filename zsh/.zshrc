@@ -302,13 +302,13 @@ plugins=(
           web-search
           zsh-autosuggestions
           zsh-completions
-          zsh-edit
           zsh-interactive-cd
           # zsh-nvm                   # use custom lazy loading function instead
           zsh-sed-sub
           zsh-vi-mode
           history-substring-search
           zsh-syntax-highlighting
+          zsh-edit
           zsh-bash-completions-fallback
 )
 
