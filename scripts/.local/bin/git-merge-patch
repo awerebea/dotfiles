@@ -1,34 +1,31 @@
 #!/usr/bin/env bash
 
 # Check if the commit hash is provided
-if [ $# -eq 0 ]
-then
+if [ $# -eq 0 ]; then
     echo "Please provide the merge commit hash as a parameter."
     exit 1
 fi
 
 # Collect the commit hash
-commit_hash=$1
+commit_hash="$1"
 
 # Check if the commit hash is a merge commit
-if [ $(git cat-file -p $commit_hash | grep parent | wc -l) -lt 2 ]
-then
+if [ "$(git cat-file -p "$commit_hash" | grep -c parent)" -lt 2 ]; then
     echo "The provided commit hash is not a merge commit."
     exit 1
 fi
 
 # Get the list of commits involved in the merge commit
-commit_list=$(git log --pretty=format:'%H' $commit_hash^..$commit_hash)
+mapfile -t commit_list < <(git log --pretty=format:'%H' "$commit_hash"^.."$commit_hash")
 
 # Create or truncate the result patch file
 result_patch="result_$commit_hash.patch"
-: > $result_patch
+: > "$result_patch"
 
 # Loop over each commit hash
-for commit in $commit_list
-do
+for commit in "${commit_list[@]}"; do
     # Generate a patch for each commit and append it to the result patch
-    git format-patch -1 --stdout $commit >> $result_patch
+    git format-patch -1 --stdout "$commit" >> "$result_patch"
 done
 
 echo "Patch file $result_patch created for merge commit $commit_hash."
