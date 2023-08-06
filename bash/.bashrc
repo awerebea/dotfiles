@@ -156,6 +156,41 @@ function ___brainy_prompt_user_info {
     fi
 }
 
+function ___remove_empty_elements {
+    ifs_old="$IFS"
+    IFS="|"
+    read -ra array <<< "$1"
+    IFS="$ifs_old"
+    new_array=()
+    for element in "${array[@]}"; do
+        trimmed="${element#"${element%%[![:space:]]*}"}"
+        trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
+        if [ "$trimmed" != "" ]; then
+            new_array+=("$element")
+        fi
+    done
+    echo "${new_array[@]}"
+}
+
+function ___brainy_prompt_python {
+    local array info
+    [ "$THEME_SHOW_PYTHON" != "true" ] && return
+    color=$_omb_prompt_bold_olive
+    box="[|]"
+    read -ra array <<< "$(___remove_empty_elements "$(python_version_prompt)")"
+    info=""
+    info="${array[-1]}"
+    if [ ${#array[@]} -gt 1 ]; then
+        # Print all elements except the last one, separated by commas
+        venvs=$(printf "%s," "${array[@]:0:${#array[@]}-1}")
+        # Remove the trailing comma
+        venvs="${venvs%,}"
+        info="${info} (${venvs})"
+    fi
+    printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_navy" "$box"
+}
+
+brainy show python
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
