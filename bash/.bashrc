@@ -9,7 +9,11 @@ export OSH='/home/andrei/.oh-my-bash'
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
-OSH_THEME="purity"
+___BRAINY_TOP_LEFT="dir scm"
+___BRAINY_TOP_RIGHT="user_info python ruby todo clock battery"
+THEME_PROMPT_CHAR_PS1="❯"
+
+OSH_THEME="brainy"
 
 # Uncomment the following line to use case-sensitive completion.
 # OMB_CASE_SENSITIVE="true"
@@ -134,6 +138,24 @@ plugins=(
 source "$OSH"/oh-my-bash.sh
 
 # User configuration
+
+# Override brainy theme functions
+function ___brainy_prompt_user_info {
+    color=$_omb_prompt_bold_navy
+    if [ "$THEME_SHOW_SUDO" == "true" ]; then
+        if [ "$(sudo -n id -u 2>&1 | grep 0)" ]; then
+            color=$_omb_prompt_bold_brown
+        fi
+    fi
+    box=""
+    info="$USER@$(hostname | awk -F'.' '{print $1}')"
+    if [ "$SSH_CLIENT" != "" ]; then
+        printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_white" "$box"
+    else
+        printf "%s|%s" "$color" "$info"
+    fi
+}
+
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
