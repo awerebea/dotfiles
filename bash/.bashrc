@@ -240,3 +240,7 @@ command -v terraform &> /dev/null && alias tf="terraform"
 command -v terragrunt &> /dev/null && alias tg="terragrunt"
 
 alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
+
+alias c="eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
+alias vf="fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR"
+alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
