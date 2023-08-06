@@ -610,6 +610,9 @@ alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
 alias vv='f -e "$EDITOR"'
 alias v="$EDITOR"
+alias c="eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
+alias vf="fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR"
+alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
 # tmux aliases
 alias tksv='tmux kill-server'
 alias tksa='tmux kill-session -a' # kill other sessions except the current one
@@ -620,7 +623,6 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[lazygit] ]] && alias lg="lazygit"
 [[ $commands[rover] ]] && alias rv="rover"
 
-vf() { v "$(fzf)" }
 vs() { find $GIT_DOTFILES/scripts -type f | fzf | xargs -I {} -r $EDITOR '{}' }
 
 # terraform lint scripts
