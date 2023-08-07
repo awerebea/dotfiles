@@ -618,6 +618,7 @@ alias tksv='tmux kill-server'
 alias tksa='tmux kill-session -a' # kill other sessions except the current one
 # To avoid repeating the last command if misspelled when calling the rr alias
 alias r="echo \"Don't use that shit!\""
+[[ $commands[trash] ]] && alias rm="trash-put"
 # Ripgrep alias to search in hidden files but ignore .git directory
 [[ $commands[rg] ]] && alias rg="rg --hidden --glob '!.git/'"
 [[ $commands[lazygit] ]] && alias lg="lazygit"
