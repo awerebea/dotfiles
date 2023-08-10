@@ -5,15 +5,13 @@ case $- in
 esac
 
 # Path to your oh-my-bash installation.
-export OSH='/home/andrei/.oh-my-bash'
+export OSH="/home/$USER/.oh-my-bash"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
-___BRAINY_TOP_LEFT="dir scm"
-___BRAINY_TOP_RIGHT="user_info python ruby todo clock battery"
-THEME_PROMPT_CHAR_PS1="❯"
-
-OSH_THEME="brainy"
+THEME_SHOW_SUDO="fasle"
+__PB10K_PROMPT_LOCAL_USER_INFO="false"
+OSH_THEME="powerbash10k"
 
 # Uncomment the following line to use case-sensitive completion.
 # OMB_CASE_SENSITIVE="true"
@@ -138,59 +136,8 @@ plugins=(
 source "$OSH"/oh-my-bash.sh
 
 # User configuration
+pb10k show python
 
-# Override brainy theme functions
-function ___brainy_prompt_user_info {
-    color=$_omb_prompt_bold_navy
-    if [ "$THEME_SHOW_SUDO" == "true" ]; then
-        if [ "$(sudo -n id -u 2>&1 | grep 0)" ]; then
-            color=$_omb_prompt_bold_brown
-        fi
-    fi
-    box=""
-    info="$USER@$(hostname | awk -F'.' '{print $1}')"
-    if [ "$SSH_CLIENT" != "" ]; then
-        printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_white" "$box"
-    else
-        printf "%s|%s" "$color" "$info"
-    fi
-}
-
-function ___remove_empty_elements {
-    ifs_old="$IFS"
-    IFS="|"
-    read -ra array <<< "$1"
-    IFS="$ifs_old"
-    new_array=()
-    for element in "${array[@]}"; do
-        trimmed="${element#"${element%%[![:space:]]*}"}"
-        trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
-        if [ "$trimmed" != "" ]; then
-            new_array+=("$element")
-        fi
-    done
-    echo "${new_array[@]}"
-}
-
-function ___brainy_prompt_python {
-    local array info
-    [ "$THEME_SHOW_PYTHON" != "true" ] && return
-    color=$_omb_prompt_bold_olive
-    box="[|]"
-    read -ra array <<< "$(___remove_empty_elements "$(python_version_prompt)")"
-    info=""
-    info="${array[-1]}"
-    if [ ${#array[@]} -gt 1 ]; then
-        # Print all elements except the last one, separated by commas
-        venvs=$(printf "%s," "${array[@]:0:${#array[@]}-1}")
-        # Remove the trailing comma
-        venvs="${venvs%,}"
-        info="${info} (${venvs})"
-    fi
-    printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_navy" "$box"
-}
-
-brainy show python
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
