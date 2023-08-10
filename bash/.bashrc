@@ -249,4 +249,91 @@ alias c="eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
 alias vf="fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR"
 alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
 
+alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
+
 command -v trash &> /dev/null && alias rm="trash-put"
+
+# Define exa aliases conditionally
+if command -v exa &> /dev/null; then
+    alias l="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale"
+    alias lle="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale | less -NR"
+    alias lT="exa --long --all --header --links --git --icons --color=always \
+    --group-directories-first --color-scale --tree"
+    alias ll="exa --long --header --links --git --icons --color=always \
+    --group-directories-first --color-scale"
+    alias llT="exa --long --header --links --git --icons --color=always \
+    --group-directories-first --color-scale --tree"
+fi
+
+# Load nvm if exists
+if [ -d "$HOME/.nvm" ]; then
+    [ "$NVM_DIR" = "" ] && export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+fi
+
+# Load rbenv if exists
+if [ -d "$HOME/.rbenv/bin" ]; then
+    if [[ ":$PATH:" != *":$HOME/.rbenv/bin:"* ]]; then
+        export PATH="$PATH:$HOME/.rbenv/bin"
+    fi
+    eval "$(rbenv init - bash)"
+fi
+# Setup ruby environment
+export_all_ruby_versions_bin_dirs () {
+    local version versions
+    if [ -d "$HOME/.rbenv/versions" ]; then
+        read -ra versions <<< "$(find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d)"
+        for version in "${versions[@]}"; do
+            if [ -d "$version/bin" ] && [[ ":$PATH:" != *":$version/bin:"* ]]; then
+                export PATH="$version/bin:$PATH"
+            fi
+        done
+    fi
+}
+export_all_ruby_versions_bin_dirs
+
+# Set Bat theme
+export BAT_THEME="TwoDark"
+
+# FZF settings
+if command -v fd &> /dev/null; then
+    FD_BIN_NAME="fd"
+elif command -v fdfind &> /dev/null; then
+    FD_BIN_NAME="fdfind"
+fi
+if [[ -n $FD_BIN_NAME ]]; then
+    export FZF_DEFAULT_COMMAND="$FD_BIN_NAME --type file --follow --hidden --exclude .git"
+else
+    export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
+fi
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Set fzf preview options
+FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
+2> /dev/null || cat --number {} 2> /dev/null)) || ([[ -d {} ]] && \
+(exa --oneline --group-directories-first --color=always --color-scale --icons \
+--all --git {} 2> /dev/null || tree -a -C -L 1 -v --dirsfirst {} \
+2> /dev/null)) || echo {} 2> /dev/null | head -200"
+export FZF_DEFAULT_OPTS=" \
+  --height=100% \
+  --preview '${FZF_PREVIEW_STRING/$\'\n\'/}' \
+  --preview-window=up:60%:hidden \
+  --bind=ctrl-/:toggle-preview \
+  --bind=alt-j:preview-down,alt-k:preview-up \
+  --bind=alt-b:preview-page-up,alt-f:preview-page-down \
+  --bind=alt-u:preview-half-page-up,alt-d:preview-half-page-down \
+  --bind=alt-up:preview-top,alt-down:preview-bottom \
+  --bind=ctrl-space:toggle+up \
+  --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
+  --bind=ctrl-f:page-down,ctrl-b:page-up \
+  "
+export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
+
+# fzf_marks
+export FZF_MARKS_FILE="$HOME/.fzf-marks"
+export FZF_MARKS_CMD="fzf"
+export FZF_FZM_OPTS="--cycle +m --ansi --bind=ctrl-o:accept,ctrl-t:toggle --select-1"
+export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
