@@ -132,13 +132,21 @@ function! TabsNoExpandByFourSpaces()
 endfunction
 command! TabsNoExpandByFourSpaces call TabsNoExpandByFourSpaces()
 
+function! TabsNoExpandByTwoSpaces()
+  setlocal tabstop=2
+  setlocal shiftwidth=2
+  setlocal softtabstop=2
+  setlocal noexpandtab
+endfunction
+command! TabsNoExpandByTwoSpaces call TabsNoExpandByTwoSpaces()
+
 function! TabsExpandByFourSpaces()
   setlocal tabstop=4
   setlocal shiftwidth=4
   setlocal softtabstop=4
   setlocal expandtab
 endfunction
-command! TabsNoExpandByFourSpaces call TabsExpandByFourSpaces()
+command! TabsExpandByFourSpaces call TabsExpandByFourSpaces()
 
 function! TabsExpandByTwoSpaces()
   setlocal tabstop=2
