@@ -1,0 +1,7 @@
+#! /usr/bin/env bash
+
+if [ "$#" -ne 2 ]; then
+    echo "Specify exactly two positional arguments." >&2
+fi
+
+cd "$(pwd | sed "s|/-infrastructure/envs/${1}|/-infrastructure/envs/${2}|")"
