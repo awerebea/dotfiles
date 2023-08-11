@@ -156,7 +156,7 @@ function __pb10k_prompt_scm {
     color=$_omb_prompt_bold_green
     scm
     box=""
-    info="$(if [ "$SCM" == "git" ]; then echo " "; fi) "
+    info="$(if [ "$SCM" == "git" ]; then echo "  "; fi)"
     info+="$(if [ "$SCM" != "NONE" ]; then echo " $(scm_prompt_info)"; fi)"
     [ "$info" == "" ] && return
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_green" "$box"
