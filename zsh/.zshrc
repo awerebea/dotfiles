@@ -829,17 +829,18 @@ if [ -d "$HOME/.rbenv/bin" ]; then
 fi
 # Setup ruby environment
 export_all_ruby_versions_bin_dirs () {
-  if [ -d "$HOME/.rbenv/versions" ]; then
-    find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d |
-      while read VERSION; do
-      if [ -d "$VERSION/bin" ]; then
-        [[ ":$PATH:" != *":$VERSION/bin:"* ]] &&
-            export PATH="$VERSION/bin:$PATH"
-      fi
-    done
-  fi
+    local version versions
+    if [ -d "$HOME/.rbenv/versions" ]; then
+        read -ra versions <<< "$(find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d)"
+        for version in "${versions[@]}"; do
+            if [ -d "$version/bin" ] && [[ ":$PATH:" != *":$version/bin:"* ]]; then
+                export PATH="$version/bin:$PATH"
+            fi
+        done
+    fi
 }
 export_all_ruby_versions_bin_dirs
+
 
 # Lazy loading github-copilot if exists
 if [[ $commands[github-copilot-cli] ]]; then
