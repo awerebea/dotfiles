@@ -33,7 +33,7 @@ function __pb10k_format_duration {
     fi
 }
 
-# Last command duration time
+# Last command duration
 function __pb10k_timer_start {
     __pb10k_timer=${__pb10k_timer:-$SECONDS}
 }
@@ -243,7 +243,7 @@ function __pb10k_prompt_char {
     printf "%s|%s" "$color" "$__PB10K_PROMPT_CHAR_PS1"
 }
 
-function __pb10k_prompt_time_duration {
+function __pb10k_prompt_cmd_duration {
     local color box info
     color=$_omb_prompt_bold_navy
     box=""
@@ -342,7 +342,7 @@ __PB10K_PROMPT_CHAR_PS1=${THEME_PROMPT_CHAR_PS1:-"❯"}
 __PB10K_PROMPT_CHAR_PS2=${THEME_PROMPT_CHAR_PS2:-"\\"}
 
 __PB10K_TOP_LEFT=${__PB10K_TOP_LEFT:-"dir scm"}
-__PB10K_TOP_RIGHT=${__PB10K_TOP_RIGHT:-"exitcode time_duration user_info python ruby todo clock battery"}
+__PB10K_TOP_RIGHT=${__PB10K_TOP_RIGHT:-"exitcode cmd_duration user_info python ruby todo clock battery"}
 __PB10K_BOTTOM=${__PB10K_BOTTOM:-"char"}
 __PB10K_PROMPT_LOCAL_USER_INFO=${__PB10K_PROMPT_LOCAL_USER_INFO:-"true"}
 
