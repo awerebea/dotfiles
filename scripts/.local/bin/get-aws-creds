@@ -5,9 +5,21 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-envs=("$@")
+envs_raw=("$@")
 VALID_ENVS=(torana-{dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
 
+# Remove duplicates
+declare -A seen_elements
+envs=()
+
+for element in "${envs_raw[@]}"; do
+    if [ "${seen_elements[$element]}" = "" ]; then
+        envs+=("$element")
+        seen_elements["$element"]=1
+    fi
+done
+
+# Check if the passed envs are valid
 for env in "${envs[@]}"; do
     # shellcheck disable=SC2076
     if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
