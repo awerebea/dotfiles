@@ -1,7 +1,10 @@
 #! /usr/bin/env bash
 
-if [ "$#" -ne 2 ]; then
-    echo "Specify exactly two positional arguments." >&2
+if [ "$#" -ne 1 ]; then
+    echo "Specify the environment where you want to jump." >&2
 fi
 
-cd "$(pwd | sed "s|/-infrastructure/envs/${1}|/-infrastructure/envs/${2}|")"
+git_root="$(git rev-parse --show-toplevel)"
+
+# shellcheck disable=SC2164
+cd "$(pwd | sed -E "s|$git_root/envs/(\w+\b)|$git_root/envs/${1}|")"
