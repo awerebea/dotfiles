@@ -20,4 +20,5 @@ for i in "${envs[@]}"; do
     aws sso login --profile="$i" 2>/dev/null |
     stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
     stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
+    echo
 done
