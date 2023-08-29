@@ -643,6 +643,7 @@ if [[ $commands[terragrunt] ]]; then
   alias tg="terragrunt"
   alias tgp="terragrunt plan"
   alias tga="terragrunt apply"
+  alias tgo="terragrunt output"
   alias tgsl="terragrunt state list"
   alias tgss="terragrunt state show"
 fi
