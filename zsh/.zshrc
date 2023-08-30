@@ -9,9 +9,9 @@ fi
 
 # Add neovim installation path, installed by bob
 # https://github.com/MordechaiHadad/bob
-if [ -d "$HOME/.local/share/neovim/bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/share/neovim/bin:"* ]]; then
-    export PATH="$HOME/.local/share/neovim/bin:$PATH"
+if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
+[[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
+    export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 fi
 
 # Define default editor nvim, vim, vi or nano
