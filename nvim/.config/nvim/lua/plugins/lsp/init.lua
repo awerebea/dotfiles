@@ -166,7 +166,7 @@ return {
     config = true,
   },
   {
-    url = "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
+    url = "https://github.com/ErichDonGubler/lsp_lines.nvim",
     event = "VeryLazy",
     -- config = true,
     config = function()
