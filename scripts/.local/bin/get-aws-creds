@@ -5,8 +5,13 @@ if [ "$#" -lt 1 ]; then
     exit 1
 fi
 
-envs_raw=("$@")
-VALID_ENVS=(torana-{dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
+envs_raw=()
+VALID_ENVS=(torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
+
+for arg in "$@"; do
+    read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
+    envs_raw+=("${splitted_arg[@]}")
+done
 
 # Remove duplicates
 declare -A seen_elements
@@ -23,7 +28,7 @@ done
 for env in "${envs[@]}"; do
     # shellcheck disable=SC2076
     if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
-        echo "Invalid environment passed." >&2
+        echo "Invalid environment passed: $env" >&2
         exit 1
     fi
 done
