@@ -623,6 +623,7 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[rg] ]] && alias rg="rg --hidden --glob '!.git/'"
 [[ $commands[lazygit] ]] && alias lg="lazygit"
 [[ $commands[rover] ]] && alias rv="rover"
+alias cdi='source cd-infra'
 
 vs() { find $GIT_DOTFILES/scripts -type f | fzf | xargs -I {} -r $EDITOR '{}' }
 
