@@ -1275,6 +1275,7 @@ alias glpf='git log --pretty=fuller'
 alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
 alias glsa='git ls-files $(git rev-parse --show-toplevel)'
 alias -g GR='$(git rev-parse --show-toplevel)'
+alias cdgr='cd "$(git rev-parse --show-toplevel)"'
 # Prune local tracking branches that do not exist on remote anymore
 cleanup-git-branches() {
   git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | \
