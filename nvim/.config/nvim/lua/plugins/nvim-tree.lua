@@ -11,6 +11,28 @@ return {
       },
     },
     opts = {
+      on_attach = function(bufnr)
+        local api = require "nvim-tree.api"
+        local function opts(desc)
+          return {
+            desc = "nvim-tree: " .. desc,
+            buffer = bufnr,
+            noremap = true,
+            silent = true,
+            nowait = true,
+          }
+        end
+        -- use all default mappings
+        api.config.mappings.default_on_attach(bufnr)
+        -- remove a default
+        vim.keymap.del("n", "-", { buffer = bufnr })
+        -- override a default
+        vim.keymap.set("n", "<C-e>", api.tree.reload, opts "Refresh")
+        vim.keymap.set("n", "u", api.tree.change_root_to_parent, opts "Up")
+        vim.keymap.set("n", "h", api.node.navigate.parent_close, opts "Close Directory")
+        vim.keymap.set("n", "l", api.node.open.edit, opts "Open")
+        vim.keymap.set("n", "F1", api.node.show_info_popup, opts "Info")
+      end,
       disable_netrw = false,
       hijack_netrw = true,
       respect_buf_cwd = true,
@@ -18,17 +40,6 @@ return {
         number = true,
         relativenumber = true,
         adaptive_size = true,
-        mappings = {
-          list = {
-            { key = "u", action = "dir_up" },
-            { key = "h", action = "close_node" },
-            { key = "l", action = "edit" },
-            { key = "<F1>", action = "toggle_file_info" },
-          },
-        },
-      },
-      remove_keymaps = {
-        "-",
       },
       filters = {
         custom = { "^\\.git$" },
