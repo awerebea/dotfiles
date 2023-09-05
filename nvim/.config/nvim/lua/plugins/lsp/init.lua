@@ -97,7 +97,8 @@ return {
         "eslint_d",
         -- "autopep8",
         "flake8",
-        "yapf",
+        -- "yapf",
+        "black",
         "pydocstyle",
         -- "pylama",
         "pylint",
@@ -138,16 +139,19 @@ return {
               return utils.root_has_file ".eslintrc.js" -- change file extension if you use something else
             end,
           },
-          nls.builtins.formatting.yapf.with {
-            extra_args = {
-              "--style={based_on_style: google, column_limit: 99, indent_width: 4}",
-            },
+          -- nls.builtins.formatting.yapf.with {
+          --   extra_args = {
+          --     "--style={based_on_style: google, column_limit: 88, indent_width: 4}",
+          --   },
+          -- },
+          nls.builtins.formatting.black.with {
+            extra_args = { "--line-length=88" },
           },
           -- nls.builtins.formatting.autopep8,
           -- nls.builtins.diagnostics.pylama,
           nls.builtins.diagnostics.pylint,
           nls.builtins.diagnostics.pydocstyle,
-          nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=99" } },
+          nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
