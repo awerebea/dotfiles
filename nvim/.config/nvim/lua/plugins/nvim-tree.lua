@@ -35,7 +35,7 @@ return {
       end,
       disable_netrw = false,
       hijack_netrw = true,
-      respect_buf_cwd = true,
+      respect_buf_cwd = false,
       view = {
         number = true,
         relativenumber = true,
@@ -44,7 +44,7 @@ return {
       filters = {
         custom = { "^\\.git$" },
       },
-      sync_root_with_cwd = true,
+      sync_root_with_cwd = false,
       prefer_startup_root = true,
       update_focused_file = {
         enable = false,
