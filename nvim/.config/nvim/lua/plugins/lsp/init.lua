@@ -56,14 +56,7 @@ return {
         bashls = {},
         rust_analyzer = {},
         gopls = {},
-        ruff_lsp = {
-          init_options = {
-            settings = {
-              -- Any extra CLI arguments for `ruff` go here.
-              args = { "--line-length=99" },
-            },
-          },
-        },
+        ruff_lsp = { init_options = { settings = { args = { "--line-length=88" } } } },
         marksman = {},
       },
       setup = {
@@ -147,11 +140,12 @@ return {
           nls.builtins.formatting.black.with {
             extra_args = { "--line-length=88" },
           },
+          -- nls.builtins.diagnostics.ruff,
           -- nls.builtins.formatting.autopep8,
           -- nls.builtins.diagnostics.pylama,
-          nls.builtins.diagnostics.pylint,
-          nls.builtins.diagnostics.pydocstyle,
-          nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
+          -- nls.builtins.diagnostics.pylint,
+          -- nls.builtins.diagnostics.pydocstyle,
+          -- nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
