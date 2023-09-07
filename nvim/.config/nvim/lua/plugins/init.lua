@@ -147,9 +147,18 @@ return {
     end,
   },
   {
-    "famiu/bufdelete.nvim",
-    cmd = "Bdelete",
-    keys = { { "gz", "<Cmd>Bdelete<CR>" } },
+    "ojroques/nvim-bufdel",
+    cmd = {
+      "BufDel",
+      "BufDelAll",
+      "BufDelOthers",
+    },
+    keys = {
+      { "gz", "<Cmd>BufDel<CR>" },
+      { "gZ", "<Cmd>BufDelOthers<CR>" },
+    },
+    opts = { next = "tabs", quit = false },
+    config = true,
   },
   {
     "rhysd/git-messenger.vim",
