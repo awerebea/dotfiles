@@ -13,7 +13,7 @@ return {
         "fugitive",
         "NvimTree",
       },
-      delay = 100,
+      delay = 2000,
       min_count_to_highlight = 2,
       under_cursor = false,
     },
