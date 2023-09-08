@@ -85,7 +85,7 @@ return {
     keys = { { "<leader>cm", "<Cmd>Mason<CR>", desc = "Mason" } },
     opts = {
       ensure_installed = {
-        "prettier",
+        "prettierd",
         "stylua",
         "eslint_d",
         -- "autopep8",
@@ -124,7 +124,7 @@ return {
       nls.setup {
         sources = {
           refurb,
-          nls.builtins.formatting.prettier,
+          nls.builtins.formatting.prettierd,
           nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
           nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
             -- only enable eslint if root has .eslintrc.js
