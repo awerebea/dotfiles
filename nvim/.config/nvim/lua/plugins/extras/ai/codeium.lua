@@ -1,6 +1,7 @@
 return {
   {
     "Exafunction/codeium.vim",
+    enabled = false,
     event = "InsertEnter",
     -- stylua: ignore
     config = function ()
