@@ -1,0 +1,19 @@
+{
+  "useTabs": false,
+  "parser": "json",
+  "printWidth": 88,
+  "overrides": [
+    {
+      "files": ["*.json", "*.json.tpl*"],
+      "options": {
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": [".prettierrc*"],
+      "options": {
+        "tabWidth": 2
+      }
+    }
+  ]
+}
