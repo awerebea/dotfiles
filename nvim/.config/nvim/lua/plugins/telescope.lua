@@ -19,61 +19,52 @@ return {
     },
     cmd = "Telescope",
     keys = {
-      -- find files within current working directory, respects .gitignore
-      -- { "<leader>ff", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
       {
         "<leader>ff",
-        "<Cmd> lua require('telescope').extensions.menufacture.find_files()<CR>",
-        desc = "Find files",
+        function()
+          require("telescope").extensions.menufacture.find_files()
+        end,
+        desc = "Find files (menufacture)",
       },
-      {
-        "<leader>ffv",
-        "<Cmd> lua require('telescope').extensions.menufacture.find_files({layout_strategy='vertical'})<CR>",
-        desc = "Find files, vertical layout",
-      },
-      { "<leader>fi", require("utils").find_ignored_files, desc = "Find files including ignored" },
-      {
-        "<leader>fiv",
-        require("utils").find_ignored_files_vert,
-        desc = "Find files including ignored, vertical layout",
-      },
-      { "<C-p>", "<Cmd>Telescope find_files<CR>", desc = "Find files" },
-      { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
-      -- { "<leader>f/", "<Cmd>Telescope live_grep<CR>", desc = "Live grep in workspace" },
       {
         "<leader>f/",
-        "<Cmd> lua require('telescope').extensions.menufacture.live_grep()<CR>",
-        { desc = "Live grep in workspace" },
-      },
-      {
-        "<leader>f/v",
-        "<Cmd> lua require('telescope').extensions.menufacture.live_grep({layout_strategy='vertical'})<CR>",
-        { desc = "Live grep in workspace, vertical layout" },
+        function()
+          require("telescope").extensions.menufacture.live_grep()
+        end,
+        { desc = "Live grep (menufacture)" },
       },
       {
         "<leader>f//",
-        "<Cmd> lua require('telescope').extensions.menufacture.live_grep({grep_open_files=true})<CR>",
-        { desc = "Live grep in open files" },
+        function()
+          require("telescope").extensions.menufacture.grep_string {
+            shorten_path = true,
+            word_match = "-w",
+            only_sort_text = true,
+            search = "",
+          }
+        end,
+        desc = "Fuzzy Grep",
       },
       {
-        "<leader>f//v",
-        "<Cmd> lua require('telescope').extensions.menufacture.live_grep({layout_strategy='vertical', grep_open_files=true})<CR>",
-        { desc = "Live grep in open files, vertical layout" },
+        "<leader>//",
+        function()
+          require("telescope.builtin").current_buffer_fuzzy_find()
+        end,
+        desc = "Fuzzy grep in current buffer",
       },
+      { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
       {
         "<leader>f?",
-        "<Cmd> lua require('telescope').extensions.live_grep_args.live_grep_args()<CR>",
-        { desc = "Live grep in workspace with custom args" },
+        function()
+          require("telescope").extensions.live_grep_args.live_grep_args()
+        end,
+        { desc = "Live grep (custom args)" },
       },
-      {
-        "<leader>f?v",
-        "<Cmd> lua require('telescope').extensions.live_grep_args.live_grep_args({layout_strategy='vertical'})<CR>",
-        { desc = "Live grep in workspace with custom args, vertical layout" },
-      },
-      -- { "<leader>f?", require("utils").grep_ignored_files, desc = "Live grep including ignored" },
       {
         "<leader>fw",
-        "<Cmd> lua require('telescope').extensions.menufacture.grep_string()<CR>",
+        function()
+          require("telescope").extensions.menufacture.grep_string()
+        end,
         { desc = "Find word under cursor" },
       },
       { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
@@ -95,18 +86,23 @@ return {
       { "<leader>far", "<Cmd>Telescope repo list<cr>", desc = "Search" },
       {
         "<leader>fp",
+        "<Cmd>Telescope projects<cr>",
+        desc = "Projects",
+      },
+      {
+        "<leader>fP",
         function()
           require("telescope").extensions.project.project { display_type = "minimal" }
         end,
         desc = "List",
       },
-      {
-        "<leader>//",
-        function()
-          require("telescope.builtin").current_buffer_fuzzy_find()
-        end,
-        desc = "Buffer",
-      },
+      -- {
+      --   "<leader>//",
+      --   function()
+      --     require("telescope.builtin").current_buffer_fuzzy_find()
+      --   end,
+      --   desc = "Buffer",
+      -- },
       {
         "<leader>fd",
         function()
@@ -141,6 +137,22 @@ return {
       },
     },
     config = function(_, _)
+      -- Open one or more selected entries in the current window
+      local select_one_or_multi = function(prompt_bufnr)
+        local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+        local multi = picker:get_multi_selection()
+        if not vim.tbl_isempty(multi) then
+          require("telescope.actions").close(prompt_bufnr)
+          for _, j in pairs(multi) do
+            if j.path ~= nil then
+              vim.cmd(string.format("%s %s", "edit", j.path))
+            end
+          end
+        else
+          require("telescope.actions").select_default(prompt_bufnr)
+        end
+      end
+
       local telescope = require "telescope"
       local icons = require "config.icons"
       local actions = require "telescope.actions"
@@ -183,6 +195,7 @@ return {
             require("telescope.actions").select_default(prompt_bufnr)
             require("telescope.builtin").resume()
           end,
+          ["<CR>"] = select_one_or_multi,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -244,7 +257,7 @@ return {
               height = 0.999,
             },
           },
-          file_ignore_patterns = { "^.git/", ".cache/" },
+          file_ignore_patterns = { "^.git/", ".cache/", ".venv/" },
           prompt_prefix = icons.ui.Telescope .. " ",
           selection_caret = icons.ui.Forward .. " ",
           mappings = mappings,
@@ -259,6 +272,9 @@ return {
           },
           live_grep = {
             only_sort_text = true,
+            mappings = {
+              i = { ["<c-g>"] = actions.to_fuzzy_refine },
+            },
           },
           git_commits = {
             layout_strategy = "vertical",
@@ -363,11 +379,37 @@ return {
     cmd = "ProjectRoot",
     config = function()
       require("project_nvim").setup {
+        -- Manual mode doesn't automatically change your root directory, so you have
+        -- the option to manually do so using `:ProjectRoot` command.
         manual_mode = false,
-        silent_chdir = true,
+
+        -- Methods of detecting the root directory. **"lsp"** uses the native neovim
+        -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
+        -- order matters: if one is not detected, the other is used as fallback. You
+        -- can also delete or rearangne the detection methods.
         detection_methods = { "pattern", "lsp" },
+
+        -- All the patterns used to detect root dir, when **"pattern"** is in
+        -- detection_methods  -- All the patterns used to detect root dir, when **"pattern"** is in
+        -- detection_methods
         patterns = { ".project", ".git" },
+
+        -- Table of lsp clients to ignore by name
+        -- eg: { "efm", ... }
         ignore_lsp = { "null-ls" },
+
+        -- Show hidden files in telescope
+        show_hidden = false,
+
+        -- When set to false, you will get a message when project.nvim changes your
+        -- directory.
+        silent_chdir = true,
+
+        -- What scope to change the directory, valid options are
+        -- * global (default)
+        -- * tab
+        -- * win
+        scope_chdir = "win",
       }
     end,
   },
