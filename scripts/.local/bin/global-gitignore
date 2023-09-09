@@ -44,6 +44,4 @@ EOT
 
 git config --global core.excludesfile ~/.gitignore
 
-cat ~/.gitignore | LC_ALL=C sort -u > ~/.gitignore_
-rm -f ~/.gitignore
-mv ~/.gitignore_ ~/.gitignore
+LC_ALL=C sort -u -o ~/.gitignore ~/.gitignore
