@@ -17,36 +17,20 @@ return {
 
     scopes.add_startup_scope()
 
-    -- stylua: ignore
-    vim.keymap.set("n", "<leader>ss", [[<cmd>lua require("neoscopes").select()<CR>]], { desc = "Select scope" })
+    vim.keymap.set(
+      "n",
+      "<leader>ss",
+      [[<cmd>lua require("neoscopes").select()<CR>]],
+      { desc = "Select scope" }
+    )
 
     _G.neoscopes_find_files = function()
-      require("telescope.builtin").find_files { search_dirs = scopes.get_current_dirs() }
-    end
-    _G.neoscopes_find_files_vert = function()
-      require("telescope.builtin").find_files {
-        layout_strategy = "vertical",
+      require("telescope").extensions.menufacture.find_files {
         search_dirs = scopes.get_current_dirs(),
       }
     end
     _G.neoscopes_find_ignored = function()
       require("telescope.builtin").find_files {
-        search_dirs = scopes.get_current_dirs(),
-        find_command = {
-          "rg",
-          "--files",
-          "--hidden",
-          "-g",
-          "!.git",
-          "-g",
-          "!.venv",
-          "--no-ignore",
-        },
-      }
-    end
-    _G.neoscopes_find_ignored_vert = function()
-      require("telescope.builtin").find_files {
-        layout_strategy = "vertical",
         search_dirs = scopes.get_current_dirs(),
         find_command = {
           "rg",
@@ -66,56 +50,50 @@ return {
         additional_args = { "--no-ignore" },
       }
     end
-    _G.neoscopes_grep_ignored_vert = function()
-      require("telescope.builtin").live_grep {
-        layout_strategy = "vertical",
-        search_dirs = scopes.get_current_dirs(),
-        additional_args = { "--no-ignore" },
-      }
-    end
     _G.neoscopes_live_grep = function()
-      require("telescope").extensions.live_grep_args.live_grep_args {
+      require("telescope").extensions.menufacture.live_grep {
         search_dirs = scopes.get_current_dirs(),
       }
     end
-    _G.neoscopes_live_grep_vert = function()
-      require("telescope").extensions.live_grep_args.live_grep_args {
-        layout_strategy = "vertical",
+    _G.neoscopes_fuzzy_grep = function()
+      require("telescope").extensions.live_grep_args.grep_string {
         search_dirs = scopes.get_current_dirs(),
+        shorten_path = true,
+        word_match = "-w",
+        only_sort_text = true,
+        search = "",
       }
     end
 
-    -- stylua: ignore
-    vim.keymap.set( "n", "<leader>sf", ":lua neoscopes_find_files()<CR>", { desc = "Find files in scope" })
     vim.keymap.set(
       "n",
-      "<leader>sfv",
-      ":lua neoscopes_find_files_vert()<CR>",
-      { desc = "Find files in scope, vertical layout" }
+      "<leader>sf",
+      ":lua neoscopes_find_files()<CR>",
+      { desc = "Find files in scope" }
     )
-    -- stylua: ignore
-    vim.keymap.set( "n", "<leader>si", ":lua neoscopes_find_ignored()<CR>", { desc = "Find files in scope including ignored" })
     vim.keymap.set(
       "n",
-      "<leader>siv",
-      ":lua neoscopes_find_ignored_vert()<CR>",
-      { desc = "Find files in scope including ignored, vertical layout" }
+      "<leader>si",
+      ":lua neoscopes_find_ignored()<CR>",
+      { desc = "Find files in scope including ignored" }
     )
-    -- stylua: ignore
-    vim.keymap.set( "n", "<leader>s/", ":lua neoscopes_live_grep()<CR>", { desc = "Live grep in scope" })
     vim.keymap.set(
       "n",
-      "<leader>s/v",
-      ":lua neoscopes_live_grep_vert()<CR>",
-      { desc = "Live grep in scope, vertical layout" }
+      "<leader>s/",
+      ":lua neoscopes_live_grep()<CR>",
+      { desc = "Live grep in scope" }
     )
-    -- stylua: ignore
-    vim.keymap.set( "n", "<leader>s?", ":lua neoscopes_grep_ignored()<CR>", { desc = "Live grep in scope including ignored" })
     vim.keymap.set(
       "n",
-      "<leader>s?v",
-      ":lua neoscopes_grep_ignored_vert()<CR>",
-      { desc = "Live grep in scope including ignored, vertical layout" }
+      "<leader>s//",
+      ":lua neoscopes_fuzzy_grep()<CR>",
+      { desc = "Fuzzy grep in scope" }
+    )
+    vim.keymap.set(
+      "n",
+      "<leader>s?",
+      ":lua neoscopes_grep_ignored()<CR>",
+      { desc = "Live grep in scope including ignored" }
     )
   end,
 }
