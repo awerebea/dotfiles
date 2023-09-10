@@ -1,7 +1,5 @@
 return {
-  "yanshay/hop.nvim",
-  branch = "fix-cursor-on-empty-line",
-  -- "phaazon/hop.nvim",
+  "phaazon/hop.nvim",
   event = "VeryLazy",
   opts = { keys = "asdfghjklqwertyuiopzxcvbnm;" },
   config = function(_, opts)
