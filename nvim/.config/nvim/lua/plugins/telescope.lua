@@ -17,6 +17,7 @@ return {
       "molecule-man/telescope-menufacture",
       "kdheepak/lazygit.nvim",
       "nvim-telescope/telescope-z.nvim",
+      "debugloop/telescope-undo.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -219,6 +220,12 @@ return {
           }
         end,
       },
+      {
+        "<leader>tu",
+        function()
+          require("telescope").extensions.undo.undo {}
+        end,
+      },
     },
     config = function(_, _)
       -- Open one or more selected entries in the current window
@@ -384,6 +391,27 @@ return {
             -- jump to entry where hoop loop was started from
             reset_selection = true,
           },
+          undo = {
+            layout_strategy = "vertical",
+            layout_config = {
+              vertical = {
+                mirror = true,
+              },
+            },
+            -- use_delta = true,
+            use_custom_command = { "bash", "-c", "echo '$DIFF' | delta --side-by-side" },
+            side_by_side = true,
+            diff_context_lines = vim.o.scrolloff,
+            entry_format = "state #$ID, $STAT, $TIME",
+            time_format = "",
+            mappings = {
+              i = {
+                ["<cr>"] = require("telescope-undo.actions").yank_additions,
+                ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
+                ["<C-cr>"] = require("telescope-undo.actions").restore,
+              },
+            },
+          },
         },
       }
       telescope.setup(opts)
@@ -398,6 +426,7 @@ return {
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
       telescope.load_extension "lazygit"
+      telescope.load_extension "undo"
 
       vim.cmd [[
         function!   QuickFixOpenAll()
