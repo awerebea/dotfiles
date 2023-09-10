@@ -80,7 +80,7 @@ vim.keymap.set("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
 vim.keymap.set(
   "n",
-  "<leader>o",
+  "<leader>ta",
   "<Cmd>tab ball<CR>",
   { desc = "Open all buffers in separate tabs" }
 )
