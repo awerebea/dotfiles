@@ -13,7 +13,7 @@ return {
       "kiyoon/telescope-insert-path.nvim",
       "AckslD/nvim-neoclip.lua",
       "nvim-telescope/telescope-hop.nvim",
-      { "nvim-telescope/telescope-live-grep-args.nvim" },
+      "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
       "kdheepak/lazygit.nvim",
     },
@@ -22,14 +22,14 @@ return {
       {
         "<leader>ff",
         function()
-          require("telescope").extensions.menufacture.find_files()
+          require("telescope").extensions.menufacture.find_files {}
         end,
         desc = "Find files (menufacture)",
       },
       {
         "<leader>f/",
         function()
-          require("telescope").extensions.menufacture.live_grep()
+          require("telescope").extensions.menufacture.live_grep {}
         end,
         { desc = "Live grep (menufacture)" },
       },
@@ -48,29 +48,55 @@ return {
       {
         "<leader>//",
         function()
-          require("telescope.builtin").current_buffer_fuzzy_find()
+          require("telescope.builtin").current_buffer_fuzzy_find {}
         end,
         desc = "Fuzzy grep in current buffer",
       },
-      { "<leader>fg", require("utils").find_files, desc = "Find Git managed files" },
+      {
+        "<leader>fg",
+        function()
+          local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
+          if not ok then
+            require("telescope").extensions.menufacture.find_files {}
+          end
+        end,
+        desc = "Find Git managed files",
+      },
       {
         "<leader>f?",
         function()
-          require("telescope").extensions.live_grep_args.live_grep_args()
+          require("telescope").extensions.live_grep_args.live_grep_args {}
         end,
         { desc = "Live grep (custom args)" },
       },
       {
         "<leader>fw",
         function()
-          require("telescope").extensions.menufacture.grep_string()
+          require("telescope").extensions.menufacture.grep_string {}
         end,
         { desc = "Find word under cursor" },
       },
-      { "<leader>fb", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
-      { "<leader><CR>", "<Cmd>Telescope buffers<cr>", desc = "Buffers" },
-
-      { "<leader>fh", "<Cmd>Telescope help_tags<cr>", desc = "Help tags" },
+      {
+        "<leader>fb",
+        function()
+          require("telescope.builtin").buffers {}
+        end,
+        desc = "Buffers",
+      },
+      {
+        "<leader><CR>",
+        function()
+          require("telescope.builtin").buffers {}
+        end,
+        desc = "Buffers",
+      },
+      {
+        "<leader>fh",
+        function()
+          require("telescope.builtin").help_tags {}
+        end,
+        desc = "Help tags",
+      },
       {
         "<leader><leader>c",
         function()
@@ -80,13 +106,49 @@ return {
       },
 
       -- repeat last telescope command and query
-      { "<leader>fr", "<Cmd>Telescope resume<CR>", desc = "Resume" },
-      { "<leader>fo", "<Cmd>Telescope oldfiles<cr>", desc = "Recent" },
-      { "<leader>fab", "<Cmd>Telescope file_browser<cr>", desc = "File browser" },
-      { "<leader>far", "<Cmd>Telescope repo list<cr>", desc = "Search" },
+      {
+        "<leader>fr",
+        function()
+          require("telescope.builtin").resume {}
+        end,
+        desc = "Resume",
+      },
+      {
+        "<leader>fo",
+        function()
+          require("telescope.builtin").oldfiles {}
+        end,
+        desc = "Recent",
+      },
+      {
+        "<leader>fab",
+        function()
+          require("telescope").extensions.file_browser.file_browser {}
+        end,
+        desc = "File browser",
+      },
+      {
+        "<leader>faB",
+        function()
+          require("telescope").extensions.file_browser.file_browser {
+            path = "%:p:h",
+            select_buffer = true,
+          }
+        end,
+        desc = "File browser (find file)",
+      },
+      {
+        "<leader>far",
+        function()
+          require("telescope").extensions.repo.list {}
+        end,
+        desc = "Search",
+      },
       {
         "<leader>fp",
-        "<Cmd>Telescope projects<cr>",
+        function()
+          require("telescope").extensions.projects.projects {}
+        end,
         desc = "Projects",
       },
       {
@@ -94,45 +156,58 @@ return {
         function()
           require("telescope").extensions.project.project { display_type = "minimal" }
         end,
-        desc = "List",
+        desc = "Project extension",
       },
-      -- {
-      --   "<leader>//",
-      --   function()
-      --     require("telescope.builtin").current_buffer_fuzzy_find()
-      --   end,
-      --   desc = "Buffer",
-      -- },
       {
         "<leader>fd",
         function()
-          require("telescope.builtin").diagnostics()
+          require("telescope.builtin").diagnostics {}
         end,
         desc = "Diagnostics",
       },
-      { "<leader>vo", "<cmd>Telescope aerial<cr>", desc = "Code Outline" },
+      {
+        "<leader>vo",
+        function()
+          require("telescope").extensions.aerial.aerial {}
+        end,
+        desc = "Code Outline",
+      },
 
       -- list of items copied to clipboard
-      { "<leader>fc", "<Cmd>Telescope neoclip<CR>", desc = "Clipboard" },
+      {
+        "<leader>fc",
+        function()
+          require("telescope").extensions.neoclip.default {}
+        end,
+        desc = "Clipboard",
+      },
       -- git commands
       {
         "<leader>glg",
-        "<Cmd>echo 'Git commits'<CR> <Cmd>Telescope git_commits<CR>",
+        function()
+          require("telescope.builtin").git_commits {}
+        end,
         desc = "Commits",
       },
       {
         "<leader>glf",
-        "<Cmd>echo 'Git commits of the current file'<CR> <Cmd>Telescope git_bcommits<CR>",
+        function()
+          require("telescope.builtin").git_bcommits {}
+        end,
         desc = "Commits of current file",
       },
       {
         "<leader>gb",
-        "<Cmd>echo 'Git branches'<CR> <Cmd>Telescope git_branches<CR>",
+        function()
+          require("telescope.builtin").git_branches {}
+        end,
         desc = "Branches",
       },
       {
         "<leader>gst",
-        "<Cmd>echo 'Git status'<CR> <Cmd>Telescope git_status<CR>",
+        function()
+          require("telescope.builtin").git_status {}
+        end,
         desc = "Status",
       },
     },
@@ -201,56 +276,24 @@ return {
           ["dd"] = require("telescope.actions").delete_buffer,
           ["<C-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
-          -- ["[I"] = path_actions.insert_relpath_I_visual,
-          -- ["[a"] = path_actions.insert_relpath_a_visual,
-          -- ["[A"] = path_actions.insert_relpath_A_visual,
-          -- ["[o"] = path_actions.insert_relpath_o_visual,
-          -- ["[O"] = path_actions.insert_relpath_O_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
-          -- ["]I"] = path_actions.insert_abspath_I_visual,
-          -- ["]a"] = path_actions.insert_abspath_a_visual,
-          -- ["]A"] = path_actions.insert_abspath_A_visual,
-          -- ["]o"] = path_actions.insert_abspath_o_visual,
-          -- ["]O"] = path_actions.insert_abspath_O_visual,
-          -- Additionally, there's insert and normal mode mappings for the same actions:
-          -- ["{i"] = path_actions.insert_relpath_i_insert,
-          -- ["{I"] = path_actions.insert_relpath_I_insert,
-          -- ["{a"] = path_actions.insert_relpath_a_insert,
-          -- ["{A"] = path_actions.insert_relpath_A_insert,
-          -- ["{o"] = path_actions.insert_relpath_o_insert,
-          -- ["{O"] = path_actions.insert_relpath_O_insert,
-          -- ["}i"] = path_actions.insert_abspath_i_insert,
-          -- ["}I"] = path_actions.insert_abspath_I_insert,
-          -- ["}a"] = path_actions.insert_abspath_a_insert,
-          -- ["}A"] = path_actions.insert_abspath_A_insert,
-          -- ["}o"] = path_actions.insert_abspath_o_insert,
-          -- ["}O"] = path_actions.insert_abspath_O_insert,
-          -- ["-i"] = path_actions.insert_relpath_i_normal,
-          -- ["-I"] = path_actions.insert_relpath_I_normal,
-          -- ["-a"] = path_actions.insert_relpath_a_normal,
-          -- ["-A"] = path_actions.insert_relpath_A_normal,
-          -- ["-o"] = path_actions.insert_relpath_o_normal,
-          -- ["-O"] = path_actions.insert_relpath_O_normal,
-          -- ["+i"] = path_actions.insert_abspath_i_normal,
-          -- ["+I"] = path_actions.insert_abspath_I_normal,
-          -- ["+a"] = path_actions.insert_abspath_a_normal,
-          -- ["+A"] = path_actions.insert_abspath_A_normal,
-          -- ["+o"] = path_actions.insert_abspath_o_normal,
-          -- ["+O"] = path_actions.insert_abspath_O_normal,
         },
       }
 
       local opts = {
         defaults = {
           layout_strategy = "horizontal",
+          sorting_strategy = "ascending",
           layout_config = {
             horizontal = {
+              prompt_position = "top",
               preview_cutoff = 110,
               preview_width = { 0.5, min = 70, max = 100 },
               width = 0.999,
               height = 0.999,
             },
             vertical = {
+              prompt_position = "top",
               preview_cutoff = 25,
               preview_height = { 0.6, min = 20, max = 40 },
               width = 0.999,
@@ -261,8 +304,8 @@ return {
           prompt_prefix = icons.ui.Telescope .. " ",
           selection_caret = icons.ui.Forward .. " ",
           mappings = mappings,
-          border = {},
-          borderchars = { "─", "│", "─", "│", "╭", "╮", "╯", "╰" },
+          border = true,
+          borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
           color_devicons = true,
         },
         pickers = {
@@ -335,6 +378,7 @@ return {
         },
       }
       telescope.setup(opts)
+      telescope.load_extension "aerial"
       telescope.load_extension "fzf"
       telescope.load_extension "file_browser"
       telescope.load_extension "project"
