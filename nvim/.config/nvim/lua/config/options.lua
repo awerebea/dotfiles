@@ -408,7 +408,6 @@ vim.cmd [[
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3
-vim.opt.pastetoggle = "<F4>"
 vim.opt.whichwrap:append "<,>,[,]"
 vim.opt.mousemoveevent = true
 vim.opt.timeoutlen = 300

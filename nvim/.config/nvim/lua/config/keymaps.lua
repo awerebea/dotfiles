@@ -258,3 +258,6 @@ vim.keymap.set(
   "<Cmd>CopyDirRelPath<CR>",
   { noremap = true, silent = true, desc = "Relative path" }
 )
+
+-- pastetoggle option is deprecated in 0.10.0
+vim.keymap.set("n", "<F4>", [[:set paste!<CR>:set paste?<CR>]], { noremap = true, silent = true })
