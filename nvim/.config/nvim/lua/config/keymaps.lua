@@ -1,45 +1,43 @@
-local keymap = vim.keymap.set
-
 -- Remap for dealing with word wrap
-keymap({ "n", "v" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
-keymap({ "n", "v" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
+vim.keymap.set({ "n", "v" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
+vim.keymap.set({ "n", "v" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
 
 -- Better viewing
-keymap("n", "n", "nzzzv")
-keymap("n", "N", "Nzzzv")
-keymap("n", "g,", "g,zvzz")
-keymap("n", "g;", "g;zvzz")
-keymap("n", "<C-d>", "<C-d>zvzz")
-keymap("n", "<C-u>", "<C-u>zvzz")
+vim.keymap.set("n", "n", "nzzzv")
+vim.keymap.set("n", "N", "Nzzzv")
+vim.keymap.set("n", "g,", "g,zvzz")
+vim.keymap.set("n", "g;", "g;zvzz")
+vim.keymap.set("n", "<C-d>", "<C-d>zvzz")
+vim.keymap.set("n", "<C-u>", "<C-u>zvzz")
 
 -- Add undo break-points
-keymap("i", ",", "<c-g>u,")
-keymap("i", ".", "<c-g>u.")
-keymap("i", ";", "<c-g>u;")
-keymap("i", ":", "<c-g>u:")
+vim.keymap.set("i", ",", "<c-g>u,")
+vim.keymap.set("i", ".", "<c-g>u.")
+vim.keymap.set("i", ";", "<c-g>u;")
+vim.keymap.set("i", ":", "<c-g>u:")
 
 -- Move Lines vertically (use mini.move instead)
--- keymap("n", "<A-j>", ":m .+1<CR>==")
--- keymap("v", "<A-j>", ":m '>+1<CR>gv=gv")
--- keymap("i", "<A-j>", "<Esc>:m .+1<CR>==gi")
--- keymap("n", "<A-k>", ":m .-2<CR>==")
--- keymap("v", "<A-k>", ":m '<-2<CR>gv=gv")
--- keymap("i", "<A-k>", "<Esc>:m .-2<CR>==gi")
+-- vim.keymap.set("n", "<A-j>", ":m .+1<CR>==")
+-- vim.keymap.set("v", "<A-j>", ":m '>+1<CR>gv=gv")
+-- vim.keymap.set("i", "<A-j>", "<Esc>:m .+1<CR>==gi")
+-- vim.keymap.set("n", "<A-k>", ":m .-2<CR>==")
+-- vim.keymap.set("v", "<A-k>", ":m '<-2<CR>gv=gv")
+-- vim.keymap.set("i", "<A-k>", "<Esc>:m .-2<CR>==gi")
 
 -- Resize window using <shift> arrow keys
-keymap("n", "<S-Up>", "<cmd>resize +2<CR>")
-keymap("n", "<S-Down>", "<cmd>resize -2<CR>")
-keymap("n", "<S-Left>", "<cmd>vertical resize -2<CR>")
-keymap("n", "<S-Right>", "<cmd>vertical resize +2<CR>")
+vim.keymap.set("n", "<S-Up>", "<cmd>resize +2<CR>")
+vim.keymap.set("n", "<S-Down>", "<cmd>resize -2<CR>")
+vim.keymap.set("n", "<S-Left>", "<cmd>vertical resize -2<CR>")
+vim.keymap.set("n", "<S-Right>", "<cmd>vertical resize +2<CR>")
 
 ---------------------
 -- General Keymaps
 ---------------------
 
 -- Save file as sudo on files that require root permission
-keymap("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!")
+vim.keymap.set("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar> edit!")
 -- clear search highlights
-keymap("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
+vim.keymap.set("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
 
 -- paste over without overwriting register
 vim.cmd [[
@@ -47,12 +45,12 @@ vim.cmd [[
 ]]
 
 -- send changed text segment to black hole
-keymap({ "n", "v" }, "c", '"_c')
-keymap({ "n", "v" }, "C", '"_C')
+vim.keymap.set({ "n", "v" }, "c", '"_c')
+vim.keymap.set({ "n", "v" }, "C", '"_C')
 
 -- window management
-keymap("n", "<leader>\\", "<C-w>v") -- split window vertically
-keymap("n", "<leader>-", "<C-w>s") -- split window horizontally
+vim.keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
+vim.keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
 
 -- split left
 SplitLeft = function()
@@ -60,7 +58,7 @@ SplitLeft = function()
   vim.cmd "vsplit"
   vim.opt.splitright = true
 end
-keymap("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
+vim.keymap.set("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
 
 -- split above
 SplitAbove = function()
@@ -68,32 +66,42 @@ SplitAbove = function()
   vim.cmd "split"
   vim.opt.splitbelow = true
 end
-keymap("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
+vim.keymap.set("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
 
-keymap("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
-keymap("n", "<leader>xy", "<Cmd>close<CR>") -- close current split window
+vim.keymap.set("n", "<leader>=", "<C-w>=") -- make split windows equal width & height
+vim.keymap.set("n", "<leader>xy", "<Cmd>close<CR>") -- close current split window
 -- buffers management
-keymap("n", "<M-S-l>", "<Cmd>bnext<CR>")
-keymap("n", "<M-S-h>", "<Cmd>bprevious<CR>")
-keymap("n", "<M-S-k>", "<Cmd>tabnext<CR>")
-keymap("n", "<M-S-j>", "<Cmd>tabprevious<CR>")
-keymap("n", "gp", "<Cmd>bprevious<CR>")
-keymap("n", "gn", "<Cmd>bnext<CR>")
+vim.keymap.set("n", "<M-S-l>", "<Cmd>bnext<CR>")
+vim.keymap.set("n", "<M-S-h>", "<Cmd>bprevious<CR>")
+vim.keymap.set("n", "<M-S-k>", "<Cmd>tabnext<CR>")
+vim.keymap.set("n", "<M-S-j>", "<Cmd>tabprevious<CR>")
+vim.keymap.set("n", "gp", "<Cmd>bprevious<CR>")
+vim.keymap.set("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
-keymap("n", "<leader>o", "<Cmd>tab ball<CR>", { desc = "Open all buffers in separate tabs" })
-keymap("n", "<leader><Left>", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
-keymap("n", "<leader><Right>", "<Cmd>tabnext<CR>", { desc = "Next tab" })
-keymap("n", "<leader>tp", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
-keymap("n", "<leader>tn", "<Cmd>tabnext<CR>", { desc = "Next tab" })
-keymap("n", "<leader>th", "<Cmd>tabfirst<CR>", { desc = "First tab" })
-keymap("n", "<leader>tl", "<Cmd>tablast<CR>", { desc = "Last tab" })
-keymap("n", "<leader>te", ":tabedit<Space>", { desc = "Tab .. N" })
-keymap("n", "<leader>tc", "<Cmd>tabnew<CR>", { desc = "Open new tab" })
-keymap("n", "<leader>tm", ":tabmove<Space>", { desc = "Move tab to position .. N" })
-keymap("n", "<leader>tmp", "<Cmd>-tabmove<CR>", { desc = "Move current tab left" })
-keymap("n", "<leader>tmn", "<Cmd>+tabmove<CR>", { desc = "Move current tab right" })
-keymap("n", "<leader>tx", "<Cmd>tabclose<CR>", { desc = "Close current tab" })
-keymap("n", "<leader>tz", "<Cmd>tabonly<CR>", { desc = "Close all tabs except the current one" })
+vim.keymap.set(
+  "n",
+  "<leader>o",
+  "<Cmd>tab ball<CR>",
+  { desc = "Open all buffers in separate tabs" }
+)
+vim.keymap.set("n", "<leader><Left>", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
+vim.keymap.set("n", "<leader><Right>", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "<leader>tp", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
+vim.keymap.set("n", "<leader>tn", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+vim.keymap.set("n", "<leader>th", "<Cmd>tabfirst<CR>", { desc = "First tab" })
+vim.keymap.set("n", "<leader>tl", "<Cmd>tablast<CR>", { desc = "Last tab" })
+vim.keymap.set("n", "<leader>te", ":tabedit<Space>", { desc = "Tab .. N" })
+vim.keymap.set("n", "<leader>tc", "<Cmd>tabnew<CR>", { desc = "Open new tab" })
+vim.keymap.set("n", "<leader>tm", ":tabmove<Space>", { desc = "Move tab to position .. N" })
+vim.keymap.set("n", "<leader>tmp", "<Cmd>-tabmove<CR>", { desc = "Move current tab left" })
+vim.keymap.set("n", "<leader>tmn", "<Cmd>+tabmove<CR>", { desc = "Move current tab right" })
+vim.keymap.set("n", "<leader>tx", "<Cmd>tabclose<CR>", { desc = "Close current tab" })
+vim.keymap.set(
+  "n",
+  "<leader>tz",
+  "<Cmd>tabonly<CR>",
+  { desc = "Close all tabs except the current one" }
+)
 -- Switch to last tab
 vim.cmd [[
 if !exists('g:lasttab')
@@ -101,29 +109,34 @@ if !exists('g:lasttab')
 endif
 autocmd TabLeave * let g:lasttab = tabpagenr()
 ]]
-keymap("n", "<leader>tt", "<Cmd>exe 'tabn '.g:lasttab<CR>", { desc = "Switch to last tab" })
--- keymap("n", "gz", "<Cmd>bdelete<CR>") -- overriden by bufdelete plugin
+vim.keymap.set(
+  "n",
+  "<leader>tt",
+  "<Cmd>exe 'tabn '.g:lasttab<CR>",
+  { desc = "Switch to last tab" }
+)
+-- vim.keymap.set("n", "gz", "<Cmd>bdelete<CR>") -- overriden by bufdelete plugin
 
 -- Toggle spell checking
 --stylua: ignore
-keymap("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
+vim.keymap.set("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
 --stylua: ignore
-keymap("n", "<leader>sce", "<Cmd>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spellcheck English" })
+vim.keymap.set("n", "<leader>sce", "<Cmd>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spellcheck English" })
 --stylua: ignore
-keymap("n", "<leader>scr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", { desc = "Toggle spellcheck Russian" })
+vim.keymap.set("n", "<leader>scr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", { desc = "Toggle spellcheck Russian" })
 
 -- Toggle show non-visible white spaces
-keymap("n", "<leader>ll", "<Cmd>set list!<CR>")
+vim.keymap.set("n", "<leader>ll", "<Cmd>set list!<CR>")
 
 -- Remove duplicate lines (leave only the last occurrence)
-keymap(
+vim.keymap.set(
   "n",
   "<leader>rd",
   "<Cmd>g/^\\(.*\\)\\ze\\n\\%(.*\\n\\)*\\1$/d<CR>",
   { desc = "Remove duplicate lines, keep last occurrence" }
 )
 
-keymap("n", "<leader>e", "<Cmd>edit<CR>")
+vim.keymap.set("n", "<leader>e", "<Cmd>edit<CR>")
 
 -- Jump to closed folds
 vim.cmd [[
@@ -151,9 +164,9 @@ vim.cmd [[
 ]]
 
 --stylua: ignore
-keymap("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
+vim.keymap.set("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
 --stylua: ignore
-keymap("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
+vim.keymap.set("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
 -- Insert empty line above/below (functions from vim-unimpaired)
 vim.cmd [[
@@ -173,16 +186,16 @@ function! UnimpairedBlankDown() abort
   return cmd
 endfunction
 ]]
-keymap("n", "[<Space>", ":<C-U>exe UnimpairedBlankUp()<CR>")
-keymap("n", "]<Space>", ":<C-U>exe UnimpairedBlankDown()<CR>")
+vim.keymap.set("n", "[<Space>", ":<C-U>exe UnimpairedBlankUp()<CR>")
+vim.keymap.set("n", "]<Space>", ":<C-U>exe UnimpairedBlankDown()<CR>")
 
-keymap(
+vim.keymap.set(
   "n",
   "<leader><Tab>",
   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
   { desc = "Toggle Tab switcher mode." }
 )
-keymap(
+vim.keymap.set(
   "n",
   "<leader><leader>rn",
   "<Cmd>call ToggleSmartRelativenumbers()<CR>",
@@ -190,14 +203,14 @@ keymap(
 )
 
 -- Toggle word wrap for current buffer
-keymap(
+vim.keymap.set(
   "n",
   "<leader>ww",
   "<Cmd>setlocal wrap!<CR> <bar> <Cmd>echo 'wordwrap!'<CR>",
   { desc = "Toggle visual wrapping of long lines." }
 )
 -- Toggle wrap at textwidth column
-keymap(
+vim.keymap.set(
   "n",
   "<leader>aw",
   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
@@ -205,7 +218,7 @@ keymap(
 )
 
 -- Auto Indent the Current Empty Line
-keymap("n", "i", function()
+vim.keymap.set("n", "i", function()
   if #vim.fn.getline "." == 0 then
     return [["_cc]]
   else
