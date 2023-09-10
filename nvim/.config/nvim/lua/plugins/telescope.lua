@@ -16,6 +16,7 @@ return {
       "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
       "kdheepak/lazygit.nvim",
+      "nvim-telescope/telescope-z.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -209,6 +210,14 @@ return {
           require("telescope.builtin").git_status {}
         end,
         desc = "Status",
+      },
+      {
+        "<leader>gz",
+        function()
+          require("telescope").extensions.z.list {
+            cmd = { "bash", "-c", "fasd", "-d" },
+          }
+        end,
       },
     },
     config = function(_, _)
