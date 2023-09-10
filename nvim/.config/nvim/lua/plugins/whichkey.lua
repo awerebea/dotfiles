@@ -63,7 +63,12 @@ return {
         u = "Toggle Undo-tree",
         w = "Pick a window",
         c = {
-          name = "Code",
+          name = "Code, Copy path",
+          p = {
+            name = "Copy path to clipboard",
+            f = { name = "File" },
+            d = { name = "Directory" },
+          },
           x = {
             name = "Swap Next",
             f = "Function",
