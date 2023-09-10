@@ -90,17 +90,17 @@ return {
           },
         },
       }
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "n", "<C-a>", require("dial.map").inc_normal(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "n", "<C-x>", require("dial.map").dec_normal(), { desc = "Decrement", noremap = true })
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "v", "<C-a>", require("dial.map").inc_visual(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "v", "<C-x>", require("dial.map").dec_visual(), { desc = "Decrement", noremap = true })
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "v", "g<C-a>", require("dial.map").inc_gvisual(), { desc = "Increment", noremap = true })
-      vim.api.nvim_set_keymap(
+      vim.keymap.set(
         "v", "g<C-x>", require("dial.map").dec_gvisual(), { desc = "Decrement", noremap = true })
     end,
   },
