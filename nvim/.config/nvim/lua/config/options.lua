@@ -405,14 +405,6 @@ vim.cmd [[
   cabbrev wnf <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'WriteNoFormat' : 'wnf')<CR>
 ]]
 
--- Copy current file name/full path/dir name/dir path
-vim.cmd [[
-  command! CopyFileName let @+ = expand("%:t")
-  command! CopyFilePath let @+ = expand("%:p")
-  command! CopyDirName let @+ = expand("%:h")
-  command! CopyDirPath let @+ = expand("%:p:h")
-]]
-
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3

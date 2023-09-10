@@ -48,6 +48,6 @@ return {
   },
   config = function(_, opts)
     require("copilot").setup(opts)
-    vim.keymap.set("n", "<leader>cp", "<Cmd>Copilot panel<CR>", { noremap = true, silent = true })
+    -- vim.keymap.set("n", "<leader>cp", "<Cmd>Copilot panel<CR>", { noremap = true, silent = true }) -- used for path copying
   end,
 }

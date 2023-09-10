@@ -212,3 +212,49 @@ keymap("n", "i", function()
     return "i"
   end
 end, { expr = true })
+
+-- Copy current file name/full path/dir name/dir path
+vim.cmd [[
+  command! CopyFileName let @+ = expand("%:t")
+  command! CopyFilePath let @+ = expand("%:p")
+  command! CopyFileRelPath let @+ = (expand("%:h") . "/" . expand("%:t"))
+  command! CopyDirName let @+ = expand("%:h:t")
+  command! CopyDirPath let @+ = expand("%:p:h")
+  command! CopyDirRelPath let @+ = expand("%:h")
+]]
+vim.keymap.set(
+  "n",
+  "<leader>cpfn",
+  "<Cmd>CopyFileName<CR>",
+  { noremap = true, silent = true, desc = "Name only" }
+)
+vim.keymap.set(
+  "n",
+  "<leader>cpfp",
+  "<Cmd>CopyFilePath<CR>",
+  { noremap = true, silent = true, desc = "Full path" }
+)
+vim.keymap.set(
+  "n",
+  "<leader>cpfr",
+  "<Cmd>CopyFileRelPath<CR>",
+  { noremap = true, silent = true, desc = "Relative path" }
+)
+vim.keymap.set(
+  "n",
+  "<leader>cpdn",
+  "<Cmd>CopyDirName<CR>",
+  { noremap = true, silent = true, desc = "Name only" }
+)
+vim.keymap.set(
+  "n",
+  "<leader>cpdp",
+  "<Cmd>CopyDirPath<CR>",
+  { noremap = true, silent = true, desc = "Full path" }
+)
+vim.keymap.set(
+  "n",
+  "<leader>cpdr",
+  "<Cmd>CopyDirRelPath<CR>",
+  { noremap = true, silent = true, desc = "Relative path" }
+)
