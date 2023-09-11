@@ -4,7 +4,9 @@ return {
   opts = {
     scopes = {
       { name = "nvim", dirs = { vim.fn.stdpath "config" } },
+      { name = "disable", dirs = {} },
     },
+    diff_branches_for_scopes = { "main", "origin/main", "master", "origin/master" },
   },
   config = function(_, opts)
     require("neoscopes").setup(opts)
@@ -17,47 +19,39 @@ return {
 
     scopes.add_startup_scope()
 
-    vim.keymap.set(
-      "n",
-      "<leader>ss",
-      [[<cmd>lua require("neoscopes").select()<CR>]],
-      { desc = "Select scope" }
-    )
+    vim.keymap.set("n", "<leader>ss", function()
+      require("neoscopes").select {}
+    end, { desc = "Select scope" })
+
+    local function get_search_dirs()
+      if scopes.get_current_scope() == "disable" then
+        return nil
+      end
+      return scopes.get_current_dirs()
+    end
 
     _G.neoscopes_find_files = function()
       require("telescope").extensions.menufacture.find_files {
-        search_dirs = scopes.get_current_dirs(),
-      }
-    end
-    _G.neoscopes_find_ignored = function()
-      require("telescope.builtin").find_files {
-        search_dirs = scopes.get_current_dirs(),
-        find_command = {
-          "rg",
-          "--files",
-          "--hidden",
-          "-g",
-          "!.git",
-          "-g",
-          "!.venv",
-          "--no-ignore",
-        },
-      }
-    end
-    _G.neoscopes_grep_ignored = function()
-      require("telescope.builtin").live_grep {
-        search_dirs = scopes.get_current_dirs(),
-        additional_args = { "--no-ignore" },
+        search_dirs = get_search_dirs(),
       }
     end
     _G.neoscopes_live_grep = function()
       require("telescope").extensions.menufacture.live_grep {
-        search_dirs = scopes.get_current_dirs(),
+        search_dirs = get_search_dirs(),
+      }
+    end
+    _G.neoscopes_live_grep_args = function()
+      require("telescope").extensions.live_grep_args.live_grep_args {
+        search_dirs = get_search_dirs(),
+        shorten_path = true,
+        word_match = "-w",
+        only_sort_text = true,
+        search = "",
       }
     end
     _G.neoscopes_fuzzy_grep = function()
-      require("telescope").extensions.live_grep_args.grep_string {
-        search_dirs = scopes.get_current_dirs(),
+      require("telescope").extensions.menufacture.grep_string {
+        search_dirs = get_search_dirs(),
         shorten_path = true,
         word_match = "-w",
         only_sort_text = true,
@@ -67,33 +61,27 @@ return {
 
     vim.keymap.set(
       "n",
-      "<leader>sf",
-      ":lua neoscopes_find_files()<CR>",
-      { desc = "Find files in scope" }
+      "<leader>ff",
+      "<Cmd>lua neoscopes_find_files()<CR>",
+      { desc = "Find files (menufacture)" }
     )
     vim.keymap.set(
       "n",
-      "<leader>si",
-      ":lua neoscopes_find_ignored()<CR>",
-      { desc = "Find files in scope including ignored" }
+      "<leader>f/",
+      "<Cmd>lua neoscopes_live_grep()<CR>",
+      { desc = "Live grep (menufacture)" }
     )
     vim.keymap.set(
       "n",
-      "<leader>s/",
-      ":lua neoscopes_live_grep()<CR>",
-      { desc = "Live grep in scope" }
+      "<leader>f?",
+      "<Cmd>lua neoscopes_live_grep_args()<CR>",
+      { desc = "Live grep (custom args)" }
     )
     vim.keymap.set(
       "n",
-      "<leader>s//",
-      ":lua neoscopes_fuzzy_grep()<CR>",
-      { desc = "Fuzzy grep in scope" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>s?",
-      ":lua neoscopes_grep_ignored()<CR>",
-      { desc = "Live grep in scope including ignored" }
+      "<leader>fa",
+      "<Cmd>lua neoscopes_fuzzy_grep()<CR>",
+      { desc = "Fuzzy Grep (menufacture)" }
     )
   end,
 }

@@ -21,32 +21,40 @@ return {
     },
     cmd = "Telescope",
     keys = {
-      {
-        "<leader>ff",
-        function()
-          require("telescope").extensions.menufacture.find_files {}
-        end,
-        desc = "Find files (menufacture)",
-      },
-      {
-        "<leader>f/",
-        function()
-          require("telescope").extensions.menufacture.live_grep {}
-        end,
-        { desc = "Live grep (menufacture)" },
-      },
-      {
-        "<leader>f//",
-        function()
-          require("telescope").extensions.menufacture.grep_string {
-            shorten_path = true,
-            word_match = "-w",
-            only_sort_text = true,
-            search = "",
-          }
-        end,
-        desc = "Fuzzy Grep",
-      },
+      -- Following 4 keymaps are defined in nescopes.lua module
+      -- {
+      --   "<leader>ff",
+      --   function()
+      --     require("telescope").extensions.menufacture.find_files {}
+      --   end,
+      --   desc = "Find files (menufacture)",
+      -- },
+      -- {
+      --   "<leader>f/",
+      --   function()
+      --     require("telescope").extensions.menufacture.live_grep {}
+      --   end,
+      --   { desc = "Live grep (menufacture)" },
+      -- },
+      -- {
+      --   "<leader>f?",
+      --   function()
+      --     require("telescope").extensions.live_grep_args.live_grep_args {}
+      --   end,
+      --   { desc = "Live grep (custom args)" },
+      -- },
+      -- {
+      --   "<leader>fa",
+      --   function()
+      --     require("telescope").extensions.menufacture.grep_string {
+      --       shorten_path = true,
+      --       word_match = "-w",
+      --       only_sort_text = true,
+      --       search = "",
+      --     }
+      --   end,
+      --   desc = "Fuzzy Grep (menufacture)",
+      -- },
       {
         "<leader>//",
         function()
@@ -63,13 +71,6 @@ return {
           end
         end,
         desc = "Find Git managed files",
-      },
-      {
-        "<leader>f?",
-        function()
-          require("telescope").extensions.live_grep_args.live_grep_args {}
-        end,
-        { desc = "Live grep (custom args)" },
       },
       {
         "<leader>fw",
