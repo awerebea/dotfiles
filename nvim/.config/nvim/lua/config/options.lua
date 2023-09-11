@@ -83,7 +83,7 @@ vim.cmd [[
 ]]
 
 -- Default location of swap files (echo &directory) is ~/.local/state/nvim/swap
-vim.opt.swapfile = true
+vim.opt.swapfile = false
 vim.opt.updatecount = 100
 
 -- Viminfo stores the state of your previous editing session
