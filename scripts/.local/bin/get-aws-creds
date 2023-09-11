@@ -39,22 +39,16 @@ creds_addon="$HOME/.aws/credentials_addon"
 creds_temp_dir="$(dirname "$creds_temp")"
 
 mkdir -p "$creds_temp_dir" 2>/dev/null
-echo >"$creds_temp"
+: >"$creds_temp"    # Clear the file
 for i in "${envs[@]}"; do
     aws-vault exec "$i" --json >"$creds_temp_dir/$i.json"
     {
         echo "[$i]"
-        echo -n aws_access_key_id=
-        jq .AccessKeyId "$creds_temp_dir/$i.json"
+        echo "aws_access_key_id=$(jq .AccessKeyId "$creds_temp_dir/$i.json")"
+        echo "aws_secret_access_key=$(jq .SecretAccessKey "$creds_temp_dir/$i.json")"
+        echo "aws_session_token=$(jq .SessionToken "$creds_temp_dir/$i.json")"
         echo
-        echo -n aws_secret_access_key=
-        jq .SecretAccessKey "$creds_temp_dir/$i.json"
-        echo
-        echo -n aws_session_token=
-        jq .SessionToken "$creds_temp_dir/$i.json"
-        echo
-    } \
-        >>"$creds_temp"
+    } >>"$creds_temp"
 done
 cp "$creds_temp" "$creds"
 
