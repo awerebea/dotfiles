@@ -427,9 +427,37 @@ return {
       telescope.load_extension "live_grep_args"
       telescope.load_extension "lazygit"
       telescope.load_extension "undo"
+      telescope.load_extension "menufacture"
 
+      -- this is a hack to add menufacture items to all the builtin pickers
+      local telescope_builtin = require "telescope.builtin"
+      local menufacture = require("telescope").extensions.menufacture
+      -- this menu items will be present in all the pickers
+      local global_menu_items = {
+        ["change cwd to parent"] = function(opts, callback)
+          local cwd = opts.cwd and vim.fn.expand(opts.cwd) or vim.loop.cwd()
+          opts.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
+          callback(opts)
+        end,
+        ["layout strategy vertical"] = function(opts, callback)
+          opts.layout_strategy = "vertical"
+          callback(opts)
+        end,
+      }
+
+      for key, picker in pairs(telescope_builtin) do
+        local menu_items = global_menu_items
+        if menufacture[key .. "_menu"] then
+          -- this additional menu items are copied from the menufacture extension (if present)
+          menu_items = vim.tbl_extend("force", global_menu_items, menufacture[key .. "_menu"])
+        end
+        -- we overwrite the builtin pickers. This makes every builtin picker have a menu
+        telescope_builtin[key] = menufacture.add_menu_with_default_mapping(picker, menu_items)
+      end
+
+      -- Open all files in the quickfix list
       vim.cmd [[
-        function!   QuickFixOpenAll()
+        function! QuickFixOpenAll()
             if empty(getqflist())
                 return
             endif

@@ -31,12 +31,12 @@ return {
     end
 
     _G.neoscopes_find_files = function()
-      require("telescope").extensions.menufacture.find_files {
+      require("telescope.builtin").find_files {
         search_dirs = get_search_dirs(),
       }
     end
     _G.neoscopes_live_grep = function()
-      require("telescope").extensions.menufacture.live_grep {
+      require("telescope.builtin").live_grep {
         search_dirs = get_search_dirs(),
       }
     end
@@ -50,7 +50,7 @@ return {
       }
     end
     _G.neoscopes_fuzzy_grep = function()
-      require("telescope").extensions.menufacture.grep_string {
+      require("telescope.builtin").grep_string {
         search_dirs = get_search_dirs(),
         shorten_path = true,
         word_match = "-w",
