@@ -6,7 +6,7 @@ return {
       { name = "nvim", dirs = { vim.fn.stdpath "config" } },
       { name = "disable", dirs = {} },
     },
-    diff_branches_for_scopes = { "main", "origin/main", "master", "origin/master" },
+    -- diff_branches_for_scopes = { "main", "origin/main" }, -- use per-project settings defined in neoscopes.config.json
   },
   config = function(_, opts)
     require("neoscopes").setup(opts)
