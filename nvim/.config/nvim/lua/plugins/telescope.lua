@@ -288,6 +288,7 @@ return {
             require("telescope.builtin").resume()
           end,
           ["<CR>"] = select_one_or_multi,
+          ["<C-g>"] = actions.to_fuzzy_refine,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -301,6 +302,7 @@ return {
         defaults = {
           layout_strategy = "horizontal",
           sorting_strategy = "ascending",
+          path_display = { "truncate" },
           layout_config = {
             horizontal = {
               prompt_position = "top",
@@ -332,9 +334,6 @@ return {
           },
           live_grep = {
             only_sort_text = true,
-            mappings = {
-              i = { ["<c-g>"] = actions.to_fuzzy_refine },
-            },
           },
           git_commits = {
             layout_strategy = "vertical",
