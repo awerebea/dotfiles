@@ -8,7 +8,8 @@ return {
       { name = "nvim", dirs = { vim.fn.stdpath "config" } },
       { name = "<disable>", dirs = {} },
     },
-    -- diff_branches_for_scopes = { "main", "origin/main" }, -- use per-project settings defined in neoscopes.config.json
+    -- diff_branches_for_scopes = { "main", "dev" }, -- use per-project settings defined in neoscopes.config.json
+    -- diff_ancestors_for_scopes = { "main", "dev" }, -- use per-project settings defined in neoscopes.config.json
   },
   config = function(_, opts)
     require("neoscopes").setup(opts)
@@ -29,7 +30,7 @@ return {
       if scopes.get_current_scope() == "<disable>" then
         return nil
       end
-      return scopes.get_current_dirs()
+      return scopes.get_current_paths()
     end
 
     _G.neoscopes_find_files = function()
