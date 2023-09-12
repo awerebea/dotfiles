@@ -4,7 +4,7 @@ return {
   opts = {
     scopes = {
       { name = "nvim", dirs = { vim.fn.stdpath "config" } },
-      { name = "disable", dirs = {} },
+      { name = "<disable>", dirs = {} },
     },
     -- diff_branches_for_scopes = { "main", "origin/main" }, -- use per-project settings defined in neoscopes.config.json
   },
@@ -24,7 +24,7 @@ return {
     end, { desc = "Select scope" })
 
     local function get_search_dirs()
-      if scopes.get_current_scope() == "disable" then
+      if scopes.get_current_scope() == "<disable>" then
         return nil
       end
       return scopes.get_current_dirs()
