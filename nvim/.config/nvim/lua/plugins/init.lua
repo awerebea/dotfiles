@@ -342,4 +342,15 @@ return {
     dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
     opts = {},
   },
+  {
+    "echasnovski/mini.operators",
+    event = "VeryLazy",
+    opts = {
+      evaluate = { prefix = "g=" },
+      exchange = { prefix = "gx", reindent_linewise = true },
+      multiply = { prefix = "" },
+      replace = { prefix = "" },
+      sort = { prefix = "" },
+    },
+  },
 }
