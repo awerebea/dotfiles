@@ -27,6 +27,4 @@ local refurb = {
   factory = h.generator_factory,
 }
 
-nls.register(refurb)
-
 return refurb
