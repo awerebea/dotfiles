@@ -218,14 +218,6 @@ return {
     config = true,
   },
   {
-    "mfussenegger/nvim-treehopper",
-    event = "VeryLazy",
-    config = function()
-      vim.keymap.set("o", "<leader>m", [[:<C-U>lua require('tsht').nodes()<CR>]])
-      vim.keymap.set("v", "m", [[:lua require("tsht").nodes()<CR>]])
-    end,
-  },
-  {
     "petertriho/nvim-scrollbar",
     event = "BufReadPre",
     opts = { marks = { GitChange = { text = "│" } } },
@@ -340,7 +332,7 @@ return {
     "m4xshen/hardtime.nvim",
     event = "VeryLazy",
     dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
-    opts = {},
+    opts = { restricted_keys = { ["<CR>"] = {} } },
   },
   {
     "echasnovski/mini.operators",
@@ -352,5 +344,11 @@ return {
       replace = { prefix = "" },
       sort = { prefix = "" },
     },
+  },
+  {
+    "sustech-data/wildfire.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-treesitter/nvim-treesitter" },
+    config = true,
   },
 }
