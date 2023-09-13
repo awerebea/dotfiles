@@ -1,23 +1,23 @@
 return {
-  enabled = false,
+  enabled = true,
   "preservim/nerdcommenter",
+  event = "VeryLazy",
   cmd = { "NERDCommenterToggle" },
   keys = {
-    -- stylua: ignore
     { "<C-_>", "<Plug>NERDCommenterToggle", desc = "Toggle comment for current line" },
-    -- stylua: ignore
-    { "<C-_>", "<Plug>NERDCommenterToggle<CR>gv", mode = "v", desc = "Toggle comment for current line" },
-    { "<leader>c$" },
-    { "<leader>cA" },
-    { "<leader>cb", mode = { "n", "v" } },
-    { "<leader>cc", mode = { "n", "v" } },
-    { "<leader>ci", mode = { "n", "v" } },
-    { "<leader>cl", mode = { "n", "v" } },
-    { "<leader>cm", mode = "v" }, -- n mode overriden by lsp plugin
-    { "<leader>cs", mode = "v" }, -- n mode overriden by lsp plugin
-    { "<leader>cn", mode = { "n", "v" } },
-    { "<leader>cu", mode = { "n", "v" } },
-    { "<leader>cy", mode = { "n", "v" } },
+    { "<leader>c<space>", "<Plug>NERDCommenterToggle", desc = "Toggle comment for current line" },
+    {
+      "<C-_>",
+      "<Plug>NERDCommenterToggle<CR>gv",
+      mode = "v",
+      desc = "Toggle comment for current line",
+    },
+    {
+      "<leader>c<space>",
+      "<Plug>NERDCommenterToggle<CR>gv",
+      mode = "v",
+      desc = "Toggle comment for current line",
+    },
   },
   config = function()
     vim.g.NERDSpaceDelims = 1
