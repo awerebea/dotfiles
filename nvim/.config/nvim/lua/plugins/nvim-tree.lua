@@ -37,6 +37,7 @@ return {
       hijack_netrw = true,
       respect_buf_cwd = false,
       view = {
+        side = "right",
         number = true,
         relativenumber = true,
         adaptive_size = true,
