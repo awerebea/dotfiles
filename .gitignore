@@ -11,3 +11,4 @@ ranger/.config/ranger/history
 ranger/.config/ranger/tagged
 ranger/.config/ranger/**/__init__.py
 !ranger/.config/ranger/plugins/ranger_devicons/__init__.py
+/__/*
