@@ -516,22 +516,21 @@ return {
         end,
       }
 
+      local viewer
+      if os.execute "bat --version" == 0 then
+        viewer = { "bat" }
+      else
+        viewer = { "less", "-NR", "-r" }
+      end
+
       local delta_status = telescope_previewers.new_termopen_previewer {
         get_command = function(entry)
           local git_path_handle = io.popen "git rev-parse --show-toplevel"
           if git_path_handle ~= nil then
             local git_path = string.match(git_path_handle:read "*a", "[^\r\n]+")
             git_path_handle:close()
-            if entry.status == "??" or "A " then
-              return {
-                "git",
-                "-c",
-                "core.pager=delta",
-                "-c",
-                "delta.side-by-side=false",
-                "diff",
-                git_path .. "/" .. entry.value,
-              }
+            if entry.status and (entry.status == "??" or entry.status == "A ") then
+              return { unpack(viewer), git_path .. "/" .. entry.value }
             else
               return {
                 "git",
@@ -540,7 +539,8 @@ return {
                 "-c",
                 "delta.side-by-side=false",
                 "diff",
-                git_path .. "/" .. entry.value .. "^!",
+                "--",
+                git_path .. "/" .. entry.value,
               }
             end
           end
