@@ -934,8 +934,7 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 
 # set $EDITOR as the default pager for man pages
-export MANPAGER="/bin/sh -c \"col -b | \
-  $EDITOR -c 'set ft=man ts=8 nomod nolist nonu noma' -\""
+export MANPAGER='nvim +Man!'
 
 # Set Bat theme
 export BAT_THEME="TwoDark"
