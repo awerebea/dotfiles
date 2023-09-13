@@ -52,7 +52,7 @@ return {
           l = { name = "Telescope git_commits" },
           p = { name = "ChatGPT", r = "Run command" },
         },
-        h = { name = "Help" },
+        h = { name = "Help, Harpoon" },
         k = { name = "Open files from quickfix" },
         l = { name = "Toggle non-printable symbols" },
         M = { name = "Multiple Renamer (muren)" },

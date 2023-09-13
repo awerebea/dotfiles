@@ -207,8 +207,20 @@ return {
       { "<leader><leader>m", '<Cmd>lua require("harpoon.mark").add_file()<CR>' },
       { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
       { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
-      { "<leader>m", '<Cmd>lua require("harpoon.ui").toggle_quick_menu()<CR>' },
-      { "<leader>fm", "<Cmd>Telescope harpoon marks<CR>" },
+      {
+        "<leader>hm",
+        function()
+          require("harpoon.ui").toggle_quick_menu()
+        end,
+        desc = "Harpoon marks",
+      },
+      {
+        "<leader>m",
+        function()
+          require("telescope").extensions.harpoon.marks()
+        end,
+        desc = "Harpoon marks",
+      },
     },
     opts = {
       menu = {
