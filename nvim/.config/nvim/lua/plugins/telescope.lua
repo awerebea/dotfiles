@@ -185,17 +185,20 @@ return {
         desc = "Clipboard",
       },
       -- git commands
+      -- Defined later in this file using custom previewer with delta
       {
         "<leader>glg",
         function()
-          require("telescope.builtin").git_commits {}
+          -- require("telescope.builtin").git_commits {}
+          Delta_git_commits()
         end,
         desc = "Commits",
       },
       {
         "<leader>glf",
         function()
-          require("telescope.builtin").git_bcommits {}
+          -- require("telescope.builtin").git_bcommits {}
+          Delta_git_bcommits()
         end,
         desc = "Commits of current file",
       },
@@ -209,7 +212,8 @@ return {
       {
         "<leader>gst",
         function()
-          require("telescope.builtin").git_status {}
+          -- require("telescope.builtin").git_status {}
+          Delta_git_status()
         end,
         desc = "Status",
       },
@@ -478,6 +482,96 @@ return {
         ":call QuickFixOpenAll()<CR>",
         { noremap = true, silent = false }
       )
+
+      local telescope_previewers = require "telescope.previewers"
+      local telescope_builtin = require "telescope.builtin"
+
+      local delta_commits = telescope_previewers.new_termopen_previewer {
+        get_command = function(entry)
+          return {
+            "git",
+            "-c",
+            "core.pager=delta",
+            "-c",
+            "delta.side-by-side=false",
+            "diff",
+            entry.value .. "^!",
+          }
+        end,
+      }
+
+      local delta_bcommits = telescope_previewers.new_termopen_previewer {
+        get_command = function(entry)
+          return {
+            "git",
+            "-c",
+            "core.pager=delta",
+            "-c",
+            "delta.side-by-side=false",
+            "diff",
+            entry.value .. "^!",
+            "--",
+            entry.current_file,
+          }
+        end,
+      }
+
+      local delta_status = telescope_previewers.new_termopen_previewer {
+        get_command = function(entry)
+          local git_path_handle = io.popen "git rev-parse --show-toplevel"
+          if git_path_handle ~= nil then
+            local git_path = string.match(git_path_handle:read "*a", "[^\r\n]+")
+            git_path_handle:close()
+            if entry.status == "??" or "A " then
+              return {
+                "git",
+                "-c",
+                "core.pager=delta",
+                "-c",
+                "delta.side-by-side=false",
+                "diff",
+                git_path .. "/" .. entry.value,
+              }
+            else
+              return {
+                "git",
+                "-c",
+                "core.pager=delta",
+                "-c",
+                "delta.side-by-side=false",
+                "diff",
+                git_path .. "/" .. entry.value .. "^!",
+              }
+            end
+          end
+        end,
+      }
+
+      Delta_git_commits = function(opts)
+        opts = opts or {}
+        opts.previewer = {
+          delta_commits,
+          telescope_previewers.git_commit_message.new(opts),
+          telescope_previewers.git_commit_diff_as_was.new(opts),
+        }
+        telescope_builtin.git_commits(opts)
+      end
+
+      Delta_git_bcommits = function(opts)
+        opts = opts or {}
+        opts.previewer = {
+          delta_bcommits,
+          telescope_previewers.git_commit_message.new(opts),
+          telescope_previewers.git_commit_diff_as_was.new(opts),
+        }
+        telescope_builtin.git_bcommits(opts)
+      end
+
+      Delta_git_status = function(opts)
+        opts = opts or {}
+        opts.previewer = { delta_status }
+        telescope_builtin.git_status(opts)
+      end
     end,
   },
   {
