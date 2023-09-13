@@ -154,8 +154,8 @@ return {
       "BufDelOthers",
     },
     keys = {
-      { "gz", "<Cmd>BufDel<CR>" },
-      { "gZ", "<Cmd>BufDelOthers<CR>" },
+      { "gz", "<Cmd>BufDel<CR>", desc = "Delete buffer" },
+      { "gZ", "<Cmd>BufDelOthers<CR>", desc = "Delete other buffers" },
     },
     opts = { next = "tabs", quit = false },
     config = true,
