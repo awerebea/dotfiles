@@ -257,6 +257,29 @@ return {
         end
       end
 
+      -- Toggleterm
+      toggle_term = function(prompt_bufnr)
+        -- Get the full path
+        local content = require("telescope.actions.state").get_selected_entry()
+        if content == nil then
+          return
+        end
+        local file_dir = ""
+        if content.filename then
+          file_dir = vim.fs.dirname(content.filename)
+        elseif content.value then
+          if content.cwd then
+            file_dir = content.cwd
+          end
+          file_dir = file_dir .. require("plenary.path").path.sep .. content.value
+        end
+        -- Close the Telescope window
+        require("telescope.actions").close(prompt_bufnr)
+        -- Open terminal
+        local utils = require "utils"
+        utils.open_term(nil, { direction = "float", dir = file_dir })
+      end
+
       local telescope = require "telescope"
       local icons = require "config.icons"
       local actions = require "telescope.actions"
@@ -301,12 +324,14 @@ return {
           end,
           ["<CR>"] = select_one_or_multi,
           ["<C-g>"] = actions.to_fuzzy_refine,
+          ["<C-z>"] = toggle_term,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
           ["<C-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
+          ["z"] = toggle_term,
         },
       }
 
