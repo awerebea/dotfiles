@@ -184,6 +184,14 @@ return {
         end,
         desc = "Clipboard",
       },
+      -- list notifications
+      {
+        "<leader>fn",
+        function()
+          require("telescope").extensions.notify.notify()
+        end,
+        desc = "Notifications",
+      },
       -- git commands
       -- Defined later in this file using custom previewer with delta
       {
