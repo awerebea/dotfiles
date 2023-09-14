@@ -264,7 +264,7 @@ return {
         end
       end
 
-      -- Toggleterm
+      -- Get the full path to the directory containing the selected item
       toggle_term = function(prompt_bufnr)
         -- Get the full path
         local content = require("telescope.actions.state").get_selected_entry()
@@ -280,11 +280,21 @@ return {
           end
           file_dir = file_dir .. require("plenary.path").path.sep .. content.value
         end
+        return file_dir
+      end
+
+      -- Toggleterm
+      open_terminal = function(prompt_bufnr)
+        local file_dir = toggle_term(prompt_bufnr)
         -- Close the Telescope window
         require("telescope.actions").close(prompt_bufnr)
-        -- Open terminal
-        local utils = require "utils"
-        utils.open_term(nil, { direction = "float", dir = file_dir })
+        require("utils").open_term(nil, { direction = "float", dir = file_dir })
+      end
+
+      -- Copy the path to the directory containing the selected item to the clipboard
+      copy_dirpath_of_selected_item = function(prompt_bufnr)
+        local file_dir = toggle_term(prompt_bufnr)
+        vim.fn.setreg("*", file_dir)
       end
 
       local telescope = require "telescope"
@@ -309,6 +319,7 @@ return {
           ["?"] = actions_layout.toggle_preview,
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
+          ["<C-c"] = actions.close,
           ["<Esc><Esc>"] = actions.close,
           ["<C-t>"] = trouble.open_with_trouble,
           ["<C-h>"] = function(prompt_bufnr)
@@ -331,14 +342,16 @@ return {
           end,
           ["<CR>"] = select_one_or_multi,
           ["<C-g>"] = actions.to_fuzzy_refine,
-          ["<C-z>"] = toggle_term,
+          ["<C-z>"] = open_terminal,
+          ["<C-M-d>"] = copy_dirpath_of_selected_item,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
           ["<C-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
-          ["z"] = toggle_term,
+          ["z"] = open_terminal,
+          ["<C-M-d>"] = copy_dirpath_of_selected_item,
         },
       }
 
