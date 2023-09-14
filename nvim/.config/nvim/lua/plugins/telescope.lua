@@ -226,6 +226,13 @@ return {
         desc = "Status",
       },
       {
+        "<leader>gss",
+        function()
+          require("utils").git_diff_picker()
+        end,
+        desc = "git diff --name-only",
+      },
+      {
         "<leader>gz",
         function()
           require("telescope").extensions.z.list {
