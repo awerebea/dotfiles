@@ -271,7 +271,7 @@ return {
         if content == nil then
           return
         end
-        local file_dir = ""
+        local file_dir = nil
         if content.filename then
           file_dir = vim.fs.dirname(content.filename)
         elseif content.value then
@@ -565,10 +565,8 @@ return {
 
       local delta_status = telescope_previewers.new_termopen_previewer {
         get_command = function(entry)
-          local git_path_handle = io.popen "git rev-parse --show-toplevel"
-          if git_path_handle ~= nil then
-            local git_path = string.match(git_path_handle:read "*a", "[^\r\n]+")
-            git_path_handle:close()
+          local git_path = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+          if git_path ~= nil then
             if entry.status and (entry.status == "??" or entry.status == "A ") then
               return { unpack(viewer), git_path .. "/" .. entry.value }
             else
