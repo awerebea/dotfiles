@@ -25,21 +25,21 @@ return {
       -- {
       --   "<leader>ff",
       --   function()
-      --     require("telescope").extensions.menufacture.find_files {}
+      --     require("telescope").extensions.menufacture.find_files()
       --   end,
       --   desc = "Find files (menufacture)",
       -- },
       -- {
       --   "<leader>f/",
       --   function()
-      --     require("telescope").extensions.menufacture.live_grep {}
+      --     require("telescope").extensions.menufacture.live_grep()
       --   end,
       --   { desc = "Live grep (menufacture)" },
       -- },
       -- {
       --   "<leader>f?",
       --   function()
-      --     require("telescope").extensions.live_grep_args.live_grep_args {}
+      --     require("telescope").extensions.live_grep_args.live_grep_args()
       --   end,
       --   { desc = "Live grep (custom args)" },
       -- },
@@ -58,7 +58,7 @@ return {
       {
         "<leader>//",
         function()
-          require("telescope.builtin").current_buffer_fuzzy_find {}
+          require("telescope.builtin").current_buffer_fuzzy_find()
         end,
         desc = "Fuzzy grep in current buffer",
       },
@@ -67,7 +67,7 @@ return {
         function()
           local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
           if not ok then
-            require("telescope").extensions.menufacture.find_files {}
+            require("telescope").extensions.menufacture.find_files()
           end
         end,
         desc = "Find Git managed files",
@@ -75,28 +75,28 @@ return {
       {
         "<leader>fw",
         function()
-          require("telescope").extensions.menufacture.grep_string {}
+          require("telescope").extensions.menufacture.grep_string()
         end,
         { desc = "Find word under cursor" },
       },
       {
         "<leader>fb",
         function()
-          require("telescope.builtin").buffers {}
+          require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
       },
       {
         "<leader><CR>",
         function()
-          require("telescope.builtin").buffers {}
+          require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
       },
       {
         "<leader>fh",
         function()
-          require("telescope.builtin").help_tags {}
+          require("telescope.builtin").help_tags()
         end,
         desc = "Help tags",
       },
@@ -112,21 +112,21 @@ return {
       {
         "<leader>fr",
         function()
-          require("telescope.builtin").resume {}
+          require("telescope.builtin").resume()
         end,
         desc = "Resume",
       },
       {
         "<leader>fo",
         function()
-          require("telescope.builtin").oldfiles {}
+          require("telescope.builtin").oldfiles()
         end,
         desc = "Recent",
       },
       {
         "<leader>fab",
         function()
-          require("telescope").extensions.file_browser.file_browser {}
+          require("telescope").extensions.file_browser.file_browser()
         end,
         desc = "File browser",
       },
@@ -143,14 +143,14 @@ return {
       {
         "<leader>far",
         function()
-          require("telescope").extensions.repo.list {}
+          require("telescope").extensions.repo.list()
         end,
         desc = "Search",
       },
       {
         "<leader>fp",
         function()
-          require("telescope").extensions.projects.projects {}
+          require("telescope").extensions.projects.projects()
         end,
         desc = "Projects",
       },
@@ -164,14 +164,14 @@ return {
       {
         "<leader>fd",
         function()
-          require("telescope.builtin").diagnostics {}
+          require("telescope.builtin").diagnostics()
         end,
         desc = "Diagnostics",
       },
       {
         "<leader>vo",
         function()
-          require("telescope").extensions.aerial.aerial {}
+          require("telescope").extensions.aerial.aerial()
         end,
         desc = "Code Outline",
       },
@@ -180,7 +180,7 @@ return {
       {
         "<leader>fc",
         function()
-          require("telescope").extensions.neoclip.default {}
+          require("telescope").extensions.neoclip.default()
         end,
         desc = "Clipboard",
       },
@@ -197,7 +197,7 @@ return {
       {
         "<leader>glg",
         function()
-          -- require("telescope.builtin").git_commits {}
+          -- require("telescope.builtin").git_commits()
           Delta_git_commits()
         end,
         desc = "Commits",
@@ -205,7 +205,7 @@ return {
       {
         "<leader>glf",
         function()
-          -- require("telescope.builtin").git_bcommits {}
+          -- require("telescope.builtin").git_bcommits()
           Delta_git_bcommits()
         end,
         desc = "Commits of current file",
@@ -213,14 +213,14 @@ return {
       {
         "<leader>gb",
         function()
-          require("telescope.builtin").git_branches {}
+          require("telescope.builtin").git_branches()
         end,
         desc = "Branches",
       },
       {
         "<leader>gst",
         function()
-          -- require("telescope.builtin").git_status {}
+          -- require("telescope.builtin").git_status()
           Delta_git_status()
         end,
         desc = "Status",
@@ -236,7 +236,7 @@ return {
       {
         "<leader>tu",
         function()
-          require("telescope").extensions.undo.undo {}
+          require("telescope").extensions.undo.undo()
         end,
       },
     },
