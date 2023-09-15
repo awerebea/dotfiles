@@ -354,6 +354,7 @@ return {
     config = true,
   },
   {
+    enabled = false,
     "m4xshen/hardtime.nvim",
     event = "VeryLazy",
     dependencies = { "MunifTanjim/nui.nvim", "nvim-lua/plenary.nvim" },
@@ -466,5 +467,22 @@ return {
         { "<Leader>kkp", function() require('macrothis').copy_register_printable() end, desc = "Copy register as printable" },
         { "<Leader>kkm", function() require('macrothis').copy_macro_printable() end, desc = "Copy macro as printable" }
     },
+  },
+  {
+    "hrsh7th/nvim-pasta",
+    event = "VeryLazy",
+    config = function()
+      require("pasta").setup {
+        paste_mode = false,
+        fix_cursor = true,
+        fix_indent = true,
+        prevent_diagnostics = false,
+        next_key = vim.api.nvim_replace_termcodes("<C-n>", true, true, true),
+        prev_key = vim.api.nvim_replace_termcodes("<C-p>", true, true, true),
+      }
+      vim.keymap.set({ "n", "x" }, "p", require("pasta.mappings").p)
+      vim.keymap.set({ "n", "x" }, "P", require("pasta.mappings").P)
+      vim.keymap.set({ "n" }, "<C-p>", require("pasta.mappings").toggle_pin)
+    end,
   },
 }
