@@ -52,7 +52,7 @@ return {
             },
           },
         },
-        terraformls = {},
+        ["terraformls@0.28.1"] = {},
         bashls = {},
         rust_analyzer = {},
         gopls = {},
