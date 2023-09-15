@@ -54,7 +54,7 @@ return {
           w = { name = "Git Worktree" },
         },
         h = { name = "Help, Harpoon" },
-        k = { name = "Open files from quickfix" },
+        k = { name = "Open from quickfix, Macrothis", k = "Macrothis" },
         l = { name = "Toggle non-printable symbols" },
         M = { name = "Multiple Renamer (muren)" },
         t = { name = "Test", N = { name = "Neotest" }, o = { "Overseer" } },

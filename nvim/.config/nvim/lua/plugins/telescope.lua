@@ -246,6 +246,11 @@ return {
           require("telescope").extensions.undo.undo()
         end,
       },
+      {
+        "<leader>fm",
+        "<Cmd>Telescope macrothis<CR>",
+        desc = "Macrothis",
+      },
     },
     config = function(_, _)
       -- Open one or more selected entries in the current window
@@ -469,6 +474,22 @@ return {
               },
             },
           },
+          macrothis = {
+            mappings = {
+              i = {
+                ["<C-c"] = actions.close,
+              },
+            },
+            -- <CR>   Load selected entry into register
+            -- <C-c>  Copy macro as printable
+            -- <C-d>  Delete selected entry or delete all marked entries
+            -- <C-e>  Edit content of macro
+            -- <C-n>  Rename selected entry
+            -- <C-q>  Run macro on files in quickfix list
+            -- <C-r>  Run macro
+            -- <C-s>  Save a macro/register
+            -- <C-x>  Edit register (<C-c> can be used to copy the register as printable)
+          },
         },
       }
       telescope.setup(opts)
@@ -485,6 +506,7 @@ return {
       telescope.load_extension "lazygit"
       telescope.load_extension "undo"
       telescope.load_extension "menufacture"
+      telescope.load_extension "macrothis"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
