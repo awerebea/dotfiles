@@ -82,7 +82,7 @@ return {
   {
     "williamboman/mason.nvim",
     cmd = "Mason",
-    keys = { { "<leader>cm", "<Cmd>Mason<CR>", desc = "Mason" } },
+    keys = { { "<leader><leader>M", "<Cmd>Mason<CR>", desc = "Mason" } },
     opts = {
       ensure_installed = {
         "prettierd",
