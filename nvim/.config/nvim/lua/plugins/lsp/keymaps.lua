@@ -43,9 +43,9 @@ function M.on_attach(client, buffer)
     require("telescope.builtin").lsp_dynamic_workspace_symbols,
     { desc = "Workspace Symbols" }
   )
-  self:map("<leader>wa", vim.lsp.buf.add_workspace_folder, { desc = "Add Workspace folder" })
-  self:map("<leader>wr", vim.lsp.buf.remove_workspace_folder, { desc = "Remove Workspace folder" })
-  self:map("<leader>wl", function()
+  self:map("<leader>wla", vim.lsp.buf.add_workspace_folder, { desc = "Add Workspace folder" })
+  self:map("<leader>wlr", vim.lsp.buf.remove_workspace_folder, { desc = "Remove Workspace folder" })
+  self:map("<leader>wll", function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, { desc = "Print Workspace folders" })
 end
