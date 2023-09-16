@@ -1,7 +1,5 @@
 return {
-  -- "smartpde/neoscopes",
-  "awerebea/neoscopes",
-  branch = "git_diff_from_ancestors",
+  "smartpde/neoscopes",
   event = "VeryLazy",
   opts = {
     scopes = {
