@@ -19,7 +19,6 @@ return {
         if grand_parent ~= "" then
           return "../" .. vim.fn.fnamemodify(parent, ":t")
         else
-          print(parent)
           return "/" .. vim.fn.fnamemodify(parent, ":t")
         end
       else
