@@ -51,6 +51,7 @@ function M.git_diff_picker(opts)
   local finders = require "telescope.finders"
   local conf = require("telescope.config").values
   local list = nil
+
   if M.is_git_worktree() then
     list = vim.fn.systemlist "git diff --name-only"
   else
@@ -58,15 +59,18 @@ function M.git_diff_picker(opts)
     return
   end
 
+  local git_path = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  if git_path ~= nil and list ~= nil then
+    for k, v in pairs(list) do
+      list[k] = git_path .. "/" .. v
+    end
+  end
+
   pickers
     .new(opts, {
       prompt_title = "Git Diff Files",
       finder = finders.new_table { results = list },
       sorter = conf.generic_sorter(opts),
-      attach_mappings = function()
-        vim.api.nvim_set_current_dir(vim.fn.systemlist("git rev-parse --show-toplevel")[1])
-        return true
-      end,
     })
     :find()
 end
