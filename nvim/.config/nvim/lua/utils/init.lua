@@ -37,7 +37,13 @@ function M.git_diff_picker(opts)
   local pickers = require "telescope.pickers"
   local finders = require "telescope.finders"
   local conf = require("telescope.config").values
+  local git_path = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
   local list = vim.fn.systemlist "git diff --name-only"
+  if git_path ~= nil and list ~= nil then
+    for k, v in pairs(list) do
+      list[k] = git_path .. "/" .. v
+    end
+  end
 
   pickers
     .new(opts, {
