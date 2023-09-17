@@ -32,12 +32,31 @@ function M.open_term(cmd, opts)
   new_term:open(opts.size, opts.direction)
 end
 
+-- Returns true if current directory is a git worktree
+function M.is_git_worktree()
+  local _, ret, _ = require("telescope.utils").get_os_command_output {
+    "git",
+    "rev-parse",
+    "--is-inside-work-tree",
+  }
+  if ret == 0 then
+    return true
+  end
+  return false
+end
+
 function M.git_diff_picker(opts)
   opts = opts or require("telescope.themes").get_dropdown {}
   local pickers = require "telescope.pickers"
   local finders = require "telescope.finders"
   local conf = require("telescope.config").values
-  local list = vim.fn.systemlist "git diff --name-only"
+  local list = nil
+  if M.is_git_worktree() then
+    list = vim.fn.systemlist "git diff --name-only"
+  else
+    print "Not a git worktree."
+    return
+  end
 
   pickers
     .new(opts, {
