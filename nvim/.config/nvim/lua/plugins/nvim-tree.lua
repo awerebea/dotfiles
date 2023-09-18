@@ -6,7 +6,7 @@ return {
       { "<F2>", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
       {
         "<leader><F2>",
-        "<Cmd>NvimTreeFindFileToggle<CR>",
+        "<Cmd>NvimTreeFindFile<CR>",
         desc = "Explorer",
       },
     },
