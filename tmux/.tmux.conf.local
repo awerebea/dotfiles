@@ -522,8 +522,6 @@ set -g pane-border-status top
 # Add in setting below to indicate: #D - Unique pane ID, #{pane_current_command} - running command
 set -g pane-border-format '[#[bold]#{?pane_active,#[fg=green],#[fg=#9e9e9e]}#P#[fg=default,nobold]]\
 #{?pane_active,#[bold]#[fg=green],#[fg=default]}-#[fg=default,nobold]\
-[#[bold]#{?pane_active,#[fg=green],#[fg=#9e9e9e]}#D#[fg=default,nobold]]\
-#{?pane_active,#[bold]#[fg=green],#[fg=default]}-#[fg=default,nobold]\
 [#{?pane_active,#[bold]#[fg=green],#[fg=#9e9e9e]}#{pane_current_command}#[fg=default,nobold]]'
 
   # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
