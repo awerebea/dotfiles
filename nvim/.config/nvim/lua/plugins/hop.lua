@@ -79,10 +79,10 @@ return {
     keymap("", "<C-s>", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>2s", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>d", "<Cmd>HopChar2<CR>")
-    keymap("", "<leader><leader>J", "<Cmd>HopLineAC<CR>")
-    keymap("", "<leader><leader>K", "<Cmd>HopLineBC<CR>")
-    keymap("", "<leader><leader>j", "<Cmd>HopVerticalAC<CR>")
-    keymap("", "<leader><leader>k", "<Cmd>HopVerticalBC<CR>")
+    keymap("", "<leader><leader>j", "<Cmd>HopLineAC<CR>")
+    keymap("", "<leader><leader>k", "<Cmd>HopLineBC<CR>")
+    keymap("", "<leader><leader>J", "<Cmd>HopVerticalAC<CR>")
+    keymap("", "<leader><leader>K", "<Cmd>HopVerticalBC<CR>")
     keymap("", "<leader><leader>/", "<Cmd>HopPattern<CR>")
   end,
 }
