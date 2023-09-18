@@ -75,4 +75,17 @@ function M.git_diff_picker(opts)
     :find()
 end
 
+-- Delete the current file
+function M.delete_current_file()
+  local current_buffer = vim.fn.bufnr "%" -- Get the buffer number of the current buffer
+  local current_file = vim.fn.expand "%:p" -- Get the full path of the current file
+
+  -- Close the buffer associated with the current file
+  vim.api.nvim_command(current_buffer .. "bdel") -- Buffer deletion command
+
+  -- Delete the file
+  vim.fn.delete(current_file) -- Delete the file
+  vim.api.nvim_out_write("Deleted file: " .. current_file .. "\n") -- Optional: Display a message
+end
+
 return M

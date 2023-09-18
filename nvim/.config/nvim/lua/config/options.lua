@@ -405,6 +405,11 @@ vim.cmd [[
   cabbrev wnf <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'WriteNoFormat' : 'wnf')<CR>
 ]]
 
+-- Delete current file
+vim.cmd [[
+  command! DeleteCurrentFile lua require"utils".delete_current_file()
+]]
+
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3
