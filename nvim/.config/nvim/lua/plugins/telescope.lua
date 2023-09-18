@@ -518,6 +518,20 @@ return {
           opts.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
           callback(opts)
         end,
+        ["find with fd in $HOME"] = function(opts, callback)
+          opts.search_dirs = {}
+          opts.cwd = vim.fn.expand "$HOME"
+          opts.find_command = {
+            "fd",
+            "--type",
+            "f",
+            "--hidden",
+            "--follow",
+            "--ignore-file",
+            vim.fn.expand "$HOME/.config/fd/vim-ignore",
+          }
+          callback(opts)
+        end,
         ["layout strategy vertical"] = function(opts, callback)
           opts.layout_strategy = "vertical"
           callback(opts)
