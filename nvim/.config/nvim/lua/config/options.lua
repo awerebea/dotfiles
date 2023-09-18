@@ -429,6 +429,7 @@ vim.opt.shiftround = true
 vim.opt.showmode = false
 vim.opt.smartindent = false
 vim.opt.updatetime = 200
+vim.opt.startofline = true
 
 vim.g.mapleader = " "
 vim.g.maplocalleader = ","
