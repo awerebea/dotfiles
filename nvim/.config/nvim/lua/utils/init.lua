@@ -81,7 +81,13 @@ function M.delete_current_file()
   local current_file = vim.fn.expand "%:p" -- Get the full path of the current file
 
   -- Close the buffer associated with the current file
-  vim.api.nvim_command(current_buffer .. "bdel") -- Buffer deletion command
+  local success, bufdel = pcall(require, "bufdel")
+  if success then
+    bufdel.setup()
+    vim.api.nvim_command "BufDel!" -- Delete buffer with nvim-bufdel
+  else
+    vim.api.nvim_command(current_buffer .. "bdel") -- Buffer deletion command
+  end
 
   -- Delete the file
   vim.fn.delete(current_file) -- Delete the file
