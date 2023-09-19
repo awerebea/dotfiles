@@ -468,9 +468,14 @@ return {
             time_format = "",
             mappings = {
               i = {
-                ["<cr>"] = require("telescope-undo.actions").yank_additions,
-                ["<S-cr>"] = require("telescope-undo.actions").yank_deletions,
-                ["<C-cr>"] = require("telescope-undo.actions").restore,
+                ["<C-a>"] = require("telescope-undo.actions").yank_additions,
+                ["<C-d>"] = require("telescope-undo.actions").yank_deletions,
+                ["<cr>"] = require("telescope-undo.actions").restore,
+              },
+              n = {
+                ["<C-a>"] = require("telescope-undo.actions").yank_additions,
+                ["<C-d>"] = require("telescope-undo.actions").yank_deletions,
+                ["<cr>"] = require("telescope-undo.actions").restore,
               },
             },
           },
