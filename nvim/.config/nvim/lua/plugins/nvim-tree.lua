@@ -55,7 +55,13 @@ return {
         open_file = {
           quit_on_open = false,
           window_picker = {
-            enable = false,
+            enable = true,
+            picker = "default",
+            chars = "FJDKSLA;EIQPWO",
+            exclude = {
+              filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+              buftype = { "nofile", "terminal", "help" },
+            },
           },
         },
       },
