@@ -270,7 +270,7 @@ return {
       end
 
       -- Get the full path to the directory containing the selected item
-      toggle_term = function(prompt_bufnr)
+      get_item_dirpath = function(prompt_bufnr)
         -- Get the full path
         local content = require("telescope.actions.state").get_selected_entry()
         if content == nil then
@@ -288,9 +288,19 @@ return {
         return file_dir
       end
 
+      -- Get the full path to the selected item
+      get_item_path = function(prompt_bufnr)
+        -- Get the full path
+        local content = require("telescope.actions.state").get_selected_entry()
+        if content == nil then
+          return
+        end
+        return content.filename
+      end
+
       -- Toggleterm
       open_terminal = function(prompt_bufnr)
-        local file_dir = toggle_term(prompt_bufnr)
+        local file_dir = get_item_dirpath(prompt_bufnr)
         -- Close the Telescope window
         require("telescope.actions").close(prompt_bufnr)
         require("utils").open_term(nil, { direction = "float", dir = file_dir })
@@ -298,8 +308,16 @@ return {
 
       -- Copy the path to the directory containing the selected item to the clipboard
       copy_dirpath_of_selected_item = function(prompt_bufnr)
-        local file_dir = toggle_term(prompt_bufnr)
+        local file_dir = get_item_dirpath(prompt_bufnr)
         vim.fn.setreg("*", file_dir)
+        require("telescope.actions").close(prompt_bufnr)
+      end
+
+      -- Copy the path to the selected item to the clipboard
+      copy_path_of_selected_item = function(prompt_bufnr)
+        local file_path = get_item_path(prompt_bufnr)
+        vim.fn.setreg("*", file_path)
+        require("telescope.actions").close(prompt_bufnr)
       end
 
       local telescope = require "telescope"
@@ -349,6 +367,7 @@ return {
           ["<C-g>"] = actions.to_fuzzy_refine,
           ["<C-z>"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
+          ["<C-M-f>"] = copy_path_of_selected_item,
         },
         n = {
           ["dd"] = require("telescope.actions").delete_buffer,
@@ -357,6 +376,7 @@ return {
           ["]i"] = path_actions.insert_abspath_i_visual,
           ["z"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
+          ["<C-M-f>"] = copy_path_of_selected_item,
         },
       }
 
