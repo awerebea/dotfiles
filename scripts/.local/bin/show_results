@@ -1,8 +1,11 @@
 #! /usr/bin/env bash
 
 g_envs_pattern=""
-g_pattern="(error|output)\.txt"
 g_positional_args+=("$1")
+g_output=false
+g_error=false
+g_plan=false
+g_apply=false
 
 VALID_ENVS=(
     sand
@@ -31,11 +34,17 @@ __join_by() {
 _process_cmd_options() {
     while [[ -n "$1" ]]; do
         case "$1" in
-            "-e" | "--err" | "--error" | "--errors" )
-                g_pattern="error\.txt"
+            "-p" | "--plan" )
+                g_plan=true
+                ;;
+            "-a" | "--apply" )
+                g_apply=true
                 ;;
             "-o" | "--out" | "--output" | "--outputs" )
-                g_pattern="output\.txt"
+                g_output=true
+                ;;
+            "-e" | "--err" | "--error" | "--errors" )
+                g_error=true
                 ;;
             *)
                 g_positional_args+=("$1")
@@ -68,28 +77,50 @@ _process_cmd_options() {
     done
     if [ "${#g_envs[@]}" -gt 1 ]; then
         g_envs_pattern="{$(__join_by ',' "${g_envs[@]}")}"
-    elif [ "${#g_envs[@]}" -gt 0 ]; then
+    elif [ "${#g_envs[@]}" -eq 1 ]; then
         g_envs_pattern="${g_envs[0]}"
     fi
 }
 
 # Main
 _main() {
+    local results pattern commands subdirs
     _process_cmd_options "$@"
-    if [ "$g_envs_pattern" = "" ]; then
+    if [ "$g_envs_pattern" == "" ]; then
         g_envs_pattern="{$(__join_by ',' "${VALID_ENVS[@]}")}"
     fi
+
+    results=()
+    "$g_output" && results+=("output")
+    "$g_error" && results+=("error")
+
+    pattern="(output|error)\.txt"
+    if [ "${#results[@]}" -gt 1 ]; then
+        pattern="($(__join_by '|' "${results[@]}"))\.txt"
+    elif [ "${#results[@]}" -eq 1 ]; then
+        pattern="${results[0]}\.txt"
+    fi
+
+    commands=()
+    "$g_plan" && commands+=("plan")
+    "$g_apply" && commands+=("apply")
+
+    subdirs=""
+    if [ "${#commands[@]}" -gt 1 ]; then
+        subdirs="{$(__join_by ',' "${commands[@]}")}"
+    elif [ "${#commands[@]}" -eq 1 ]; then
+        subdirs="${commands[0]}"
+    fi
+
     if command -v fd &>/dev/null; then
-        eval "fd -IH -tf \"$g_pattern\" ./result/$g_envs_pattern 2>/dev/null | \
+        eval "fd -IH -tf \"$pattern\" ./result/$g_envs_pattern/$subdirs 2>/dev/null | \
             sort | xargs tail -v -n +1 | less -NRWr --use-color"
     else
-        if [ "$g_pattern" = "(error|output)\.txt" ]; then
-            # Use parameter expansion to escape "(", ")" and "|"
-            g_pattern="${g_pattern//(/\\(}"
-            g_pattern="${g_pattern//)/\\)}"
-            g_pattern="${g_pattern//|/\\|}"
-        fi
-        eval "find ./result/$g_envs_pattern -type f -regex \".*$g_pattern\" 2>/dev/null | \
+        # Use parameter expansion to escape "(", ")" and "|"
+        pattern="${pattern//(/\\(}"
+        pattern="${pattern//)/\\)}"
+        pattern="${pattern//|/\\|}"
+        eval "find ./result/$g_envs_pattern/$subdirs -type f -regex \".*$pattern\" 2>/dev/null | \
             sort | xargs tail -v -n +1 | less -NRWr --use-color"
     fi
 }
