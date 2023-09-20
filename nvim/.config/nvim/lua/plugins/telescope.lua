@@ -500,12 +500,8 @@ return {
             },
           },
           macrothis = {
-            mappings = {
-              i = {
-                ["<C-c"] = actions.close,
-              },
-            },
-            -- <CR>   Load selected entry into register
+            mappings = {},
+            -- <CR>   Load selected entry into register,
             -- <C-c>  Copy macro as printable
             -- <C-d>  Delete selected entry or delete all marked entries
             -- <C-e>  Edit content of macro
