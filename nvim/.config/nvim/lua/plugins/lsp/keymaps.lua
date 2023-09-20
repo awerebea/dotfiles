@@ -44,7 +44,11 @@ function M.on_attach(client, buffer)
     { desc = "Workspace Symbols" }
   )
   self:map("<leader>wla", vim.lsp.buf.add_workspace_folder, { desc = "Add Workspace folder" })
-  self:map("<leader>wlr", vim.lsp.buf.remove_workspace_folder, { desc = "Remove Workspace folder" })
+  self:map(
+    "<leader>wlr",
+    vim.lsp.buf.remove_workspace_folder,
+    { desc = "Remove Workspace folder" }
+  )
   self:map("<leader>wll", function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, { desc = "Print Workspace folders" })
@@ -76,7 +80,7 @@ function M.rename()
   if pcall(require, "inc_rename") then
     return ":IncRename " .. vim.fn.expand "<cword>"
   else
-    vim.lsp.buf.rename()
+    return "<Cmd>lua vim.lsp.buf.rename()<CR>"
   end
 end
 
