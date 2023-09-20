@@ -501,9 +501,4 @@ return {
       },
     },
   },
-  {
-    "chrisgrieser/nvim-origami",
-    event = "BufReadPost",
-    opts = true, -- needed even when using default config
-  },
 }
