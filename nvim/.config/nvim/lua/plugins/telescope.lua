@@ -271,31 +271,30 @@ return {
 
       -- Get the full path to the directory containing the selected item
       get_item_dirpath = function(prompt_bufnr)
-        -- Get the full path
-        local content = require("telescope.actions.state").get_selected_entry()
-        if content == nil then
+        file_dirpath = get_item_path(prompt_bufnr)
+        if not file_dirpath then
           return
         end
-        local file_dir = nil
-        if content.filename then
-          file_dir = vim.fs.dirname(content.filename)
-        elseif content.value then
-          if content.cwd then
-            file_dir = content.cwd
-          end
-          file_dir = file_dir .. require("plenary.path").path.sep .. content.value
-        end
-        return file_dir
+        return vim.fs.dirname(file_dirpath)
       end
 
       -- Get the full path to the selected item
       get_item_path = function(prompt_bufnr)
         -- Get the full path
+        local file_path = nil
         local content = require("telescope.actions.state").get_selected_entry()
         if content == nil then
           return
         end
-        return content.filename
+        if content.filename then
+          file_path = content.filename
+          if not content.cwd then
+            file_path = vim.fn.getcwd(-1, -1) .. "/" .. file_path
+          end
+        elseif content.value then
+          file_path = content.value
+        end
+        return file_path
       end
 
       -- Toggleterm
