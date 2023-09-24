@@ -656,7 +656,19 @@ return {
         end,
       }
 
+      local is_in_git_repo = function()
+        if vim.fn.systemlist("git rev-parse --is-inside-work-tree")[1]:lower() == "true" then
+          return true
+        else
+          print "Not a git repo"
+          return false
+        end
+      end
+
       Delta_git_commits = function(opts)
+        if not is_in_git_repo() then
+          return
+        end
         opts = opts or {}
         opts.previewer = {
           delta_commits,
@@ -667,6 +679,9 @@ return {
       end
 
       Delta_git_bcommits = function(opts)
+        if not is_in_git_repo() then
+          return
+        end
         opts = opts or {}
         opts.previewer = {
           delta_bcommits,
@@ -677,6 +692,9 @@ return {
       end
 
       Delta_git_status = function(opts)
+        if not is_in_git_repo() then
+          return
+        end
         opts = opts or {}
         opts.previewer = { delta_status }
         telescope_builtin.git_status(opts)
