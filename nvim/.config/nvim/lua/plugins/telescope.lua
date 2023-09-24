@@ -239,12 +239,14 @@ return {
             cmd = { "bash", "-c", "fasd", "-d" },
           }
         end,
+        desc = "fasd",
       },
       {
         "<leader>tu",
         function()
           require("telescope").extensions.undo.undo()
         end,
+        desc = "Undo tree",
       },
       {
         "<leader>fm",
