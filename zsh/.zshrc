@@ -1280,6 +1280,24 @@ cleanup-git-branches() {
   git fetch -p ; git branch -r | awk '{print $1}' | egrep -v -f /dev/fd/0 <(git branch -vv | \
     grep origin) | awk '{print $1}' | xargs git branch -d
 }
+alias gcm='git switch $(git_main_branch)'
+
+unalias gb
+gb() {
+  local format_string
+  format_string="%(align:width=${1:-75})"
+  format_string+="%(color:bold yellow)%(refname:short)%(color:reset)%(end)"
+  format_string+="%(align:width=${2:-40})"
+  format_string+="%(color:green)%(committername)%(color:reset)%(end)"
+  format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
+  git branch --sort=${3:-refname} --format="$format_string"
+}
+
+cbr() {
+  gb 70 35 -committerdate |
+  fzf --header "Checkout Recent Branch" --preview "git diff --color=always {1}" --pointer="" |
+  cut -d " " -f 1 | xargs git switch
+}
 
 # Execute any alias or command in dotfiles repo
 dots() {
