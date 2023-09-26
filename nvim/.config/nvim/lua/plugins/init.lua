@@ -506,4 +506,13 @@ return {
     event = "VeryLazy",
     config = true,
   },
+  {
+    "ggandor/leap.nvim",
+    event = "VimEnter",
+    dependencies = { "tpope/vim-repeat" },
+    config = function()
+      require("leap").add_default_mappings()
+      require("leap").add_repeat_mappings(";", ",", { relative_directions = true })
+    end,
+  },
 }
