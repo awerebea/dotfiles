@@ -515,4 +515,15 @@ return {
       require("leap").add_repeat_mappings(";", ",", { relative_directions = true })
     end,
   },
+  {
+    "ggandor/flit.nvim",
+    event = "VeryLazy",
+    dependencies = { "ggandor/leap.nvim", "tpope/vim-repeat" },
+    opts = {
+      keys = { f = "f", F = "F", t = "t", T = "T" },
+      labeled_modes = "nvo",
+      multiline = true,
+    },
+    config = true,
+  },
 }
