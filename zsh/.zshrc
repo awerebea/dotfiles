@@ -1281,6 +1281,7 @@ cleanup-git-branches() {
     grep origin) | awk '{print $1}' | xargs git branch -d
 }
 alias gcm='git switch $(git_main_branch)'
+alias gpf='git push --force-with-lease'
 
 unalias gb
 gb() {
