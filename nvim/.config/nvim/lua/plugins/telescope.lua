@@ -77,7 +77,7 @@ return {
         function()
           require("telescope").extensions.menufacture.grep_string()
         end,
-        { desc = "Find word under cursor" },
+        desc = "Find word under cursor",
       },
       {
         "<leader>fb",

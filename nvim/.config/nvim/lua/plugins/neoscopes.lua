@@ -80,7 +80,7 @@ return {
     )
     vim.keymap.set(
       "n",
-      "<leader>fa",
+      "<leader>fag",
       "<Cmd>lua neoscopes_fuzzy_grep()<CR>",
       { desc = "Fuzzy Grep (menufacture)" }
     )
