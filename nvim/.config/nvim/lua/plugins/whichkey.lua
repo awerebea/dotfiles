@@ -39,7 +39,7 @@ return {
       wk.register({
         b = { name = "Buffer" },
         d = { name = "Debug" },
-        f = { name = "Telescope" },
+        f = { name = "Telescope", a = "Additional" },
         g = {
           name = "Git, ChatGPT",
           c = {
