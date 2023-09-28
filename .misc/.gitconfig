@@ -1,6 +1,7 @@
 [core]
 	excludesfile = /home/andrei/.gitignore
 	pager = less -x1,5
+	autocrlf = input
 
 [merge]
 tool = vim_mergetool
