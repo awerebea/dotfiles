@@ -1283,8 +1283,7 @@ cleanup-git-branches() {
 alias gcm='git switch $(git_main_branch)'
 alias gpf='git push --force-with-lease'
 
-unalias gb
-gb() {
+gbb() {
   local format_string
   format_string="%(align:width=${1:-75})"
   format_string+="%(color:bold yellow)%(refname:short)%(color:reset)%(end)"
