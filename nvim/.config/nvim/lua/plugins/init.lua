@@ -518,4 +518,16 @@ return {
     event = "VeryLazy",
     config = true,
   },
+  {
+    "hinell/lsp-timeout.nvim",
+    event = "VeryLazy",
+    dependencies = { "neovim/nvim-lspconfig" },
+    config = function()
+      vim.g["lsp-timeout-config"] = {
+        -- Wait 5 minutes before stopping all LSP servers
+        stopTimeout = 1000 * 60 * 5,
+        startTimeout = 1000 * 5,
+      }
+    end,
+  },
 }
