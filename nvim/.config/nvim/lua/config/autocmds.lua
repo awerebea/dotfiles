@@ -60,6 +60,26 @@ local aucmd_dict = {
       end,
     },
   },
+  BufWritePost = {
+    -- make file with shebang executable
+    {
+      pattern = "*",
+      callback = function()
+        local not_executable = vim.fn.getfperm(vim.fn.expand "%"):sub(3, 3) ~= "x"
+        local line = vim.fn.getline(1)
+        if type(line) == "table" then
+          line = line[1] or "" -- Use the first element of the table or an empty string
+        end
+        local has_shebang = string.match(line, "^#!")
+        local has_bin = string.match(line, "/bin/")
+        if not_executable and has_shebang and has_bin then
+          vim.notify "File made executable"
+          vim.cmd [[!chmod +x <afile>]]
+        end
+      end,
+      once = false,
+    },
+  },
 }
 
 for event, opt_tbls in pairs(aucmd_dict) do
