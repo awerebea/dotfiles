@@ -518,4 +518,5 @@ return {
     event = "VeryLazy",
     config = true,
   },
+  { "tpope/vim-eunuch", event = "VeryLazy" },
 }
