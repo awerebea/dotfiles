@@ -18,6 +18,7 @@ return {
       "kdheepak/lazygit.nvim",
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
+      "SalOrak/whaler",
     },
     cmd = "Telescope",
     keys = {
@@ -252,6 +253,13 @@ return {
         "<leader>fm",
         "<Cmd>Telescope macrothis<CR>",
         desc = "Macrothis",
+      },
+      {
+        "<leader>fW",
+        function()
+          require("telescope").extensions.whaler.whaler()
+        end,
+        desc = "Go to subdirectory",
       },
     },
     config = function(_, _)
@@ -514,6 +522,13 @@ return {
             -- <C-s>  Save a macro/register
             -- <C-x>  Edit register (<C-c> can be used to copy the register as printable)
           },
+          whaler = {
+            directories = { "/home/andrei/Projects", "/home/andrei/work" }, -- Absolute path directories to search. By default the list is empty.
+            auto_file_explorer = true, -- Whether to automatically open file explorer. By default is `true`
+            auto_cwd = true, -- Whether to automatically change current working directory. By default is `true`
+            file_explorer = "nvimtree", -- Automagically creates a configuration for the file explorer of your choice.
+            -- Options are "netrw"(default), "nvimtree", "neotree".
+          },
         },
       }
       telescope.setup(opts)
@@ -531,6 +546,7 @@ return {
       telescope.load_extension "undo"
       telescope.load_extension "menufacture"
       telescope.load_extension "macrothis"
+      telescope.load_extension "whaler"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
