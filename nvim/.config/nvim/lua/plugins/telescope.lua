@@ -351,6 +351,9 @@ return {
           ["<C-h>"] = function(prompt_bufnr)
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
+          ["<C-M-h>"] = function(prompt_bufnr)
+            telescope.extensions.hop._hop(prompt_bufnr)
+          end,
           -- custom hop loop to multi selects and sending selected entries to quickfix list
           ["<C-l>"] = function(prompt_bufnr)
             local opts = {
