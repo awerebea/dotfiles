@@ -11,7 +11,7 @@ return {
       "stevearc/aerial.nvim",
       "folke/trouble.nvim",
       "kiyoon/telescope-insert-path.nvim",
-      "AckslD/nvim-neoclip.lua",
+      -- "AckslD/nvim-neoclip.lua",
       "nvim-telescope/telescope-hop.nvim",
       "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
@@ -19,6 +19,7 @@ return {
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
+      "gbprod/yanky.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -181,7 +182,8 @@ return {
       {
         "<leader>fc",
         function()
-          require("telescope").extensions.neoclip.default()
+          -- require("telescope").extensions.neoclip.default()
+          require("telescope").extensions.yank_history.yank_history()
         end,
         desc = "Clipboard",
       },
@@ -534,7 +536,7 @@ return {
       telescope.load_extension "projects"
       telescope.load_extension "aerial"
       telescope.load_extension "dap"
-      telescope.load_extension "neoclip"
+      -- telescope.load_extension "neoclip"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
       telescope.load_extension "lazygit"
@@ -542,6 +544,7 @@ return {
       telescope.load_extension "menufacture"
       telescope.load_extension "macrothis"
       telescope.load_extension "terraform_doc"
+      telescope.load_extension "yank_history"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
@@ -712,6 +715,48 @@ return {
         opts.previewer = { delta_status }
         telescope_builtin.git_status(opts)
       end
+
+      local utils = require "yanky.utils"
+      local mapping = require "yanky.telescope.mapping"
+
+      require("yanky").setup {
+        history_length = 100,
+        storage = "shada",
+        sync_with_numbered_registers = false,
+        cancel_event = "update",
+        ignore_registers = { "_" },
+        system_clipboard = { sync_with_ring = true },
+        highlight = {
+          on_put = true,
+          on_yank = true,
+          timer = 500,
+        },
+        preserve_cursor_position = {
+          enabled = true,
+        },
+        picker = {
+          telescope = {
+            use_default_mappings = true,
+            mappings = {
+              -- default = mapping.put "p",
+              i = {
+                -- ["<c-g>"] = mapping.put "p",
+                -- ["<c-k>"] = mapping.put "P",
+                ["<c-x>"] = mapping.delete(),
+                ["<CR>"] = mapping.set_register(utils.get_default_register()),
+              },
+              n = {
+                -- p = mapping.put "p",
+                -- P = mapping.put "P",
+                d = mapping.delete(),
+                ["<CR>"] = mapping.set_register(utils.get_default_register()),
+              },
+            },
+            -- mappings = nil,
+          },
+        },
+      }
+      vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
     end,
   },
   {
@@ -817,4 +862,51 @@ return {
       "tpope/vim-fugitive",
     },
   },
+  -- {
+
+  --   "gbprod/yanky.nvim",
+  --   event = "VeryLazy",
+  --   config = function()
+  --     local utils = require "yanky.utils"
+  --     local mapping = require "yanky.telescope.mapping"
+
+  --     require("yanky").setup {
+  --       history_length = 100,
+  --       storage = "shada",
+  --       sync_with_numbered_registers = false,
+  --       cancel_event = "update",
+  --       ignore_registers = { "_" },
+  --       system_clipboard = { sync_with_ring = true },
+  --       highlight = {
+  --         on_put = true,
+  --         on_yank = true,
+  --         timer = 500,
+  --       },
+  --       preserve_cursor_position = {
+  --         enabled = true,
+  --       },
+  --       picker = {
+  --         telescope = {
+  --           mappings = {
+  --             default = mapping.put "p",
+  --             i = {
+  --               -- ["<c-g>"] = mapping.put "p",
+  --               -- ["<c-k>"] = mapping.put "P",
+  --               ["<c-x>"] = mapping.delete(),
+  --               ["<CR>"] = mapping.set_register(utils.get_default_register()),
+  --             },
+  --             n = {
+  --               -- p = mapping.put "p",
+  --               -- P = mapping.put "P",
+  --               d = mapping.delete(),
+  --               ["<CR>"] = mapping.set_register(utils.get_default_register()),
+  --             },
+  --           },
+  --           -- mappings = nil,
+  --         },
+  --       },
+  --     }
+  --     vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
+  --   end,
+  -- },
 }
