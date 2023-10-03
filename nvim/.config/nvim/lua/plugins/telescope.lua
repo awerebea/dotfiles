@@ -18,6 +18,7 @@ return {
       "kdheepak/lazygit.nvim",
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
+      "ANGkeith/telescope-terraform-doc.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -517,6 +518,12 @@ return {
             -- <C-s>  Save a macro/register
             -- <C-x>  Edit register (<C-c> can be used to copy the register as printable)
           },
+          terraform_doc = {
+            url_open_command = "xdg-open",
+            latest_provider_symbol = "  ",
+            wincmd = "botright vnew",
+            wrap = "nowrap",
+          },
         },
       }
       telescope.setup(opts)
@@ -534,6 +541,7 @@ return {
       telescope.load_extension "undo"
       telescope.load_extension "menufacture"
       telescope.load_extension "macrothis"
+      telescope.load_extension "terraform_doc"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
