@@ -5,6 +5,7 @@ return {
   { "nacro90/numb.nvim", event = "BufReadPre", config = true },
   {
     "lukas-reineke/indent-blankline.nvim",
+    version = "2.20.8",
     event = "BufReadPre",
     opts = {
       show_current_context = true,
