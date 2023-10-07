@@ -5,15 +5,27 @@ return {
   { "nacro90/numb.nvim", event = "BufReadPre", config = true },
   {
     "lukas-reineke/indent-blankline.nvim",
-    version = "2.20.8",
+    main = "ibl",
     event = "BufReadPre",
     opts = {
-      show_current_context = true,
-      show_current_context_start = false,
-      show_end_of_line = true,
-      space_char_blankline = " ",
+      indent = {
+        char = "│",
+      },
+      whitespace = { remove_blankline_trail = true },
+      scope = {
+        enabled = true,
+        show_start = false,
+        show_end = false,
+        include = {
+          node_type = { ["*"] = { "*" } },
+        },
+      },
     },
+    config = function(_, opts)
+      require("ibl").setup(opts)
+    end,
   },
+
   {
     "stevearc/dressing.nvim",
     event = "VeryLazy",
