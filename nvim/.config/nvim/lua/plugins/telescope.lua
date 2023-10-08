@@ -274,11 +274,11 @@ return {
 
       -- Get the full path to the directory containing the selected item
       get_item_dirpath = function(prompt_bufnr)
-        file_dirpath = get_item_path(prompt_bufnr)
-        if not file_dirpath then
+        file_path = get_item_path(prompt_bufnr)
+        if not file_path then
           return
         end
-        return vim.fs.dirname(file_dirpath)
+        return vim.fs.dirname(file_path)
       end
 
       -- Get the full path to the selected item
@@ -548,6 +548,11 @@ return {
       local menufacture = require("telescope").extensions.menufacture
       -- this menu items will be present in all the pickers
       local global_menu_items = {
+        ["change cwd to the current file dir"] = function(opts, callback)
+          opts.search_dirs = {}
+          opts.cwd = vim.fn.expand "%:p:h"
+          callback(opts)
+        end,
         ["change cwd to parent"] = function(opts, callback)
           local cwd = opts.cwd and vim.fn.expand(opts.cwd) or vim.loop.cwd()
           opts.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
