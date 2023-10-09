@@ -195,12 +195,9 @@ vim.keymap.set(
   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
   { desc = "Toggle Tab switcher mode." }
 )
-vim.keymap.set(
-  "n",
-  "<leader><leader>rn",
-  "<Cmd>call ToggleSmartRelativenumbers()<CR>",
-  { desc = "Toggle smart relative numbers." }
-)
+vim.keymap.set("n", "<leader><leader>rn", function()
+  ToggleSmartRelativenumbers()
+end, { desc = "Toggle smart relative numbers." })
 
 -- Toggle word wrap for current buffer
 vim.keymap.set(

@@ -200,42 +200,36 @@ end
 -- )
 -- }}}
 
--- {{{ toggle relativenumber
-vim.cmd [[
-augroup SmartRelativenumbers
-  let blacklist = ["toggleterm"]
-  autocmd!
-  autocmd InsertEnter * if index(blacklist, &ft) < 0 | :setlocal norelativenumber | endif
-  autocmd InsertLeave * if index(blacklist, &ft) < 0 | :setlocal relativenumber | endif
-  autocmd BufLeave * if index(blacklist, &ft) < 0 | :setlocal norelativenumber | endif
-  autocmd BufEnter * if index(blacklist, &ft) < 0 | :setlocal relativenumber | endif
-augroup END
+-- {{{ Smart relativenumbers
+function SetRelativeNumberAutocmd(events, mode)
+  vim.api.nvim_create_autocmd(events, {
+    group = vim.api.nvim_create_augroup("SmartRelativenumbers", { clear = false }),
+    pattern = "*",
+    callback = function()
+      local blacklist = { "toggleterm" }
+      if not vim.tbl_contains(blacklist, vim.bo.filetype) then
+        vim.wo.relativenumber = mode
+      end
+    end,
+  })
+end
 
-function! ToggleSmartRelativenumbers()
-  if !exists('#SmartRelativenumbers#InsertEnter')
-    set relativenumber
-    augroup SmartRelativenumbers
-      autocmd!
-      autocmd InsertEnter * if index(blacklist, &ft) < 0 | :setlocal norelativenumber | endif
-      autocmd InsertLeave * if index(blacklist, &ft) < 0 | :setlocal relativenumber | endif
-      autocmd BufLeave * if index(blacklist, &ft) < 0 | :setlocal norelativenumber | endif
-      autocmd BufEnter * if index(blacklist, &ft) < 0 | :setlocal relativenumber | endif
-    augroup END
-else
-    set relativenumber!
-    augroup SmartRelativenumbers
-      autocmd!
-    augroup END
-  endif
-endfunction
-]]
--- this keymap is defined in config/keymaps.lua
--- vim.keymap.set(
---   "n",
---   "<leader><leader>rn",
---   "<Cmd>call ToggleSmartRelativenumbers()<CR>",
---   { desc = "Toggle smart relative numbers." }
--- )
+SetRelativeNumberAutocmd({ "InsertEnter", "BufLeave" }, false)
+SetRelativeNumberAutocmd({ "InsertLeave", "BufEnter" }, true)
+vim.g.SmartRelativenumbersEnabled = true
+
+function _G.ToggleSmartRelativenumbers()
+  if not vim.g.SmartRelativenumbersEnabled then
+    SetRelativeNumberAutocmd({ "InsertEnter", "BufLeave" }, false)
+    SetRelativeNumberAutocmd({ "InsertLeave", "BufEnter" }, true)
+    vim.o.relativenumber = true
+    vim.g.SmartRelativenumbersEnabled = true
+  else
+    vim.api.nvim_create_augroup("SmartRelativenumbers", { clear = true })
+    vim.o.relativenumber = false
+    vim.g.SmartRelativenumbersEnabled = false
+  end
+end
 -- }}}
 
 -- {{{ Word wrap
