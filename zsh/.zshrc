@@ -1282,6 +1282,7 @@ cleanup-git-branches() {
 }
 alias gcm='git switch $(git_main_branch)'
 alias gpf='git push --force-with-lease'
+alias gbsc='git branch --show-current'
 
 gbb() {
   local format_string
