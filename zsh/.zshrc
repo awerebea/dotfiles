@@ -1262,8 +1262,12 @@ alias gcpdn!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend
 alias gcud!='git commit -v --amend --date=now'
 # Git. Amend commit, update author date, no-edit
 alias gcudn!='git commit --amend --date=now --no-edit'
+# Rebase preserving merges
+alias grbrm='git rebase --rebase-merges'
 # Rebase preserving merges and committer date
 alias grbpdrm='git rebase --committer-date-is-author-date --rebase-merges'
+# Rebase interactively preserving merges
+alias grbirm='git rebase -i --rebase-merges'
 # Rebase interactively preserving merges and committer date
 alias grbipdrm='git rebase -i --committer-date-is-author-date --rebase-merges'
 # Rebase preserving committer date
