@@ -532,4 +532,10 @@ return {
     config = true,
   },
   { "tpope/vim-eunuch", event = "VeryLazy" },
+  {
+    "echasnovski/mini.splitjoin",
+    event = "VeryLazy",
+    version = "*",
+    config = true,
+  },
 }
