@@ -624,6 +624,7 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[lazygit] ]] && alias lg="lazygit"
 [[ $commands[rover] ]] && alias rv="rover"
 alias cdi='source cd-infra'
+alias py='python'
 
 vs() { find $GIT_DOTFILES/scripts -type f | fzf | xargs -I {} -r $EDITOR '{}' }
 
