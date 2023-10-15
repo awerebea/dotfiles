@@ -9,7 +9,6 @@ return {
     dependencies = { "tpope/vim-repeat" },
     config = function()
       require("leap").add_default_mappings()
-      require("leap").add_repeat_mappings(";", ",", { relative_directions = true })
 
       local function get_line_starts(winid, skip_range)
         local wininfo = vim.fn.getwininfo(winid)[1]
