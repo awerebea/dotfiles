@@ -23,8 +23,8 @@ local aucmd_dict = {
       end,
     },
   },
-  -- windows to close with q
   FileType = {
+    -- windows to close with q
     {
       pattern = {
         "OverseerForm",
@@ -49,6 +49,13 @@ local aucmd_dict = {
       callback = function(event)
         vim.bo[event.buf].buflisted = false
         vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = event.buf })
+      end,
+    },
+    -- textwidth for python
+    {
+      pattern = { "python" },
+      callback = function(event)
+        vim.bo[event.buf].textwidth = 88
       end,
     },
   },
