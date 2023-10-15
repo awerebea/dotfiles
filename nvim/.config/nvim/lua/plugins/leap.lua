@@ -72,15 +72,4 @@ return {
       vim.keymap.set("n", "<leader><leader>k", "<Cmd>lua Leap_linewise()<CR>")
     end,
   },
-  {
-    "ggandor/flit.nvim",
-    event = "VeryLazy",
-    dependencies = { "ggandor/leap.nvim", "tpope/vim-repeat" },
-    opts = {
-      keys = { f = "f", F = "F", t = "t", T = "T" },
-      labeled_modes = "nvo",
-      multiline = true,
-    },
-    config = true,
-  },
 }
