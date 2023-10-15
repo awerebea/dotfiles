@@ -124,7 +124,14 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
-  { "tpope/vim-surround", event = "VeryLazy" },
+  {
+    "tpope/vim-surround",
+    event = "VeryLazy",
+    dependecies = { { "echasnovski/mini.splitjoin" } },
+    config = function()
+      require("mini.splitjoin").setup()
+    end,
+  },
   { "tpope/vim-repeat", event = "VeryLazy" },
   { "christoomey/vim-tmux-navigator", event = "VimEnter" },
   {
