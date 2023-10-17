@@ -501,23 +501,6 @@ return {
     },
   },
   {
-    "hrsh7th/nvim-pasta",
-    event = "VeryLazy",
-    config = function()
-      require("pasta").setup {
-        paste_mode = false,
-        fix_cursor = true,
-        fix_indent = false,
-        prevent_diagnostics = false,
-        next_key = vim.api.nvim_replace_termcodes("<C-n>", true, true, true),
-        prev_key = vim.api.nvim_replace_termcodes("<C-p>", true, true, true),
-      }
-      vim.keymap.set({ "n", "x" }, "p", require("pasta.mappings").p)
-      vim.keymap.set({ "n", "x" }, "P", require("pasta.mappings").P)
-      vim.keymap.set({ "n" }, "<C-p>", require("pasta.mappings").toggle_pin)
-    end,
-  },
-  {
     "altermo/ultimate-autopair.nvim",
     enabled = true,
     event = { "InsertEnter", "CmdlineEnter" },
