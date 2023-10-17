@@ -395,17 +395,19 @@ return {
           layout_config = {
             horizontal = {
               prompt_position = "top",
+              anchor = "S",
               preview_cutoff = 110,
               preview_width = { 0.5, min = 70, max = 100 },
               width = 0.999,
-              height = 0.999,
+              height = 0.95,
             },
             vertical = {
               prompt_position = "top",
+              anchor = "S",
               preview_cutoff = 25,
               preview_height = { 0.6, min = 20, max = 40 },
               width = 0.999,
-              height = 0.999,
+              height = 0.95,
             },
           },
           file_ignore_patterns = { "^.git/", ".cache/", ".venv/" },
