@@ -75,6 +75,7 @@ return {
             },
           },
         },
+        symlink_destination = false,
       },
       sort_by = "case_sensitive",
       --  git = {
