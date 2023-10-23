@@ -578,6 +578,7 @@ return {
           opts.layout_strategy = "vertical"
           callback(opts)
         end,
+        ["--pcre2"] = menufacture.toggle_flag("additional_args", "--pcre2"),
       }
 
       for key, picker in pairs(telescope_builtin) do
