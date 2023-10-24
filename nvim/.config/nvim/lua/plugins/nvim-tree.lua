@@ -3,10 +3,15 @@ return {
     "nvim-tree/nvim-tree.lua",
     cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
     keys = {
-      { "<F2>", "<Cmd>NvimTreeToggle<CR>", desc = "Explorer" },
+      { "<F2>", "<Cmd>NvimTreeToggle<CR><bar><Cmd>NvimTreeRefresh<CR>", desc = "Explorer" },
+      {
+        "<leader><leader><F2>",
+        "<Cmd>:NvimTreeFocus<CR><bar><Cmd>NvimTreeRefresh<CR>",
+        desc = "Explorer",
+      },
       {
         "<leader><F2>",
-        "<Cmd>NvimTreeFindFile<CR>",
+        "<Cmd>NvimTreeFindFile<CR><bar><Cmd>NvimTreeRefresh<CR>",
         desc = "Explorer",
       },
     },
