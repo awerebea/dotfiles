@@ -185,6 +185,20 @@ if command -v direnv &> /dev/null; then
     eval "$(direnv hook bash)"
 fi
 
+# Add neovim installation path, installed by bob
+# https://github.com/MordechaiHadad/bob
+if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
+[[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
+    export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
+fi
+
+# Add neovim installation path, installed manually from release page
+# https://github.com/neovim/neovim/releases
+if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
+[[ ":$PATH:" != *":$HOME/.local/share/nvim-release/bin:"* ]]; then
+    export PATH="$HOME/.local/share/nvim-release/bin:$PATH"
+fi
+
 # Define default editor nvim, vim, vi or nano
 if command -v nvim &> /dev/null; then
     export EDITOR='nvim'
