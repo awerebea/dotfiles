@@ -1308,8 +1308,8 @@ gbb() {
 }
 
 cbr() {
-  gb 70 35 -committerdate |
-  fzf --header "Checkout Recent Branch" --preview "git diff --color=always {1}" --pointer="" |
+  gbb 70 35 -committerdate |
+  fzf --header "Switch to Recent Branch:" --preview "git diff --color=always {1}" --pointer="" |
   cut -d " " -f 1 | xargs git switch
 }
 
