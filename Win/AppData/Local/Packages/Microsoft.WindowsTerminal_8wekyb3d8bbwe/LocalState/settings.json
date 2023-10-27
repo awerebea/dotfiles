@@ -60,7 +60,9 @@
     {
         "defaults": 
         {
-            "closeOnExit": "graceful"
+            "closeOnExit": "graceful",
+            "padding": "0",
+            "scrollbarState": "hidden"
         },
         "list": 
         [
