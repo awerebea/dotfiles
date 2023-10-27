@@ -6,7 +6,7 @@ if [ "$#" -lt 1 ]; then
 fi
 
 envs_raw=()
-VALID_ENVS=(torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
+VALID_ENVS=(torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-{dev,prod})
 
 for arg in "$@"; do
     read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
