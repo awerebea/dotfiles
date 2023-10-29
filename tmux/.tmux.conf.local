@@ -358,8 +358,8 @@ bind C-a send-prefix
 # bind v new-window -c #{pane_current_path} #!important
 
 # move status line to top
-#set -g status-position top
-set -g status-position bottom
+set -g status-position top
+# set -g status-position bottom
 
 
 # -- tpm -----------------------------------------------------------------------
@@ -792,6 +792,7 @@ set -g @yank_with_mouse on
 
 #  tmux-split-statusbar
 set -g @split-statusbar-mode 'on'                 # [ on | off]
+set -g @split-statusbar-swap-lines 'on'
 set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
 # bindkey for toggle statusbar-mode
 # define yourself just like bind-key, default: M-s
