@@ -1,24 +1,73 @@
 #!/usr/bin/env bash
 
-if [ "$#" -lt 1 ]; then
-    printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
-    exit 1
-fi
+VALID_ENVS=(
+    "all"
+    torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test}
+    hnb-cp-{dev,prod}
+)
 
-envs=("$@")
-VALID_ENVS=(torana-{dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-dev)
 
-for env in "${envs[@]}"; do
-    # shellcheck disable=SC2076
-    if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
-        echo "Invalid environment passed." >&2
+_check_inputs() {
+    if ! command -v aws &> /dev/null; then
+        echo "AWS CLI is not installed." >&2
         exit 1
     fi
-done
 
-for i in "${envs[@]}"; do
-    aws sso login --profile="$i" 2>/dev/null |
-    stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
-    stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
-    echo
-done
+    if [ "$#" -lt 1 ]; then
+        printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
+        exit 1
+    fi
+}
+
+
+_get_envs() {
+    local envs_raw arg seen_elements envs element env
+    envs_raw=()
+    for arg in "$@"; do
+        read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
+        envs_raw+=("${splitted_arg[@]}")
+    done
+    # Remove duplicates
+    declare -A seen_elements
+    envs=()
+    for element in "${envs_raw[@]}"; do
+        if [ "${seen_elements[$element]}" = "" ]; then
+            envs+=("$element")
+            seen_elements["$element"]=1
+        fi
+    done
+    for env in "${envs[@]}"; do
+        # shellcheck disable=SC2076
+        if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
+            echo "Invalid environment passed." >&2
+            exit 1
+        fi
+        if [ "$env" = "all" ]; then
+            envs=("${VALID_ENVS[@]}")
+            unset 'envs[0]'
+            break
+        fi
+    done
+    echo "${envs[@]}"
+}
+
+
+_main() {
+    local envs env
+    _check_inputs "$@"
+    read -ra envs <<<"$(_get_envs "$@")"
+
+    # Clear existing credentials
+    rm -rf ~/.awsvault ~/.aws/{cli,tmp-creds,sso,credentials}
+
+    for env in "${envs[@]}"; do
+        aws sso login --profile="$env" 2>/dev/null |
+        stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
+        stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
+        echo
+    done
+}
+
+
+# Start program here
+_main "$@"
