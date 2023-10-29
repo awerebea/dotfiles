@@ -1,55 +1,84 @@
 #!/usr/bin/env bash
 
-if [ "$#" -lt 1 ]; then
-    printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
-    exit 1
-fi
+VALID_ENVS=(
+    "all"
+    torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test}
+    hnb-cp-{dev,prod}
+)
 
-envs_raw=()
-VALID_ENVS=(torana-{sand,dev,test,stage,prod,audit,shared,p2dev,p2test} hnb-cp-{dev,prod})
 
-for arg in "$@"; do
-    read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
-    envs_raw+=("${splitted_arg[@]}")
-done
-
-# Remove duplicates
-declare -A seen_elements
-envs=()
-
-for element in "${envs_raw[@]}"; do
-    if [ "${seen_elements[$element]}" = "" ]; then
-        envs+=("$element")
-        seen_elements["$element"]=1
-    fi
-done
-
-# Check if the passed envs are valid
-for env in "${envs[@]}"; do
-    # shellcheck disable=SC2076
-    if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
-        echo "Invalid environment passed: $env" >&2
+_check_inputs() {
+    if ! command -v aws-vault &> /dev/null; then
+        echo "aws-vault is not installed." >&2
         exit 1
     fi
-done
 
-creds="$HOME/.aws/credentials"
-creds_temp="$HOME/.aws/tmp-creds/tmp.credentials"
-creds_addon="$HOME/.aws/credentials_addon"
-creds_temp_dir="$(dirname "$creds_temp")"
+    if [ "$#" -lt 1 ]; then
+        printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
+        exit 1
+    fi
+}
 
-mkdir -p "$creds_temp_dir" 2>/dev/null
-: >"$creds_temp"    # Clear the file
-for i in "${envs[@]}"; do
-    aws-vault exec "$i" --json >"$creds_temp_dir/$i.json"
-    {
-        echo "[$i]"
-        echo "aws_access_key_id=$(jq .AccessKeyId "$creds_temp_dir/$i.json")"
-        echo "aws_secret_access_key=$(jq .SecretAccessKey "$creds_temp_dir/$i.json")"
-        echo "aws_session_token=$(jq .SessionToken "$creds_temp_dir/$i.json")"
-        echo
-    } >>"$creds_temp"
-done
-cp "$creds_temp" "$creds"
 
-[ -f "$creds_addon" ] && echo >>"$creds_temp" && cat "$creds_addon" >>"$creds"
+_get_envs() {
+    local envs_raw arg seen_elements envs element env
+    envs_raw=()
+    for arg in "$@"; do
+        read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
+        envs_raw+=("${splitted_arg[@]}")
+    done
+    # Remove duplicates
+    declare -A seen_elements
+    envs=()
+    for element in "${envs_raw[@]}"; do
+        if [ "${seen_elements[$element]}" = "" ]; then
+            envs+=("$element")
+            seen_elements["$element"]=1
+        fi
+    done
+    for env in "${envs[@]}"; do
+        # shellcheck disable=SC2076
+        if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
+            echo "Invalid environment passed." >&2
+            exit 1
+        fi
+        if [ "$env" = "all" ]; then
+            envs=("${VALID_ENVS[@]}")
+            unset 'envs[0]'
+            break
+        fi
+    done
+    echo "${envs[@]}"
+}
+
+
+_main() {
+    local envs creds creds_temp creds_addon creds_temp_dir env
+    _check_inputs "$@"
+    read -ra envs <<<"$(_get_envs "$@")"
+
+    creds="$HOME/.aws/credentials"
+    creds_temp="$HOME/.aws/tmp-creds/tmp.credentials"
+    creds_addon="$HOME/.aws/credentials_addon"
+    creds_temp_dir="$(dirname "$creds_temp")"
+
+    mkdir -p "$creds_temp_dir" 2>/dev/null || exit 1
+    : >"$creds_temp"    # Clear the file
+    for env in "${envs[@]}"; do
+        aws-vault exec "$env" --json >"$creds_temp_dir/$env.json"
+        {
+            echo "[$env]"
+            echo "aws_access_key_id=$(jq .AccessKeyId "$creds_temp_dir/$env.json")"
+            echo "aws_secret_access_key=$(jq .SecretAccessKey "$creds_temp_dir/$env.json")"
+            echo "aws_session_token=$(jq .SessionToken "$creds_temp_dir/$env.json")"
+            echo
+        } >>"$creds_temp" || exit 1
+    done
+    cp "$creds_temp" "$creds"
+
+    [ -f "$creds_addon" ] && echo >>"$creds_temp" && cat "$creds_addon" >>"$creds"
+}
+
+
+# Start program here
+_main "$@"
