@@ -767,8 +767,12 @@ return {
   },
   {
     "AckslD/nvim-neoclip.lua",
+    dependencies = { { "kkharji/sqlite.lua", module = "sqlite" } },
     event = "VeryLazy",
     opts = {
+      enable_persistent_history = true,
+      continuous_sync = true,
+      db_path = vim.fn.stdpath "data" .. "/databases/neoclip.sqlite3",
       default_register = "+",
       keys = {
         telescope = {
