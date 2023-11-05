@@ -15,8 +15,6 @@ VALID_ENVS=(
     prod
     shared
     audit
-    p2dev
-    p2test
 )
 
 # Define colors
