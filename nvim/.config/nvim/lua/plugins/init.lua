@@ -149,9 +149,14 @@ return {
       vim.keymap.set(
         { "n", "v" },
         "<leader>z",
-        "<Cmd>MaximizerToggle<CR>",
+        "<Cmd>MaximizerToggle!<CR>",
         { desc = "Maximize window toggle" }
       )
+      vim.g.maximizer_set_default_mapping = 1
+      vim.g.maximizer_set_mapping_with_bang = 1
+      vim.g.maximizer_default_mapping_key = "<F3>"
+      vim.opt.winminheight = 0
+      vim.opt.winminwidth = 0
     end,
   },
   {
@@ -354,12 +359,9 @@ return {
   },
   {
     "b0o/incline.nvim",
+    enabled = false, -- Disabled as conflicts with vim-maximizer
     event = "VeryLazy",
-    opts = {
-      hide = {
-        cursorline = "focused_win",
-      },
-    },
+    opts = { hide = { cursorline = "focused_win" } },
     config = true,
   },
   {
