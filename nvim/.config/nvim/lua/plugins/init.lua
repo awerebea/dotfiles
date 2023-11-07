@@ -230,34 +230,6 @@ return {
     config = true,
   },
   {
-    "ThePrimeagen/harpoon",
-    keys = {
-      { "<leader><leader>m", '<Cmd>lua require("harpoon.mark").add_file()<CR>' },
-      { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
-      { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
-      {
-        "<leader>hm",
-        function()
-          require("harpoon.ui").toggle_quick_menu()
-        end,
-        desc = "Harpoon marks",
-      },
-      {
-        "<leader>m",
-        function()
-          require("telescope").extensions.harpoon.marks()
-        end,
-        desc = "Harpoon marks",
-      },
-    },
-    opts = {
-      menu = {
-        width = vim.api.nvim_win_get_width(0) - 4,
-      },
-    },
-    config = true,
-  },
-  {
     "petertriho/nvim-scrollbar",
     event = "BufReadPre",
     opts = { marks = { GitChange = { text = "│" } } },
