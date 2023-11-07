@@ -19,6 +19,7 @@ return {
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
+      "ThePrimeagen/harpoon",
     },
     cmd = "Telescope",
     keys = {
@@ -253,6 +254,13 @@ return {
         "<leader>fm",
         "<Cmd>Telescope macrothis<CR>",
         desc = "Macrothis",
+      },
+      {
+        "<leader>m",
+        function()
+          require("telescope").extensions.harpoon.marks()
+        end,
+        desc = "Harpoon marks",
       },
     },
     config = function(_, _)
@@ -544,6 +552,7 @@ return {
       telescope.load_extension "menufacture"
       telescope.load_extension "macrothis"
       telescope.load_extension "terraform_doc"
+      telescope.load_extension "harpoon"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
@@ -828,5 +837,27 @@ return {
       "nvim-telescope/telescope.nvim",
       "tpope/vim-fugitive",
     },
+  },
+  {
+    "ThePrimeagen/harpoon",
+    event = "VeryLazy",
+    keys = {
+      { "<leader><leader>m", '<Cmd>lua require("harpoon.mark").add_file()<CR>' },
+      { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
+      { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
+      {
+        "<leader>hm",
+        function()
+          require("harpoon.ui").toggle_quick_menu()
+        end,
+        desc = "Harpoon marks",
+      },
+    },
+    opts = {
+      menu = {
+        width = vim.api.nvim_win_get_width(0) - 4,
+      },
+    },
+    config = true,
   },
 }
