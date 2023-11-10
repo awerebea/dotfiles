@@ -776,7 +776,20 @@ return {
   },
   {
     "AckslD/nvim-neoclip.lua",
-    dependencies = { { "kkharji/sqlite.lua", module = "sqlite" } },
+    dependencies = {
+      {
+        "kkharji/sqlite.lua",
+        module = "sqlite",
+        config = function()
+          if
+            string.sub(string.lower(vim.loop.os_uname().sysname), 1, string.len "windows")
+            == "windows"
+          then
+            vim.g.sqlite_clib_path = "C:/Program Files/sqlite/sqlite3.dll"
+          end
+        end,
+      },
+    },
     event = "VeryLazy",
     opts = {
       enable_persistent_history = true,
@@ -802,6 +815,7 @@ return {
         },
       },
     },
+    config = true,
   },
   {
     "aaronhallaert/advanced-git-search.nvim",
