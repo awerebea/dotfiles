@@ -5,14 +5,18 @@ return {
     local dashboard = require "alpha.themes.dashboard"
     dashboard.section.header.val = require("plugins.dashboard.logo")["random"]
     dashboard.section.buttons.val = {
-      dashboard.button("f", " " .. " Find file", ":Telescope find_files <CR>"),
-      dashboard.button("n", " " .. " New file", ":ene <BAR> startinsert <CR>"),
-      dashboard.button("r", " " .. " Recent files", ":Telescope oldfiles <CR>"),
-      dashboard.button("g", " " .. " Find text", ":Telescope live_grep <CR>"),
-      dashboard.button("c", " " .. " Config", ":e $MYVIMRC <CR>"),
-      dashboard.button("s", " " .. " Load CWD session", ":lua LoadCurrentCwdSession()<CR>"),
-      dashboard.button("l", "鈴 " .. " Lazy", ":Lazy<CR>"),
-      dashboard.button("q", " " .. " Quit", ":qa<CR>"),
+      dashboard.button("f", " " .. " Find file", "<Cmd>Telescope find_files<CR>"),
+      dashboard.button("n", " " .. " New file", "<Cmd>enew <BAR> startinsert<CR>"),
+      dashboard.button("r", " " .. " Recent files", "<Cmd>Telescope oldfiles<CR>"),
+      dashboard.button("g", " " .. " Find text", "<Cmd>Telescope live_grep<CR>"),
+      dashboard.button("c", " " .. " Config", "<Cmd>edit $MYVIMRC<CR>"),
+      dashboard.button(
+        "s",
+        " " .. " Load CWD session",
+        "<Cmd>lua HandleCurrentCwdSession('load')<CR>"
+      ),
+      dashboard.button("l", "鈴 " .. " Lazy", "<Cmd>Lazy<CR>"),
+      dashboard.button("q", " " .. " Quit", "<Cmd>quitall<CR>"),
     }
     for _, button in ipairs(dashboard.section.buttons.val) do
       button.opts.hl = "AlphaButtons"
