@@ -40,7 +40,7 @@ return {
       end,
       disable_netrw = false,
       hijack_netrw = true,
-      respect_buf_cwd = false,
+      respect_buf_cwd = true,
       view = {
         side = "right",
         number = true,
@@ -50,10 +50,10 @@ return {
       filters = {
         custom = { "^\\.git$" },
       },
-      sync_root_with_cwd = false,
+      sync_root_with_cwd = true,
       prefer_startup_root = true,
       update_focused_file = {
-        enable = false,
+        enable = true,
         update_root = true,
       },
       actions = {
