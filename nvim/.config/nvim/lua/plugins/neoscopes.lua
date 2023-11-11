@@ -25,7 +25,7 @@ return {
     end, { desc = "Select scope" })
 
     local function get_search_dirs()
-      if scopes.get_current_scope() == "<disable>" then
+      if not scopes.get_current_scope() or scopes.get_current_scope() == "<disable>" then
         return nil
       end
       return scopes.get_current_paths()
