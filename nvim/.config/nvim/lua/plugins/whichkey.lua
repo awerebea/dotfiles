@@ -102,12 +102,12 @@ return {
           ["2"] = { name = "Hop" },
         },
         ["["] = {
-          name = "Harpoon, Bufferline, ToDo-comments",
+          name = "Harpoon, ToDo-comments",
           b = "Move Bufferline tab left",
           h = "Go to prev Harpoon mark",
         },
         ["]"] = {
-          name = "Harpoon, Bufferline, ToDo-comments",
+          name = "Harpoon, ToDo-comments",
           b = "Move Bufferline tab right",
           h = "Go to next Harpoon mark",
         },
