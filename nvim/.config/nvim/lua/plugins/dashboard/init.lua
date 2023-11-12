@@ -7,7 +7,7 @@ return {
     dashboard.section.buttons.val = {
       dashboard.button("f", " " .. " Find file", "<Cmd>Telescope find_files<CR>"),
       dashboard.button("n", " " .. " New file", "<Cmd>enew <BAR> startinsert<CR>"),
-      dashboard.button("r", " " .. " Recent files", "<Cmd>Telescope oldfiles<CR>"),
+      dashboard.button("r", "󰄉 " .. " Recent files", "<Cmd>Telescope oldfiles<CR>"),
       dashboard.button("g", " " .. " Find text", "<Cmd>Telescope live_grep<CR>"),
       dashboard.button("c", " " .. " Config", "<Cmd>edit $MYVIMRC<CR>"),
       dashboard.button(
@@ -15,7 +15,7 @@ return {
         " " .. " Load CWD session",
         "<Cmd>lua HandleCurrentCwdSession('load')<CR>"
       ),
-      dashboard.button("l", "鈴 " .. " Lazy", "<Cmd>Lazy<CR>"),
+      dashboard.button("l", "󰒲 " .. " Lazy", "<Cmd>Lazy<CR>"),
       dashboard.button("q", " " .. " Quit", "<Cmd>quitall<CR>"),
     }
     for _, button in ipairs(dashboard.section.buttons.val) do
