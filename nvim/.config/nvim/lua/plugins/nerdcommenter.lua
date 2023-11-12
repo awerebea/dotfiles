@@ -1,5 +1,5 @@
 return {
-  enabled = true,
+  enabled = false,
   "preservim/nerdcommenter",
   event = "VeryLazy",
   cmd = { "NERDCommenterToggle" },
