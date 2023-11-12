@@ -95,8 +95,9 @@
                 "colorScheme": "Tokyo Night",
                 "font": 
                 {
-                    "face": "Liga SFMono Nerd Font",
-                    "weight": "thin"
+                    "face": "JetBrainsMono Nerd Font",
+                    "size": 13.0,
+                    "weight": "light"
                 },
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
                 "hidden": false,
@@ -124,8 +125,8 @@
                 "experimental.retroTerminalEffect": false,
                 "font": 
                 {
-                    "face": "Liga SFMono Nerd Font",
-                    "weight": "thin"
+                    "face": "JetBrainsMono Nerd Font",
+                    "weight": "light"
                 },
                 "guid": "{d7b20cea-47a9-518c-95a4-c8bd91e2e1c6}",
                 "hidden": false,
