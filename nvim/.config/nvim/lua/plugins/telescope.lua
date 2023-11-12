@@ -866,14 +866,17 @@ return {
       {
         "<leader>m",
         function()
+          require("harpoon").setup {
+            menu = {
+              width = math.min(
+                math.max(math.min(vim.api.nvim_win_get_width(0) - 60, 100), 75),
+                vim.api.nvim_win_get_width(0)
+              ),
+            },
+          }
           require("harpoon.ui").toggle_quick_menu()
         end,
         desc = "Harpoon marks",
-      },
-    },
-    opts = {
-      menu = {
-        width = vim.api.nvim_win_get_width(0) - 4,
       },
     },
     config = true,
