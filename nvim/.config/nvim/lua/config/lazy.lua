@@ -21,7 +21,7 @@ require("lazy").setup {
     { import = "plugins.extras.ai" },
   },
   defaults = { lazy = true, version = nil },
-  install = { missing = true, colorscheme = { "tokyonight", "gruvbox" } },
+  install = { missing = true, colorscheme = { "catppuccin" } },
   checker = { enabled = false },
   performance = {
     cache = {
