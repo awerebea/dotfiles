@@ -271,6 +271,3 @@ vim.keymap.set(
 
 -- pastetoggle option is deprecated in 0.10.0
 vim.keymap.set("n", "<F4>", [[:set paste!<CR>:set paste?<CR>]], { noremap = true, silent = true })
-
--- leap (added here as it conflicts with vim-swap plugin)
-vim.keymap.set("n", "gs", "<Plug>(leap-from-window)", { noremap = true, silent = true })
