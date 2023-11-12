@@ -1,6 +1,7 @@
 return {
   {
     "folke/styler.nvim",
+    enabled = false,
     event = "VeryLazy",
     config = function()
       require("styler").setup {
