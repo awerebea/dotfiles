@@ -1,6 +1,6 @@
 return {
   {
-    enabled = false,
+    enabled = true,
     "numToStr/Comment.nvim",
     dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
     event = "VeryLazy",
@@ -111,7 +111,8 @@ return {
       -- Invert (flip flop) comments with gC, in normal and visual mode
       vim.keymap.set(
         { "n", "x" },
-        "gC",
+        -- "gC",
+        "<leader>ci",
         "<cmd>set operatorfunc=v:lua.__flip_flop_comment<cr>g@",
         { silent = true, desc = "Invert comments" }
       )
