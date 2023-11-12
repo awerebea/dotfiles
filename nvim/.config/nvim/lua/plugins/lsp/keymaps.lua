@@ -77,8 +77,8 @@ function M:map(lhs, rhs, opts)
 end
 
 function M.rename()
-  if pcall(require, "inc_rename") then
-    return ":IncRename " .. vim.fn.expand "<cword>"
+  if pcall(require, "lspsaga") then
+    return "<Cmd>Lspsaga rename<CR>"
   else
     return "<Cmd>lua vim.lsp.buf.rename()<CR>"
   end
