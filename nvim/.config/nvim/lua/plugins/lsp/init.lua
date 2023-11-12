@@ -204,6 +204,18 @@ return {
     {
       "glepnir/lspsaga.nvim",
       event = "VeryLazy",
+      opts = {
+        code_action = {
+          show_server_name = true,
+          extend_gitsigns = true,
+        },
+        finder = {
+          default = "def+ref+imp+tyd",
+        },
+        lightbulb = {
+          enable = true,
+        },
+      },
       config = true,
     },
   },
