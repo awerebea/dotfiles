@@ -2,7 +2,10 @@ return {
   "natecraddock/sessions.nvim",
   lazy = false,
   config = function()
-    require("sessions").setup()
+    require("sessions").setup {
+      absolute = true,
+      session_filepath = vim.fn.stdpath "data" .. "/sessions",
+    }
     local config_group = vim.api.nvim_create_augroup("SessionManagerCustom", {})
     vim.api.nvim_create_autocmd({ "VimEnter" }, {
       pattern = "*",
@@ -21,13 +24,24 @@ return {
     vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
       group = config_group,
       callback = function()
-        if vim.bo.filetype ~= "git" and not vim.bo.filetype ~= "gitcommit" then
-          HandleCurrentCwdSession "save"
-          vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-          local session_file, _ = vim.fn.getcwd(-1, -1):gsub("/", "@_@")
-          session_file = vim.fn.stdpath "data" .. "/sessions/" .. session_file
-          require("sessions").save(session_file)
+        local git_filetypes = {
+          "git",
+          "gitcommit",
+          "gitconfig",
+          "gitrebase",
+          "gitsendemail",
+        }
+        local buf_filetype = vim.bo.filetype
+        for _, str in ipairs(git_filetypes) do
+          if str == buf_filetype then
+            return
+          end
         end
+        HandleCurrentCwdSession "save"
+        vim.api.nvim_set_current_dir(vim.g.CWD_initial)
+        local session_file, _ = vim.fn.getcwd(-1, -1):gsub("/", "@_@")
+        session_file = vim.fn.stdpath "data" .. "/sessions/" .. session_file
+        require("sessions").save(session_file)
       end,
     })
     HandleCurrentCwdSession = function(cmd)
