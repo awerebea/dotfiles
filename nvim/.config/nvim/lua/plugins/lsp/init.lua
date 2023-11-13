@@ -95,7 +95,7 @@ return {
         "pydocstyle",
         -- "pylama",
         "pylint",
-        "tflint",
+        -- "tflint",
         "shellcheck",
         "shellharden",
         "beautysh",
