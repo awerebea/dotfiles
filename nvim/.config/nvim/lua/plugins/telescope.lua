@@ -20,6 +20,7 @@ return {
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
       "ThePrimeagen/harpoon",
+      "axkirillov/hbac.nvim",
     },
     cmd = "Telescope",
     keys = {
@@ -94,6 +95,15 @@ return {
           require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
+      },
+      {
+        "<leader><leader><CR>",
+        function()
+          require("telescope").extensions.hbac.buffers {
+            path_display = { "truncate" },
+          }
+        end,
+        desc = "Hbac Buffers",
       },
       {
         "<leader>fh",
@@ -581,6 +591,7 @@ return {
       telescope.load_extension "macrothis"
       telescope.load_extension "terraform_doc"
       telescope.load_extension "harpoon"
+      telescope.load_extension "hbac"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
