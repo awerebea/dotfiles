@@ -1,6 +1,6 @@
 return {
   "akinsho/toggleterm.nvim",
-  keys = { [[<leader>;]] },
+  keys = { { [[<leader>;]] }, { [[<leader>;;]] } },
   cmd = { "ToggleTerm", "TermExec" },
   opts = {
     size = function(term)
@@ -44,8 +44,13 @@ return {
     -- toggle all terminals at once
     vim.keymap.set({ "n", "t" }, "<leader><leader>;", "<Cmd>ToggleTermToggleAll<CR>")
 
-    -- toggle vertical terminal
-    vim.keymap.set("n", "<leader>v;", "<Cmd>ToggleTerm direction=vertical<CR>")
+    -- toggle terminal
+    vim.keymap.set("n", "<leader>;", function()
+      vim.cmd(vim.v.count1 .. "ToggleTerm direction=horizontal")
+    end)
+    vim.keymap.set("n", "<leader>;;", function()
+      vim.cmd(vim.v.count1 .. "ToggleTerm direction=vertical")
+    end)
 
     vim.keymap.set("t", "<C-e>", [[<Cmd>WinResizerStartResize<CR>]])
   end,
