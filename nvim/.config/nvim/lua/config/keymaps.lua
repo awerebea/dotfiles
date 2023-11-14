@@ -271,3 +271,7 @@ vim.keymap.set(
 
 -- pastetoggle option is deprecated in 0.10.0
 vim.keymap.set("n", "<F4>", [[:set paste!<CR>:set paste?<CR>]], { noremap = true, silent = true })
+
+-- append empty line above
+-- stylua: ignore
+vim.keymap.set({ "n", "i" }, "<M-CR>", "<Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>")
