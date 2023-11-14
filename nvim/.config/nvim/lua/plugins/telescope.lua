@@ -435,6 +435,16 @@ return {
           border = true,
           borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
           color_devicons = true,
+          vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--hidden",
+          },
         },
         pickers = {
           find_files = {
