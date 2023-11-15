@@ -22,8 +22,19 @@ Set-PSReadLineOption -ViModeIndicator Script -ViModeChangeHandler $Function:OnVi
 # See https://ch0.co/tab-completion for details.
 $ChocolateyProfile = "$env:ChocolateyInstall\helpers\chocolateyProfile.psm1"
 if (Test-Path($ChocolateyProfile)) {
-	Import-Module "$ChocolateyProfile"
+    Import-Module "$ChocolateyProfile"
 }
+
+# Catppuccin theme
+if (-not (Get-Module -ListAvailable -Name Catppuccin)) {
+    $MyDocumentsLocation = [Environment]::GetFolderPath('MyDocuments')
+    New-Item -Type Directory -Path "$MyDocumentsLocation\PowerShell\Modules" -ErrorAction SilentlyContinue
+    git clone https://github.com/catppuccin/powershell.git "$MyDocumentsLocation\PowerShell\Modules\Catppuccin"
+}
+# Import the module https://github.com/catppuccin/powershell
+Import-Module Catppuccin
+# Set a flavor for easy access
+$Flavor = $Catppuccin['Mocha']
 
 # PSFzf Config
 Remove-PSReadlineKeyHandler 'Ctrl+r'
@@ -34,7 +45,72 @@ Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory
 
 $env:FZF_DEFAULT_COMMAND='fd --type f --follow --hidden --exclude .git'
 $env:FZF_CTRL_T_COMMAND=$env:FZF_DEFAULT_COMMAND
-$env:FZF_DEFAULT_OPTS="--height=100%  --inline-info --ansi --scheme=history --bind ctrl-/:toggle-preview,alt-j:preview-down,alt-k:preview-up,alt-b:preview-page-up,alt-f:preview-page-down,alt-u:preview-half-page-up,alt-d:preview-half-page-down,alt-up:preview-top,alt-down:preview-bottom,ctrl-space:toggle+up,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-f:page-down,ctrl-b:page-up"
+$env:FZF_DEFAULT_OPTS = @"
+--height=100%
+--inline-info
+--ansi
+--scheme=history
+--bind ctrl-/:toggle-preview
+--bind alt-j:preview-down
+--bind alt-k:preview-up
+--bind alt-b:preview-page-up
+--bind alt-f:preview-page-down
+--bind alt-u:preview-half-page-up
+--bind alt-d:preview-half-page-down
+--bind alt-up:preview-top
+--bind alt-down:preview-bottom
+--bind ctrl-space:toggle+up
+--bind ctrl-d:half-page-down
+--bind ctrl-u:half-page-up
+--bind ctrl-f:page-down
+--bind ctrl-b:page-up
+--color=bg+:$($Flavor.Surface0),bg:$($Flavor.Base),spinner:$($Flavor.Rosewater)
+--color=hl:$($Flavor.Red),fg:$($Flavor.Text),header:$($Flavor.Red)
+--color=info:$($Flavor.Mauve),pointer:$($Flavor.Rosewater),marker:$($Flavor.Rosewater)
+--color=fg+:$($Flavor.Text),prompt:$($Flavor.Mauve),hl+:$($Flavor.Red)
+--color=border:$($Flavor.Surface2)
+"@
+
+# PSReadLine Catppuccin theme
+$Colors = @{
+    # Largely based on the Code Editor style guide
+    # Emphasis, ListPrediction and ListPredictionSelected are inspired by the Catppuccin fzf theme
+
+    # Powershell colours
+    ContinuationPrompt      = $Flavor.Teal.Foreground()
+    Emphasis                = $Flavor.Red.Foreground()
+    Selection               = $Flavor.Surface0.Background()
+
+    # PSReadLine prediction  colours
+    InlinePrediction        = $Flavor.Overlay0.Foreground()
+    ListPrediction          = $Flavor.Mauve.Foreground()
+    ListPredictionSelected  = $Flavor.Surface0.Background()
+
+    # Syntax highlighting
+    Command                 = $Flavor.Blue.Foreground()
+    Comment                 = $Flavor.Overlay0.Foreground()
+    Default                 = $Flavor.Text.Foreground()
+    Error                   = $Flavor.Red.Foreground()
+    Keyword                 = $Flavor.Mauve.Foreground()
+    Member                  = $Flavor.Rosewater.Foreground()
+    Number                  = $Flavor.Peach.Foreground()
+    Operator                = $Flavor.Sky.Foreground()
+    Parameter               = $Flavor.Pink.Foreground()
+    String                  = $Flavor.Green.Foreground()
+    Type                    = $Flavor.Yellow.Foreground()
+    Variable                = $Flavor.Lavender.Foreground()
+}
+Set-PSReadLineOption -Colors $Colors
+
+# The following colors are used by PowerShell's formatting
+# Again PS 7.2+ only
+$PSStyle.Formatting.Debug           = $Flavor.Sky.Foreground()
+$PSStyle.Formatting.Error           = $Flavor.Red.Foreground()
+$PSStyle.Formatting.ErrorAccent     = $Flavor.Blue.Foreground()
+$PSStyle.Formatting.FormatAccent    = $Flavor.Teal.Foreground()
+$PSStyle.Formatting.TableHeader     = $Flavor.Rosewater.Foreground()
+$PSStyle.Formatting.Verbose         = $Flavor.Yellow.Foreground()
+$PSStyle.Formatting.Warning         = $Flavor.Peach.Foreground()
 
 # Keybindings
 # Alt+; to accept autosuggestion
@@ -125,20 +201,20 @@ New-Alias lg lazygit
 
 # Python Virtual Environment activation
 function Activate-VirtualEnvironment {
-    param (
-        [string]$venvName = ".venv"
-    )
+        param (
+                [string]$venvName = ".venv"
+        )
 
-    # Create the virtual environment
-    python -m venv $venvName
+        # Create the virtual environment
+        python -m venv $venvName
 
-    # Activate the virtual environment
-    $activateScript = Join-Path $venvName "Scripts\Activate.ps1"
-    if (Test-Path $activateScript) {
-        . $activateScript
-    } else {
-        Write-Error "Failed to find Activate.ps1 script in the virtual environment."
-    }
+        # Activate the virtual environment
+        $activateScript = Join-Path $venvName "Scripts\Activate.ps1"
+        if (Test-Path $activateScript) {
+                . $activateScript
+        } else {
+                Write-Error "Failed to find Activate.ps1 script in the virtual environment."
+        }
 }
 Set-Alias -Name activate -Value Activate-VirtualEnvironment
 
@@ -269,7 +345,7 @@ Set-Alias -Name activate -Value Activate-VirtualEnvironment
 # ggpull='git pull origin "$(git_current_branch)"'
 # ggpush='git push origin "$(git_current_branch)"'
 # ghh='git help'
-# ghtkn='gpg /home/andrei/Github/workspace/github_token.gpg;   source /home/andrei/Github/workspace/github_token; rm -f /home/andrei/Github/workspace/github_token'
+# ghtkn='gpg /home/andrei/Github/workspace/github_token.gpg; source /home/andrei/Github/workspace/github_token; rm -f /home/andrei/Github/workspace/github_token'
 # gignore='git update-index --assume-unchanged'
 # gignored='git ls-files -v | grep "^[[:lower:]]"'
 # glall='git branch -r | grep -v "\->" | while read remote; do git branch --track "${remote#origin/}" "$remote"; done'
