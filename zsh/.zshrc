@@ -73,6 +73,16 @@ fast-syntax-highlighting.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/fast-syntax-highlighting"
 fi
 
+# catppuccin fast-syntax-highlighting theme
+if ! ls "$HOME"/.config/fsh/catppuccin-*.ini &>/dev/null; then
+  git clone https://github.com/catppuccin/zsh-fsh.git "$HOME/.config/fsh"
+  for file in "$HOME"/.config/fsh/themes/catppuccin-*.ini; do
+      if [ -e "$file" ]; then
+          ln -s "$file" "$HOME"/.config/fsh/
+      fi
+  done
+fi
+
 if [[ ! -f "$ZSH/custom/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh" ]]; then
   git clone https://github.com/jeffreytse/zsh-vi-mode \
     "$ZSH/custom/plugins/zsh-vi-mode"
@@ -1435,3 +1445,10 @@ bindkey '^I' fzf-tab-complete-wrapper
       eval $(ssh-agent -s) > /dev/null
   fi
  fi
+
+# catppuccin fast-syntax-highlighting theme
+fsh_theme="catppuccin-mocha"
+# fast-theme -s | head -n 1 | awk '{print $NF}'
+if [[ -e "$HOME/.config/fsh/$fsh_theme.ini" ]]; then
+  fast-theme XDG:"$fsh_theme" --quiet
+fi
