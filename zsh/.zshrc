@@ -67,10 +67,10 @@ zsh-completions.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/zsh-completions"
 fi
 
-if [[ ! -f "$ZSH/custom/plugins/zsh-syntax-highlighting/\
-zsh-syntax-highlighting.plugin.zsh" ]]; then
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting \
-    "$ZSH/custom/plugins/zsh-syntax-highlighting"
+if [[ ! -f "$ZSH/custom/plugins/fast-syntax-highlighting/\
+fast-syntax-highlighting.plugin.zsh" ]]; then
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git \
+    "$ZSH/custom/plugins/fast-syntax-highlighting"
 fi
 
 if [[ ! -f "$ZSH/custom/plugins/zsh-vi-mode/zsh-vi-mode.plugin.zsh" ]]; then
@@ -314,7 +314,7 @@ plugins=(
           zsh-sed-sub
           zsh-vi-mode
           history-substring-search
-          zsh-syntax-highlighting
+          fast-syntax-highlighting
           zsh-edit
           zsh-bash-completions-fallback
 )
