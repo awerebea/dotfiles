@@ -474,9 +474,9 @@ return {
         },
         extensions = {
           file_browser = {
-            theme = "dropdown",
-            previewer = false,
-            hijack_netrw = true,
+            theme = "ivy",
+            previewer = true,
+            hijack_netrw = false,
             mappings = mappings,
           },
           project = {
