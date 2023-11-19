@@ -924,11 +924,37 @@ return {
   },
   {
     "ThePrimeagen/harpoon",
-    event = "VeryLazy",
+    -- From the quickmenu, open a file in:
+    -- Vertical split with <ctrl-v>
+    -- Horizontal split with <ctrl-x>
+    -- New tab with <ctrl-t>
+
+    -- Valid keymaps in Telescope are:
+    -- <ctrl-d> delete the current mark
+    -- <ctrl-p> move mark up one position
+    -- <ctrl-n> move mark down one position
+
+    -- stylua: ignore
     keys = {
-      { "<leader><leader>m", '<Cmd>lua require("harpoon.mark").add_file()<CR>' },
-      { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
-      { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
+      { "<leader><leader>m",
+        function() require("harpoon.mark").add_file() end,
+        desc = "Add Harpoon mark",
+      },
+      {
+        "<leader>hr",
+        function() require("harpoon.mark").rm_file() end,
+        desc = "Remove Harpoon mark",
+      },
+      {
+        "]h",
+        function() require("harpoon.ui").nav_next() end,
+        desc = "Next Harpoon mark",
+      },
+      {
+        "[h",
+        function() require("harpoon.ui").nav_prev() end,
+        desc = "Previous Harpoon mark",
+      },
       {
         "<leader>hm",
         function()
