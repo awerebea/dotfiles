@@ -367,16 +367,16 @@ return {
 
       local mappings = {
         i = {
-          ["<C-x>"] = require("telescope.actions").delete_buffer,
+          ["<C-x>"] = actions.delete_buffer,
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
           ["<C-n>"] = actions.move_selection_next,
-          ["<C-p>"] = actions.move_selection_previous,
+          -- ["<C-p>"] = actions.move_selection_previous,
           ["<M-j>"] = actions.cycle_history_next,
           ["<M-k>"] = actions.cycle_history_prev,
           ["<M-n>"] = actions.cycle_history_next,
           ["<M-p>"] = actions.cycle_history_prev,
-          ["?"] = actions_layout.toggle_preview,
+          ["<C-p>"] = actions_layout.toggle_preview,
           ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
           ["<C-c"] = actions.close,
@@ -410,7 +410,8 @@ return {
           ["<C-M-f>"] = copy_path_of_selected_item,
         },
         n = {
-          ["dd"] = require("telescope.actions").delete_buffer,
+          ["<C-p>"] = actions_layout.toggle_preview,
+          ["dd"] = actions.delete_buffer,
           ["<C-t>"] = trouble.open_with_trouble,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
