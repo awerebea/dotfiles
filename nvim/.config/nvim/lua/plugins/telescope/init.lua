@@ -24,18 +24,18 @@ return {
     },
     cmd = "Telescope",
     keys = {
-      -- Following 4 keymaps are defined in nescopes.lua module
+      -- Following 5 keymaps are defined in nescopes.lua module
       -- {
       --   "<leader>ff",
       --   function()
-      --     require("telescope").extensions.menufacture.find_files()
+      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "find_files" }
       --   end,
       --   desc = "Find files (menufacture)",
       -- },
       -- {
       --   "<leader>f/",
       --   function()
-      --     require("telescope").extensions.menufacture.live_grep()
+      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "live_grep" }
       --   end,
       --   { desc = "Live grep (menufacture)" },
       -- },
@@ -58,6 +58,13 @@ return {
       --   end,
       --   desc = "Fuzzy Grep (menufacture)",
       -- },
+      -- {
+      --   "<leader>fw",
+      --   function()
+      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "grep_string" }
+      --   end,
+      --   desc = "Find word under cursor",
+      -- },
       {
         "<leader>//",
         function()
@@ -68,10 +75,9 @@ return {
       {
         "<leader>fg",
         function()
-          local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
-          if not ok then
-            require("telescope").extensions.menufacture.find_files()
-          end
+          require("plugins.telescope.telescopePickers").prettyFilesPicker {
+            picker = "git_files",
+          }
         end,
         desc = "Find Git managed files",
       },
@@ -131,7 +137,9 @@ return {
       {
         "<leader>fo",
         function()
-          require("telescope.builtin").oldfiles()
+          require("plugins.telescope.telescopePickers").prettyFilesPicker {
+            picker = "oldfiles",
+          }
         end,
         desc = "Recent",
       },

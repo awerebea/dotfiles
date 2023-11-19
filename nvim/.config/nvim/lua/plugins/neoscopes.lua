@@ -32,14 +32,22 @@ return {
     end
 
     _G.neoscopes_find_files = function()
-      require("telescope.builtin").find_files {
-        search_dirs = get_search_dirs(),
+      require("plugins.telescope.telescopePickers").prettyFilesPicker {
+        picker = "find_files",
+        options = { search_dirs = get_search_dirs() },
       }
+      -- require("telescope.builtin").find_files {
+      --   search_dirs = get_search_dirs(),
+      -- }
     end
     _G.neoscopes_live_grep = function()
-      require("telescope.builtin").live_grep {
-        search_dirs = get_search_dirs(),
+      require("plugins.telescope.telescopePickers").prettyGrepPicker {
+        picker = "live_grep",
+        options = { search_dirs = get_search_dirs() },
       }
+      -- require("telescope.builtin").live_grep {
+      --   search_dirs = get_search_dirs(),
+      -- }
     end
     _G.neoscopes_live_grep_args = function()
       require("telescope").extensions.live_grep_args.live_grep_args {
@@ -59,30 +67,27 @@ return {
         search = "",
       }
     end
+    _G.neoscopes_grep_word = function()
+      require("plugins.telescope.telescopePickers").prettyGrepPicker {
+        picker = "grep_string",
+        options = { search_dirs = get_search_dirs() },
+      }
+    end
 
-    vim.keymap.set(
-      "n",
-      "<leader>ff",
-      "<Cmd>lua neoscopes_find_files()<CR>",
-      { desc = "Find files (menufacture)" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>f/",
-      "<Cmd>lua neoscopes_live_grep()<CR>",
-      { desc = "Live grep (menufacture)" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>f?",
-      "<Cmd>lua neoscopes_live_grep_args()<CR>",
-      { desc = "Live grep (custom args)" }
-    )
-    vim.keymap.set(
-      "n",
-      "<leader>fag",
-      "<Cmd>lua neoscopes_fuzzy_grep()<CR>",
-      { desc = "Fuzzy Grep (menufacture)" }
-    )
+    vim.keymap.set("n", "<leader>ff", function()
+      neoscopes_find_files()
+    end, { desc = "Find files (menufacture)" })
+    vim.keymap.set("n", "<leader>f/", function()
+      neoscopes_live_grep()
+    end, { desc = "Live grep (menufacture)" })
+    vim.keymap.set("n", "<leader>f?", function()
+      neoscopes_live_grep_args()
+    end, { desc = "Live grep (custom args)" })
+    vim.keymap.set("n", "<leader>fag", function()
+      neoscopes_fuzzy_grep()
+    end, { desc = "Fuzzy Grep (menufacture)" })
+    vim.keymap.set("n", "<leader>fw", function()
+      neoscopes_grep_word()
+    end, { desc = "Find word under cursor (menufacture)" })
   end,
 }
