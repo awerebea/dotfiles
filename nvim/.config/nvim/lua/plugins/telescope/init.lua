@@ -323,9 +323,10 @@ return {
           return
         end
         if content.filename then
-          file_path = content.filename
-          if not content.cwd then
-            file_path = vim.fn.systemlist("pwd")[1] .. "/" .. file_path
+          if content.cwd then
+            file_path = content.cwd .. "/" .. content.filename
+          else
+            file_path = vim.fn.systemlist("pwd")[1] .. "/" .. content.filename
           end
         elseif content.path then
           file_path = content.path
