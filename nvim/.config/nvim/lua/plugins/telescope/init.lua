@@ -281,7 +281,7 @@ return {
         desc = "Macrothis",
       },
       {
-        "<leader>hm",
+        "<leader>m",
         function()
           require("telescope").extensions.harpoon.marks()
         end,
@@ -930,7 +930,7 @@ return {
       { "]h", '<Cmd>lua require("harpoon.ui").nav_next()<CR>' },
       { "[h", '<Cmd>lua require("harpoon.ui").nav_prev()<CR>' },
       {
-        "<leader>m",
+        "<leader>hm",
         function()
           require("harpoon").setup {
             menu = {
