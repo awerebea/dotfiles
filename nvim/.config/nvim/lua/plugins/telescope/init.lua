@@ -82,23 +82,16 @@ return {
         desc = "Find Git managed files",
       },
       {
-        "<leader>fw",
-        function()
-          require("telescope").extensions.menufacture.grep_string()
-        end,
-        desc = "Find word under cursor",
-      },
-      {
         "<leader>fb",
         function()
-          require("telescope.builtin").buffers()
+          require("plugins.telescope.telescopePickers").prettyBuffersPicker()
         end,
         desc = "Buffers",
       },
       {
         "<leader><CR>",
         function()
-          require("telescope.builtin").buffers()
+          require("plugins.telescope.telescopePickers").prettyBuffersPicker()
         end,
         desc = "Buffers",
       },
@@ -117,6 +110,20 @@ return {
           require("telescope.builtin").help_tags()
         end,
         desc = "Help tags",
+      },
+      {
+        "<leader>fs",
+        function()
+          require("plugins.telescope.telescopePickers").prettyDocumentSymbols()
+        end,
+        desc = "Document symbols",
+      },
+      {
+        "<leader>fS",
+        function()
+          require("plugins.telescope.telescopePickers").prettyWorkspaceSymbols()
+        end,
+        desc = "Workspace symbols",
       },
       {
         "<leader><leader>c",
