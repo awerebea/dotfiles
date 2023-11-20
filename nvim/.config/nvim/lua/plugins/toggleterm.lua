@@ -1,5 +1,6 @@
 return {
   "akinsho/toggleterm.nvim",
+  event = "VeryLazy",
   keys = { { [[<leader>;]] }, { [[<leader>;;]] } },
   cmd = { "ToggleTerm", "TermExec" },
   opts = {
@@ -10,7 +11,7 @@ return {
         return vim.o.columns * 0.4
       end
     end,
-    autochdir = true, -- when neovim changes it current directory the terminal will change it's own when next it's opened
+    autochdir = false, -- when neovim changes it current directory the terminal will change it's own when next it's opened
     hide_numbers = true,
     open_mapping = [[<leader>;]],
     shade_filetypes = {},
