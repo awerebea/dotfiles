@@ -244,16 +244,21 @@ forgit_reset_head=GRH
 forgit_ignore=GI
 forgit_checkout_file=GCF
 forgit_checkout_branch=GCB
+forgit_branch_delete=GBD
+forgit_checkout_tag=GCT
 forgit_checkout_commit=GCO
+forgit_revert_commit=GRC
 forgit_clean=GCLEAN
 forgit_stash_show=GSS
+forgit_stash_push=GSP
 forgit_cherry_pick=GCP
 forgit_rebase=GRB
+forgit_blame=GBL
 forgit_fixup=GFU
 # forgit fzf settings
 export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
   'bat --style=numbers --color=always --line-range :500 {}' \
-  --preview-window=up:60% \
+  --preview-window=up:60%:nohidden \
   --bind=ctrl-/:toggle-preview \
   --bind=alt-j:preview-down,alt-k:preview-up \
   --bind=alt-b:preview-page-up,alt-f:preview-page-down \
