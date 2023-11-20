@@ -305,17 +305,8 @@ return {
         end
       end
 
-      -- Get the full path to the directory containing the selected item
-      get_item_dirpath = function(prompt_bufnr)
-        file_path = get_item_path(prompt_bufnr)
-        if not file_path then
-          return
-        end
-        return vim.fs.dirname(file_path)
-      end
-
       -- Get the full path to the selected item
-      get_item_path = function(prompt_bufnr)
+      local get_item_path = function()
         -- Get the full path
         local file_path = nil
         local content = require("telescope.actions.state").get_selected_entry()
@@ -336,24 +327,33 @@ return {
         return file_path
       end
 
+      -- Get the full path to the directory containing the selected item
+      local get_item_dirpath = function()
+        local file_path = get_item_path()
+        if not file_path then
+          return
+        end
+        return vim.fs.dirname(file_path)
+      end
+
       -- Toggleterm
-      open_terminal = function(prompt_bufnr)
-        local file_dir = get_item_dirpath(prompt_bufnr)
+      local open_terminal = function(prompt_bufnr)
+        local file_dir = get_item_dirpath()
         -- Close the Telescope window
         require("telescope.actions").close(prompt_bufnr)
-        require("utils").open_term(nil, { direction = "float", dir = file_dir })
+        require("utils").open_term(nil, { direction = "horizontal", size = 10, dir = file_dir })
       end
 
       -- Copy the path to the directory containing the selected item to the clipboard
-      copy_dirpath_of_selected_item = function(prompt_bufnr)
-        local file_dir = get_item_dirpath(prompt_bufnr)
+      local copy_dirpath_of_selected_item = function(prompt_bufnr)
+        local file_dir = get_item_dirpath()
         vim.fn.setreg("*", file_dir)
         require("telescope.actions").close(prompt_bufnr)
       end
 
       -- Copy the path to the selected item to the clipboard
-      copy_path_of_selected_item = function(prompt_bufnr)
-        local file_path = get_item_path(prompt_bufnr)
+      local copy_path_of_selected_item = function(prompt_bufnr)
+        local file_path = get_item_path()
         vim.fn.setreg("*", file_path)
         require("telescope.actions").close(prompt_bufnr)
       end
@@ -625,20 +625,20 @@ return {
       local menufacture = require("telescope").extensions.menufacture
       -- this menu items will be present in all the pickers
       local global_menu_items = {
-        ["change cwd to the current file dir"] = function(opts, callback)
-          opts.search_dirs = {}
-          opts.cwd = vim.fn.expand "%:p:h"
-          callback(opts)
+        ["change cwd to the current file dir"] = function(options, callback)
+          options.search_dirs = {}
+          options.cwd = vim.fn.expand "%:p:h"
+          callback(options)
         end,
-        ["change cwd to parent"] = function(opts, callback)
-          local cwd = opts.cwd and vim.fn.expand(opts.cwd) or vim.loop.cwd()
-          opts.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
-          callback(opts)
+        ["change cwd to parent"] = function(options, callback)
+          local cwd = options.cwd and vim.fn.expand(options.cwd) or vim.loop.cwd()
+          options.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
+          callback(options)
         end,
-        ["find with fd in $HOME"] = function(opts, callback)
-          opts.search_dirs = {}
-          opts.cwd = vim.fn.expand "$HOME"
-          opts.find_command = {
+        ["find with fd in $HOME"] = function(options, callback)
+          options.search_dirs = {}
+          options.cwd = vim.fn.expand "$HOME"
+          options.find_command = {
             "fd",
             "--type",
             "f",
@@ -647,11 +647,15 @@ return {
             "--ignore-file",
             vim.fn.expand "$HOME/.config/fd/vim-ignore",
           }
-          callback(opts)
+          callback(options)
         end,
-        ["layout strategy vertical"] = function(opts, callback)
-          opts.layout_strategy = "vertical"
-          callback(opts)
+        ["layout strategy vertical"] = function(options, callback)
+          options.layout_strategy = "vertical"
+          callback(options)
+        end,
+        ["layout strategy horizontal"] = function(options, callback)
+          options.layout_strategy = "horizontal"
+          callback(options)
         end,
         ["--pcre2"] = menufacture.toggle_flag("additional_args", "--pcre2"),
       }
@@ -691,7 +695,6 @@ return {
       )
 
       local telescope_previewers = require "telescope.previewers"
-      local telescope_builtin = require "telescope.builtin"
 
       local delta_commits = telescope_previewers.new_termopen_previewer {
         get_command = function(entry)
@@ -761,39 +764,39 @@ return {
         end
       end
 
-      Delta_git_commits = function(opts)
+      Delta_git_commits = function(options)
         if not is_in_git_repo() then
           return
         end
-        opts = opts or {}
-        opts.previewer = {
+        options = options or {}
+        options.previewer = {
           delta_commits,
-          telescope_previewers.git_commit_message.new(opts),
-          telescope_previewers.git_commit_diff_as_was.new(opts),
+          telescope_previewers.git_commit_message.new(options),
+          telescope_previewers.git_commit_diff_as_was.new(options),
         }
-        telescope_builtin.git_commits(opts)
+        telescope_builtin.git_commits(options)
       end
 
-      Delta_git_bcommits = function(opts)
+      Delta_git_bcommits = function(options)
         if not is_in_git_repo() then
           return
         end
-        opts = opts or {}
-        opts.previewer = {
+        options = options or {}
+        options.previewer = {
           delta_bcommits,
-          telescope_previewers.git_commit_message.new(opts),
-          telescope_previewers.git_commit_diff_as_was.new(opts),
+          telescope_previewers.git_commit_message.new(options),
+          telescope_previewers.git_commit_diff_as_was.new(options),
         }
-        telescope_builtin.git_bcommits(opts)
+        telescope_builtin.git_bcommits(options)
       end
 
-      Delta_git_status = function(opts)
+      Delta_git_status = function(options)
         if not is_in_git_repo() then
           return
         end
-        opts = opts or {}
-        opts.previewer = { delta_status }
-        telescope_builtin.git_status(opts)
+        options = options or {}
+        options.previewer = { delta_status }
+        telescope_builtin.git_status(options)
       end
     end,
   },
