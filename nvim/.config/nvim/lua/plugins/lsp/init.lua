@@ -1,7 +1,7 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    event = "BufReadPre",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       { "folke/neoconf.nvim", cmd = "Neoconf", config = true },
       {
@@ -81,6 +81,7 @@ return {
   },
   {
     "williamboman/mason.nvim",
+    build = ":MasonUpdate",
     cmd = "Mason",
     keys = { { "<leader><leader>M", "<Cmd>Mason<CR>", desc = "Mason" } },
     opts = {
@@ -91,6 +92,7 @@ return {
         -- "autopep8",
         "flake8",
         -- "yapf",
+        -- "isort",
         "black",
         "pydocstyle",
         -- "pylama",
@@ -106,22 +108,35 @@ return {
     config = function(_, opts)
       require("mason").setup()
       local mr = require "mason-registry"
-      for _, tool in ipairs(opts.ensure_installed) do
-        local p = mr.get_package(tool)
-        if not p:is_installed() then
-          p:install()
+      local function ensure_installed()
+        for _, tool in ipairs(opts.ensure_installed) do
+          local p = mr.get_package(tool)
+          if not p:is_installed() then
+            p:install()
+          end
         end
+      end
+      if mr.refresh then
+        mr.refresh(ensure_installed)
+      else
+        ensure_installed()
       end
     end,
   },
   {
-    "jose-elias-alvarez/null-ls.nvim",
-    event = "BufReadPre",
+    "nvimtools/none-ls.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = { "mason.nvim" },
     config = function()
       local nls = require "null-ls"
       local refurb = require "plugins.lsp.refurb"
       nls.setup {
+        root_dir = require("null-ls.utils").root_pattern(
+          ".null-ls-root",
+          ".neoconf.json",
+          "Makefile",
+          ".git"
+        ),
         sources = {
           refurb,
           nls.builtins.formatting.prettierd,
@@ -137,6 +152,7 @@ return {
           --     "--style={based_on_style: google, column_limit: 88, indent_width: 4}",
           --   },
           -- },
+          -- nls.builtins.formatting.isort,
           nls.builtins.formatting.black.with {
             extra_args = { "--line-length=88" },
           },
@@ -149,6 +165,7 @@ return {
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
+          -- nls.builtins.formatting.shfmt,
         },
       }
     end,
@@ -161,10 +178,11 @@ return {
       "SmiteshP/nvim-navic",
       "nvim-tree/nvim-web-devicons",
     },
+    enabled = false, -- use dropbar instead
     config = true,
   },
   {
-    url = "https://github.com/ErichDonGubler/lsp_lines.nvim",
+    "ErichDonGubler/lsp_lines.nvim",
     event = "VeryLazy",
     -- config = true,
     config = function()
@@ -195,28 +213,45 @@ return {
     opts = { use_diagnostic_signs = true },
     keys = {
       { "<leader>xx", "<Cmd>TroubleToggle<CR>" },
-      { "<leader>xw", "<Cmd>TroubleToggle workspace_diagnostics<CR>" },
-      { "<leader>xd", "<Cmd>TroubleToggle document_diagnostics<CR>" },
+      {
+        "<leader>xw",
+        "<Cmd>TroubleToggle workspace_diagnostics<CR>",
+        desc = "Workspace Diagnostics",
+      },
+      {
+        "<leader>xd",
+        "<Cmd>TroubleToggle document_diagnostics<CR>",
+        desc = "Document Diagnostics",
+      },
       { "<leader>xl", "<Cmd>TroubleToggle loclist<CR>" },
       { "<leader>xq", "<Cmd>TroubleToggle quickfix<CR>" },
       { "gR", "<Cmd>TroubleToggle lsp_references<CR>" },
     },
-    {
-      "glepnir/lspsaga.nvim",
-      event = "VeryLazy",
-      opts = {
-        code_action = {
-          show_server_name = true,
-          extend_gitsigns = true,
-        },
-        finder = {
-          default = "def+ref+imp+tyd",
-        },
-        lightbulb = {
-          enable = true,
-        },
+  },
+  {
+    "glepnir/lspsaga.nvim",
+    event = "VeryLazy",
+    opts = {
+      code_action = {
+        show_server_name = true,
+        extend_gitsigns = true,
       },
-      config = true,
+      finder = {
+        default = "def+ref+imp+tyd",
+      },
+      lightbulb = {
+        enable = true,
+      },
+      symbol_in_winbar = {
+        enable = false,
+      },
     },
+  },
+  {
+    "Bekaboo/dropbar.nvim",
+    event = "VeryLazy",
+    enabled = function()
+      return vim.fn.has "nvim-0.10.0" == 1
+    end,
   },
 }

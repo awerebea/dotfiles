@@ -1,12 +1,26 @@
 local M = {}
 
-local FORMATTING = require("null-ls").methods.FORMATTING
-local DIAGNOSTICS = require("null-ls").methods.DIAGNOSTICS
-local COMPLETION = require("null-ls").methods.COMPLETION
-local CODE_ACTION = require("null-ls").methods.CODE_ACTION
-local HOVER = require("null-ls").methods.HOVER
+local loaded = false
+local FORMATTING = nil
+local DIAGNOSTICS = nil
+local COMPLETION = nil
+local CODE_ACTION = nil
+local HOVER = nil
+
+local function init()
+  local nls_methods = require("null-ls").methods
+  FORMATTING = nls_methods.FORMATTING
+  DIAGNOSTICS = nls_methods.DIAGNOSTICS
+  COMPLETION = nls_methods.COMPLETION
+  CODE_ACTION = nls_methods.CODE_ACTION
+  HOVER = nls_methods.HOVER
+  loaded = true
+end
 
 local function list_registered_providers_names(ft)
+  if not loaded then
+    init()
+  end
   local s = require "null-ls.sources"
   local available_sources = s.get_available(ft)
   local registered = {}
@@ -46,7 +60,8 @@ end
 
 function M.capabilities()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities.textDocument.foldingRange = { -- required by nvim-ufo
+  capabilities.textDocument.completion.completionItem.snippetSupport = true
+  capabilities.textDocument.foldingRange = {
     dynamicRegistration = false,
     lineFoldingOnly = true,
   }
@@ -61,6 +76,30 @@ function M.on_attach(on_attach)
       on_attach(client, bufnr)
     end,
   })
+end
+
+local diagnostics_active = false
+
+function M.show_diagnostics()
+  return diagnostics_active
+end
+
+function M.toggle_diagnostics()
+  diagnostics_active = not diagnostics_active
+  if diagnostics_active then
+    vim.diagnostic.show()
+  else
+    vim.diagnostic.hide()
+  end
+end
+
+function M.opts(name)
+  local plugin = require("lazy.core.config").plugins[name]
+  if not plugin then
+    return {}
+  end
+  local Plugin = require "lazy.core.plugin"
+  return Plugin.values(plugin, "opts", false)
 end
 
 return M

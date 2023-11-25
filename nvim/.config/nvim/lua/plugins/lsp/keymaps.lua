@@ -4,13 +4,18 @@ function M.on_attach(client, buffer)
   local self = M.new(client, buffer)
 
   self:map("<leader>rs", "LspRestart", { desc = "Restart LSP server" })
-
   self:map("gd", "Lspsaga goto_definition", { desc = "Goto Definition" })
   self:map("gD", "Lspsaga peek_definition", { desc = "Peek Definition" })
   self:map("gf", "Lspsaga finder", { desc = "References" })
   self:map("gr", "Telescope lsp_references", { desc = "References" })
   self:map("gI", "Lspsaga incoming_calls", { desc = "Call hierarchy, incoming calls" })
   self:map("gO", "Lspsaga outgoing_calls", { desc = "Call hierarchy, outgoing calls" })
+  self:map("gy", function()
+    require("telescope.builtin").lsp_type_definitions { reuse_win = true }
+  end, { desc = "Goto Type Definition" })
+  self:map("gY", function()
+    require("telescope.builtin").lsp_implementations { reuse_win = true }
+  end, { desc = "Goto Implementation" })
   -- self:map("K", "Lspsaga hover_doc ++keep", { desc = "Hover" }) -- keybind is defined in nvim-ufo settings
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
   self:map("]d", M.diagnostic_goto(true), { desc = "Next Diagnostic" })
@@ -53,6 +58,11 @@ function M.on_attach(client, buffer)
   self:map("<leader>wll", function()
     print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
   end, { desc = "Print Workspace folders" })
+  self:map(
+    "<leader>lw",
+    require("plugins.lsp.utils").toggle_diagnostics,
+    { desc = "Toggle Inline Diagnostics" }
+  )
 end
 
 function M.new(client, buffer)
@@ -73,7 +83,7 @@ function M:map(lhs, rhs, opts)
     lhs,
     type(rhs) == "string" and ("<cmd>%s<cr>"):format(rhs) or rhs,
     ---@diagnostic disable-next-line: no-unknown
-    { buffer = self.buffer, expr = opts.expr, desc = opts.desc }
+    { silent = true, buffer = self.buffer, expr = opts.expr, desc = opts.desc }
   )
 end
 
@@ -81,7 +91,7 @@ function M.rename()
   if pcall(require, "lspsaga") then
     return "<Cmd>Lspsaga rename<CR>"
   else
-    return "<Cmd>lua vim.lsp.buf.rename()<CR>"
+    vim.lsp.buf.rename()
   end
 end
 
