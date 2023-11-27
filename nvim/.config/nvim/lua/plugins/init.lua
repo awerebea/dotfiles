@@ -127,14 +127,6 @@ return {
       vim.g.matchup_matchparen_offscreen = { method = "popup" }
     end,
   },
-  {
-    "tpope/vim-surround",
-    event = "VeryLazy",
-    dependecies = { { "echasnovski/mini.splitjoin" } },
-    config = function()
-      require("mini.splitjoin").setup()
-    end,
-  },
   { "tpope/vim-repeat", event = "VeryLazy" },
   { "christoomey/vim-tmux-navigator", event = "VimEnter" },
   {
@@ -558,5 +550,13 @@ return {
     -- Optional dependencies
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = true,
+  },
+  {
+    "kylechui/nvim-surround",
+    version = "*", -- Use for stability; omit to use `main` branch for the latest features
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup {}
+    end,
   },
 }
