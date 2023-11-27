@@ -671,28 +671,26 @@ return {
       end
 
       -- Open all files in the quickfix list
-      vim.cmd [[
-        function! QuickFixOpenAll()
-            if empty(getqflist())
-                return
-            endif
-            let s:prev_val = ""
-            for d in getqflist()
-                let s:curr_val = bufname(d.bufnr)
-                if (s:curr_val != s:prev_val)
-                    exec "edit " . s:curr_val
-                endif
-                let s:prev_val = s:curr_val
-            endfor
-        endfunction
-      ]]
+      function QuickFixOpenAll()
+        local quickfix_list = vim.fn.getqflist()
 
-      vim.keymap.set(
-        "n",
-        "<leader>ka",
-        ":call QuickFixOpenAll()<CR>",
-        { noremap = true, silent = false }
-      )
+        if vim.fn.empty(quickfix_list) == 1 then
+          return
+        end
+
+        local prev_val = nil
+        for _, d in ipairs(quickfix_list) do
+          local curr_val = vim.fn.bufname(d.bufnr)
+          if curr_val ~= prev_val then
+            vim.cmd("edit " .. curr_val)
+          end
+          prev_val = curr_val
+        end
+      end
+
+      vim.keymap.set("n", "<leader>ka", function()
+        QuickFixOpenAll()
+      end, { noremap = true, silent = false })
 
       local telescope_previewers = require "telescope.previewers"
 
