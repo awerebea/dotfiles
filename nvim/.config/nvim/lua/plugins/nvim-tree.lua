@@ -37,6 +37,12 @@ return {
         vim.keymap.set("n", "h", api.node.navigate.parent_close, opts "Close Directory")
         vim.keymap.set("n", "l", api.node.open.edit, opts "Open")
         vim.keymap.set("n", "F1", api.node.show_info_popup, opts "Info")
+        vim.keymap.set("n", "<", function()
+          require("nvim-tree.view").resize "+5"
+        end, opts "Increase size")
+        vim.keymap.set("n", ">", function()
+          require("nvim-tree.view").resize "-5"
+        end, opts "Decrease size")
       end,
       disable_netrw = false,
       hijack_netrw = true,
@@ -45,7 +51,7 @@ return {
         side = "right",
         number = true,
         relativenumber = true,
-        adaptive_size = true,
+        width = 50,
       },
       filters = {
         custom = { "^\\.git$" },
