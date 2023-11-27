@@ -104,6 +104,18 @@ return {
             word = true,
             cyclic = true,
           },
+          augend.constant.new{
+            elements = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
+            elements = {"January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"},
+            word = true,
+            cyclic = true,
+          },
         },
       }
       vim.keymap.set(
