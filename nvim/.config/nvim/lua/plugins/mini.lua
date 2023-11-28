@@ -52,6 +52,23 @@ return {
       require("mini.bracketed").setup()
     end,
   },
+  {
+    "echasnovski/mini.operators",
+    event = "VeryLazy",
+    opts = {
+      evaluate = { prefix = "g=" },
+      exchange = { prefix = "gx", reindent_linewise = true },
+      multiply = { prefix = "" },
+      replace = { prefix = "" },
+      sort = { prefix = "" },
+    },
+  },
+  {
+    "echasnovski/mini.splitjoin",
+    event = "VeryLazy",
+    version = "*",
+    config = true,
+  },
   -- {
   --   "echasnovski/mini.comment",
   --   event = "VeryLazy",

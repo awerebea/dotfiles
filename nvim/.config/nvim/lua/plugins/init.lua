@@ -430,17 +430,6 @@ return {
     opts = { restricted_keys = { ["<CR>"] = {} } },
   },
   {
-    "echasnovski/mini.operators",
-    event = "VeryLazy",
-    opts = {
-      evaluate = { prefix = "g=" },
-      exchange = { prefix = "gx", reindent_linewise = true },
-      multiply = { prefix = "" },
-      replace = { prefix = "" },
-      sort = { prefix = "" },
-    },
-  },
-  {
     "sustech-data/wildfire.nvim",
     event = "VeryLazy",
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -559,12 +548,6 @@ return {
     config = true,
   },
   { "tpope/vim-eunuch", event = "VeryLazy" },
-  {
-    "echasnovski/mini.splitjoin",
-    event = "VeryLazy",
-    version = "*",
-    config = true,
-  },
   {
     "folke/flash.nvim",
     event = "VeryLazy",
