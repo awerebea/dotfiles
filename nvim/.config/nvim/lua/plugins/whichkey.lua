@@ -33,8 +33,6 @@ return {
         },
       }
 
-      local bufnr = vim.api.nvim_get_current_buf()
-      local ft = vim.api.nvim_buf_get_option(bufnr, "filetype")
       wk.register({
         b = { name = "Buffer" },
         d = { name = "Debug" },
