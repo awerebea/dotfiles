@@ -225,7 +225,16 @@ return {
         "<leader>glg",
         function()
           -- require("telescope.builtin").git_commits()
-          Delta_git_commits()
+          Delta_git_commits {
+            git_command = {
+              "git",
+              "log",
+              "--format=%h %ad %<(20,trunc)%an %s",
+              "--date=format:%Y-%m.%d",
+              "--",
+              ".",
+            },
+          }
         end,
         desc = "Commits",
       },
@@ -233,7 +242,14 @@ return {
         "<leader>glf",
         function()
           -- require("telescope.builtin").git_bcommits()
-          Delta_git_bcommits()
+          Delta_git_bcommits {
+            git_command = {
+              "git",
+              "log",
+              "--format=%h %ad %<(20,trunc)%an %s",
+              "--date=format:%Y-%m.%d",
+            },
+          }
         end,
         desc = "Commits of current file",
       },
