@@ -387,13 +387,13 @@ return {
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
           ["<C-M-h>"] = function(prompt_bufnr)
-            telescope.extensions.hop._hop(prompt_bufnr)
+            telescope.extensions.hop._hop(prompt_bufnr, { callback = actions.toggle_selection })
           end,
           -- custom hop loop to multi selects and sending selected entries to quickfix list
           ["<C-l>"] = function(prompt_bufnr)
             local opts = {
               callback = actions.toggle_selection,
-              loop_callback = actions.send_selected_to_qflist,
+              loop_callback = actions.send_selected_to_qflist + actions.open_qflist,
             }
             require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
