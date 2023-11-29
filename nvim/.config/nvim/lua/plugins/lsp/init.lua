@@ -212,20 +212,48 @@ return {
     cmd = { "TroubleToggle", "Trouble" },
     opts = { use_diagnostic_signs = true },
     keys = {
-      { "<leader>xx", "<Cmd>TroubleToggle<CR>" },
+      {
+        "<leader>xx",
+        function()
+          require("trouble").toggle()
+        end,
+        desc = "Toggle Trouble",
+      },
       {
         "<leader>xw",
-        "<Cmd>TroubleToggle workspace_diagnostics<CR>",
+        function()
+          require("trouble").toggle "workspace_diagnostics"
+        end,
         desc = "Workspace Diagnostics",
       },
       {
         "<leader>xd",
-        "<Cmd>TroubleToggle document_diagnostics<CR>",
+        function()
+          require("trouble").toggle "document_diagnostics"
+        end,
         desc = "Document Diagnostics",
       },
-      { "<leader>xl", "<Cmd>TroubleToggle loclist<CR>" },
-      { "<leader>xq", "<Cmd>TroubleToggle quickfix<CR>" },
-      { "gR", "<Cmd>TroubleToggle lsp_references<CR>" },
+      {
+        "<leader>xq",
+        function()
+          require("trouble").toggle "quickfix"
+        end,
+        desc = "Trouble quickfix",
+      },
+      {
+        "<leader>xl",
+        function()
+          require("trouble").toggle "loclist"
+        end,
+        desc = "Trouble loclist",
+      },
+      {
+        "gR",
+        function()
+          require("trouble").toggle "lsp_references"
+        end,
+        desc = "Trouble LSP references",
+      },
     },
   },
   {
