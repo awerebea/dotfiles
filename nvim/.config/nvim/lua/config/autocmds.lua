@@ -3,7 +3,7 @@ local aucmd_dict = {
   TextYankPost = {
     {
       callback = function()
-        vim.highlight.on_yank { timeout = 250 }
+        vim.highlight.on_yank { timeout = 500 }
       end,
       group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
       pattern = "*",
