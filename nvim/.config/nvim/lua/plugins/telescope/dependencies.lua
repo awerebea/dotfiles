@@ -114,18 +114,21 @@ return {
         ":DiffCommitLine<CR>",
         { desc = "current line Git history", noremap = true }
       )
-      vim.keymap.set(
-        "n",
-        "<leader>gcb",
-        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_branch_file()<CR>",
-        { desc = "current file diff against other branch", noremap = true }
-      )
-      vim.keymap.set(
-        "n",
-        "<leader>gcf",
-        "<Cmd> lua require('telescope').extensions.advanced_git_search.diff_commit_file()<CR>",
-        { desc = "current file Git history", noremap = true }
-      )
+      vim.keymap.set("n", "<leader>gcb", function()
+        require("telescope").extensions.advanced_git_search.diff_branch_file()
+      end, { desc = "current file diff against other branch", noremap = true })
+      vim.keymap.set("n", "<leader>gcf", function()
+        require("telescope").extensions.advanced_git_search.diff_commit_file()
+      end, { desc = "current file Git history", noremap = true })
+      vim.keymap.set("n", "<leader>gclf", function()
+        require("telescope").extensions.advanced_git_search.search_log_content_file()
+      end, { desc = "search in file log content", noremap = true })
+      vim.keymap.set("n", "<leader>gclr", function()
+        require("telescope").extensions.advanced_git_search.search_log_content()
+      end, { desc = "search in repo log content", noremap = true })
+      vim.keymap.set("n", "<leader>gcs", function()
+        require("telescope").extensions.advanced_git_search.show_custom_functions()
+      end, { desc = "show custom AdvancedGitSearch commands", noremap = true })
     end,
     dependencies = {
       "nvim-telescope/telescope.nvim",

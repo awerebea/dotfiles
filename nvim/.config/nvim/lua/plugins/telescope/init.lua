@@ -509,6 +509,11 @@ return {
           },
         },
         extensions = {
+          advanced_git_search = {
+            -- fugitive or diffview
+            diff_plugin = "diffview",
+            show_builtin_git_pickers = true,
+          },
           file_browser = {
             theme = "ivy",
             previewer = true,
