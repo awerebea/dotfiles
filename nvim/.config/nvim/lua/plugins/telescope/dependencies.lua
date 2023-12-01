@@ -101,18 +101,11 @@ return {
     "aaronhallaert/advanced-git-search.nvim",
     event = "VeryLazy",
     config = function()
-      require("telescope").load_extension "advanced_git_search"
-      vim.api.nvim_create_user_command(
-        "DiffCommitLine",
-        "lua require('telescope').extensions.advanced_git_search.diff_commit_line()",
-        { range = true }
-      )
-
       vim.keymap.set(
         "v",
         "<leader>gcl",
-        ":DiffCommitLine<CR>",
-        { desc = "current line Git history", noremap = true }
+        [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
+        { desc = "selected lines Git history", noremap = true }
       )
       vim.keymap.set("n", "<leader>gcb", function()
         require("telescope").extensions.advanced_git_search.diff_branch_file()
