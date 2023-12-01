@@ -557,9 +557,6 @@ return {
           enabled = false,
           jump_labels = true,
         },
-        search = {
-          enabled = false,
-        },
       },
     },
     -- stylua: ignore
