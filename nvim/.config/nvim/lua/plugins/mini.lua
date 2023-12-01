@@ -48,8 +48,9 @@ return {
   {
     "echasnovski/mini.bracketed",
     event = "BufReadPost",
-    config = function()
-      require("mini.bracketed").setup()
+    opts = {},
+    config = function(_, opts)
+      require("mini.bracketed").setup(opts)
     end,
   },
   {
