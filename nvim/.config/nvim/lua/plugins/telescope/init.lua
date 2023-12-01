@@ -21,6 +21,7 @@ return {
       "ANGkeith/telescope-terraform-doc.nvim",
       "ThePrimeagen/harpoon",
       "axkirillov/hbac.nvim",
+      { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
     cmd = "Telescope",
     keys = {
@@ -303,6 +304,49 @@ return {
         end,
         desc = "Harpoon marks",
       },
+      -- {{{ advanced-git-search
+      {
+        "<leader>gcl",
+        mode = "x",
+        [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
+        desc = "selected lines Git history",
+      },
+      {
+        "<leader>gcb",
+        function()
+          require("telescope").extensions.advanced_git_search.diff_branch_file()
+        end,
+        desc = "current file diff against other branch",
+      },
+      {
+        "<leader>gcf",
+        function()
+          require("telescope").extensions.advanced_git_search.diff_commit_file()
+        end,
+        desc = "current file Git history",
+      },
+      {
+        "<leader>gclf",
+        function()
+          require("telescope").extensions.advanced_git_search.search_log_content_file()
+        end,
+        desc = "search in file log content",
+      },
+      {
+        "<leader>gclr",
+        function()
+          require("telescope").extensions.advanced_git_search.search_log_content()
+        end,
+        desc = "search in repo log content",
+      },
+      {
+        "<leader>gcs",
+        function()
+          require("telescope").extensions.advanced_git_search.show_custom_functions()
+        end,
+        desc = "show custom AdvancedGitSearch commands",
+      },
+      -- }}} advanced-git-search
     },
     config = function(_, _)
       -- Open one or more selected entries in the current window
@@ -513,6 +557,8 @@ return {
             -- fugitive or diffview
             diff_plugin = "diffview",
             show_builtin_git_pickers = true,
+            -- FIXME: this is not working
+            entry_default_author_or_date = "date", -- one of "author" or "date"
           },
           file_browser = {
             theme = "ivy",
@@ -643,6 +689,7 @@ return {
       telescope.load_extension "terraform_doc"
       telescope.load_extension "harpoon"
       telescope.load_extension "hbac"
+      telescope.load_extension "advanced_git_search"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
