@@ -796,7 +796,7 @@ return {
       }
 
       local viewer
-      if os.execute "bat --version" == 0 then
+      if vim.fn.executable "bat" > 0 then
         viewer = { "bat" }
       else
         viewer = { "less", "-NR", "-r" }
