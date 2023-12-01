@@ -266,14 +266,14 @@ return {
           -- require("telescope.builtin").git_status()
           Delta_git_status()
         end,
-        desc = "Status",
+        desc = "Git status (telescope)",
       },
       {
         "<leader>gss",
         function()
           require("utils").git_diff_picker()
         end,
-        desc = "git diff --name-only",
+        desc = "Changed files names only (telescope)",
       },
       {
         "<leader>gz",

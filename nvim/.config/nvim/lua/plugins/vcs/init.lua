@@ -9,11 +9,12 @@ return {
       "DiffviewToggleFiles",
     },
     keys = {
-      { "<leader>gdc", "<Cmd>DiffviewClose<CR>", desc = "DiffviewClose" },
-      { "<leader>gdf", "<Cmd>DiffviewFileHistory %<CR>", desc = "DiffviewFileHistory" },
-      { "<leader>gdF", ":DiffviewFileHistory ", desc = "DiffviewFileHistory" },
-      { "<leader>gdo", "<Cmd>DiffviewOpen<CR>", desc = "DiffviewOpen" },
-      { "<leader>gdO", ":DiffviewOpen ", desc = "DiffviewOpen" },
+      { "<leader>gdd", "<Cmd>DiffviewClose<CR>", desc = "close Diffview tab" },
+      { "<leader>gdf", "<Cmd>DiffviewFileHistory %<CR>", desc = "current file history" },
+      { "<leader>gdl", mode = "x", [[:DiffviewFileHistory<CR>]], desc = "selected lines history" },
+      { "<leader>gdF", ":DiffviewFileHistory ", desc = "diff history repo/file/rev" },
+      { "<leader>gdo", "<Cmd>DiffviewOpen<CR>", desc = "open current changes" },
+      { "<leader>gdO", ":DiffviewOpen ", desc = "open changes [rev] [ -- {paths...} ]" },
     },
     config = true,
   },
@@ -24,7 +25,7 @@ return {
       integrations = { diffview = true },
     },
     keys = {
-      { "<leader>gsn", "<cmd>Neogit kind=tab<cr>", desc = "Status" },
+      { "<leader>gsn", "<cmd>Neogit kind=tab<cr>", desc = "Git status (neogit)" },
     },
   },
   {

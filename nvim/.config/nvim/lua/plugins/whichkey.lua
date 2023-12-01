@@ -48,6 +48,7 @@ return {
           m = { name = "Git messenger" },
           l = { name = "Telescope git_commits" },
           p = { name = "ChatGPT", r = "Run command" },
+          s = { name = "Git status" },
           w = { name = "Git Worktree" },
         },
         h = { name = "Help, Harpoon" },
