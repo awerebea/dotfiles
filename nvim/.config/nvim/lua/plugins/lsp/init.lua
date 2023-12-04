@@ -16,6 +16,18 @@ return {
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-nvim-lsp-signature-help",
+      {
+        "ray-x/lsp_signature.nvim",
+        opts = {
+          floating_window = false,
+          hint_enable = true,
+          toggle_key = "<M-x>",
+          toggle_key_flip_floatwin_setting = true,
+        },
+        config = function(_, opts)
+          require("lsp_signature").setup(opts)
+        end,
+      },
     },
     opts = {
       servers = {
