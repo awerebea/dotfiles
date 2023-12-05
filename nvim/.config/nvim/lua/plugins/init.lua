@@ -72,7 +72,7 @@ return {
       require("dial.config").augends:register_group{
         default = {
           augend.constant.alias.bool,
-          augend.integer.alias.decimal_int,
+          augend.integer.alias.decimal,
           augend.integer.alias.hex,
           augend.date.alias["%Y/%m/%d"],
           augend.date.alias["%Y-%m-%d"],
