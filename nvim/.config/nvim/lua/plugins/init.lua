@@ -631,4 +631,9 @@ return {
       require("pqf").setup(opts)
     end,
   },
+  {
+    "yutkat/confirm-quit.nvim",
+    event = "CmdlineEnter",
+    opts = {},
+  },
 }
