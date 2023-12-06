@@ -26,6 +26,7 @@ function M.format()
 
   vim.lsp.buf.format(vim.tbl_deep_extend("force", {
     bufnr = buf,
+    timeout_ms = 5000,
     filter = function(client)
       return vim.tbl_contains(client_ids, client.id)
     end,
