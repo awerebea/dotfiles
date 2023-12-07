@@ -468,6 +468,7 @@ return {
           ["<C-g>"] = actions.to_fuzzy_refine,
           ["<C-z>"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
+          ["<C-M-f>"] = copy_path_of_selected_item,
           ["<M-h>"] = actions.results_scrolling_left,
           ["<M-l>"] = actions.results_scrolling_right,
           ["<C-/>"] = actions.which_key,
