@@ -142,8 +142,12 @@ return {
   { "tpope/vim-repeat", event = "VeryLazy" },
   {
     "adoyle-h/lsp-toggle.nvim",
-    cmd = { "ToggleLSP", "ToggleNullLSP" },
-    config = true,
+    event = "VeryLazy",
+    config = function()
+      require("lsp-toggle").setup()
+      vim.keymap.set("n", "<leader>tgl", "<Cmd>ToggleLSP<CR>", { desc = "Toggle LSP" })
+      vim.keymap.set("n", "<leader>tgn", "<Cmd>ToggleNullLSP<CR>", { desc = "Toggle Null LSP" })
+    end,
   },
   {
     "simeji/winresizer",
