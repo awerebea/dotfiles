@@ -8,7 +8,10 @@ return {
     --   return { "treesitter", "indent" }
     -- end,
     open_fold_hl_timeout = 400,
-    close_fold_kinds = { "imports", "comment" },
+    close_fold_kinds = {
+      "imports",
+      -- "comment", -- do not close folds in comments on startup
+    },
     preview = {
       win_config = {
         border = { "", "─", "", "", "", "─", "", "" },
