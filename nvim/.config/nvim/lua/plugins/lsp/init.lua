@@ -116,6 +116,7 @@ return {
         "beautysh",
         "debugpy",
         "codelldb",
+        "powershell-editor-services",
       },
     },
     config = function(_, opts)
