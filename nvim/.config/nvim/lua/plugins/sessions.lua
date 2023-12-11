@@ -44,6 +44,12 @@ return {
         require("sessions").save(session_file)
       end,
     })
+
+    local function close_neo_tree()
+      require("neo-tree.sources.manager").close_all()
+      vim.notify "closed all"
+    end
+
     HandleCurrentCwdSession = function(cmd)
       local session_cwd, _ = vim.fn.getcwd(-1, -1)
       local function transform_cwd(cwd)
@@ -61,6 +67,7 @@ return {
           vim.fn.delete(session_file)
         end
       elseif cmd == "save" then
+        close_neo_tree()
         require("sessions").save(session_file)
         print("Session CWD is: " .. session_cwd)
       end
