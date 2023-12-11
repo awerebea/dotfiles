@@ -1,6 +1,7 @@
 return {
   {
     "nvim-tree/nvim-tree.lua",
+    enabled = false,
     cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
     keys = {
       { "<F2>", "<Cmd>NvimTreeToggle<CR><bar><Cmd>NvimTreeRefresh<CR>", desc = "Explorer" },
