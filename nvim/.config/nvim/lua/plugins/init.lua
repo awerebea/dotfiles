@@ -105,6 +105,21 @@ return {
             cyclic = true,
           },
           augend.constant.new{
+            elements = {"left", "center", "right"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
+            elements = {"Left", "Center", "Right"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
+            elements = {"LEFT", "CENTER", "RIGHT"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
             elements = {"Jan", "Feb", "Mar", "Apr", "May", "Jun",
                         "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"},
             word = true,
