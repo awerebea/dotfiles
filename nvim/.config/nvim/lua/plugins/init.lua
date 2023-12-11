@@ -329,8 +329,8 @@ return {
         autoselect_one = true,
         include_current_win = false,
         bo = {
-          filetype = { "NvimTree", "neo-tree", "notify", "incline", "fidget" },
-          buftype = { "terminal" },
+          filetype = { "NvimTree", "neo-tree", "neo-tree-popup", "notify", "incline", "fidget" },
+          buftype = { "terminal", "quickfix" },
         },
       },
     },
