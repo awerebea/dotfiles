@@ -12,21 +12,13 @@ if (-not $sourceDirectory)
 # Get video files
 $sidecarFiles = Get-ChildItem -Path $sourceDirectory -Recurse -Include '*.xmp' -Exclude '*.mkv.xmp'
 
-$tempDirectory = New-Item -ItemType Directory `
-    -Path ([System.IO.Path]::GetTempPath() + [System.IO.Path]::GetRandomFileName() -replace '\..*')
-
 foreach ($file in $sidecarFiles)
 {
     $outputFile = "$($file -replace '\.[^.]*\.[^.]*$').mkv.xmp"
 
     if (Test-Path "$outputFile")
     {
-        $fileTempPath = Join-Path $tempDirectory.FullName ([System.IO.Path]::GetRandomFileName())
-        Copy-Item -Path "$file" -Destination "$fileTempPath" -Force
-        $outputFileTempPath = Join-Path $tempDirectory.FullName ([System.IO.Path]::GetRandomFileName())
-        Copy-Item -Path "$outputFile" -Destination "$outputFileTempPath" -Force
-
-        & exiftool -tagsFromFile "$fileTempPath" "$outputFileTempPath"
+        & exiftool -overwrite_original -tagsFromFile "$file" "$outputFile"
 
         if ($LASTEXITCODE -eq 0)
         {
@@ -41,10 +33,6 @@ foreach ($file in $sidecarFiles)
         {
             Write-Host "Metadata transfer failed for $($file.FullName)"
         }
-
-        Move-Item -Path "$outputFileTempPath" -Destination "$outputFile" -Force
     }
     Write-Host ""
 }
-
-Remove-Item -Path $tempDirectory.FullName -Recurse -Force
