@@ -40,7 +40,7 @@ Write-Host ""
 
 foreach ($file in $videoFiles)
 {
-    $outputPath = Join-Path $file.Directory.FullName "$($file.BaseName).mkv"
+    $outputPath = Join-Path "$($file.Directory.FullName)" "$($file.BaseName).mkv"
     $xmpFilePath = "$($file.FullName).xmp"
 
     Write-Host "Processing $($file.FullName)"
@@ -55,10 +55,10 @@ foreach ($file in $videoFiles)
     if ($LASTEXITCODE -eq 0)
     {
         Write-Host "Conversion successful. Removing original file: $($file.FullName)"
-        Remove-Item -Path $file.FullName -Force
+        Remove-Item -Path "$($file.FullName)" -Force
 
         # Check if .xmp file exists and rename it
-        if (Test-Path $xmpFilePath)
+        if (Test-Path "$xmpFilePath")
         {
             Write-Host "Renaming $xmpFilePath to $outputPath.xmp"
             Rename-Item -Path "$xmpFilePath" -NewName "$outputPath.xmp" -Force
