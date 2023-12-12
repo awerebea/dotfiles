@@ -38,6 +38,13 @@ Write-Host ""
 Write-Host "Used preset: $preset"
 Write-Host ""
 
+$logFilePath = Join-Path (Get-Location) "convert.log"
+
+if (-not (Test-Path "$logFilePath"))
+{
+    New-Item -ItemType File -Path "$logFilePath" | Out-Null
+}
+
 foreach ($file in $videoFiles)
 {
     $outputPath = Join-Path "$($file.Directory.FullName)" "$($file.BaseName).mkv"
@@ -51,9 +58,15 @@ foreach ($file in $videoFiles)
         -c:a copy -c:s copy `
         "$outputPath"
 
-    if ($LASTEXITCODE -ne 0)
+    $exitCode = $LASTEXITCODE
+
+    $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
+    if ($exitCode -eq 0)
     {
-        Write-Host "Conversion failed for $($file.FullName)"
+        "$timeStamp [COMPLETE]: $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+    } else
+    {
+        "$timeStamp [FAILED]  : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
     }
     Write-Host ""
 }
