@@ -1,5 +1,7 @@
 param (
     [string]$preset = 'slow',
+    [switch]$v = $false,
+    [switch]$vv = $false,
 
     [string]$sourceDirectory
 )
@@ -25,18 +27,29 @@ $videoExtensions = @(
 # Get video files
 $videoFiles = Get-ChildItem -Path $sourceDirectory -Recurse -Include $videoExtensions
 
-# Print the number of found paths
-Write-Host "Number of files found for processing: $($videoFiles.Count)"
-
-# Iterate through each path and print
-foreach ($file in $videoFiles)
-{
-    Write-Host "$($file.FullName)"
+# Filter out already converted files
+$filteredFiles = $videoFiles | Where-Object {
+    $outputPath = Join-Path "$($_.Directory.FullName)" "$($_.BaseName).mkv"
+    -not (Test-Path "$outputPath")
 }
 
-Write-Host ""
-Write-Host "Used preset: $preset"
-Write-Host ""
+# Print the number of found paths
+if ($v -or $vv)
+{
+    Write-Host "Number of files found for processing: $($filteredFiles.Count)"
+}
+
+# Iterate through each path and print
+if ($vv)
+{
+    foreach ($file in $filteredFiles)
+    {
+        Write-Host "$($file.FullName)"
+    }
+    Write-Host ""
+}
+
+Write-Host "Used preset: $preset`n"
 
 # Ask the user for confirmation on the same line
 [Console]::Write("Do you want to proceed? (Yes/[N]o): ")
@@ -67,7 +80,7 @@ if (-not (Test-Path "$logFilePath"))
     New-Item -ItemType File -Path "$logFilePath" | Out-Null
 }
 
-foreach ($file in $videoFiles)
+foreach ($file in $filteredFiles)
 {
     $outputPath = Join-Path "$($file.Directory.FullName)" "$($file.BaseName).mkv"
 
