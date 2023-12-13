@@ -39,6 +39,24 @@ if ($v -or $vv)
     Write-Host "Number of files found for processing: $($filteredFiles.Count)"
 }
 
+function Format-FileSize
+{
+    param (
+        [double]$sizeInBytes
+    )
+
+    $suffixes = "B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"
+    $index = 0
+
+    while ($sizeInBytes -ge 1KB -and $index -lt $suffixes.Count)
+    {
+        $sizeInBytes /= 1KB
+        $index++
+    }
+
+    "{0:N2} {1}" -f $sizeInBytes, $suffixes[$index]
+}
+
 # Iterate through each path and print
 if ($vv)
 {
@@ -84,10 +102,14 @@ foreach ($file in $filteredFiles)
 {
     $outputPath = Join-Path "$($file.Directory.FullName)" "$($file.BaseName).mkv"
 
-    Write-Host "Processing $($file.FullName)"
+    $fileSizeInBytes = (Get-Item "$($file.FullName)").length
+    $fileSize = "$(Format-FileSize -sizeInBytes $fileSizeInBytes)"
+
+    Write-Host "Processing $($file.FullName) ($fileSize)"
 
     $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
-    "$timeStamp [STARTED]  : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+    "$timeStamp [STARTED]  : $($file.FullName) ($fileSize)" |
+        Out-File -Append -FilePath "$logFilePath"
 
     & ffmpeg -y -hide_banner `
         -i "$($file.FullName)" `
@@ -101,7 +123,20 @@ foreach ($file in $filteredFiles)
     $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
     if ($exitCode -eq 0)
     {
-        "$timeStamp [COMPLETED]: $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+        $outputFileSizeInBytes = (Get-Item "$outputPath").length
+        $outputFileSize = "$(Format-FileSize -sizeInBytes $outputFileSizeInBytes)"
+
+        # Calculate compression efficiency
+        $compressionEfficiency = (1 - ($outputFileSizeInBytes / $fileSizeInBytes)) * 100
+        $compressionEfficiencyFormatted = $("{0:N2}%" -f $compressionEfficiency)
+
+        "$timeStamp [COMPLETED]: $outputPath ($outputFileSize) " +
+        "compression efficiency: $compressionEfficiencyFormatted" |
+            Out-File -Append -FilePath "$logFilePath"
+
+        Write-Host "Completed: original size $fileSize," `
+            "converted size $outputFileSize," `
+            "compression efficiency $compressionEfficiencyFormatted"
     } else
     {
         "$timeStamp [FAILED]   : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
