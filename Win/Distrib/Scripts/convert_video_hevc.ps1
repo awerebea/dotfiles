@@ -86,6 +86,9 @@ foreach ($file in $filteredFiles)
 
     Write-Host "Processing $($file.FullName)"
 
+    $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
+    "$timeStamp [STARTED]  : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+
     & ffmpeg -y -hide_banner `
         -i "$($file.FullName)" `
         -map 0:v -map 0:a? -map 0:s? -map_metadata 0 `
@@ -98,10 +101,10 @@ foreach ($file in $filteredFiles)
     $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
     if ($exitCode -eq 0)
     {
-        "$timeStamp [COMPLETE]: $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+        "$timeStamp [COMPLETED]: $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
     } else
     {
-        "$timeStamp [FAILED]  : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+        "$timeStamp [FAILED]   : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
     }
     Write-Host ""
 }
