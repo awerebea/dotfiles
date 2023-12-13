@@ -38,6 +38,28 @@ Write-Host ""
 Write-Host "Used preset: $preset"
 Write-Host ""
 
+# Ask the user for confirmation on the same line
+[Console]::Write("Do you want to proceed? (Yes/[N]o): ")
+
+# Wait for a key press
+while (-not [Console]::KeyAvailable)
+{
+    Start-Sleep -Milliseconds 100
+}
+
+# Read the key
+$key = [Console]::ReadKey()
+
+# Add a new line after user input
+Write-Host ""
+
+# Check user input
+if (-not($key.Key -eq 'Y' -or $key.Key -eq 'y'))
+{
+    Write-Host "Script execution aborted."
+    exit
+}
+
 $logFilePath = Join-Path (Get-Location) "convert.log"
 
 if (-not (Test-Path "$logFilePath"))
