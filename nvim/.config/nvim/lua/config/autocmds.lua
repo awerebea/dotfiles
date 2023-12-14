@@ -55,7 +55,7 @@ local aucmd_dict = {
     {
       pattern = { "python" },
       callback = function(event)
-        vim.bo[event.buf].textwidth = 88
+        vim.bo[event.buf].textwidth = 99
       end,
     },
   },
