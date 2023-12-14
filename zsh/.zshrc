@@ -1461,7 +1461,7 @@ bindkey '^I' fzf-tab-complete-wrapper
   if [[ -n $(pgrep ssh-agent) ]]; then
     if [[ -z $SSH_AGENT_PID ]]; then
       export SSH_AGENT_PID=$(pgrep ssh-agent | head -n1)
-      export SSH_AUTH_SOCK=$(find /tmp/ -type s -name "agent.$((SSH_AGENT_PID-1))")
+      export SSH_AUTH_SOCK=$(find /tmp/ -type s -name "agent.$((SSH_AGENT_PID-1))" 2>/dev/null)
     fi
   else
       eval $(ssh-agent -s) > /dev/null
