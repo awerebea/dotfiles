@@ -57,6 +57,23 @@ function Format-FileSize
     "{0:N2} {1}" -f $sizeInBytes, $suffixes[$index]
 }
 
+function Update-LastLine
+{
+    param (
+        [string]$filePath,
+        [string]$newLastLine
+    )
+
+    # Read all lines from the file
+    $fileContent = Get-Content -Path "$filePath"
+
+    # Modify the last line (replace "NewLastLine" with your desired content)
+    $fileContent[-1] = "$newLastLine"
+
+    # Write the updated content back to the file
+    $fileContent | Set-Content -Path "$filePath"
+}
+
 # Iterate through each path and print
 if ($vv)
 {
@@ -137,10 +154,12 @@ foreach ($file in $filteredFiles)
         $compressionEfficiency = (1 - ($outputFileSizeInBytes / $fileSizeInBytes)) * 100
         $compressionEfficiencyFormatted = $("{0:N2}%" -f $compressionEfficiency)
 
-        "$timeStampFinish [COMPLETED]: $outputPath ($outputFileSize), " +
+        $finalMessage = "$timeStampFinish [COMPLETED]: $file => $outputPath, " +
+        "Original Size: ($fileSize), Converted Size: ($outputFileSize), " +
         "Compression Efficiency: $compressionEfficiencyFormatted, " +
-        "Time Elapsed: $timeElapsedFormatted" |
-            Out-File -Append -FilePath "$logFilePath"
+        "Time Elapsed: $timeElapsedFormatted"
+
+        Update-LastLine -filePath "$logFilePath" -newLastLine "$finalMessage"
 
         Write-Host "Completed: Original Size: $fileSize," `
             "Converted Size: $outputFileSize," `
@@ -148,9 +167,8 @@ foreach ($file in $filteredFiles)
             "Time Elapsed: $timeElapsedFormatted"
     } else
     {
-        "$timeStampFinish [FAILED]   : $($file.FullName) " +
-        "Time Elapsed: $timeElapsedFormatted" |
-            Out-File -Append -FilePath "$logFilePath"
+        $finalMessage = "$timeStampFinish [FAILED]   : $file, Time Elapsed: $timeElapsedFormatted"
+        Update-LastLine -filePath "$logFilePath" -newLastLine "$finalMessage"
     }
     Write-Host ""
 }
