@@ -163,12 +163,14 @@ augroup filetypeRelatedSettings
   autocmd BufRead,BufNewFile .yamllint set ft=yaml
   autocmd BufRead,BufNewFile *.tf,*.hcl,*.tfvars,.terraformrc,terraform.rc set ft=terraform
   autocmd BufRead,BufNewFile *.tfstate,*.json.tpl* set ft=json
-  autocmd FileType bash,sh,json*,dockerfile,python,cmake,ps1,psm1,psd1,ps1xml
+  autocmd FileType bash,sh,json*,dockerfile,python,cmake
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
   autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
   autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm,lua,hcl,terraform
     \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  autocmd FileType ps1,psm1,psd1,ps1xml
+    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab textwidth=99
 augroup END
 ]]
 -- }}}
