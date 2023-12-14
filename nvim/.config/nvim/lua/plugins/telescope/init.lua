@@ -66,6 +66,7 @@ return {
       --   end,
       --   desc = "Find word under cursor",
       -- },
+      { "<leader>ft", "<Cmd>Telescope<CR>", desc = "Telescope" },
       {
         "<leader>//",
         function()
