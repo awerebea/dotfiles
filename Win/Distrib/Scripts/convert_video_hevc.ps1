@@ -107,8 +107,8 @@ foreach ($file in $filteredFiles)
 
     Write-Host "Processing $($file.FullName) ($fileSize)"
 
-    $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
-    "$timeStamp [STARTED]  : $($file.FullName) ($fileSize)" |
+    $timeStampStart = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
+    "$timeStampStart [STARTED]  : $($file.FullName) ($fileSize)" |
         Out-File -Append -FilePath "$logFilePath"
 
     & ffmpeg -y -hide_banner `
@@ -120,7 +120,14 @@ foreach ($file in $filteredFiles)
 
     $exitCode = $LASTEXITCODE
 
-    $timeStamp = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
+    $timeStampFinish = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
+
+    # Calculate time elapsed
+    $timeElapsed = (Get-Date $timeStampFinish) - (Get-Date $timeStampStart)
+
+    # Format the time elapsed
+    $timeElapsedFormatted = '{0:HH:mm:ss}' -f $timeElapsed
+
     if ($exitCode -eq 0)
     {
         $outputFileSizeInBytes = (Get-Item "$outputPath").length
@@ -130,16 +137,20 @@ foreach ($file in $filteredFiles)
         $compressionEfficiency = (1 - ($outputFileSizeInBytes / $fileSizeInBytes)) * 100
         $compressionEfficiencyFormatted = $("{0:N2}%" -f $compressionEfficiency)
 
-        "$timeStamp [COMPLETED]: $outputPath ($outputFileSize) " +
-        "compression efficiency: $compressionEfficiencyFormatted" |
+        "$timeStampFinish [COMPLETED]: $outputPath ($outputFileSize), " +
+        "Compression Efficiency: $compressionEfficiencyFormatted, " +
+        "Time Elapsed: $timeElapsedFormatted" |
             Out-File -Append -FilePath "$logFilePath"
 
-        Write-Host "Completed: original size $fileSize," `
-            "converted size $outputFileSize," `
-            "compression efficiency $compressionEfficiencyFormatted"
+        Write-Host "Completed: Original Size: $fileSize," `
+            "Converted Size: $outputFileSize," `
+            "Compression Efficiency: $compressionEfficiencyFormatted," `
+            "Time Elapsed: $timeElapsedFormatted"
     } else
     {
-        "$timeStamp [FAILED]   : $($file.FullName)" | Out-File -Append -FilePath "$logFilePath"
+        "$timeStampFinish [FAILED]   : $($file.FullName) " +
+        "Time Elapsed: $timeElapsedFormatted" |
+            Out-File -Append -FilePath "$logFilePath"
     }
     Write-Host ""
 }
