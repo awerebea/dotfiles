@@ -139,11 +139,21 @@ foreach ($file in $filteredFiles)
 
     $timeStampFinish = "$(Get-Date -Format 'yyyy-MM-ddTHH:mm:ss.fffZ')"
 
+    # Convert the strings to DateTime objects
+    $startTime = [DateTime]::ParseExact(
+        $timeStampStart, 'yyyy-MM-ddTHH:mm:ss.fffZ',
+        [System.Globalization.CultureInfo]::InvariantCulture
+    )
+    $finishTime = [DateTime]::ParseExact(
+        $timeStampFinish, 'yyyy-MM-ddTHH:mm:ss.fffZ',
+        [System.Globalization.CultureInfo]::InvariantCulture
+    )
+
     # Calculate time elapsed
-    $timeElapsed = (Get-Date $timeStampFinish) - (Get-Date $timeStampStart)
+    $timeElapsed = $finishTime - $startTime
 
     # Format the time elapsed
-    $timeElapsedFormatted = '{0:HH:mm:ss}' -f $timeElapsed
+    $timeElapsedFormatted = '{0:hh\:mm\:ss}' -f $timeElapsed
 
     if ($exitCode -eq 0)
     {
@@ -154,16 +164,14 @@ foreach ($file in $filteredFiles)
         $compressionEfficiency = (1 - ($outputFileSizeInBytes / $fileSizeInBytes)) * 100
         $compressionEfficiencyFormatted = $("{0:N2}%" -f $compressionEfficiency)
 
-        $finalMessage = "$timeStampFinish [COMPLETED]: $file => $outputPath, " +
-        "Original Size: ($fileSize), Converted Size: ($outputFileSize), " +
-        "Compression Efficiency: $compressionEfficiencyFormatted, " +
-        "Time Elapsed: $timeElapsedFormatted," +
-        "Start Time: $timeStampStart"
+        $finalMessage = "$timeStampFinish [COMPLETED]: $file, " +
+        "$fileSize => $outputFileSize, " +
+        "Compression: $compressionEfficiencyFormatted, " +
+        "Time Elapsed: $timeElapsedFormatted"
 
         Update-LastLine -filePath "$logFilePath" -newLastLine "$finalMessage"
 
-        Write-Host "Completed: Original Size: $fileSize," `
-            "Converted Size: $outputFileSize," `
+        Write-Host "Completed: $fileSize => $outputFileSize," `
             "Compression Efficiency: $compressionEfficiencyFormatted," `
             "Time Elapsed: $timeElapsedFormatted"
     } else
