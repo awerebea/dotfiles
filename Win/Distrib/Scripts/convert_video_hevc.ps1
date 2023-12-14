@@ -157,7 +157,8 @@ foreach ($file in $filteredFiles)
         $finalMessage = "$timeStampFinish [COMPLETED]: $file => $outputPath, " +
         "Original Size: ($fileSize), Converted Size: ($outputFileSize), " +
         "Compression Efficiency: $compressionEfficiencyFormatted, " +
-        "Time Elapsed: $timeElapsedFormatted"
+        "Time Elapsed: $timeElapsedFormatted," +
+        "Start Time: $timeStampStart"
 
         Update-LastLine -filePath "$logFilePath" -newLastLine "$finalMessage"
 
