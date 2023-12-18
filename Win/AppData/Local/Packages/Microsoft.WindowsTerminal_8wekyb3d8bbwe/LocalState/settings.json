@@ -86,7 +86,7 @@
             {
                 "colorScheme": "Catppuccin Mocha",
                 "font": {
-                    "face": "JetBrainsMono NF",
+                    "face": "JetBrainsMono Nerd Font",
                     "size": 13.0,
                     "weight": "light"
                 },
@@ -115,7 +115,7 @@
                 "cursorShape": "filledBox",
                 "experimental.retroTerminalEffect": false,
                 "font": {
-                    "face": "JetBrainsMono NF",
+                    "face": "JetBrainsMono Nerd Font",
                     "weight": "light"
                 },
                 "guid": "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}",
