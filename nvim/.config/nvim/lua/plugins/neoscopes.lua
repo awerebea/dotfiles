@@ -32,22 +32,22 @@ return {
     end
 
     _G.neoscopes_find_files = function()
-      require("plugins.telescope.telescopePickers").prettyFilesPicker {
-        picker = "find_files",
-        options = { search_dirs = get_search_dirs() },
-      }
-      -- require("telescope.builtin").find_files {
-      --   search_dirs = get_search_dirs(),
+      -- require("plugins.telescope.telescopePickers").prettyFilesPicker {
+      --   picker = "find_files",
+      --   options = { search_dirs = get_search_dirs() },
       -- }
+      require("telescope.builtin").find_files {
+        search_dirs = get_search_dirs(),
+      }
     end
     _G.neoscopes_live_grep = function()
-      require("plugins.telescope.telescopePickers").prettyGrepPicker {
-        picker = "live_grep",
-        options = { search_dirs = get_search_dirs() },
-      }
-      -- require("telescope.builtin").live_grep {
-      --   search_dirs = get_search_dirs(),
+      -- require("plugins.telescope.telescopePickers").prettyGrepPicker {
+      --   picker = "live_grep",
+      --   options = { search_dirs = get_search_dirs() },
       -- }
+      require("telescope.builtin").live_grep {
+        search_dirs = get_search_dirs(),
+      }
     end
     _G.neoscopes_live_grep_args = function()
       require("telescope").extensions.live_grep_args.live_grep_args {
@@ -68,9 +68,12 @@ return {
       }
     end
     _G.neoscopes_grep_word = function()
-      require("plugins.telescope.telescopePickers").prettyGrepPicker {
-        picker = "grep_string",
-        options = { search_dirs = get_search_dirs() },
+      -- require("plugins.telescope.telescopePickers").prettyGrepPicker {
+      --   picker = "grep_string",
+      --   options = { search_dirs = get_search_dirs() },
+      -- }
+      require("telescope.builtin").grep_string {
+        search_dirs = get_search_dirs(),
       }
     end
 

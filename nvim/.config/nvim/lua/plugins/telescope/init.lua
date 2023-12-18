@@ -29,14 +29,14 @@ return {
       -- {
       --   "<leader>ff",
       --   function()
-      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "find_files" }
+      --     require("telescope").extensions.menufacture.find_files()
       --   end,
       --   desc = "Find files (menufacture)",
       -- },
       -- {
       --   "<leader>f/",
       --   function()
-      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "live_grep" }
+      --     require("telescope").extensions.menufacture.live_grep()
       --   end,
       --   { desc = "Live grep (menufacture)" },
       -- },
@@ -62,7 +62,7 @@ return {
       -- {
       --   "<leader>fw",
       --   function()
-      --     require("plugins.telescope.telescopePickers").prettyGrepPicker { picker = "grep_string" }
+      --     require("telescope.builtin").grep_string()
       --   end,
       --   desc = "Find word under cursor",
       -- },
@@ -77,23 +77,24 @@ return {
       {
         "<leader>fg",
         function()
-          require("plugins.telescope.telescopePickers").prettyFilesPicker {
-            picker = "git_files",
-          }
+          local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
+          if not ok then
+            require("telescope").extensions.menufacture.find_files()
+          end
         end,
         desc = "Find Git managed files",
       },
       {
         "<leader>fb",
         function()
-          require("plugins.telescope.telescopePickers").prettyBuffersPicker()
+          require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
       },
       {
         "<leader><CR>",
         function()
-          require("plugins.telescope.telescopePickers").prettyBuffersPicker()
+          require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
       },
@@ -146,9 +147,7 @@ return {
       {
         "<leader>fo",
         function()
-          require("plugins.telescope.telescopePickers").prettyFilesPicker {
-            picker = "oldfiles",
-          }
+          require("telescope.builtin").oldfiles()
         end,
         desc = "Recent",
       },
