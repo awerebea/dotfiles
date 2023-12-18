@@ -59,7 +59,7 @@ function telescopePickers.prettyFilesPicker(pickerAndOptions)
   end
 
   -- Ensure 'options' integrity
-  options = pickerAndOptions.options or {}
+  local options = pickerAndOptions.options or {}
 
   -- Use Telescope's existing function to obtain a default 'entry_maker' function
   -- ----------------------------------------------------------------------------
@@ -160,7 +160,7 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
   end
 
   -- Ensure 'options' integrity
-  options = pickerAndOptions.options or {}
+  local options = pickerAndOptions.options or {}
 
   -- Use Telescope's existing function to obtain a default 'entry_maker' function
   -- ----------------------------------------------------------------------------
@@ -237,7 +237,8 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
       local tailForDisplay = tail .. " "
 
       -- Encode text if necessary
-      local text = options.file_encoding and vim.iconv(entry.text, options.file_encoding, "utf8")
+      ---@diagnostic disable-next-line: param-type-mismatch
+      local text = options.file_encoding and vim.iconv(entry.text, options.file_encoding, "utf-8")
         or entry.text
 
       -- INSIGHT: This return value should be a tuple of 2, where the first value is the actual value
@@ -274,7 +275,7 @@ function telescopePickers.prettyDocumentSymbols(localOptions)
     return
   end
 
-  options = localOptions or {}
+  local options = localOptions or {}
 
   local originalEntryMaker = telescopeMakeEntryModule.gen_from_lsp_symbols(options)
 
@@ -310,7 +311,7 @@ function telescopePickers.prettyWorkspaceSymbols(localOptions)
     return
   end
 
-  options = localOptions or {}
+  local options = localOptions or {}
 
   local originalEntryMaker = telescopeMakeEntryModule.gen_from_lsp_symbols(options)
 
@@ -356,7 +357,7 @@ function telescopePickers.prettyBuffersPicker(localOptions)
     return
   end
 
-  options = localOptions or {}
+  local options = localOptions or {}
 
   local originalEntryMaker = telescopeMakeEntryModule.gen_from_buffer(options)
 
