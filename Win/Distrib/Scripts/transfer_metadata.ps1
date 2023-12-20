@@ -33,6 +33,6 @@ foreach ($file in $sidecarFiles)
         {
             Write-Host "Metadata transfer failed for $($file.FullName)"
         }
+        Write-Host ""
     }
-    Write-Host ""
 }
