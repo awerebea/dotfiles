@@ -10,19 +10,6 @@ return {
   },
   config = function()
     local win_width = 40
-    -- Toggle width.
-    local toggle_width = function()
-      local max_width = math.floor((win_width + 1) * 2.25)
-      local cur_width = vim.fn.winwidth(0)
-      local new_width = win_width + 1
-      if cur_width >= win_width and cur_width < math.floor(win_width * 1.5) then
-        new_width = math.floor(win_width * 1.5)
-      elseif cur_width >= math.floor(win_width * 1.5) and cur_width < max_width then
-        new_width = max_width
-      end
-      vim.cmd(new_width .. " wincmd |")
-    end
-
     require("neo-tree").setup {
       close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
       event_handlers = {
@@ -167,6 +154,17 @@ return {
             end
           end)
         end,
+        toggle_width = function()
+          local max_width = math.floor((win_width + 1) * 2.25)
+          local cur_width = vim.fn.winwidth(0)
+          local new_width = win_width + 1
+          if cur_width >= win_width and cur_width < math.floor(win_width * 1.5) then
+            new_width = math.floor(win_width * 1.5)
+          elseif cur_width >= math.floor(win_width * 1.5) and cur_width < max_width then
+            new_width = max_width
+          end
+          vim.cmd(new_width .. " wincmd |")
+        end,
       },
       window = {
         position = "right",
@@ -229,7 +227,7 @@ return {
           ["<"] = "prev_source",
           [">"] = "next_source",
           ["i"] = "show_file_details",
-          ["W"] = toggle_width,
+          ["W"] = "toggle_width",
           ["Y"] = "copy_selector",
         },
       },
