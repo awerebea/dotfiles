@@ -128,7 +128,46 @@ return {
       -- A list of functions, each representing a global custom command
       -- that will be available in all sources (if not overridden in `opts[source_name].commands`)
       -- see `:h neo-tree-custom-commands-global`
-      commands = {},
+      commands = {
+        copy_selector = function(state)
+          local node = state.tree:get_node()
+          local filepath = node:get_id()
+          local filename = node.name
+          local modify = vim.fn.fnamemodify
+
+          local vals = {
+            ["1. FILENAME    "] = filename,
+            ["2. PATH FULL   "] = filepath,
+            ["3. PATH DIR    "] = vim.fs.dirname(filepath),
+            ["4. PATH REL.   "] = modify(filepath, ":."),
+            ["5. BASENAME    "] = modify(filename, ":r"),
+            ["6. PATH REL. ~ "] = modify(filepath, ":~"),
+            ["7. EXTENSION   "] = modify(filename, ":e"),
+            ["8. URI         "] = vim.uri_from_fname(filepath),
+          }
+
+          local options = vim.tbl_filter(function(val)
+            return vals[val] ~= ""
+          end, vim.tbl_keys(vals))
+          if vim.tbl_isempty(options) then
+            vim.notify("No values to copy", vim.log.levels.WARN)
+            return
+          end
+          table.sort(options)
+          vim.ui.select(options, {
+            prompt = "Choose to copy to clipboard:",
+            format_item = function(item)
+              return ("%s: %s"):format(item, vals[item])
+            end,
+          }, function(choice)
+            local result = vals[choice]
+            if result then
+              vim.notify(("Copied: `%s`"):format(result))
+              vim.fn.setreg("+", result)
+            end
+          end)
+        end,
+      },
       window = {
         position = "right",
         width = win_width,
@@ -191,6 +230,7 @@ return {
           [">"] = "next_source",
           ["i"] = "show_file_details",
           ["W"] = toggle_width,
+          ["Y"] = "copy_selector",
         },
       },
       nesting_rules = {},
