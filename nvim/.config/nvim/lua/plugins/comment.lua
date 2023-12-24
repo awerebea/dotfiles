@@ -47,6 +47,7 @@ return {
         vim.api.nvim_feedkeys(esc, "nx", false)
         api.toggle.blockwise(vim.fn.visualmode())
       end)
+
       ---Operator function to invert comments on each line
       function _G.__flip_flop_comment()
         local U = require "Comment.utils"
@@ -115,6 +116,20 @@ return {
         "<leader>ci",
         "<cmd>set operatorfunc=v:lua.__flip_flop_comment<cr>g@",
         { silent = true, desc = "Invert comments" }
+      )
+
+      -- Duplicate commented line
+      vim.keymap.set(
+        "n",
+        "<leader>gy",
+        "yy<Plug>(comment_toggle_linewise_current)p",
+        { desc = "Duplicate commented line" }
+      )
+      vim.keymap.set(
+        "x",
+        "<leader>gy",
+        "ygv<Plug>(comment_toggle_linewise_visual)`>p",
+        { desc = "Duplicate commented line" }
       )
     end,
   },
