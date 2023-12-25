@@ -11,5 +11,5 @@ return {
     { "<leader>cq", "<cmd>TodoQuickFix<CR>", desc = "todo-comments (quickfix)" },
     { "<leader>cl", "<cmd>TodoLocList<CR>", desc = "todo-comments (loclist)" },
   },
-  config = true,
+  opts = { keywords = { NOTE = { alt = { "INFO", "DEBUG" } } } },
 }
