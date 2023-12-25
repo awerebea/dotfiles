@@ -641,4 +641,5 @@ return {
     event = "CmdlineEnter",
     opts = {},
   },
+  { "wellle/targets.vim", event = "VeryLazy" },
 }
