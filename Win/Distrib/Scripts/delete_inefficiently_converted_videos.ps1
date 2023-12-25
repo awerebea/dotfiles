@@ -146,12 +146,12 @@ function Build-DataTable ($fileMapping)
             {
                 # Add the mapping to the nested hashtable
                 $nestedMapping["origFile"] = $videoFilePath
+                # Add the nested hashtable to the main mapping with converted file path as key
+                $fileMapping[$convertedFile.FullName] = $nestedMapping
                 # Exit the inner loop as we found a match
                 break
             }
         }
-        # Add the nested hashtable to the main mapping with converted file path as key
-        $fileMapping[$convertedFile.FullName] = $nestedMapping
     }
 
     # DEBUG: print
@@ -249,7 +249,7 @@ function Request-OverwritePermission
 function Move-FilesToBackupLocation ($fileMapping)
 {
     $filesToBackup = New-Object System.Collections.ArrayList
-    foreach ($convertedFile in $fileMapping.Keys)
+    foreach ($convertedFile in $fileMapping.Keys | Sort-Object)
     {
         if ($fileMapping[$convertedFile].ContainsKey("backupFile"))
         {
@@ -257,21 +257,10 @@ function Move-FilesToBackupLocation ($fileMapping)
         }
     }
 
-    Write-Confirmation -filesToBackup $filesToBackup
+    Write-Confirmation -filesToBackup $filesToBackup -fileMapping $fileMapping
 
     foreach ($convertedFile in $filesToBackup)
     {
-        if (-not $silent)
-        {
-            Write-Output "$convertedFile : $(
-                $fileMapping[$convertedFile]["origFileSize"]
-            ) => $(
-                $fileMapping[$convertedFile]["convertedFileSize"]
-            ), Compression: $(
-                $fileMapping[$convertedFile]["compressionEfficiencyFormatted"]
-            )"
-        }
-
         $backupFile = $fileMapping[$convertedFile]["backupFile"]
 
         # Creating the directory structure if it doesn't exist
@@ -297,7 +286,7 @@ function Move-FilesToBackupLocation ($fileMapping)
 
         if (-not $silent)
         {
-            Write-Output "File moved to $backupFile"
+            Write-Output "$convertedFile => $backupFile"
             if ($sidecarFileExists)
             {
                 Write-Output "Sidecar file moved to $backupFile.xmp"
@@ -307,16 +296,25 @@ function Move-FilesToBackupLocation ($fileMapping)
     }
 }
 
-function Write-Confirmation ($filesToBackup)
+function Write-Confirmation ($filesToBackup, $fileMapping)
 {
     if ($filesToBackup.Count -gt 0)
     {
         Write-Output "Number of files to move to backup: $($filesToBackup.Count)`n"
-        foreach ($item in $filesToBackup)
+        if (-not $silent)
         {
-            Write-Output $item
+            foreach ($convertedFile in $filesToBackup)
+            {
+                Write-Output "$convertedFile : $(
+                $fileMapping[$convertedFile]["origFileSize"]
+            ) => $(
+                $fileMapping[$convertedFile]["convertedFileSize"]
+            ), Compression: $(
+                $fileMapping[$convertedFile]["compressionEfficiencyFormatted"]
+            )"
+            }
+            Write-Output ""
         }
-        Write-Output ""
         if (-not (Get-Confirmation))
         {
             Write-Output "Script execution aborted."
