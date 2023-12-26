@@ -1,4 +1,5 @@
 return {
+  require "plugins.telescope.dependencies",
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
@@ -6,12 +7,9 @@ return {
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
       "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-project.nvim",
-      "ahmedkhalf/project.nvim",
       "cljoly/telescope-repo.nvim",
-      "stevearc/aerial.nvim",
       "folke/trouble.nvim",
       "kiyoon/telescope-insert-path.nvim",
-      "AckslD/nvim-neoclip.lua",
       "nvim-telescope/telescope-hop.nvim",
       "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
@@ -19,7 +17,6 @@ return {
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
-      "ThePrimeagen/harpoon",
       "axkirillov/hbac.nvim",
       { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
@@ -870,5 +867,4 @@ return {
       end
     end,
   },
-  require "plugins.telescope.dependencies",
 }
