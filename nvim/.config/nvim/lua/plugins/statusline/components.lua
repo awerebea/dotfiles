@@ -126,4 +126,12 @@ return {
     end,
     color = { fg = "#ff9e64" },
   },
+  session_name = {
+    function()
+      return "📌 " .. require("possession.session").session_name
+    end,
+    cond = function()
+      return require("possession.session").session_name ~= nil
+    end,
+  },
 }

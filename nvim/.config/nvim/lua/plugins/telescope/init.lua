@@ -344,6 +344,14 @@ return {
         desc = "show custom AdvancedGitSearch commands",
       },
       -- }}} advanced-git-search
+      -- possession
+      {
+        "<leader>qa",
+        function()
+          require("telescope").extensions.possession.list()
+        end,
+        desc = "Show All sessions",
+      },
     },
     config = function(_, _)
       -- Open one or more selected entries in the current window
@@ -688,6 +696,7 @@ return {
       telescope.load_extension "harpoon"
       telescope.load_extension "hbac"
       telescope.load_extension "advanced_git_search"
+      telescope.load_extension "possession"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"

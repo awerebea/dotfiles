@@ -12,8 +12,8 @@ return {
       dashboard.button("c", " " .. " Config", "<Cmd>edit $MYVIMRC<CR>"),
       dashboard.button(
         "s",
-        " " .. " Load CWD session",
-        "<Cmd>lua HandleCurrentCwdSession('load')<CR>"
+        " " .. " Load session",
+        "<Cmd>lua require('telescope').extensions.possession.list()<CR>"
       ),
       dashboard.button("l", "󰒲 " .. " Lazy", "<Cmd>Lazy<CR>"),
       dashboard.button("q", " " .. " Quit", "<Cmd>quitall<CR>"),
