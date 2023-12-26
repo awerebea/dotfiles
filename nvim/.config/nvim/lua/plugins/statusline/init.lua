@@ -121,6 +121,7 @@ return {
           lualine_c = {
             components.diff,
             components.diagnostics,
+            components.session_name,
             components.noice_command,
             components.noice_mode,
             components.noice_search,
