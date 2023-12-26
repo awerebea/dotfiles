@@ -84,9 +84,9 @@ return {
       {
         "<leader>fb",
         function()
-          require("telescope.builtin").buffers()
+          require("telescope").extensions.scope.buffers()
         end,
-        desc = "Buffers",
+        desc = "Buffers accross all tabs",
       },
       {
         "<leader><CR>",
@@ -697,6 +697,7 @@ return {
       telescope.load_extension "hbac"
       telescope.load_extension "advanced_git_search"
       telescope.load_extension "possession"
+      telescope.load_extension "scope"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"

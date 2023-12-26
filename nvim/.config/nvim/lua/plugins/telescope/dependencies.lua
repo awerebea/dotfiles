@@ -152,6 +152,10 @@ return {
     "jedrzejboczar/possession.nvim",
     dependencies = {
       { "nvim-lua/plenary.nvim" },
+      {
+        "tiagovla/scope.nvim",
+        config = true,
+      },
     },
     lazy = false,
     config = function()
