@@ -39,8 +39,9 @@ vim.opt.wrap = false -- disable line wrapping
 vim.opt.ignorecase = true -- ignore case when searching
 vim.opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
 
--- highlight the current cursor line
-vim.opt.cursorline = false
+-- highlight the current cursor line and column
+vim.wo.cursorline = true
+vim.wo.cursorcolumn = true
 
 -- appearance
 
