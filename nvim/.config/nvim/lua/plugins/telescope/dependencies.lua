@@ -1,7 +1,19 @@
 return {
   {
     "stevearc/aerial.nvim",
+    keys = {
+      {
+        "<leader>vo",
+        function()
+          require("telescope").extensions.aerial.aerial()
+        end,
+        desc = "Code Outline",
+      },
+    },
     config = true,
+    init = function()
+      require("telescope").load_extension "aerial"
+    end,
   },
   {
     "ahmedkhalf/project.nvim",
@@ -13,6 +25,15 @@ return {
     -- s            <c-s>       search_in_project_files
     -- r            <c-r>       recent_project_files
     -- w            <c-w>       change_working_directory
+    keys = {
+      {
+        "<leader>fp",
+        function()
+          require("telescope").extensions.projects.projects()
+        end,
+        desc = "Projects",
+      },
+    },
     cmd = "ProjectRoot",
     config = function()
       require("project_nvim").setup {
@@ -53,9 +74,21 @@ return {
         datapath = vim.fn.stdpath "data",
       }
     end,
+    init = function()
+      require("telescope").load_extension "projects"
+    end,
   },
   {
     "AckslD/nvim-neoclip.lua",
+    keys = {
+      {
+        "<leader>fc",
+        function()
+          require("telescope").extensions.neoclip.default()
+        end,
+        desc = "Clipboard",
+      },
+    },
     dependencies = {
       {
         "kkharji/sqlite.lua",
@@ -96,6 +129,9 @@ return {
       },
     },
     config = true,
+    init = function()
+      require("telescope").load_extension "neoclip"
+    end,
   },
   {
     "ThePrimeagen/harpoon",
@@ -147,6 +183,9 @@ return {
       },
     },
     config = true,
+    init = function()
+      require("telescope").load_extension "harpoon"
+    end,
   },
   {
     "jedrzejboczar/possession.nvim",
@@ -272,6 +311,12 @@ return {
         end,
       })
 
+      vim.keymap.set("n", "<leader>qa", function()
+        require("telescope").extensions.possession.list()
+      end, { desc = "Show All sessions" })
+      vim.keymap.set("n", "<leader>fb", function()
+        require("telescope").extensions.scope.buffers()
+      end, { desc = "Buffers accross all tabs" })
       vim.keymap.set("n", "<leader>qL", function()
         handle_current_cwd_session "load"
       end, { desc = "Load the current CWD session" })
@@ -284,6 +329,9 @@ return {
       vim.keymap.set("n", "<leader>qs", function()
         save_session()
       end, { desc = "Save session" })
+
+      require("telescope").load_extension "possession"
+      require("telescope").load_extension "scope"
     end,
   },
   {
@@ -303,8 +351,91 @@ return {
       require("textcase").setup {}
       require("telescope").load_extension "textcase"
     end,
+  },
+  {
+    "desdic/macrothis.nvim",
+    opts = {},
     keys = {
-      { "ga.", "<Cmd>TextCaseOpenTelescope<CR>", mode = { "n", "v" }, desc = "Telescope" },
+      {
+        "<Leader>kkd",
+        function()
+          require("macrothis").delete()
+        end,
+        desc = "delete",
+      },
+      {
+        "<Leader>kke",
+        function()
+          require("macrothis").edit()
+        end,
+        desc = "edit",
+      },
+      {
+        "<Leader>kkl",
+        function()
+          require("macrothis").load()
+        end,
+        desc = "load",
+      },
+      {
+        "<Leader>kkn",
+        function()
+          require("macrothis").rename()
+        end,
+        desc = "rename",
+      },
+      {
+        "<Leader>kkq",
+        function()
+          require("macrothis").quickfix()
+        end,
+        desc = "run macro on all files in quickfix",
+      },
+      {
+        "<Leader>kkr",
+        function()
+          require("macrothis").run()
+        end,
+        desc = "run macro",
+      },
+      {
+        "<Leader>kks",
+        function()
+          require("macrothis").save()
+        end,
+        desc = "save",
+      },
+      {
+        "<Leader>kkx",
+        function()
+          require("macrothis").register()
+        end,
+        desc = "edit register",
+      },
+      {
+        "<Leader>kkp",
+        function()
+          require("macrothis").copy_register_printable()
+        end,
+        desc = "Copy register as printable",
+      },
+      {
+        "<Leader>kkm",
+        function()
+          require("macrothis").copy_macro_printable()
+        end,
+        desc = "Copy macro as printable",
+      },
+      {
+        "<leader>fm",
+        function()
+          require("telescope").extensions.macrothis.macrothis()
+        end,
+        desc = "Macrothis",
+      },
     },
+    init = function()
+      require("telescope").load_extension "macrothis"
+    end,
   },
 }

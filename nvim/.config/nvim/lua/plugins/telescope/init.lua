@@ -82,13 +82,6 @@ return {
         desc = "Find Git managed files",
       },
       {
-        "<leader>fb",
-        function()
-          require("telescope").extensions.scope.buffers()
-        end,
-        desc = "Buffers accross all tabs",
-      },
-      {
         "<leader><CR>",
         function()
           require("telescope.builtin").buffers()
@@ -173,13 +166,6 @@ return {
         desc = "Search",
       },
       {
-        "<leader>fp",
-        function()
-          require("telescope").extensions.projects.projects()
-        end,
-        desc = "Projects",
-      },
-      {
         "<leader>fP",
         function()
           require("telescope").extensions.project.project { display_type = "minimal" }
@@ -193,22 +179,7 @@ return {
         end,
         desc = "Diagnostics",
       },
-      {
-        "<leader>vo",
-        function()
-          require("telescope").extensions.aerial.aerial()
-        end,
-        desc = "Code Outline",
-      },
 
-      -- list of items copied to clipboard
-      {
-        "<leader>fc",
-        function()
-          require("telescope").extensions.neoclip.default()
-        end,
-        desc = "Clipboard",
-      },
       -- list notifications
       {
         "<leader>fn",
@@ -290,11 +261,6 @@ return {
         desc = "Undo tree",
       },
       {
-        "<leader>fm",
-        "<Cmd>Telescope macrothis<CR>",
-        desc = "Macrothis",
-      },
-      {
         "<leader>m",
         function()
           require("telescope").extensions.harpoon.marks()
@@ -344,14 +310,6 @@ return {
         desc = "show custom AdvancedGitSearch commands",
       },
       -- }}} advanced-git-search
-      -- possession
-      {
-        "<leader>qa",
-        function()
-          require("telescope").extensions.possession.list()
-        end,
-        desc = "Show All sessions",
-      },
     },
     config = function(_, _)
       -- Open one or more selected entries in the current window
@@ -678,26 +636,18 @@ return {
       -- }}} flash.nvim integration
 
       telescope.setup(opts)
-      telescope.load_extension "aerial"
       telescope.load_extension "fzf"
       telescope.load_extension "file_browser"
       telescope.load_extension "project"
-      telescope.load_extension "projects"
-      telescope.load_extension "aerial"
       telescope.load_extension "dap"
-      telescope.load_extension "neoclip"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
       telescope.load_extension "lazygit"
       telescope.load_extension "undo"
       telescope.load_extension "menufacture"
-      telescope.load_extension "macrothis"
       telescope.load_extension "terraform_doc"
-      telescope.load_extension "harpoon"
       telescope.load_extension "hbac"
       telescope.load_extension "advanced_git_search"
-      telescope.load_extension "possession"
-      telescope.load_extension "scope"
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local telescope_builtin = require "telescope.builtin"
