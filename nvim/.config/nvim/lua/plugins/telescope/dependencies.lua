@@ -286,4 +286,25 @@ return {
       end, { desc = "Save session" })
     end,
   },
+  {
+    "johmsalas/text-case.nvim",
+    event = "VeryLazy",
+    dependencies = { "nvim-telescope/telescope.nvim" },
+    -- Author's Note: If default keymappings fail to register (possible config issue in my local setup),
+    -- verify lazy loading functionality. On failure, disable lazy load and report issue
+    -- lazy = false,
+    keys = {
+      { "ga.", "<Cmd>TextCaseOpenTelescope<CR>", mode = { "n", "v" }, desc = "Telescope" },
+      { "gaa", "<Cmd>TextCaseOpenTelescopeQuickChange<CR>", desc = "Telescope Quick Change" },
+      { "gai", "<Cmd>TextCaseOpenTelescopeLSPChange<CR>", desc = "Telescope LSP Change" },
+      { "<leader>ga", "ga", desc = "Show the char code" },
+    },
+    config = function()
+      require("textcase").setup {}
+      require("telescope").load_extension "textcase"
+    end,
+    keys = {
+      { "ga.", "<Cmd>TextCaseOpenTelescope<CR>", mode = { "n", "v" }, desc = "Telescope" },
+    },
+  },
 }
