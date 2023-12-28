@@ -213,19 +213,26 @@ return {
         },
       }
 
+      local path_delim = require("utils").path_delim()
+
       local function transform_cwd(cwd)
         if cwd then
-          return cwd:gsub("/", "@_@"):gsub(":", "@+@")
+          return cwd:gsub(path_delim, "@_@"):gsub(":", "@+@")
         end
       end
 
       local function get_session_name()
-        local session_name, _ = vim.fn.getcwd(-1, -1):gsub("/", "@_@"):gsub(":", "@+@")
+        local session_name, _ = vim.fn.getcwd(-1, -1):gsub(path_delim, "@_@"):gsub(":", "@+@")
         return session_name
       end
 
       local function get_session_file(session_name)
-        local session_file = vim.fn.stdpath "data" .. "/possession/" .. session_name .. ".json"
+        local session_file = vim.fn.stdpath "data"
+          .. path_delim
+          .. "possession"
+          .. path_delim
+          .. session_name
+          .. ".json"
         return session_file
       end
 
