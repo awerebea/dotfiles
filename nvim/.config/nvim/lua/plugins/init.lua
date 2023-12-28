@@ -634,6 +634,7 @@ return {
   { "wellle/targets.vim", event = "VeryLazy" },
   {
     "backdround/improved-ft.nvim",
+    enabled = not require("utils").is_windows(),
     event = "VeryLazy",
     config = function()
       local ft = require "improved-ft"
@@ -662,6 +663,7 @@ return {
   },
   {
     "backdround/neowords.nvim",
+    enabled = not require("utils").is_windows(),
     event = "VeryLazy",
     config = function()
       local neowords = require "neowords"
