@@ -119,40 +119,45 @@ return {
         copy_selector = function(state)
           local node = state.tree:get_node()
           local filepath = node:get_id()
+          local dirpath = vim.fs.dirname(filepath)
           local filename = node.name
           local modify = vim.fn.fnamemodify
 
-          local vals = {
-            ["1. FILENAME    "] = filename,
-            ["2. PATH FULL   "] = filepath,
-            ["3. PATH DIR    "] = vim.fs.dirname(filepath),
-            ["4. PATH REL.   "] = modify(filepath, ":."),
-            ["5. BASENAME    "] = modify(filename, ":r"),
-            ["6. PATH REL. ~ "] = modify(filepath, ":~"),
-            ["7. EXTENSION   "] = modify(filename, ":e"),
-            ["8. URI         "] = vim.uri_from_fname(filepath),
+          local results = {
+            filepath,
+            modify(filepath, ":."),
+            modify(filepath, ":~"),
+            dirpath,
+            modify(dirpath, ":."),
+            modify(dirpath, ":~"),
+            filename,
+            modify(filename, ":r"),
+            modify(filename, ":e"),
           }
 
-          local options = vim.tbl_filter(function(val)
-            return vals[val] ~= ""
-          end, vim.tbl_keys(vals))
-          if vim.tbl_isempty(options) then
-            vim.notify("No values to copy", vim.log.levels.WARN)
-            return
+          local messages = {
+            "Choose to copy to clipboard:",
+            "1. File path absolute         : " .. results[1],
+            "2. File path relative to CWD  : " .. results[2],
+            "3. File path relative to HOME : " .. results[3],
+            "4. Dir path absolute          : " .. results[4],
+            "5. Dir path relative to CWD   : " .. results[5],
+            "6. Dir path relative to HOME  : " .. results[6],
+            "7. Filename                   : " .. results[7],
+            "8. File basename              : " .. results[8],
+            "9. Extension of the file      : " .. results[9],
+          }
+
+          vim.api.nvim_echo({ { table.concat(messages, "\n"), "Normal" } }, true, {})
+          local choice = vim.fn.getchar() - 48
+
+          if choice >= 1 and choice <= 9 then
+            local result = results[choice]
+            vim.notify(("Copied: `%s`"):format(result))
+            vim.fn.setreg("+", result)
+          elseif choice then
+            vim.notify("Invalid choice: " .. string.char(choice + 48))
           end
-          table.sort(options)
-          vim.ui.select(options, {
-            prompt = "Choose to copy to clipboard:",
-            format_item = function(item)
-              return ("%s: %s"):format(item, vals[item])
-            end,
-          }, function(choice)
-            local result = vals[choice]
-            if result then
-              vim.notify(("Copied: `%s`"):format(result))
-              vim.fn.setreg("+", result)
-            end
-          end)
         end,
         toggle_width = function()
           local max_width = math.floor((win_width + 1) * 2.25)
