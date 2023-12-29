@@ -663,7 +663,7 @@ return {
   },
   {
     "backdround/neowords.nvim",
-    enabled = not require("utils").is_windows(),
+    enabled = false, -- not require("utils").is_windows(),
     event = "VeryLazy",
     config = function()
       local neowords = require "neowords"
