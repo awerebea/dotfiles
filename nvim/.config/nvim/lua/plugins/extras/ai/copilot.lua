@@ -33,15 +33,24 @@ return {
       },
     },
     filetypes = {
-      yaml = false,
-      markdown = false,
+      yaml = true,
+      markdown = true,
       help = false,
-      gitcommit = false,
+      gitcommit = true,
       gitrebase = false,
       hgcommit = false,
       svn = false,
       cvs = false,
       ["."] = false,
+      sh = function()
+        local buf_name = vim.api.nvim_buf_get_name(0)
+        local basename = vim.fn.fnamemodify(buf_name, ":t")
+        if basename and string.match(basename, "^%.env.*") then
+          -- disable for .env files
+          return false
+        end
+        return true
+      end,
     },
     copilot_node_command = "node", -- Node.js version must be > 16.x
     server_opts_overrides = {},
