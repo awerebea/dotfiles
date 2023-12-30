@@ -56,8 +56,14 @@ return {
         k = { "Open from quickfix, Macrothis", k = "Macrothis" },
         l = "Toggle non-printable symbols",
         M = "Multiple Renamer (muren)",
+        T = {
+          "Test",
+          n = "Neotest",
+          o = "Overseer",
+          t = "vim-test",
+        },
         t = {
-          "Tabs, Test, Toggle LSP",
+          "Tabs, Toggle LSP",
           g = "Toglle LSP",
           N = "Neotest",
           o = "Overseer",
