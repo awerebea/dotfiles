@@ -267,17 +267,17 @@ alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /d
 
 command -v trash &> /dev/null && alias rm="trash-put"
 
-# Define exa aliases conditionally
-if command -v exa &> /dev/null; then
-    alias l="exa --long --all --header --links --git --icons --color=always \
+# Define eza aliases conditionally
+if command -v eza &> /dev/null; then
+    alias l="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
-    alias lle="exa --long --all --header --links --git --icons --color=always \
+    alias lle="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale | less -NR"
-    alias lT="exa --long --all --header --links --git --icons --color=always \
+    alias lT="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale --tree"
-    alias ll="exa --long --header --links --git --icons --color=always \
+    alias ll="eza --long --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
-    alias llT="exa --long --header --links --git --icons --color=always \
+    alias llT="eza --long --header --links --git --icons --color=always \
     --group-directories-first --color-scale --tree"
 fi
 
@@ -328,7 +328,7 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Set fzf preview options
 FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
 2> /dev/null || cat --number {} 2> /dev/null)) || ([[ -d {} ]] && \
-(exa --oneline --group-directories-first --color=always --color-scale --icons \
+(eza --oneline --group-directories-first --color=always --color-scale --icons \
 --all --git {} 2> /dev/null || tree -a -C -L 1 -v --dirsfirst {} \
 2> /dev/null)) || echo {} 2> /dev/null | head -200"
 export FZF_DEFAULT_OPTS=" \

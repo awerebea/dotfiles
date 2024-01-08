@@ -98,9 +98,9 @@ if [[ ! -f "$ZSH/custom/plugins/auto-notify/auto-notify.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/auto-notify"
 fi
 
-if [[ ! -f "$ZSH/custom/plugins/zsh-aliases-exa/zsh-aliases-exa.plugin.zsh" ]]; then
+if [[ ! -f "$ZSH/custom/plugins/zsh-aliases-eza/zsh-aliases-eza.plugin.zsh" ]]; then
   git clone https://github.com/DarrinTisdale/zsh-aliases-exa \
-    "$ZSH/custom/plugins/zsh-aliases-exa"
+    "$ZSH/custom/plugins/zsh-aliases-eza"
 fi
 
 if [[ ! -f "$ZSH/custom/plugins/forgit/forgit.plugin.zsh" ]]; then
@@ -210,8 +210,8 @@ if [[ -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
   zstyle ':fzf-tab:*' switch-group ',' '.'
   # set list-colors to enable filename colorizing
   zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
-  # preview directory's content with exa when completing cd
-  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'exa -1 --color=always $realpath'
+  # preview directory's content with eza when completing cd
+  zstyle ':fzf-tab:complete:cd:*' fzf-preview 'eza -1 --color=always $realpath'
 fi
 
 # kafka
@@ -335,8 +335,8 @@ plugins=(
 )
 
 # Load the plugin only if it will work
-if [ $commands[exa] ]; then
-  plugins+=(zsh-aliases-exa)
+if [ $commands[eza] ]; then
+  plugins+=(zsh-aliases-eza)
 fi
 
 source "$ZSH/oh-my-zsh.sh"
@@ -719,17 +719,17 @@ omz-update () {
 alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 
-# Define exa aliases conditionally
-if [ $commands[exa] ]; then
-  alias l="exa --long --all --header --links --git --icons --color=always \
+# Define eza aliases conditionally
+if [ $commands[eza] ]; then
+  alias l="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
-  alias lle="exa --long --all --header --links --git --icons --color=always \
+  alias lle="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale | less -NR"
-  alias lT="exa --long --all --header --links --git --icons --color=always \
+  alias lT="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale --tree"
-  alias ll="exa --long --header --links --git --icons --color=always \
+  alias ll="eza --long --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
-  alias llT="exa --long --header --links --git --icons --color=always \
+  alias llT="eza --long --header --links --git --icons --color=always \
     --group-directories-first --color-scale --tree"
 fi
 
@@ -992,7 +992,7 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Set fzf preview options
 FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
 2> /dev/null || cat --number {} 2> /dev/null)) || ([[ -d {} ]] && \
-(exa --oneline --group-directories-first --color=always --color-scale --icons \
+(eza --oneline --group-directories-first --color=always --color-scale --icons \
 --all --git {} 2> /dev/null || tree -a -C -L 1 -v --dirsfirst {} \
 2> /dev/null)) || echo {} 2> /dev/null | head -200"
 export FZF_DEFAULT_OPTS=" \
