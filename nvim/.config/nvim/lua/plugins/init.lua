@@ -626,11 +626,6 @@ return {
       require("pqf").setup(opts)
     end,
   },
-  {
-    "yutkat/confirm-quit.nvim",
-    event = "CmdlineEnter",
-    opts = {},
-  },
   { "wellle/targets.vim", event = "VeryLazy" },
   {
     "backdround/improved-ft.nvim",
