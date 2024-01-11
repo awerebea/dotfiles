@@ -1,3 +1,8 @@
+-- leader keys
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
+vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>")
+
 -- line numbers
 vim.opt.relativenumber = true -- show relative line numbers
 vim.opt.number = true -- shows absolute line number on cursor line (when relative number is on)
@@ -368,9 +373,24 @@ function ToggleDiffViewMode()
     print "Diff view activated"
   end
 end
-vim.keymap.set("n", "<leader><F9>", "<Cmd>lua ToggleDiffViewMode()<CR>")
-vim.keymap.set("n", "<leader>dg", "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>")
-vim.keymap.set("n", "<leader>dp", "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>")
+vim.keymap.set(
+  "n",
+  "<localleader><F9>",
+  "<Cmd>lua ToggleDiffViewMode()<CR>",
+  { desc = "Toggle Diff view" }
+)
+vim.keymap.set(
+  "n",
+  "<localleader>dg",
+  "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>",
+  { desc = "Pull a chunk from another version" }
+)
+vim.keymap.set(
+  "n",
+  "<localleader>dp",
+  "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>",
+  { desc = "Push a chunk to another version" }
+)
 -- }}}
 
 -- Easily search and replace using quickfix window
@@ -432,9 +452,5 @@ vim.opt.showmode = false
 vim.opt.smartindent = false
 vim.opt.updatetime = 200
 vim.opt.startofline = true
-
-vim.g.mapleader = " "
-vim.g.maplocalleader = ","
-vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>")
 
 vim.diagnostic.config { virtual_lines = false }

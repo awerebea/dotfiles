@@ -20,7 +20,7 @@ return {
       wk.setup {
         show_help = true,
         plugins = { spelling = false },
-        key_labels = { ["<leader>"] = "Leader" },
+        key_labels = { ["<leader>"] = "Leader", ["<localleader>"] = "Local Leader" },
         triggers = "auto",
         window = {
           border = "single", -- none, single, double, shadow
@@ -134,6 +134,9 @@ return {
           p = { "ChatGPT", r = "Run command" },
         },
       }, { mode = "v", prefix = "<leader>" })
+      wk.register({
+        d = "Diff actions",
+      }, { prefix = "<localleader>" })
     end,
   },
 }
