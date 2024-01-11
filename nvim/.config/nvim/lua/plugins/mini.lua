@@ -48,7 +48,10 @@ return {
   {
     "echasnovski/mini.bracketed",
     event = "BufReadPost",
-    opts = {},
+    opts = {
+      comment = { suffix = "" },
+      oldfile = { suffix = "" },
+    },
     config = function(_, opts)
       require("mini.bracketed").setup(opts)
     end,
