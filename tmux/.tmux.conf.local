@@ -494,34 +494,32 @@ bind S-Left swap-window -t -1 \; previous-window
 bind S-Right swap-window -t +1 \; next-window
 
 # List of installed plugins
-set -g @tpm_plugins '                 \
-  tmux-plugins/tmux-sensible          \
-  tmux-plugins/tmux-resurrect         \
-  tmux-plugins/tmux-continuum         \
-  tmux-plugins/tmux-copycat           \
-  tmux-plugins/tmux-open              \
-  tmux-plugins/tmux-sidebar           \
-  samoshkin/tmux-plugin-sysstat       \
-  CrispyConductor/tmux-copy-toolkit   \
-  laktak/extrakto                     \
-  olimorris/tmux-pomodoro-plus        \
-  tmux-plugins/tmux-yank              \
-  MunifTanjim/tmux-mode-indicator     \
-  MunifTanjim/tmux-suspend            \
-  charlietag/tmux-split-statusbar     \
-  fcsonline/tmux-thumbs               \
-  sainnhe/tmux-fzf                    \
-  wfxr/tmux-fzf-url                   \
-  awerebea/tmux-translator            \
-  addisonlynch/tmux-sidebar-plus      \
-  IngoMeyer441/tmux-easy-motion       \
-  jaclu/tmux-menus                    \
-  roosta/tmux-fuzzback                \
-  tmux-plugins/tmux-logging           \
-  kiyoon/treemux                      \
-  aserowy/tmux.nvim                   \
-  roy2220/easyjump.tmux               \
-'
+set -g @plugin "tmux-plugins/tmux-sensible"
+set -g @plugin "tmux-plugins/tmux-resurrect"
+set -g @plugin "tmux-plugins/tmux-continuum"
+set -g @plugin "tmux-plugins/tmux-copycat"
+set -g @plugin "tmux-plugins/tmux-open"
+set -g @plugin "tmux-plugins/tmux-sidebar"
+set -g @plugin "samoshkin/tmux-plugin-sysstat"
+set -g @plugin "CrispyConductor/tmux-copy-toolkit"
+set -g @plugin "laktak/extrakto"
+set -g @plugin "olimorris/tmux-pomodoro-plus"
+set -g @plugin "tmux-plugins/tmux-yank"
+set -g @plugin "MunifTanjim/tmux-mode-indicator"
+set -g @plugin "MunifTanjim/tmux-suspend"
+set -g @plugin "charlietag/tmux-split-statusbar"
+set -g @plugin "fcsonline/tmux-thumbs"
+set -g @plugin "sainnhe/tmux-fzf"
+set -g @plugin "wfxr/tmux-fzf-url"
+set -g @plugin "awerebea/tmux-translator"
+set -g @plugin "addisonlynch/tmux-sidebar-plus"
+set -g @plugin "IngoMeyer441/tmux-easy-motion"
+set -g @plugin "jaclu/tmux-menus"
+set -g @plugin "roosta/tmux-fuzzback"
+set -g @plugin "tmux-plugins/tmux-logging"
+set -g @plugin "kiyoon/treemux"
+set -g @plugin "aserowy/tmux.nvim"
+set -g @plugin "roy2220/easyjump.tmux"
 
 # treemux
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
