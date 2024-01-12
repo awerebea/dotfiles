@@ -1475,3 +1475,9 @@ fsh_theme="catppuccin-mocha"
 if [[ -e "$HOME/.config/fsh/$fsh_theme.ini" ]]; then
   fast-theme XDG:"$fsh_theme" --quiet
 fi
+
+# oh-my-tmux https://github.com/gpakosz/.tmux.git
+if [[ $commands[tmux] ]] && [ ! -d "$HOME/.tmux" ]; then
+  git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
+  ln -s "$HOME/.tmux/.tmux.conf" "$HOME/.tmux.conf"
+fi
