@@ -160,12 +160,6 @@ git-flow-completion.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/git-flow-completion"
 fi
 
-if [[ ! -f "$ZSH/custom/plugins/autoswitch_virtualenv/\
-autoswitch_virtualenv.plugin.zsh" ]]; then
-  git clone "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv.git" \
-    "$ZSH/custom/plugins/autoswitch_virtualenv"
-fi
-
 # terraform plugin with resource names detection
 if [[ ! -f "$ZSH/custom/plugins/terraform/terraform.plugin.zsh" ]]; then
   git clone https://github.com/macunha1/zsh-terraform \
@@ -283,7 +277,6 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 # Which plugins to load?
 plugins=(
-          autoswitch_virtualenv
           aws
           blackbox
           colored-man-pages
