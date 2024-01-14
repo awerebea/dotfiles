@@ -12,10 +12,10 @@ conflictstyle = diff3
 cmd = vim -f -c "MergetoolStart" "$MERGED" "$BASE" "$LOCAL" "$REMOTE"
 trustExitCode = true
 ; [merge]
-;	  tool = extMerge
+;     tool = extMerge
 ; [mergetool "extMerge"]
-;	  cmd = extMerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
-;	  trustExitCode = false
+;     cmd = extMerge \"$BASE\" \"$LOCAL\" \"$REMOTE\" \"$MERGED\"
+;     trustExitCode = false
 
 [diff "gpg"]
 	textconv = gpg -qd --no-tty
@@ -42,17 +42,17 @@ trustExitCode = true
 	; plus-style = syntax "#004000"
 	; minus-style = syntax "#5c0809"
 	; folke/tokyonight
-	minus-style					  = syntax "#37222c"
-	minus-non-emph-style		  = syntax "#37222c"
-	minus-emph-style			  = syntax "#713137"
+	minus-style                   = syntax "#37222c"
+	minus-non-emph-style          = syntax "#37222c"
+	minus-emph-style              = syntax "#713137"
 	minus-empty-line-marker-style = syntax "#37222c"
-	line-numbers-minus-style	  = "#c25d64"
-	plus-style					  = syntax "#20303b"
-	plus-non-emph-style			  = syntax "#20303b"
-	plus-emph-style				  = syntax "#2c5a66"
+	line-numbers-minus-style      = "#c25d64"
+	plus-style                    = syntax "#20303b"
+	plus-non-emph-style           = syntax "#20303b"
+	plus-emph-style               = syntax "#2c5a66"
 	plus-empty-line-marker-style  = syntax "#20303b"
-	line-numbers-plus-style		  = "#399a96"
-	line-numbers-zero-style		  = "#3b4261"
+	line-numbers-plus-style       = "#399a96"
+	line-numbers-zero-style       = "#3b4261"
 
 [delta "decorations"]
 	commit-decoration-style = bold yellow box ul
@@ -80,10 +80,3 @@ trustExitCode = true
 	enabled = 1
 [fetch]
 	prune = true
-[push]
-	autoSetupRemote = true
-[pull]
-	default = current
-	rebase = merges
-[remote "origin"]
-	fetch = +refs/heads/*:refs/remotes/origin/*
