@@ -1173,6 +1173,7 @@ expand_command_line () {
   NC='\033[0m'
   excluded_aliases=(grep nvim ranger rg rr)
   first=$(echo "$1" | awk '{print $1;}')
+  grep -qE '[\(\[\{]' <<< "$first" && return
   # Check if the alias is not in the exluded list
   if [[ ! "${excluded_aliases[*]}" =~ "$first" ]]; then
     rest=$(echo ${${1}/"${first}"/})
