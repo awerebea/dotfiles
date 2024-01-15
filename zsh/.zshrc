@@ -1336,9 +1336,108 @@ gbb() {
 }
 
 cbr() {
-  gbb 70 35 -committerdate |
-  fzf --header "Switch to Recent Branch:" --preview "git diff --color=always {1}" --pointer="" |
-  cut -d " " -f 1 | xargs git switch
+  branch_name="$(gbb 70 35 -committerdate | \
+    fzf \
+    --ansi \
+    --header "Switch to Recent Branch:" \
+    --preview "git diff --color=always {1}" \
+    --no-multi \
+    --reverse \
+    --cycle \
+    --bind=ctrl-y:accept,ctrl-t:toggle+down,tab:down,shift-tab:up \
+    --pointer="" | \
+    cut -d " " -f 1)"
+  if [[ -n "$branch_name" ]]; then
+    git switch "$branch_name"
+  fi
+}
+
+__git_worktree_get_list_of_trees() {
+  git worktree list --porcelain | grep -E "^branch refs/heads/" | sed "s|branch refs/heads/||"
+}
+
+__git_worktree_get_bare_path() {
+  git worktree list --porcelain | grep -E -B 2 "^bare$" | grep -E "^worktree" | cut -d " " -f 2
+}
+
+__git_worktree_get_path_for_branch() {
+  if [ $# -eq 0 ]; then
+    echo "Missing argument: branch name"
+    return 1
+  fi
+  local branch_name="$1"
+  local worktrees
+  read -A -d '' worktrees <<< "$(__git_worktree_get_list_of_trees)"
+  if [[ " ${worktrees[@]} " =~ " ${branch_name} " ]]; then
+    echo "$(git worktree list --porcelain | \
+      grep -E -B 2 "^branch refs/heads/${branch_name}$" | grep -E "^worktree" | cut -d " " -f 2)"
+  fi
+}
+
+__git_worktree_jump_or_create() {
+  if [ $# -eq 0 ]; then
+    echo "Missing argument: branch name"
+    return 1
+  fi
+  local worktree_path bare_path
+  local branch_name="$1"
+  local worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
+  if [[ -n "$worktree" ]]; then
+    cd "$worktree" && echo "Jumped to worktree: $worktree, for branch: $branch_name" || return 1
+  else
+    bare_path="$(__git_worktree_get_bare_path)"
+    worktree_path="${bare_path}/${branch_name}"
+    git worktree add -B "$branch_name" "$worktree_path"
+    cd "$worktree_path"
+  fi
+}
+
+__git_worktree_delete() {
+  if [ $# -eq 0 ]; then
+    echo "Missing argument: branch name"
+    return 1
+  fi
+  local worktree bare_path
+  local worktrees_to_delete="$1"
+  if [[ -n ${worktrees_to_delete} ]]; then
+    bare_path="$(__git_worktree_get_bare_path)"
+    while IFS='' read -r branch_name; do
+      worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
+      if [[ -n "$worktree" ]]; then
+        if [[ "$PWD" == "$worktree" ]]; then
+          cd "$bare_path"
+        fi
+        git worktree remove "${branch_name}" && \
+          echo "Deleted worktree: ${worktree}, for branch: ${branch_name}"
+      fi
+    done <<< "$worktrees_to_delete"
+  fi
+}
+
+cwt() {
+  delete_key="ctrl-d"
+  lines="$(gbb 70 35 -committerdate | \
+    fzf \
+    --ansi \
+    --header "Manage most recent git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
+    --preview "git diff --color=always {1}" \
+    --expect="$delete_key" \
+    --multi \
+    --reverse \
+    --cycle \
+    --bind=ctrl-y:accept,ctrl-t:toggle+down \
+    --select-1 \
+    --pointer="" | \
+      cut -d " " -f 1)"
+  if [[ -z "$lines" ]]; then
+    return
+  fi
+  local key=$(head -1 <<< "$lines")
+  if [[ $key == "$delete_key" ]]; then
+    __git_worktree_delete "$(sed 1d <<< "$lines")"
+  else
+    __git_worktree_jump_or_create "$(tail -1 <<< "${lines}")"
+  fi
 }
 
 # Execute any alias or command in dotfiles repo
