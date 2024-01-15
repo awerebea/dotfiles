@@ -1323,6 +1323,7 @@ alias gcm='git switch $(git_main_branch)'
 alias gcd='git switch $(git_develop_branch)'
 alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
+alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 
 gbb() {
   local format_string
