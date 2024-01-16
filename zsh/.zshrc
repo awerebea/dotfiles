@@ -1414,7 +1414,13 @@ __git_worktree_delete() {
   fi
 }
 
-cwt() {
+unalias gwt
+gwt() {
+  # Check if inside a bare Git repository, exit if not
+  if [[ -z "$(__git_worktree_get_bare_path)" ]]; then
+    echo "Not inside a bare Git repository. Exit..."
+    return
+  fi
   delete_key="ctrl-d"
   lines="$(gbb 70 35 -committerdate | \
     fzf \
