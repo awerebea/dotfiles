@@ -548,9 +548,13 @@ return {
     event = "VeryLazy",
     opts = {
       modes = {
-        char = {
+        char = { enabled = false },
+        search = { enabled = false },
+      },
+      label = {
+        rainbow = {
           enabled = false,
-          jump_labels = true,
+          shade = 3, -- number between 1 and 9
         },
       },
     },
