@@ -1335,22 +1335,52 @@ gbb() {
   git branch --sort=${3:-refname} --format="$format_string"
 }
 
+__is_valid_multiplier() {
+    if [[ $# -eq 0 ]]; then
+      return 1
+    fi
+    local multiplier="$1"
+    # Check if the multiplier is an integer or a floating-point number
+    if [[ "$multiplier" =~ ^[0-9]+$ ]]; then
+        return 0  # Success
+    elif [[ "$multiplier" =~ ^[0-9]+\.[0-9]+$ ]]; then
+        return 0  # Success
+    else
+        return 1  # Failure
+    fi
+}
+
+__gbb_get_segment_width_relative_to_window() {
+  if [[ $# -eq 0 ]] || ! __is_valid_multiplier "$1"; then
+    echo "25"
+    return
+  else
+    multiplier="$1"
+  fi
+  width_of_window=$COLUMNS
+  available_width=$(( width_of_window - 20 )) # 20 is the width of the age column
+  result="$(( available_width * multiplier ))"
+  printf "%.0f" "$result"
+}
+
 cbr() {
-  local branch_name
   local fzf_cmd='fzf \
     --ansi \
-    --header "Switch to Recent Branch:" \
+    --header "Switch to Recent Branch: ctrl-y:jump" \
     --preview "git diff --color=always {1}" \
     --no-multi \
     --reverse \
     --cycle \
-    --bind=ctrl-y:accept,ctrl-t:toggle+down,tab:down,shift-tab:up \
+    --bind=ctrl-y:accept,tab:down,shift-tab:up \
     --select-1 \
     --pointer=""'
   if [[ $# -gt 0 ]]; then
     fzf_cmd="$fzf_cmd --query=$1"
   fi
-  branch_name="$(gbb 70 35 -committerdate | eval "$fzf_cmd" | cut -d " " -f 1)"
+  local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
+  local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
+  local branch_name="$(gbb "$refname_width" "$author_width" -committerdate | \
+    eval "$fzf_cmd" | cut -d " " -f 1)"
   if [[ -n "$branch_name" ]]; then
     git switch "$branch_name"
   fi
@@ -1425,6 +1455,7 @@ gwt() {
     echo "Not inside a bare Git repository. Exit..."
     return
   fi
+  local delete_key="ctrl-d"
   local fzf_cmd='fzf \
     --ansi \
     --header "Manage most recent git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
@@ -1439,8 +1470,10 @@ gwt() {
   if [[ $# -gt 0 ]]; then
     fzf_cmd="$fzf_cmd --query=$1"
   fi
-  delete_key="ctrl-d"
-  lines="$(gbb 70 35 -committerdate | eval "$fzf_cmd" | cut -d " " -f 1)"
+  local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
+  local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
+  local lines="$(gbb "$refname_width" "$author_width" -committerdate | \
+    eval "$fzf_cmd" | cut -d " " -f 1)"
   if [[ -z "$lines" ]]; then
     return
   fi
