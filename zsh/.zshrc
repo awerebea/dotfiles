@@ -1336,8 +1336,8 @@ gbb() {
 }
 
 cbr() {
-  branch_name="$(gbb 70 35 -committerdate | \
-    fzf \
+  local branch_name
+  local fzf_cmd='fzf \
     --ansi \
     --header "Switch to Recent Branch:" \
     --preview "git diff --color=always {1}" \
@@ -1345,8 +1345,12 @@ cbr() {
     --reverse \
     --cycle \
     --bind=ctrl-y:accept,ctrl-t:toggle+down,tab:down,shift-tab:up \
-    --pointer="" | \
-    cut -d " " -f 1)"
+    --select-1 \
+    --pointer=""'
+  if [[ $# -gt 0 ]]; then
+    fzf_cmd="$fzf_cmd --query=$1"
+  fi
+  branch_name="$(gbb 70 35 -committerdate | eval "$fzf_cmd" | cut -d " " -f 1)"
   if [[ -n "$branch_name" ]]; then
     git switch "$branch_name"
   fi
@@ -1421,9 +1425,7 @@ gwt() {
     echo "Not inside a bare Git repository. Exit..."
     return
   fi
-  delete_key="ctrl-d"
-  lines="$(gbb 70 35 -committerdate | \
-    fzf \
+  local fzf_cmd='fzf \
     --ansi \
     --header "Manage most recent git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
     --preview "git diff --color=always {1}" \
@@ -1433,8 +1435,12 @@ gwt() {
     --cycle \
     --bind=ctrl-y:accept,ctrl-t:toggle+down \
     --select-1 \
-    --pointer="" | \
-      cut -d " " -f 1)"
+    --pointer=""'
+  if [[ $# -gt 0 ]]; then
+    fzf_cmd="$fzf_cmd --query=$1"
+  fi
+  delete_key="ctrl-d"
+  lines="$(gbb 70 35 -committerdate | eval "$fzf_cmd" | cut -d " " -f 1)"
   if [[ -z "$lines" ]]; then
     return
   fi
