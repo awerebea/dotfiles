@@ -1325,14 +1325,77 @@ alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
 alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 
-gbb() {
+__is_positive_num() {
+  if ! [ "${1}" -gt 0 ] 2>/dev/null; then
+    return 1
+  fi
+}
+
+_gbb() {
+  local refname_width=75
+  local author_width=40
+  local sort_order="refname"
+  local remote_branches=false
+  local all_branches=false
+
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      --refname-width)
+        shift
+        refname_width="${1}"
+        ;;
+      --refname-width=*)
+        refname_width="${1#*=}"
+        ;;
+      --author-width)
+        shift
+        author_width="${1}"
+        ;;
+      --author-width=*)
+        author_width="${1#*=}"
+        ;;
+      -s | --sort)
+        shift
+        sort_order="${1}"
+        ;;
+      --sort=*)
+        sort_order="${1#*=}"
+        ;;
+      -r | --remotes)
+        remote_branches=true
+        ;;
+      -a | --all)
+        all_branches=true
+        ;;
+      *)
+        echo "${0}: Invalid argument: ${1}"
+        return 1
+        ;;
+    esac
+    shift
+  done
+
+  for num in "${refname_width}" "${author_width}"; do
+    if ! __is_positive_num "${num}"; then
+      echo "${0}: Invalid value for argument: ${num}"
+      return 1
+    fi
+  done
+
   local format_string
-  format_string="%(align:width=${1:-75})"
+  format_string="%(align:width=${refname_width})"
   format_string+="%(color:bold yellow)%(refname:short)%(color:reset)%(end)"
-  format_string+="%(align:width=${2:-40})"
+  format_string+="%(align:width=${author_width})"
   format_string+="%(color:green)%(committername)%(color:reset)%(end)"
   format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
-  git branch --sort=${3:-refname} --format="$format_string"
+  cmd_line="git branch --sort=${sort_order} --format=\"$format_string\" --color=always"
+  if "${remote_branches}"; then
+    cmd_line+=" --remotes"
+  fi
+  if "${all_branches}"; then
+    cmd_line+=" --all"
+  fi
+  eval "$cmd_line"
 }
 
 __is_valid_multiplier() {
@@ -1364,6 +1427,33 @@ __gbb_get_segment_width_relative_to_window() {
 }
 
 cbr() {
+  local sort_order="-committerdate"
+  local remote_branches=false
+  local all_branches=false
+
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      -s | --sort)
+        shift
+        sort_order="${1}"
+        ;;
+      --sort=*)
+        sort_order="${1#*=}"
+        ;;
+      -r | --remotes)
+        remote_branches=true
+        ;;
+      -a | --all)
+        all_branches=true
+        ;;
+      *)
+        echo "${0}: Invalid argument: ${1}"
+        return 1
+        ;;
+    esac
+    shift
+  done
+
   local fzf_cmd='fzf \
     --ansi \
     --header "Switch to Recent Branch: ctrl-y:jump" \
@@ -1379,8 +1469,20 @@ cbr() {
   fi
   local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
   local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
-  local branch_name="$(gbb "$refname_width" "$author_width" -committerdate | \
-    eval "$fzf_cmd" | cut -d " " -f 1)"
+  local _gbb_cmd="_gbb \
+    --sort \"$sort_order\" \
+    --refname-width \"$refname_width\" \
+    --author-width \"$author_width\""
+
+  if "${remote_branches}"; then
+    _gbb_cmd+=" --remotes"
+  fi
+
+  if "${all_branches}"; then
+    _gbb_cmd+=" --all"
+  fi
+
+  local branch_name="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
   if [[ -n "$branch_name" ]]; then
     git switch "$branch_name"
   fi
@@ -1415,13 +1517,14 @@ __git_worktree_jump_or_create() {
   fi
   local worktree_path bare_path
   local branch_name="$1"
+  branch_name="${branch_name#origin/}" # Remove origin/ prefix to process only local branches
   local worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
   if [[ -n "$worktree" ]]; then
     cd "$worktree" && echo "Jumped to worktree: $worktree, for branch: $branch_name" || return 1
   else
     bare_path="$(__git_worktree_get_bare_path)"
     worktree_path="${bare_path}/${branch_name}"
-    git worktree add -B "$branch_name" "$worktree_path"
+    git worktree add "$worktree_path" "$branch_name"
     cd "$worktree_path"
   fi
 }
@@ -1436,6 +1539,7 @@ __git_worktree_delete() {
   if [[ -n ${worktrees_to_delete} ]]; then
     bare_path="$(__git_worktree_get_bare_path)"
     while IFS='' read -r branch_name; do
+      branch_name="${branch_name#origin/}" # Remove origin/ prefix to process only local branches
       worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
       if [[ -n "$worktree" ]]; then
         if [[ "$PWD" == "$worktree" ]]; then
@@ -1455,6 +1559,34 @@ gwt() {
     echo "Not inside a bare Git repository. Exit..."
     return
   fi
+
+  local sort_order="-committerdate"
+  local remote_branches=false
+  local all_branches=false
+
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      -s | --sort)
+        shift
+        sort_order="${1}"
+        ;;
+      --sort=*)
+        sort_order="${1#*=}"
+        ;;
+      -r | --remotes)
+        remote_branches=true
+        ;;
+      -a | --all)
+        all_branches=true
+        ;;
+      *)
+        echo "${0}: Invalid argument: ${1}"
+        return 1
+        ;;
+    esac
+    shift
+  done
+
   local delete_key="ctrl-d"
   local fzf_cmd='fzf \
     --ansi \
@@ -1467,17 +1599,34 @@ gwt() {
     --bind=ctrl-y:accept,ctrl-t:toggle+down \
     --select-1 \
     --pointer=""'
+
   if [[ $# -gt 0 ]]; then
     fzf_cmd="$fzf_cmd --query=$1"
   fi
+
   local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
   local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
-  local lines="$(gbb "$refname_width" "$author_width" -committerdate | \
-    eval "$fzf_cmd" | cut -d " " -f 1)"
+  local _gbb_cmd="_gbb \
+    --sort \"$sort_order\" \
+    --refname-width \"$refname_width\" \
+    --author-width \"$author_width\""
+
+  if "${remote_branches}"; then
+    _gbb_cmd+=" --remotes"
+  fi
+
+  if "${all_branches}"; then
+    _gbb_cmd+=" --all"
+  fi
+
+  local lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
+
   if [[ -z "$lines" ]]; then
     return
   fi
+
   local key=$(head -1 <<< "$lines")
+
   if [[ $key == "$delete_key" ]]; then
     __git_worktree_delete "$(sed 1d <<< "$lines")"
   else
