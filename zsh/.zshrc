@@ -1655,28 +1655,46 @@ __git_worktree_jump_or_create() {
 }
 
 __git_worktree_delete() {
-  if [ $# -eq 0 ]; then
+  local force=false
+  local positional_args=()
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      -f | --force)
+        force=true
+        ;;
+      *)
+        positional_args+=("${1}")
+        ;;
+    esac
+    shift
+  done
+
+  if [ "${#positional_args[@]}" -eq 0 ]; then
     echo "${0}: Missing argument: list of branches"
     return 1
   fi
+
   local worktree bare_path
-  local worktrees_to_delete="$1"
+  local worktrees_to_delete="${positional_args[@]}"
   if [[ -n ${worktrees_to_delete} ]]; then
     local bare_path="$(__git_worktree_get_bare_path)"
-    local branch_name
+    local branch_name user_prompt worktree_path
     while IFS='' read -r branch_name; do
       if [[ "$branch_name" == remotes/*/* ]]; then
         # Remove first two components of the reference name (remotes/<upstream>/)
         branch_name="${branch_name#*/}"
         branch_name="${branch_name#*/}"
       fi
-      local worktree_path="$(__git_worktree_get_path_for_branch "$branch_name")"
+      worktree_path="$(__git_worktree_get_path_for_branch "$branch_name")"
       if [[ -n "$worktree_path" ]]; then
         if [[ "$PWD" == "$worktree_path" ]]; then
           cd "$bare_path" || return 1
         fi
-        git worktree remove "${branch_name}" && \
-          echo "Deleted worktree: ${worktree}, for branch: ${branch_name}"
+        user_prompt="Delete worktree: $worktree_path for branch: $branch_name?"
+        if "$force" || __confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+          git worktree remove "$branch_name" && \
+            echo "Deleted worktree: $worktree_path, for branch: $branch_name"
+        fi
       fi
     done <<< "$worktrees_to_delete"
   fi
