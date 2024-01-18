@@ -1382,20 +1382,44 @@ _gbb() {
     fi
   done
 
-  local format_string
   format_string="%(align:width=${refname_width})"
   format_string+="%(color:bold yellow)%(refname:short)%(color:reset)%(end)"
   format_string+="%(align:width=${author_width})"
   format_string+="%(color:green)%(committername)%(color:reset)%(end)"
   format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
   cmd_line="git branch --sort=${sort_order} --format=\"$format_string\" --color=always"
+
+  local ref_types=()
   if "${remote_branches}"; then
-    cmd_line+=" --remotes"
+    ref_types=("remotes")
+  else
+    ref_types=("heads")
   fi
+
   if "${all_branches}"; then
-    cmd_line+=" --all"
+    ref_types=("heads" "remotes")
   fi
-  eval "$cmd_line"
+
+  local -A type_strip
+  type_strip=(
+      ["heads"]=2
+      ["remotes"]=1
+  )
+
+  local ref_type
+  local format_string
+  local ref_name
+  for ref_type in "${ref_types[@]}"; do
+    git for-each-ref --format='%(refname)' --sort="${sort_order}" refs/"$ref_type" | \
+      while read -r ref_name; do
+      format_string="%(align:width=${refname_width})"
+      format_string+="%(color:bold yellow)%(refname:lstrip=${type_strip[$ref_type]})%(color:reset)%(end)"
+      format_string+="%(align:width=${author_width})"
+      format_string+="%(color:green)%(committername)%(color:reset)%(end)"
+      format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
+      git for-each-ref --format="$format_string" "$ref_name"
+    done
+  done
 }
 
 __is_valid_multiplier() {
@@ -1430,6 +1454,7 @@ cbr() {
   local sort_order="-committerdate"
   local remote_branches=false
   local all_branches=false
+  local positional_args=()
 
   while [[ -n "${1}" ]]; do
     case "${1}" in
@@ -1447,8 +1472,7 @@ cbr() {
         all_branches=true
         ;;
       *)
-        echo "${0}: Invalid argument: ${1}"
-        return 1
+        positional_args+=("${1}")
         ;;
     esac
     shift
@@ -1464,9 +1488,11 @@ cbr() {
     --bind=ctrl-y:accept,tab:down,shift-tab:up \
     --select-1 \
     --pointer=""'
-  if [[ $# -gt 0 ]]; then
-    fzf_cmd="$fzf_cmd --query=$1"
+
+  if [[ "${#positional_args[@]}" -gt 0 ]]; then
+    fzf_cmd="$fzf_cmd --query=\"${positional_args[@]}\""
   fi
+
   local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
   local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
   local _gbb_cmd="_gbb \
@@ -1482,8 +1508,23 @@ cbr() {
     _gbb_cmd+=" --all"
   fi
 
-  local branch_name="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
-  if [[ -n "$branch_name" ]]; then
+  local lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
+
+  if [[ -z "$lines" ]]; then
+    return
+  fi
+
+  local key=$(head -1 <<< "$lines")
+
+  if [[ $key == "$delete_key" ]]; then
+    __git_branch_delete "$(sed 1d <<< "$lines")"
+  else
+    local branch_name="$(tail -1 <<< "${lines}")"
+    if [[ "$branch_name" == remotes/*/* ]]; then
+      # Remove first two components of the reference name (remotes/<upstream>/)
+      branch_name="${branch_name#*/}"
+      branch_name="${branch_name#*/}"
+    fi
     git switch "$branch_name"
   fi
 }
@@ -1517,7 +1558,11 @@ __git_worktree_jump_or_create() {
   fi
   local worktree_path bare_path
   local branch_name="$1"
-  branch_name="${branch_name#origin/}" # Remove origin/ prefix to process only local branches
+  if [[ "$branch_name" == remotes/*/* ]]; then
+    # Remove first two components of the reference name (remotes/<upstream>/)
+    branch_name="${branch_name#*/}"
+    branch_name="${branch_name#*/}"
+  fi
   local worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
   if [[ -n "$worktree" ]]; then
     cd "$worktree" && echo "Jumped to worktree: $worktree, for branch: $branch_name" || return 1
@@ -1539,11 +1584,15 @@ __git_worktree_delete() {
   if [[ -n ${worktrees_to_delete} ]]; then
     bare_path="$(__git_worktree_get_bare_path)"
     while IFS='' read -r branch_name; do
-      branch_name="${branch_name#origin/}" # Remove origin/ prefix to process only local branches
-      worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
-      if [[ -n "$worktree" ]]; then
-        if [[ "$PWD" == "$worktree" ]]; then
-          cd "$bare_path"
+      if [[ "$branch_name" == remotes/*/* ]]; then
+        # Remove first two components of the reference name (remotes/<upstream>/)
+        branch_name="${branch_name#*/}"
+        branch_name="${branch_name#*/}"
+      fi
+      local worktree_path="$(__git_worktree_get_path_for_branch "$branch_name")"
+      if [[ -n "$worktree_path" ]]; then
+        if [[ "$PWD" == "$worktree_path" ]]; then
+          cd "$bare_path" || return 1
         fi
         git worktree remove "${branch_name}" && \
           echo "Deleted worktree: ${worktree}, for branch: ${branch_name}"
@@ -1563,6 +1612,7 @@ gwt() {
   local sort_order="-committerdate"
   local remote_branches=false
   local all_branches=false
+  local positional_args=()
 
   while [[ -n "${1}" ]]; do
     case "${1}" in
@@ -1580,8 +1630,7 @@ gwt() {
         all_branches=true
         ;;
       *)
-        echo "${0}: Invalid argument: ${1}"
-        return 1
+        positional_args+=("${1}")
         ;;
     esac
     shift
@@ -1600,8 +1649,8 @@ gwt() {
     --select-1 \
     --pointer=""'
 
-  if [[ $# -gt 0 ]]; then
-    fzf_cmd="$fzf_cmd --query=$1"
+  if [[ "${#positional_args[@]}" -gt 0 ]]; then
+    fzf_cmd="$fzf_cmd --query=\"${positional_args[@]}\""
   fi
 
   local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
