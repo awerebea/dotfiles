@@ -1450,6 +1450,84 @@ __gbb_get_segment_width_relative_to_window() {
   printf "%.0f" "$result"
 }
 
+__confirmation_dialog_with_single_y_char_to_accept() {
+  local user_prompt="${1:-Are you sure?}"
+  local read_cmd ANS
+  if [[ -n "$BASH_VERSION" ]]; then
+    read_cmd="read -n 1 ANS"
+  elif [[ -n "$ZSH_VERSION" ]]; then
+    read_cmd="read -k 1 ANS"
+  else
+    echo "${0}: Unsupported shell"
+    return 42
+  fi
+
+  echo -n "$user_prompt (y|N): "
+  eval "$read_cmd"
+
+  case "$ANS" in
+    [yY])
+      echo # Move to the next line for a cleaner output      ;;
+      return 0
+      ;;
+    *)
+      echo # Move to the next line for a cleaner output
+      return 1
+      ;;
+  esac
+}
+
+__git_branch_delete() {
+  local force=false
+  local positional_args=()
+  while [[ -n "${1}" ]]; do
+    case "${1}" in
+      -f | --force)
+        force=true
+        ;;
+      *)
+        positional_args+=("${1}")
+        ;;
+    esac
+    shift
+  done
+
+  if [ "${#positional_args[@]}" -eq 0 ]; then
+    echo "${0}: Missing argument: list of branches"
+    return 1
+  fi
+
+  local branches_to_delete="${positional_args[@]}"
+
+  if [[ -n ${branches_to_delete} ]]; then
+    bare_path="$(__git_worktree_get_bare_path)"
+    local is_remote remote_name user_prompt
+
+    while IFS='' read -r branch_name; do
+      is_remote=false
+
+      if [[ "$branch_name" == remotes/*/* ]]; then
+        is_remote=true
+        remote_name="${branch_name#*/}"
+        remote_name="${remote_name%%/*}"
+      fi
+
+      if "$is_remote"; then
+        branch_name="${branch_name#remotes/*/}"
+        user_prompt="Delete branch: ${branch_name} from remote: ${remote_name}?"
+        if "$force" || __confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+          git push --delete "$remote_name" "$branch_name"
+        fi
+      else
+        user_prompt="Delete local branch: ${branch_name}?"
+        if "$force" || __confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+          git branch -d "$branch_name"
+        fi
+      fi
+    done <<< "$branches_to_delete"
+  fi
+}
+
 cbr() {
   local sort_order="-committerdate"
   local remote_branches=false
@@ -1478,14 +1556,16 @@ cbr() {
     shift
   done
 
+  local delete_key="ctrl-d"
   local fzf_cmd='fzf \
     --ansi \
-    --header "Switch to Recent Branch: ctrl-y:jump" \
+    --header "Manage recent Git Branches: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
     --preview "git diff --color=always {1}" \
-    --no-multi \
+    --expect="$delete_key" \
+    --multi \
     --reverse \
     --cycle \
-    --bind=ctrl-y:accept,tab:down,shift-tab:up \
+    --bind=ctrl-y:accept,ctrl-t:toggle+down \
     --select-1 \
     --pointer=""'
 
@@ -1576,13 +1656,14 @@ __git_worktree_jump_or_create() {
 
 __git_worktree_delete() {
   if [ $# -eq 0 ]; then
-    echo "Missing argument: branch name"
+    echo "${0}: Missing argument: list of branches"
     return 1
   fi
   local worktree bare_path
   local worktrees_to_delete="$1"
   if [[ -n ${worktrees_to_delete} ]]; then
-    bare_path="$(__git_worktree_get_bare_path)"
+    local bare_path="$(__git_worktree_get_bare_path)"
+    local branch_name
     while IFS='' read -r branch_name; do
       if [[ "$branch_name" == remotes/*/* ]]; then
         # Remove first two components of the reference name (remotes/<upstream>/)
@@ -1639,7 +1720,7 @@ gwt() {
   local delete_key="ctrl-d"
   local fzf_cmd='fzf \
     --ansi \
-    --header "Manage most recent git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
+    --header "Manage recent Git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
     --preview "git diff --color=always {1}" \
     --expect="$delete_key" \
     --multi \
