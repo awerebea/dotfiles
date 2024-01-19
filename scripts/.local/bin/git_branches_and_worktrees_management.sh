@@ -5,6 +5,18 @@
 # -o pipefail   Fail if any part of a pipe chain fails.
 # set -euo pipefail
 
+_set_colors() {
+    declare -g col_reset='\033[0m'
+    declare -g col_r='\033[1;31m'
+    declare -g col_g='\033[1;32m'
+    declare -g col_y='\033[1;33m'
+    declare -g col_b='\033[1;34m'
+}
+
+_unset_colors() {
+    unset col_reset col_r col_g col_y col_b
+}
+
 _is_positive_int() {
     # Check if the argument is a positive integer
     if ! [ "${1}" -gt 0 ] 2>/dev/null; then
@@ -142,7 +154,7 @@ _confirmation_dialog_with_single_y_char_to_accept() {
         return 42
     fi
 
-    echo -n "$user_prompt (y|N): "
+    echo -en "$user_prompt (y|N): "
     eval "$read_cmd"
 
     case "$ANS" in
@@ -194,14 +206,27 @@ _git_branch_delete() {
 
         if "$is_remote"; then
             branch_name="${branch_name#remotes/*/}"
-            user_prompt="Delete branch: ${branch_name} from remote: ${remote_name}?"
-            if "$force" || _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+            user_prompt="${col_r}WARNING:${col_reset} Delete branch: ${col_b}${branch_name}${col_reset}"
+            user_prompt+=" from remote: ${col_y}${remote_name}${col_reset}?"
+            # NOTE: Avoid --force here as it's no undoable operation for remote branches
+            if _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
                 git push --delete "$remote_name" "$branch_name"
             fi
         else
-            user_prompt="Delete local branch: ${branch_name}?"
+            user_prompt="${col_r}Delete${col_reset} local branch: ${branch_name}?"
             if "$force" || _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
-                git branch -d "$branch_name"
+                if ! git branch -d "$branch_name"; then
+                    local head_branch; head_branch="$(git rev-parse --abbrev-ref HEAD)"
+                    user_prompt="\n${col_r}WARNING:${col_reset}"
+                    user_prompt=" The branch '${col_b}${branch_name}${col_reset}'"
+                    user_prompt+=" is not yet merged into the"
+                    user_prompt+=" '${col_g}${head_branch}${col_reset}' branch."
+                    user_prompt+="\n\nAre you sure you want to delete it?"
+                    # NOTE: Avoid --force here as it's not clear if intended for non-merged branches
+                    if _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+                        git branch -D "$branch_name"
+                    fi
+                fi
             fi
         fi
     done <<< "$branches_to_delete"
@@ -213,6 +238,7 @@ _manage_git_branches() {
     local sort_order="-committerdate"
     local show_remote_branches=false
     local show_all_branches=false
+    local force=false
     local positional_args=()
 
     while [ $# -gt 0 ]; do
@@ -229,6 +255,9 @@ _manage_git_branches() {
                 ;;
             -a | --all)
                 show_all_branches=true
+                ;;
+            -f | --force)
+                force=true
                 ;;
             *)
                 positional_args+=("${1}")
@@ -278,7 +307,11 @@ _manage_git_branches() {
     local key; key=$(head -1 <<< "$lines")
 
     if [[ $key == "$delete_key" ]]; then
-        _git_branch_delete "$(sed 1d <<< "$lines")"
+        if "$force"; then
+            _git_branch_delete "$(sed 1d <<< "$lines")" --force
+        else
+            _git_branch_delete "$(sed 1d <<< "$lines")"
+        fi
     else
         local branch_name; branch_name="$(tail -1 <<< "$lines")"
         if [[ "$branch_name" == remotes/*/* ]]; then
@@ -332,14 +365,26 @@ _git_worktree_jump_or_create() {
         branch_name="${branch_name#*/}"
     fi
     local worktree_path; worktree_path="$(_git_worktree_get_path_for_branch "$branch_name")"
+    local message
     if [[ -n "$worktree_path" ]]; then
-        cd "$worktree_path" && \
-            echo "Jumped to worktree: $worktree_path, for branch: $branch_name" || return 1
+        if cd "$worktree_path"; then
+            message="${col_g}Jumped${col_reset} to worktree:"
+            message+=" ${col_y}${worktree_path}${col_reset},"
+            message+=" for branch: ${col_b}${branch_name}${col_reset}"
+            echo -e "$message"
+        else
+            return 1
+        fi
     else
         local bare_path; bare_path="$(_git_worktree_get_bare_path)"
         local worktree_path="${bare_path}/${branch_name}"
-        git worktree add "$worktree_path" "$branch_name"
-        cd "$worktree_path" || return 1
+        if git worktree add "$worktree_path" "$branch_name"; then
+            cd "$worktree_path" || return 1
+            message="Worktree ${col_y}${worktree_path}${col_reset}"
+            message+=" for branch: ${col_b}${branch_name}${col_reset} created successfully."
+            message+="\n${col_g}Jumped${col_reset} there."
+            echo -e "$message"
+        fi
     fi
 }
 
@@ -376,13 +421,40 @@ _git_worktree_delete() {
         fi
         worktree_path="$(_git_worktree_get_path_for_branch "$branch_name")"
         if [[ -n "$worktree_path" ]]; then
+            local is_in_target_wt=false
             if [[ "$PWD" == "$worktree_path" ]]; then
-                cd "$bare_path" || return 1
+                cd "$bare_path" && is_in_target_wt=true || return 1
             fi
-            user_prompt="Delete worktree: $worktree_path for branch: $branch_name?"
+            user_prompt="${col_r}Delete${col_reset} worktree: ${col_y}${worktree_path}${col_reset}"
+            user_prompt+=" for branch: ${col_b}${branch_name}${col_reset}?"
             if "$force" || _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
-                git worktree remove "$branch_name" && \
-                    echo "Deleted worktree: $worktree_path, for branch: $branch_name"
+                user_prompt="${col_g}Deleted${col_reset} worktree:"
+                user_prompt+=" ${col_y}${worktree_path}${col_reset},"
+                user_prompt+=" for branch: ${col_b}${branch_name}${col_reset}"
+                if ! git worktree remove "$branch_name"; then
+                    local success_message="$user_prompt"
+                    # local script_cmd="script -q /dev/null -c 'git -C \"$worktree_path\" status --short'"
+                    user_prompt="\n${col_r}WARNING:${col_reset}"
+                    user_prompt+=" This will permanently reset/delete the following files:\n\n"
+                    user_prompt+="$(script -q /dev/null \
+                        -c "git -C \"$worktree_path\" status --short")\n\n"
+                    user_prompt+="in the ${col_y}${worktree_path}${col_reset} path."
+                    user_prompt+="\n\nAre you sure you want to proceed?"
+                    # NOTE: Avoid --force here as it's not undoable operation
+                    if _confirmation_dialog_with_single_y_char_to_accept "$user_prompt"; then
+                        git worktree remove "$branch_name" --force && echo -e "$success_message"
+                    else
+                        if "$is_in_target_wt"; then
+                            cd "$worktree_path" || return 1
+                        fi
+                    fi
+                else
+                    echo -e "$user_prompt"
+                fi
+            else
+                if "$is_in_target_wt"; then
+                    cd "$worktree_path" || return 1
+                fi
             fi
         fi
     done <<< "$worktrees_to_delete"
@@ -399,6 +471,7 @@ _manage_git_worktrees() {
     local sort_order="-committerdate"
     local show_remote_branches=false
     local show_all_branches=false
+    local force=false
     local positional_args=()
 
     while [ $# -gt 0 ]; do
@@ -415,6 +488,9 @@ _manage_git_worktrees() {
                 ;;
             -a | --all)
                 show_all_branches=true
+                ;;
+            -f | --force)
+                force=true
                 ;;
             *)
                 positional_args+=("${1}")
@@ -464,7 +540,11 @@ _manage_git_worktrees() {
     local key; key=$(head -1 <<< "$lines")
 
     if [[ $key == "$delete_key" ]]; then
-        _git_worktree_delete "$(sed 1d <<< "$lines")"
+        if "$force"; then
+            _git_worktree_delete "$(sed 1d <<< "$lines")" --force
+        else
+            _git_worktree_delete "$(sed 1d <<< "$lines")"
+        fi
     else
         _git_worktree_jump_or_create "$(tail -1 <<< "$lines")"
     fi
@@ -472,6 +552,7 @@ _manage_git_worktrees() {
 
 _main() {
     local cmd="${1:-}"
+    _set_colors
     shift
     case "$cmd" in
         _show_git_branches)
@@ -490,6 +571,7 @@ _main() {
             return 1
             ;;
     esac
+    _unset_colors
 }
 
 _main "$@"
