@@ -3,7 +3,7 @@
 # -e            Exit on error. Append "|| true" if you expect an error.
 # -u            Treat unset variables as an error.
 # -o pipefail   Fail if any part of a pipe chain fails.
-set -euo pipefail
+# set -euo pipefail
 
 _is_positive_int() {
     # Check if the argument is a positive integer
