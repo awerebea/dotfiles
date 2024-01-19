@@ -1325,10 +1325,10 @@ alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
 alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 
-alias gbb='git_branches_and_worktrees_management.sh _show_git_branches'
-alias cbr='git_branches_and_worktrees_management.sh _manage_git_branches'
+alias gbb='source git_branches_and_worktrees_management.sh _show_git_branches'
+alias cbr='source git_branches_and_worktrees_management.sh _manage_git_branches'
 unalias gwt
-alias gwt='git_branches_and_worktrees_management.sh _manage_git_worktrees'
+alias gwt='source git_branches_and_worktrees_management.sh _manage_git_worktrees'
 
 # Execute any alias or command in dotfiles repo
 dots() {
