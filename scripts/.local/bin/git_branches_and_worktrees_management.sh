@@ -102,7 +102,7 @@ _show_git_branches() {
     for ref_type in "${ref_types[@]}"; do
         git for-each-ref --format='%(refname)' --sort="$sort_order" refs/"$ref_type" | \
             while read -r ref_name; do
-            local format_string; format_string="%(align:width=${refname_width})"
+            local format_string="%(align:width=${refname_width})"
             format_string+="%(color:bold yellow)%(refname:lstrip=${type_strip[$ref_type]})%(color:reset)%(end)"
             format_string+="%(align:width=${author_width})"
             format_string+="%(color:green)%(committername)%(color:reset)%(end)"
@@ -308,13 +308,14 @@ _git_worktree_get_path_for_branch() {
         return 1
     fi
     local branch_name="$1"
-    local worktrees
-    mapfile -t worktrees < <(_git_worktree_get_list_of_trees)
-    if [[ " ${worktrees[*]} " == *" ${branch_name} "* ]]; then
-        git worktree list --porcelain | \
-            grep -E -B 2 "^branch refs/heads/${branch_name}$" | grep -E "^worktree" | \
-            cut -d " " -f 2
-    fi
+    local worktrees; worktrees="$(_git_worktree_get_list_of_trees)"
+    while IFS= read -r line; do
+        if [[ "$line" == "$branch_name" ]]; then
+            git worktree list --porcelain | \
+                grep -E -B 2 "^branch refs/heads/${branch_name}$" | grep -E "^worktree" | \
+                cut -d " " -f 2
+        fi
+    done <<< "$worktrees"
 }
 
 _git_worktree_jump_or_create() {
@@ -330,15 +331,15 @@ _git_worktree_jump_or_create() {
         branch_name="${branch_name#*/}"
         branch_name="${branch_name#*/}"
     fi
-    local worktree
-    worktree="$(_git_worktree_get_path_for_branch "$branch_name")"
-    if [[ -n "$worktree" ]]; then
-        cd "$worktree" && echo "Jumped to worktree: $worktree, for branch: $branch_name" || return 1
+    local worktree_path; worktree_path="$(_git_worktree_get_path_for_branch "$branch_name")"
+    if [[ -n "$worktree_path" ]]; then
+        cd "$worktree_path" && \
+            echo "Jumped to worktree: $worktree_path, for branch: $branch_name" || return 1
     else
         local bare_path; bare_path="$(_git_worktree_get_bare_path)"
         local worktree_path="${bare_path}/${branch_name}"
         git worktree add "$worktree_path" "$branch_name"
-        cd "$worktree_path"
+        cd "$worktree_path" || return 1
     fi
 }
 
@@ -364,7 +365,6 @@ _git_worktree_delete() {
         return 1
     fi
 
-    local worktree bare_path
     local worktrees_to_delete="${positional_args[*]}"
     local bare_path; bare_path="$(_git_worktree_get_bare_path)"
     local branch_name worktree_path user_prompt
