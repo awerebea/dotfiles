@@ -1325,18 +1325,21 @@ alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
 alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 
-__is_positive_num() {
+__is_positive_int() {
+  # Check if the argument is a positive integer
   if ! [ "${1}" -gt 0 ] 2>/dev/null; then
     return 1
   fi
 }
 
-_gbb() {
+_show_git_branches() {
+  # Show branches in a git repository
+
   local refname_width=75
   local author_width=40
   local sort_order="refname"
-  local remote_branches=false
-  local all_branches=false
+  local show_remote_branches=false
+  local show_all_branches=false
 
   while [[ -n "${1}" ]]; do
     case "${1}" in
@@ -1362,10 +1365,10 @@ _gbb() {
         sort_order="${1#*=}"
         ;;
       -r | --remotes)
-        remote_branches=true
+        show_remote_branches=true
         ;;
       -a | --all)
-        all_branches=true
+        show_all_branches=true
         ;;
       *)
         echo "${0}: Invalid argument: ${1}"
@@ -1375,8 +1378,8 @@ _gbb() {
     shift
   done
 
-  for num in "${refname_width}" "${author_width}"; do
-    if ! __is_positive_num "${num}"; then
+  for num in "$refname_width" "$author_width"; do
+    if ! __is_positive_int "$num"; then
       echo "${0}: Invalid value for argument: ${num}"
       return 1
     fi
@@ -1387,17 +1390,16 @@ _gbb() {
   format_string+="%(align:width=${author_width})"
   format_string+="%(color:green)%(committername)%(color:reset)%(end)"
   format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
-  cmd_line="git branch --sort=${sort_order} --format=\"$format_string\" --color=always"
 
   local ref_types=()
-  if "${remote_branches}"; then
+  if "$show_remote_branches"; then
     ref_types=("remotes")
   else
     ref_types=("heads")
   fi
 
-  if "${all_branches}"; then
-    ref_types=("heads" "remotes")
+  if "$show_all_branches"; then
+      ref_types=("heads" "remotes")
   fi
 
   local -A type_strip
@@ -1406,56 +1408,60 @@ _gbb() {
       ["remotes"]=1
   )
 
-  local ref_type
-  local format_string
-  local ref_name
+  local ref_type format_string ref_name
   for ref_type in "${ref_types[@]}"; do
-    git for-each-ref --format='%(refname)' --sort="${sort_order}" refs/"$ref_type" | \
+    git for-each-ref --format='%(refname)' --sort="$sort_order" refs/"$ref_type" | \
       while read -r ref_name; do
       format_string="%(align:width=${refname_width})"
       format_string+="%(color:bold yellow)%(refname:lstrip=${type_strip[$ref_type]})%(color:reset)%(end)"
       format_string+="%(align:width=${author_width})"
       format_string+="%(color:green)%(committername)%(color:reset)%(end)"
       format_string+="(%(color:blue)%(committerdate:relative)%(color:reset))"
-      git for-each-ref --format="$format_string" "$ref_name"
+      git for-each-ref --format="$format_string" "$ref_name" --color=always
     done
   done
 }
 
-__is_valid_multiplier() {
-    if [[ $# -eq 0 ]]; then
-      return 1
-    fi
-    local multiplier="$1"
-    # Check if the multiplier is an integer or a floating-point number
-    if [[ "$multiplier" =~ ^[0-9]+$ ]]; then
-        return 0  # Success
-    elif [[ "$multiplier" =~ ^[0-9]+\.[0-9]+$ ]]; then
-        return 0  # Success
-    else
-        return 1  # Failure
-    fi
+__is_positive_int_or_float() {
+  # Check if the argument is a positive integer or a floating-point number
+  if [[ $# -eq 0 ]]; then
+    return 1
+  fi
+  local multiplier="$1"
+  if [[ "$multiplier" =~ ^[0-9]+$ ]]; then
+    return 0
+  elif [[ "$multiplier" =~ ^[0-9]+\.[0-9]+$ ]]; then
+    return 0
+  else
+    return 1
+  fi
 }
 
 __gbb_get_segment_width_relative_to_window() {
-  if [[ $# -eq 0 ]] || ! __is_valid_multiplier "$1"; then
+  # Calculate the width of a segment relative to the width of the terminal window
+
+  if [[ $# -eq 0 ]] || ! __is_positive_int_or_float "$1"; then
     echo "25"
     return
   else
     multiplier="$1"
   fi
   width_of_window=$COLUMNS
-  available_width=$(( width_of_window - 20 )) # 20 is the width of the age column
-  result="$(( available_width * multiplier ))"
+  available_width=$(( width_of_window - 6 )) # Extract the width of the age column
+  result=$(( available_width * multiplier ))
   printf "%.0f" "$result"
 }
 
 __confirmation_dialog_with_single_y_char_to_accept() {
+  # Confirmation dialog with a single 'y' character to accept
+
   local user_prompt="${1:-Are you sure?}"
   local read_cmd ANS
+  local in_zsh=false
   if [[ -n "$BASH_VERSION" ]]; then
     read_cmd="read -n 1 ANS"
   elif [[ -n "$ZSH_VERSION" ]]; then
+    in_zsh=true
     read_cmd="read -k 1 ANS"
   else
     echo "${0}: Unsupported shell"
@@ -1467,17 +1473,19 @@ __confirmation_dialog_with_single_y_char_to_accept() {
 
   case "$ANS" in
     [yY])
-      echo # Move to the next line for a cleaner output      ;;
+      "$in_zsh" && echo # Move to the next line for a cleaner output
       return 0
       ;;
     *)
-      echo # Move to the next line for a cleaner output
+      "$in_zsh" && echo # Move to the next line for a cleaner output
       return 1
       ;;
   esac
 }
 
 __git_branch_delete() {
+  # Delete a Git branch
+
   local force=false
   local positional_args=()
   while [[ -n "${1}" ]]; do
@@ -1497,11 +1505,11 @@ __git_branch_delete() {
     return 1
   fi
 
-  local branches_to_delete="${positional_args[@]}"
+  local branches_to_delete="${positional_args[*]}"
 
   if [[ -n ${branches_to_delete} ]]; then
     bare_path="$(__git_worktree_get_bare_path)"
-    local is_remote remote_name user_prompt
+    local branch_name is_remote remote_name user_prompt
 
     while IFS='' read -r branch_name; do
       is_remote=false
@@ -1529,9 +1537,11 @@ __git_branch_delete() {
 }
 
 cbr() {
+  # Manage Git branches
+
   local sort_order="-committerdate"
-  local remote_branches=false
-  local all_branches=false
+  local show_remote_branches=false
+  local show_all_branches=false
   local positional_args=()
 
   while [[ -n "${1}" ]]; do
@@ -1544,10 +1554,10 @@ cbr() {
         sort_order="${1#*=}"
         ;;
       -r | --remotes)
-        remote_branches=true
+        show_remote_branches=true
         ;;
       -a | --all)
-        all_branches=true
+        show_all_branches=true
         ;;
       *)
         positional_args+=("${1}")
@@ -1557,49 +1567,53 @@ cbr() {
   done
 
   local delete_key="ctrl-d"
-  local fzf_cmd='fzf \
+  local fzf_cmd="fzf \
     --ansi \
-    --header "Manage recent Git Branches: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
-    --preview "git diff --color=always {1}" \
-    --expect="$delete_key" \
+    --header 'Manage recent Git Branches: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete' \
+    --preview 'git diff --color=always {1}' \
+    --expect='$delete_key' \
     --multi \
     --reverse \
     --cycle \
     --bind=ctrl-y:accept,ctrl-t:toggle+down \
     --select-1 \
-    --pointer=""'
+    --pointer=''"
 
   if [[ "${#positional_args[@]}" -gt 0 ]]; then
-    fzf_cmd="$fzf_cmd --query=\"${positional_args[@]}\""
+    fzf_cmd="$fzf_cmd --query='${positional_args[*]}'"
   fi
 
-  local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
-  local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
-  local _gbb_cmd="_gbb \
-    --sort \"$sort_order\" \
-    --refname-width \"$refname_width\" \
-    --author-width \"$author_width\""
+  local refname_width author_width _gbb_cmd
+  refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
+  author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
+  _gbb_cmd="_show_git_branches \
+    --sort '$sort_order' \
+    --refname-width '$refname_width' \
+    --author-width '$author_width'"
 
-  if "${remote_branches}"; then
+  if "$show_remote_branches"; then
     _gbb_cmd+=" --remotes"
   fi
 
-  if "${all_branches}"; then
+  if "$show_all_branches"; then
     _gbb_cmd+=" --all"
   fi
 
-  local lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
+  local lines
+  lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
 
   if [[ -z "$lines" ]]; then
     return
   fi
 
-  local key=$(head -1 <<< "$lines")
+  local key
+  key=$(head -1 <<< "$lines")
 
   if [[ $key == "$delete_key" ]]; then
     __git_branch_delete "$(sed 1d <<< "$lines")"
   else
-    local branch_name="$(tail -1 <<< "${lines}")"
+    local branch_name
+    branch_name="$(tail -1 <<< "$lines")"
     if [[ "$branch_name" == remotes/*/* ]]; then
       # Remove first two components of the reference name (remotes/<upstream>/)
       branch_name="${branch_name#*/}"
@@ -1610,28 +1624,35 @@ cbr() {
 }
 
 __git_worktree_get_list_of_trees() {
+  # Get a list of worktrees
   git worktree list --porcelain | grep -E "^branch refs/heads/" | sed "s|branch refs/heads/||"
 }
 
 __git_worktree_get_bare_path() {
+  # Get the path to the bare repository
   git worktree list --porcelain | grep -E -B 2 "^bare$" | grep -E "^worktree" | cut -d " " -f 2
 }
 
 __git_worktree_get_path_for_branch() {
+  # Get the path to the worktree for a given branch
+
   if [ $# -eq 0 ]; then
     echo "Missing argument: branch name"
     return 1
   fi
   local branch_name="$1"
   local worktrees
-  read -A -d '' worktrees <<< "$(__git_worktree_get_list_of_trees)"
-  if [[ " ${worktrees[@]} " =~ " ${branch_name} " ]]; then
-    echo "$(git worktree list --porcelain | \
-      grep -E -B 2 "^branch refs/heads/${branch_name}$" | grep -E "^worktree" | cut -d " " -f 2)"
+  mapfile -t worktrees < <(__git_worktree_get_list_of_trees)
+  if [[ " ${worktrees[*]} " == *" ${branch_name} "* ]]; then
+    git worktree list --porcelain | \
+      grep -E -B 2 "^branch refs/heads/${branch_name}$" | grep -E "^worktree" | \
+      cut -d " " -f 2
   fi
 }
 
 __git_worktree_jump_or_create() {
+  # Jump to an existing worktree or create a new one for a given branch
+
   if [ $# -eq 0 ]; then
     echo "Missing argument: branch name"
     return 1
@@ -1643,7 +1664,8 @@ __git_worktree_jump_or_create() {
     branch_name="${branch_name#*/}"
     branch_name="${branch_name#*/}"
   fi
-  local worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
+  local worktree
+  worktree="$(__git_worktree_get_path_for_branch "$branch_name")"
   if [[ -n "$worktree" ]]; then
     cd "$worktree" && echo "Jumped to worktree: $worktree, for branch: $branch_name" || return 1
   else
@@ -1655,6 +1677,8 @@ __git_worktree_jump_or_create() {
 }
 
 __git_worktree_delete() {
+  # Delete a Git worktree for a given branch
+
   local force=false
   local positional_args=()
   while [[ -n "${1}" ]]; do
@@ -1675,9 +1699,10 @@ __git_worktree_delete() {
   fi
 
   local worktree bare_path
-  local worktrees_to_delete="${positional_args[@]}"
+  local worktrees_to_delete="${positional_args[*]}"
   if [[ -n ${worktrees_to_delete} ]]; then
-    local bare_path="$(__git_worktree_get_bare_path)"
+    local bare_path
+    bare_path="$(__git_worktree_get_bare_path)"
     local branch_name user_prompt worktree_path
     while IFS='' read -r branch_name; do
       if [[ "$branch_name" == remotes/*/* ]]; then
@@ -1702,15 +1727,16 @@ __git_worktree_delete() {
 
 unalias gwt
 gwt() {
-  # Check if inside a bare Git repository, exit if not
+  # Manage Git worktrees
+
   if [[ -z "$(__git_worktree_get_bare_path)" ]]; then
     echo "Not inside a bare Git repository. Exit..."
     return
   fi
 
   local sort_order="-committerdate"
-  local remote_branches=false
-  local all_branches=false
+  local show_remote_branches=false
+  local show_all_branches=false
   local positional_args=()
 
   while [[ -n "${1}" ]]; do
@@ -1723,10 +1749,10 @@ gwt() {
         sort_order="${1#*=}"
         ;;
       -r | --remotes)
-        remote_branches=true
+        show_remote_branches=true
         ;;
       -a | --all)
-        all_branches=true
+        show_all_branches=true
         ;;
       *)
         positional_args+=("${1}")
@@ -1736,49 +1762,52 @@ gwt() {
   done
 
   local delete_key="ctrl-d"
-  local fzf_cmd='fzf \
+  local fzf_cmd="fzf \
     --ansi \
-    --header "Manage recent Git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete" \
-    --preview "git diff --color=always {1}" \
-    --expect="$delete_key" \
+    --header 'Manage recent Git Worktrees: ctrl-y:jump, ctrl-t:toggle, $delete_key:delete' \
+    --preview 'git diff --color=always {1}' \
+    --expect='$delete_key' \
     --multi \
     --reverse \
     --cycle \
     --bind=ctrl-y:accept,ctrl-t:toggle+down \
     --select-1 \
-    --pointer=""'
+    --pointer=''"
 
   if [[ "${#positional_args[@]}" -gt 0 ]]; then
-    fzf_cmd="$fzf_cmd --query=\"${positional_args[@]}\""
+    fzf_cmd="$fzf_cmd --query=\"${positional_args[*]}\""
   fi
 
-  local refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
-  local author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
-  local _gbb_cmd="_gbb \
-    --sort \"$sort_order\" \
-    --refname-width \"$refname_width\" \
-    --author-width \"$author_width\""
+  local refname_width author_width _gbb_cmd
+  refname_width="$(__gbb_get_segment_width_relative_to_window 0.67)"
+  author_width="$(__gbb_get_segment_width_relative_to_window 0.33)"
+  _gbb_cmd="_show_git_branches \
+    --sort '$sort_order' \
+    --refname-width '$refname_width' \
+    --author-width '$author_width'"
 
-  if "${remote_branches}"; then
+  if "$show_remote_branches"; then
     _gbb_cmd+=" --remotes"
   fi
 
-  if "${all_branches}"; then
+  if "$show_all_branches"; then
     _gbb_cmd+=" --all"
   fi
 
-  local lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
+  local lines
+  lines="$(eval "$_gbb_cmd" | eval "$fzf_cmd" | cut -d " " -f 1)"
 
   if [[ -z "$lines" ]]; then
     return
   fi
 
-  local key=$(head -1 <<< "$lines")
+  local key
+  key=$(head -1 <<< "$lines")
 
   if [[ $key == "$delete_key" ]]; then
     __git_worktree_delete "$(sed 1d <<< "$lines")"
   else
-    __git_worktree_jump_or_create "$(tail -1 <<< "${lines}")"
+    __git_worktree_jump_or_create "$(tail -1 <<< "$lines")"
   fi
 }
 
