@@ -11,6 +11,7 @@ VALID_ENVS=(
     sand
     dev
     test
+    qa
     stage
     prod
     shared
