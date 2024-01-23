@@ -550,7 +550,7 @@ _manage_git_worktrees() {
     fi
 }
 
-_main() {
+fgb() {
     local cmd="${1:-}"
     _set_colors
     shift
@@ -573,5 +573,3 @@ _main() {
     esac
     _unset_colors
 }
-
-_main "$@"
