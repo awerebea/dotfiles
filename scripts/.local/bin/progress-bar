@@ -1,24 +1,102 @@
 #! /usr/bin/env bash
 
-function ProgressBar {
-    # Set escape codes
-    local ERASE_SCREEN_AFTER="\033[0J"
-    local ERASE_LINE_BEFORE="\033[1K"
-    # Set progress bar width
-    local bar_width=40
-    # Proccess data
-    local progress=$(( ($1*100*100/$2)/100 ))
-    local done=$(( (progress*bar_width/10)/10 ))
-    local left=$(( bar_width-done ))
-    # Build progressbar string lengths
-    local fill empty
-    fill=$(printf "%${done}s")
-    empty=$(printf "%${left}s")
-    # Output message and progress bar
-    echo -en "$ERASE_LINE_BEFORE" "$ERASE_SCREEN_AFTER" "\r"
-    [ -n "$3" ] && echo "$3"
-    printf "\rProgress : [${fill// /\#}${empty// /-}] ${progress}%%"
-}
+_progressbar() {
+    # Print a progress bar
 
-[ $# -lt 2 ] && echo "ProgressBar: Not enough arguments." >&2 && exit 1
-ProgressBar "$@"
+    local verbose=false
+    local positional_args=()
+    while [ $# -gt 0 ]; do
+        case "${1}" in
+            -v | --verbose)
+                verbose=true
+                ;;
+            *)
+                positional_args+=("${1}")
+                ;;
+        esac
+        shift
+    done
+
+    _is_positive_int() {
+        # Check if the argument is a positive integer
+        if ! [ "${1}" -gt 0 ] 2>/dev/null; then
+            return 1
+        fi
+    }
+
+    _get_len_of_verbose_suffix() {
+        local len
+        len="$(echo -n "${1}" | wc -m)"
+        len=$((len * 2 + 1))
+        echo "$len"
+    }
+
+    local usage="Usage: ${0} <curr_elem_num> <total_elements> [<message>]"
+    # Check arguments
+    if [ ${#positional_args[@]} -lt 2 ] || [ ${#positional_args[@]} -gt 3 ]; then
+        echo "$usage" >&2
+        return 1
+    fi
+
+    local message=""
+    if [[ -n "$BASH_VERSION" ]]; then
+        local curr_elem_num="${positional_args[0]}"
+        local total_elements="${positional_args[1]}"
+        if [ ${#positional_args[@]} -ge 3 ]; then
+            message="${positional_args[2]}"
+        fi
+    elif [[ -n "$ZSH_VERSION" ]]; then
+        local curr_elem_num="${positional_args[1]}"
+        local total_elements="${positional_args[2]}"
+        if [ ${#positional_args[@]} -ge 3 ]; then
+            message="${positional_args[3]}"
+        fi
+    else
+        echo "${0}: Unsupported shell"
+        return 42
+    fi
+
+    if ! _is_positive_int "$curr_elem_num" || ! _is_positive_int "$total_elements"; then
+        echo "$usage" >&2
+        echo "<curr_elem_num> and <total_elements> must be positive integers" >&2
+        return 1
+    fi
+
+    # Set escape codes
+    local ERASE_LINE_BEFORE="\033[1A\033[K"
+    # Set progress bar width depending on the terminal width
+    local suffix_length=15
+    if "$verbose"; then
+        local verbose_suffix_length
+        verbose_suffix_length=$(_get_len_of_verbose_suffix "$total_elements")
+        suffix_length=$(echo "$suffix_length $verbose_suffix_length" | awk '{print $1 + $2}')
+    fi
+    local terminal_related_width
+    terminal_related_width=$(echo "$(tput cols) $suffix_length" | awk '{print $1 - $2}')
+    local bar_width; bar_width=$(( terminal_related_width < 100 ? terminal_related_width : 100 ))
+
+    # Proccess data
+    local progress # percentage of the progress
+    progress="$(echo "$curr_elem_num $total_elements" | awk '{printf("%.2f", $1 * 100 / $2)}')"
+    local ready # number of segments of the progress bar that are ready
+    ready=$(echo "$progress $bar_width" | awk '{printf("%.0f", ($1 * $2/10)/10)}')
+    local left # number of segments of the progress bar that are left
+    left=$(echo "$bar_width $ready" | awk '{printf("%.0f", $1 - $2)}')
+
+    # Build progressbar string lengths
+    local fill empty line
+    line=""; for ((i=0; i<ready; i++)); do line+="#"; done
+    fill="$line"
+    line=""; for ((i=0; i<left; i++)); do line+="-"; done
+    empty="$line"
+
+    # Output message and progress bar
+    [ -v __progressbar_start ] && unset __progressbar_start || echo -en "$ERASE_LINE_BEFORE"
+    [ "$message" != "" ] && echo -e "$message"
+    if "$verbose"; then
+        printf "[%s%s] %6s%% %${verbose_suffix_length}s\n" "$fill" "$empty" "$progress" "$curr_elem_num/$total_elements"
+    else
+        printf "[%s%s] %6s%%\n" "$fill" "$empty" "$progress"
+    fi
+    unset -f _is_positive_int
+}
