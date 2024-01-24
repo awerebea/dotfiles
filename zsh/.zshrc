@@ -1325,11 +1325,6 @@ alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
 alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 
-alias gbb='source git_branches_and_worktrees_management.sh _show_git_branches'
-alias cbr='source git_branches_and_worktrees_management.sh _manage_git_branches'
-unalias gwt
-alias gwt='source git_branches_and_worktrees_management.sh _manage_git_worktrees'
-
 # Execute any alias or command in dotfiles repo
 dots() {
   location="$PWD"
@@ -1464,4 +1459,29 @@ fi
 if [[ $commands[tmux] ]] && [ ! -d "$HOME/.tmux" ]; then
   git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
   ln -s "$HOME/.tmux/.tmux.conf" "$HOME/.tmux.conf"
+fi
+
+# fzf-git-branches https://github.com/awerebea/fzf-git-branches
+# Auto install
+if [[ ! -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]]; then
+  git clone https://github.com/awerebea/fzf-git-branches "$HOME/.fzf-git-branches"
+fi
+# Lazy load
+if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
+  lazy_fgb () {
+    unset -f lazy_fgb fgb gbb cbr gwt
+    if ! source "$HOME/.fzf-git-branches/fzf-git-branches.sh"; then
+      echo "Failed to load fzf-git-branches" >&2
+      return 1
+    fi
+    alias gbb='fgb branch show'
+    alias cbr='fgb branch manage'
+    alias gwt='fgb worktree manage'
+    fgb "$@"
+  }
+  fgb() { lazy_fgb "$@" }
+  gbb() { lazy_fgb branch show "$@" }
+  cbr() { lazy_fgb branch manage "$@" }
+  unalias gwt
+  function gwt() { lazy_fgb worktree manage "$@" }
 fi
