@@ -4,13 +4,13 @@
 # define users data
 USER_0="awerebea"
 EMAIL_0="awerebea.21@gmail.com"
-SIGNING_KEY_0="9BCC286D7490EA90"
+SIGNING_KEY_0="9BCC286D7490EA90CB0B36D40D29164EF13B24BD"
 USER_1="Andrei Bulgakov"
 EMAIL_1="a.bulgakov.86@gmail.com"
-SIGNING_KEY_1="3A9C9CF435A23DBB"
+SIGNING_KEY_1="3A9C9CF435A23DBB070281DE98DEAF83552D8DFA"
 USER_2="Andrey Bulgakov"
 EMAIL_2="andrey.bulgakov@clearscale.com"
-SIGNING_KEY_2="9DD1905E14C47809"
+SIGNING_KEY_2="9DD1905E14C478090420E5B99A0ED9EFED1FAFE2"
 
 GLOBAL=
 
@@ -46,7 +46,7 @@ OPTIONS:
 
   -h, --help            Print this help message and exit
 __EOM__
-    echo "${MESSAGE}"
+    echo "$MESSAGE"
     return
 }
 
@@ -58,41 +58,41 @@ SIGNING_KEY=
 # Process command line options
 while [[ -n "$1" ]]; do
     case "$1" in
-    -g | --global)
-        GLOBAL='global'
-        ;;
-    -c | --sign-commits)
-        SIGN_COMMITS='true'
-        ;;
-    -t | --sign-tags)
-        SIGN_TAGS='true'
-        ;;
-    -u | --unset)
-        UNSET='--unset'
-        ;;
-    0 | awerebea)
-        USERNAME="${USER_0}"
-        USEREMAIL="${EMAIL_0}"
-        SIGNING_KEY="${SIGNING_KEY_0}"
-        ;;
-    1 | personal)
-        USERNAME="${USER_1}"
-        USEREMAIL="${EMAIL_1}"
-        SIGNING_KEY="${SIGNING_KEY_1}"
-        ;;
-    2 | work)
-        USERNAME="${USER_2}"
-        USEREMAIL="${EMAIL_2}"
-        SIGNING_KEY="${SIGNING_KEY_2}"
-        ;;
-    -h | --help)
-        usage
-        exit
-        ;;
-    *)
-        usage
-        exit 1
-        ;;
+        -g | --global)
+            GLOBAL='global'
+            ;;
+        -c | --sign-commits)
+            SIGN_COMMITS='true'
+            ;;
+        -t | --sign-tags)
+            SIGN_TAGS='true'
+            ;;
+        -u | --unset)
+            UNSET='--unset'
+            ;;
+        0 | awerebea)
+            USERNAME="$USER_0"
+            USEREMAIL="$EMAIL_0"
+            SIGNING_KEY="$SIGNING_KEY_0"
+            ;;
+        1 | personal)
+            USERNAME="$USER_1"
+            USEREMAIL="$EMAIL_1"
+            SIGNING_KEY="$SIGNING_KEY_1"
+            ;;
+        2 | work)
+            USERNAME="$USER_2"
+            USEREMAIL="$EMAIL_2"
+            SIGNING_KEY="$SIGNING_KEY_2"
+            ;;
+        -h | --help)
+            usage
+            exit
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
     esac
     shift
 done
@@ -104,17 +104,17 @@ if [[ -z ${USERNAME} ]]; then
 fi
 
 
-git config --${GLOBAL:-local} user.name "${USERNAME}"
-git config --${GLOBAL:-local} user.email "${USEREMAIL}"
-git config --${GLOBAL:-local} user.signingkey "${SIGNING_KEY}"
+git config --"${GLOBAL:-local}" user.name "$USERNAME"
+git config --"${GLOBAL:-local}" user.email "$USEREMAIL"
+git config --"${GLOBAL:-local}" user.signingkey "$SIGNING_KEY"
 
 if [[ -n ${SIGN_COMMITS} ]]; then
-    git config --${GLOBAL:-local} ${UNSET:+"$UNSET"} commit.gpgsign true
+    git config --"${GLOBAL:-local}" "${UNSET:+"$UNSET"}" commit.gpgsign true
 fi
 
 if [[ -n ${SIGN_TAGS} ]]; then
-    git config --${GLOBAL:-local} ${UNSET:+"$UNSET"} tag.gpgSign true
+    git config --"${GLOBAL:-local}" "${UNSET:+"$UNSET"}" tag.gpgSign true
 fi
 
 git config --list --show-origin |
-    grep -e user.name -e user.email -e commit.gpgsign -e tag.gpgsign
+grep -e user.name -e user.email -e commit.gpgsign -e tag.gpgsign
