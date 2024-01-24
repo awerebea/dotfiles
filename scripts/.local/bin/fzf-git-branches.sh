@@ -6,6 +6,8 @@
 # set -euo pipefail
 
 fgb() {
+    local VERSION="0.1.0"
+
     __fgb__functions() {
         __fgb_confirmation_dialog() {
             # Confirmation dialog with a single 'y' character to accept
@@ -576,15 +578,99 @@ fgb() {
         }
 
 
+        __fgb_stdout_unindented() {
+            # Print a string to stdout unindented
+
+            # Usage: __fgb_stdout_unindented "string"
+            # String supposed to be indented with any number of any characters.
+            # The first `|' character in the string will be treated as the start of the string.
+            # The first and last lines of the string will be removed because they must be empty and
+            # exist since a quoted literal starts with a new line after the opening quote and ends
+            # with a new line before the closing quote, like this:
+
+            # string="
+            #     |line 1
+            #     |line 2
+            # "
+
+            # source: https://unix.stackexchange.com/a/674903/424165
+
+            sed '1d;s/^.*|//;$d' <<< "$1"
+        }
+
+
         __fgb_unset_colors() {
             unset col_reset col_r col_g col_y col_b
         }
 
+
         # Define command and adjust arguments
         local cmd="${1:-}"
-        shift
-        local subcommand="${1:-}"
-        shift
+        if [ $# -gt 0 ]; then
+            shift
+            local subcommand="${1:-}"
+            [ $# -gt 0 ] && shift
+        fi
+
+        local version_message="fzf-git-branches, version $VERSION\n"
+        local copyright_message
+        copyright_message=$(__fgb_stdout_unindented "
+            |Copyright (C) 2024 Andrei Bulgakov <https://github.com/awerebea>.
+            |
+            |License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+            |This is free software; you are free to change and redistribute it.
+            |There is NO WARRANTY, to the extent permitted by law.
+        ")
+
+        local error_invalid_option_message
+        error_invalid_option_message=$(__fgb_stdout_unindented "
+            |error: unknown option: \`$subcommand'\n
+        ")
+
+        local error_invalid_subcommand_message
+        error_invalid_subcommand_message=$(__fgb_stdout_unindented "
+            |error: unknown subcommand: \`$subcommand'\n
+        ")
+
+        local -A usage_message=(
+            ["fgb"]="$(__fgb_stdout_unindented "
+            |Usage: fgb <command> [<args>]
+            |
+            |Commands:
+            |  branch    Manage Git branches
+            |  worktree  Manage Git worktrees
+            |
+            |Options:
+            |  -v, --version
+            |            Show version information
+            |
+            |  -h, --help
+            |            Show this help message
+            ")"
+
+            ["branch"]="$(__fgb_stdout_unindented "
+            |Usage: fgb $cmd <subcommand> [<args>]
+            |
+            |Subcommands:
+            |  show    Show branches in a git repository
+            |  manage  Manage Git branches
+            |
+            |Options:
+            |  -h, --help
+            |          Show this help message
+            ")"
+
+            ["worktree"]="$(__fgb_stdout_unindented "
+            |Usage: fgb $cmd <subcommand> [<args>]
+            |
+            |Subcommands:
+            |  manage  Manage Git worktrees
+            |
+            |Options:
+            |  -h, --help
+            |          Show this help message
+            ")"
+        )
 
         __fgb_set_colors
         case "$cmd" in
@@ -597,38 +683,60 @@ fgb() {
                             "$@"
                         ;;
                     manage) __fgb_git_branch_manage "$@" ;;
-                    -h | --help)
-                        echo "Usage: $0 branch <subcommand> [<args>]"
-                        echo
-                        echo "Subcommands:"
-                        echo "  show    Show branches in a git repository"
-                        echo "  manage  Manage Git branches"
+                    -h | --help) echo "${usage_message[$cmd]}" ;;
+                    --* | -*)
+                        echo "$error_invalid_option_message" >&2
+                        echo "${usage_message[$cmd]}" >&2
+                        return 1
                         ;;
-                    --* | -*) echo "error: unknown option: \`$1'" >&2 && return 1 ;;
-                    *) echo "error: unknown subcommand: \`$1'" >&2 && return 1 ;;
+                    *)
+                        echo "$error_invalid_subcommand_message" >&2
+                        echo "${usage_message[$cmd]}" >&2
+                        return 1
+                        ;;
                 esac
                 ;;
-                # *) echo "Invalid command: $cmd" && return 1 ;;
             worktree)
                 case "$subcommand" in
                     manage) __fgb_git_worktree_manage "$@" ;;
-                    -h | --help)
-                        echo "Usage: $0 worktree <subcommand> [<args>]"
-                        echo
-                        echo "Subcommands:"
-                        echo "  manage  Manage Git worktrees"
+                    -h | --help) echo "${usage_message[$cmd]}" ;;
+                    --* | -*)
+                        echo "$error_invalid_option_message" >&2
+                        echo "${usage_message[$cmd]}" >&2
+                        return 1
                         ;;
-                    --* | -*) echo "error: unknown option: \`$1'" >&2 && return 1 ;;
-                    *) echo "error: unknown subcommand: \`$1'" >&2 && return 1 ;;
+                    *)
+                        echo "$error_invalid_subcommand_message" >&2
+                        echo "${usage_message[$cmd]}" >&2
+                        return 1
+                        ;;
                 esac
                 ;;
-            *) echo "error: unknown subcommand: \`$cmd'" >&2 && return 1 ;;
+            -h | --help)
+                echo "${usage_message["fgb"]}"
+                ;;
+            -v | --version)
+                echo "$version_message"
+                echo "$copyright_message"
+                ;;
+            --* | -*)
+                echo "$error_invalid_option_message" >&2
+                echo "${usage_message["fgb"]}" >&2
+                return 1
+                ;;
+            *)
+                echo -e "error: unknown command: \`$cmd'\n" >&2
+                echo "${usage_message["fgb"]}" >&2
+                return 1
+                ;;
         esac
-        __fgb_unset_colors
     }
 
     # Start here
     __fgb__functions "$@"
+    local exit_code="$?"
+
+    __fgb_unset_colors
 
     unset -f \
         __fgb__functions \
@@ -646,5 +754,12 @@ fgb() {
         __fgb_is_positive_int \
         __fgb_is_positive_int_or_float \
         __fgb_set_colors \
+        __fgb_stdout_unindented \
         __fgb_unset_colors
+
+    case "$exit_code" in
+        0) ;;
+        42) return 42 ;;
+        *) return 1 ;;
+    esac
 }
