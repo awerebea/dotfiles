@@ -383,9 +383,9 @@ return {
 
     local function conditional_neotree_exec(neotree_opts)
       if vim.bo.filetype == "neo-tree" then
-        neotree_opts.action = "close"
-        require("neo-tree.command").execute(neotree_opts)
+        require("neo-tree.command").execute { action = "close" }
       else
+        require("neo-tree.command").execute { action = "close" }
         require("neo-tree.command").execute(neotree_opts)
       end
     end
@@ -406,7 +406,7 @@ return {
         source = "filesystem",
         position = "right",
         reveal_file = reveal_path, -- path to file or folder to reveal
-        reveal_force_cwd = false,
+        reveal_force_cwd = true,
       }
     end, { desc = "Toggle neo-tree at current file or working directory" })
 
