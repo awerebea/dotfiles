@@ -1469,19 +1469,34 @@ fi
 # Lazy load
 if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
   lazy_fgb () {
-    unset -f lazy_fgb fgb gbb cbr gwt
+    unset -f \
+      fgb \
+      gbl \
+      gbm \
+      gwl \
+      gwc \
+      gwm \
+      gwt \
+      lazy_fgb
     if ! source "$HOME/.fzf-git-branches/fzf-git-branches.sh"; then
       echo "Failed to load fzf-git-branches" >&2
       return 1
     fi
-    alias gbb='fgb branch show'
-    alias cbr='fgb branch manage'
-    alias gwt='fgb worktree manage'
+    alias gbl='fgb branch list'
+    alias gbm='fgb branch manage'
+    alias gwl='fgb worktree list'
+    alias gwm='fgb worktree manage'
+    alias gwc='fgb worktree create'
+    alias gwt='fgb worktree total'
     fgb "$@"
   }
-  fgb() { lazy_fgb "$@" }
-  gbb() { lazy_fgb branch show "$@" }
-  cbr() { lazy_fgb branch manage "$@" }
   unalias gwt
-  function gwt() { lazy_fgb worktree manage "$@" }
+  unalias gbl
+  function fgb() { lazy_fgb "$@" }
+  function gbl() { lazy_fgb branch list "$@" }
+  function gbm() { lazy_fgb branch manage "$@" }
+  function gwl() { lazy_fgb worktree list "$@" }
+  function gwm() { lazy_fgb worktree manage "$@" }
+  function gwc() { lazy_fgb worktree create "$@" }
+  function gwt() { lazy_fgb worktree total "$@" }
 fi
