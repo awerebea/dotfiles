@@ -351,3 +351,57 @@ export FZF_MARKS_FILE="$HOME/.fzf-marks"
 export FZF_MARKS_CMD="fzf"
 export FZF_FZM_OPTS="--cycle +m --ansi --bind=ctrl-o:accept,ctrl-t:toggle --select-1"
 export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
+
+# fzf-git-branches https://github.com/awerebea/fzf-git-branches
+# Auto install
+if [[ ! -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]]; then
+    git clone https://github.com/awerebea/fzf-git-branches "$HOME/.fzf-git-branches"
+fi
+# Lazy load
+if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
+    lazy_fgb () {
+        unset -f \
+            fgb \
+            gbl \
+            gbm \
+            gwl \
+            gwa \
+            gwm \
+            gwt \
+            lazy_fgb
+        if ! source "$HOME/.fzf-git-branches/fzf-git-branches.sh"; then
+            echo "Failed to load fzf-git-branches" >&2
+            return 1
+        fi
+        alias gbl='fgb branch list'
+        alias gbm='fgb branch manage'
+        alias gwl='fgb worktree list'
+        alias gwm='fgb worktree manage'
+        alias gwa='fgb worktree add'
+        alias gwt='fgb worktree total'
+        fgb "$@"
+    }
+    unalias gwt
+    unalias gbl
+    function fgb {
+        lazy_fgb "$@"
+    }
+    function gbl {
+        lazy_fgb branch list "$@"
+    }
+    function gbm {
+        lazy_fgb branch manage "$@"
+    }
+    function gwl {
+        lazy_fgb worktree list "$@"
+    }
+    function gwm {
+        lazy_fgb worktree manage "$@"
+    }
+    function gwa {
+        lazy_fgb worktree add "$@"
+    }
+    function gwt {
+        lazy_fgb worktree total "$@"
+    }
+fi
