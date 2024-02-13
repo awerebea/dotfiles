@@ -377,8 +377,8 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         alias gbm='fgb branch manage'
         alias gwl='fgb worktree list'
         alias gwm='fgb worktree manage'
-        alias gwa='fgb worktree add'
-        alias gwt='fgb worktree total'
+        alias gwa='fgb worktree add --confirm'
+        alias gwt='fgb worktree total --confirm'
         fgb "$@"
     }
     unalias gwt
@@ -399,9 +399,9 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         lazy_fgb worktree manage "$@"
     }
     function gwa {
-        lazy_fgb worktree add "$@"
+        lazy_fgb worktree add --confirm "$@"
     }
     function gwt {
-        lazy_fgb worktree total "$@"
+        lazy_fgb worktree total --confirm "$@"
     }
 fi
