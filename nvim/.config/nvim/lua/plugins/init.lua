@@ -526,11 +526,11 @@ return {
         desc = "Manage",
       },
       {
-        "<leader>gwc",
+        "<leader>gwa",
         function()
           require("telescope").extensions.git_worktree.create_git_worktree()
         end,
-        desc = "Create",
+        desc = "Add",
       },
     },
   },
