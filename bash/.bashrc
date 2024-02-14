@@ -405,3 +405,6 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         lazy_fgb worktree total --confirm "$@"
     }
 fi
+
+# Personal aliases
+alias cdq='cd "$(fd -t d . | fzf)"'

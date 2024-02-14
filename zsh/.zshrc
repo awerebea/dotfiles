@@ -641,6 +641,7 @@ alias r="echo \"Don't use that shit!\""
 [[ $commands[rover] ]] && alias rv="rover"
 alias cdi='source cd-infra'
 alias py='python'
+alias cdq='cd "$(fd -t d . | fzf)"'
 
 vs() { find $GIT_DOTFILES/scripts -type f | fzf | xargs -I {} -r $EDITOR '{}' }
 
