@@ -655,7 +655,8 @@ return {
   { "wellle/targets.vim", event = "VeryLazy" },
   {
     "backdround/improved-ft.nvim",
-    enabled = not require("utils").is_windows(),
+    -- enabled = not require("utils").is_windows(),
+    enabled = false,
     event = "VeryLazy",
     config = function()
       local ft = require "improved-ft"
@@ -673,10 +674,10 @@ return {
       end
 
       imap("<M-f>", ft.hop_forward_to_char, "Hop forward to a given char")
-      imap("<M-F>", ft.hop_backward_to_char, "Hop forward to a given char")
+      imap("<M-F>", ft.hop_backward_to_char, "Hop backward to a given char")
 
       imap("<M-t>", ft.hop_forward_to_pre_char, "Hop forward before a given char")
-      imap("<M-T>", ft.hop_backward_to_pre_char, "Hop forward before a given char")
+      imap("<M-T>", ft.hop_backward_to_pre_char, "Hop backward before a given char")
 
       imap("<M-;>", ft.repeat_forward, "Repeat hop forward to a last given char")
       imap("<M-,>", ft.repeat_backward, "Repeat hop backward to a last given char")
