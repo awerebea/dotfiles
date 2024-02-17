@@ -3,7 +3,12 @@ import sys
 
 
 def print_progress_bar(
-    part_num, parts_total, elem_num=None, elems_total=None, clear_on_finish=False
+    part_num,
+    parts_total,
+    elem_num=None,
+    elems_total=None,
+    clear_on_finish=False,
+    total_progress_message="",
 ):
     terminal_width = shutil.get_terminal_size((100, 20)).columns
     # Check if total progress information is provided
@@ -14,6 +19,8 @@ def print_progress_bar(
             sys.stdout.flush()
         # Calculate dynamic length for the total progress bar
         total_info_len = len(str(elems_total)) * 2 + 16  # ' xx/yy (zzz.zz%)'
+        if total_progress_message:
+            total_info_len += len(total_progress_message) + 1
         # Calculate total progress bar length
         total_bar_len = min(100, terminal_width) - total_info_len
         total_progress = int(total_bar_len * elem_num / elems_total)
@@ -26,10 +33,11 @@ def print_progress_bar(
         # Format the total percentage part without extra leading space
         total_percentage_str = f"{(elem_num / elems_total * 100):.2f}%"
         # Format the total progress bar
-        total_progress_bar = (
-            f"[{total_progress * '#'}{'-' * total_remaining}]"
-            + f" {total_counter_str} ({total_percentage_str:>7})"
-        )
+        total_progress_bar = f"[{total_progress * '#'}{'-' * total_remaining}]"
+        if total_progress_message:
+            total_progress_bar += " " + total_progress_message
+        total_progress_bar += f" {total_counter_str} ({total_percentage_str:>7})"
+
         # Print the total progress bar on the first line
         sys.stdout.write(total_progress_bar + "\n")
     else:
@@ -104,6 +112,7 @@ if __name__ == "__main__":
                 total_parts,
                 elem_num=elem,
                 elems_total=total_elements,
+                total_progress_message="TOTAL PROGRESS:",
             )
             time.sleep(0.05)
     print("Multiple elements progress bar example: Finish")
@@ -123,6 +132,7 @@ if __name__ == "__main__":
                 elem_num=elem,
                 elems_total=total_elements,
                 clear_on_finish=True,
+                total_progress_message="TOTAL PROGRESS:",
             )
             time.sleep(0.05)
     print("Multiple elements progress bar example with clear on finish: Finish")
