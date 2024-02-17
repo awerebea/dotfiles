@@ -16,7 +16,7 @@ function M.on_attach(client, buffer)
   self:map("gY", function()
     require("telescope.builtin").lsp_implementations { reuse_win = true }
   end, { desc = "Goto Implementation" })
-  -- self:map("K", "Lspsaga hover_doc ++keep", { desc = "Hover" }) -- keybind is defined in nvim-ufo settings
+  self:map("K", "Lspsaga hover_doc ++keep", { desc = "Hover" }) -- keybind is defined in nvim-ufo settings
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
   self:map("]d", M.diagnostic_goto(true), { desc = "Next Diagnostic" })
   self:map("[d", M.diagnostic_goto(false), { desc = "Prev Diagnostic" })
