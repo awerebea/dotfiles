@@ -2,49 +2,26 @@ import shutil
 import sys
 
 
+def clear_previous_lines(num_lines: int) -> None:
+    """Clear the previous lines in the console."""
+    go_up_one_line = "\033[F"
+    clear_current_line = "\r" + " " * shutil.get_terminal_size((100, 20)).columns + "\r"
+    for _ in range(num_lines):
+        sys.stdout.write(go_up_one_line + clear_current_line)
+        sys.stdout.flush()
+
+
 def print_progress_bar(
-    part_num,
-    parts_total,
-    elem_num=None,
-    elems_total=None,
-    clear_on_finish=False,
-    total_progress_message="",
-):
+    part_num: int,
+    parts_total: int,
+    desc: str = "",
+) -> str:
+    """Print a progress bar to the console."""
     terminal_width = shutil.get_terminal_size((100, 20)).columns
-    # Check if total progress information is provided
-    if elem_num is not None and elems_total is not None:
-        if part_num != 1:
-            # Move the cursor up to the beginning of the first line
-            sys.stdout.write("\033[F")
-            sys.stdout.flush()
-        # Calculate dynamic length for the total progress bar
-        total_info_len = len(str(elems_total)) * 2 + 16  # ' xx/yy (zzz.zz%)'
-        if total_progress_message:
-            total_info_len += len(total_progress_message) + 1
-        # Calculate total progress bar length
-        total_bar_len = min(100, terminal_width) - total_info_len
-        total_progress = int(total_bar_len * elem_num / elems_total)
-        total_remaining = total_bar_len - total_progress
-        # Format the total counter part
-        elems_total_str_len = len(str(elems_total))
-        total_counter_str = (
-            f"{elem_num:>{elems_total_str_len}}/{elems_total:<{elems_total_str_len}}"
-        )
-        # Format the total percentage part without extra leading space
-        total_percentage_str = f"{(elem_num / elems_total * 100):.2f}%"
-        # Format the total progress bar
-        total_progress_bar = f"[{total_progress * '#'}{'-' * total_remaining}]"
-        if total_progress_message:
-            total_progress_bar += " " + total_progress_message
-        total_progress_bar += f" {total_counter_str} ({total_percentage_str:>7})"
-
-        # Print the total progress bar on the first line
-        sys.stdout.write(total_progress_bar + "\n")
-    else:
-        sys.stdout.write("\r")
-
     # Calculate dynamic length for the progress bar
     info_len = len(str(parts_total)) * 2 + 16  # ' xx/yy (zzz.zz%)'
+    if desc:
+        info_len += len(desc) + 1
     # Calculate progress bar length
     bar_len = min(100, terminal_width) - info_len
     progress = int(bar_len * part_num / parts_total)
@@ -57,38 +34,14 @@ def print_progress_bar(
     # Format the percentage part without extra leading space
     percentage_str = f"{(part_num / parts_total * 100):.2f}%"
     # Format the progress bar for the current element
-    progress_bar = (
-        f"[{progress * '#'}{'-' * remaining}] {counter_str} ({percentage_str:>7})"
-    )
+    progress_bar = f"[{progress * '#'}{'-' * remaining}]"
+    if desc:
+        progress_bar += " " + desc
+    progress_bar += f" {counter_str} ({percentage_str:>7})"
 
     # Print the progress bar for the current element on the second line
-    sys.stdout.write("\r" + progress_bar)
-    sys.stdout.flush()
-    go_up_one_line = "\033[F"
-    clear_current_line = "\r" + " " * terminal_width + "\r"
-    if clear_on_finish:
-        if part_num == parts_total:
-            time.sleep(1)
-            sys.stdout.write(clear_current_line)
-            sys.stdout.flush()
-            if elem_num is not None and elems_total is not None:
-                if elem_num == elems_total:
-                    sys.stdout.write(go_up_one_line + clear_current_line)
-                else:
-                    sys.stdout.write(go_up_one_line)
-                sys.stdout.flush()
-    else:
-        if elem_num is not None and elems_total is not None:
-            if part_num == parts_total:
-                if elem_num != elems_total:
-                    sys.stdout.write(go_up_one_line + clear_current_line)
-                else:
-                    sys.stdout.write("\n")
-                sys.stdout.flush()
-        else:
-            if part_num == parts_total:
-                sys.stdout.write("\n")
-                sys.stdout.flush()
+    print(progress_bar)
+    return progress_bar
 
 
 if __name__ == "__main__":
@@ -96,43 +49,81 @@ if __name__ == "__main__":
 
     # Example usage in a nested loop
     total_elements = 5
-    total_parts = 25
+    total_parts = 20
+    progress_bar = ""
+    total_progress_bar = ""
 
     print("Progress bar example: Start")
+    progress_bar = ""
     for part in range(1, total_parts + 1):
-        print_progress_bar(part, total_parts)
+        if progress_bar:
+            clear_previous_lines(1)
+        progress_bar = print_progress_bar(part, total_parts)
         time.sleep(0.05)
     print("Progress bar example: Finish")
 
     print("Multiple elements progress bar example: Start")
+    total_progress_bar = ""
     for elem in range(1, total_elements + 1):
+        if total_progress_bar:
+            if progress_bar:
+                clear_previous_lines(2)
+            else:
+                clear_previous_lines(1)
+        total_progress_bar = print_progress_bar(
+            elem,
+            total_elements,
+            desc="TOTAL PROGRESS:",
+        )
+        progress_bar = ""
         for part in range(1, total_parts + 1):
-            print_progress_bar(
-                part,
-                total_parts,
-                elem_num=elem,
-                elems_total=total_elements,
-                total_progress_message="TOTAL PROGRESS:",
-            )
+            if progress_bar:
+                clear_previous_lines(1)
+            progress_bar = print_progress_bar(part, total_parts)
             time.sleep(0.05)
+            if part == total_parts:
+                clear_previous_lines(2)
+                print(f"Processing of element {elem} finished")
+                print(total_progress_bar)
+                print(progress_bar)
     print("Multiple elements progress bar example: Finish")
 
     print("Progress bar example with clear on finish: Start")
+    progress_bar = ""
     for part in range(1, total_parts + 1):
-        print_progress_bar(part, total_parts, clear_on_finish=True)
+        if progress_bar:
+            clear_previous_lines(1)
+        progress_bar = print_progress_bar(part, total_parts)
         time.sleep(0.05)
+        if part == total_parts:
+            time.sleep(1)
+            clear_previous_lines(1)
     print("Progress bar example with clear on finish: Finish")
 
     print("Multiple elements progress bar example with clear on finish: Start")
+    total_progress_bar = ""
     for elem in range(1, total_elements + 1):
+        if total_progress_bar:
+            if progress_bar:
+                clear_previous_lines(2)
+            else:
+                clear_previous_lines(1)
+        total_progress_bar = print_progress_bar(
+            elem,
+            total_elements,
+            desc="TOTAL PROGRESS:",
+        )
+        progress_bar = ""
         for part in range(1, total_parts + 1):
-            print_progress_bar(
-                part,
-                total_parts,
-                elem_num=elem,
-                elems_total=total_elements,
-                clear_on_finish=True,
-                total_progress_message="TOTAL PROGRESS:",
-            )
+            if progress_bar:
+                clear_previous_lines(1)
+            progress_bar = print_progress_bar(part, total_parts)
             time.sleep(0.05)
+            if part == total_parts:
+                time.sleep(0.5)
+                clear_previous_lines(2)
+                print(f"Processing of element {elem} finished")
+                if elem != total_elements:
+                    print(total_progress_bar)
+                    print(progress_bar)
     print("Multiple elements progress bar example with clear on finish: Finish")
