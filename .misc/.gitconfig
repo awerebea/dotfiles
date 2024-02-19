@@ -3,6 +3,13 @@
 	pager = less -x1,5
 	autocrlf = input
 
+[includeIf "gitdir:~/"]
+	path = ~/.gitconfig.home
+[includeIf "gitdir:~/Projects/"]
+	path = ~/.gitconfig.work
+[includeIf "gitdir:~/work/"]
+	path = ~/.gitconfig.work
+
 [merge]
 tool = vim_mergetool
 conflictstyle = diff3
