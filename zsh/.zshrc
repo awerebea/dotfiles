@@ -185,11 +185,6 @@ if [[ ! $commands[kubectx] ]] && \
   unset old_pwd
 fi
 
-# fzf-fasd
-if [[ ! -f "$ZSH/custom/plugins/fzf-fasd/fzf-fasd.plugin.zsh" ]]; then
-  git clone https://github.com/wookayin/fzf-fasd "$ZSH/custom/plugins/fzf-fasd"
-fi
-
 # fzf-tab
 if [[ ! -f "$ZSH/custom/plugins/fzf-tab/fzf-tab.plugin.zsh" ]]; then
   git clone https://github.com/Aloxaf/fzf-tab "$ZSH/custom/plugins/fzf-tab"
@@ -289,9 +284,7 @@ plugins=(
           easy_motion
           encode64
           extract
-          fasd
           forgit
-          fzf-fasd
           fzf-tab
           git-flow
           git
@@ -402,46 +395,6 @@ if [[ `uname -n` == "pc-home" && `uname` == "Darwin" ]]; then
   alias be="bundle exec"
 
 fi
-
-# fasd history sync via GitHub
-fhistsync () {
-  echo "\e[1;33mNeed to pull before sync? (y/N)\e[0m"
-  while true; do
-    read -r input
-    case $input in
-    [yY][eE][sS]|[yY])
-      git -C $GIT_WORKSPACE pull; break;;
-    [nN][oO]|[nN])
-      echo "\e[1;33mLocal file used\e[0m"; break;;
-    *)
-      echo -en "\e[1;33mIncorrect input. Need to push? Answer: "
-      echo -en "\e[1;32mYes\e[1;33m/\e[1;31mNo \e[1;32my\e[1;33m/\e[1;31mn "
-      echo -e "\e[1;32mY\e[1;33m/\e[1;31mN\e[0m";;
-    esac
-  done
-  cat $HOME/.fasd >> $GIT_WORKSPACE/.fasd
-  cat $GIT_WORKSPACE/.fasd | sort -t $'\|' -rk2 |
-    awk -F"[|]" '!a[$1]++' > $GIT_WORKSPACE/.fasd_
-  rm -f $GIT_WORKSPACE/.fasd $HOME/.fasd
-  mv $GIT_WORKSPACE/.fasd_ $GIT_WORKSPACE/.fasd
-  cp -rf $GIT_WORKSPACE/.fasd $HOME/.fasd
-  git -C $GIT_WORKSPACE add .fasd
-  git -C $GIT_WORKSPACE commit -m "Sync fasd history"
-  echo "\e[1;33mfasd synced history commited, need to push? (y/N)\e[0m"
-  while true; do
-    read -r input
-    case $input in
-    [yY] | [yY][eE][sS])
-      git -C $GIT_WORKSPACE push origin; break;;
-    [nN] | [nN][oO])
-      break;;
-    *)
-      echo -en "\e[1;33mIncorrect input. Need to push? Answer: "
-      echo -en "\e[1;32mYes\e[1;33m/\e[1;31mNo \e[1;32my\e[1;33m/\e[1;31mn "
-      echo -e "\e[1;32mY\e[1;33m/\e[1;31mN\e[0m";;
-    esac
-  done
-}
 
 # "Forget" last N commands from history
 # Added a space in 'my_remove_last_history_entry'
@@ -901,9 +854,9 @@ vimprj () {
     cp -- $GIT_DOTFILES/Vim/.vimprj/$f .vimprj/$f; done
 }
 
-# enable fasd
-if [[ $commands[fasd] ]]; then
-  eval "$(fasd --init auto)"
+# enable zoxide
+if [[ $commands[zoxide] ]]; then
+  eval "$(zoxide init zsh)"
 fi
 
 # git add all changed files and commit
@@ -1219,16 +1172,6 @@ bindkey -M viins "^ " globalias-wrapper
 # space makes a normal space
 bindkey -M emacs " " magic-space
 bindkey -M viins " " magic-space
-
-# fasd + fzf
-zd () {
-  fasdlist=$( fasd -d -l -R "$1" | fzf --query="$1" --select-1 --exit-0 \
-    --height=100% --reverse --no-sort --cycle) && cd "$fasdlist"
-}
-zf () {
-  fasdlist=$( fasd -f -l -R "$1" | fzf --query="$1" --select-1 --exit-0 \
-    --height=100% --reverse --no-sort --cycle) && xdg-open "$fasdlist"
-}
 
 timezsh () {
   echo "Real zsh startup time in seconds:"
