@@ -35,7 +35,7 @@ trustExitCode = true
 	show = delta
 	whatchanged = delta
 	show-branch = true
-	status = true
+	; status = true
 
 [interactive]
 	diffFilter = delta --color-only
@@ -87,3 +87,8 @@ trustExitCode = true
 	enabled = 1
 [fetch]
 	prune = true
+[push]
+	autoSetupRemote = true
+[pull]
+	default = current
+	; rebase = merges
