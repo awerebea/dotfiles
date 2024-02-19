@@ -1,0 +1,7 @@
+[user]
+	name = "Andrey Bulgakov"
+	email = andrey.bulgakov@huntington.com
+
+[credential]
+	UseHttpPath = true
+	helper = !aws --profile torana-shared codecommit credential-helper $@
