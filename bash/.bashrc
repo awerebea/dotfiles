@@ -409,4 +409,14 @@ fi
 alias cdq='cd "$(fd -t d . | fzf)"'
 
 # enable zoxide
-command -v zoxide &> /dev/null && eval "$(zoxide init bash)"
+if command -v zoxide &> /dev/null; then
+    eval "$(zoxide init bash)"
+    export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
+    --bind=tab:up,shift-tab:down \
+    --height=40% \
+    --info=inline \
+    --no-sort \
+    --reverse \
+    --select-1 \
+    "
+fi

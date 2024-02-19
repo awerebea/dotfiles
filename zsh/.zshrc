@@ -857,6 +857,14 @@ vimprj () {
 # enable zoxide
 if [[ $commands[zoxide] ]]; then
   eval "$(zoxide init zsh)"
+  export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
+    --bind=tab:up,shift-tab:down \
+    --height=40% \
+    --info=inline \
+    --no-sort \
+    --reverse \
+    --select-1 \
+    "
 fi
 
 # git add all changed files and commit
