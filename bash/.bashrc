@@ -122,7 +122,6 @@ plugins=(
     git
     bashmarks
     progress
-    fasd
     sudo
 )
 
@@ -408,3 +407,6 @@ fi
 
 # Personal aliases
 alias cdq='cd "$(fd -t d . | fzf)"'
+
+# enable zoxide
+command -v zoxide &> /dev/null && eval "$(zoxide init bash)"
