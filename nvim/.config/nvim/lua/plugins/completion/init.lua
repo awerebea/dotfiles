@@ -7,8 +7,8 @@ return {
       "saadparwaiz1/cmp_luasnip",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
-      "f3fora/cmp-spell",
+      -- "hrsh7th/cmp-cmdline",
+      -- "f3fora/cmp-spell",
       "danymat/neogen",
     },
     config = function()
@@ -80,19 +80,19 @@ return {
         sources = cmp.config.sources {
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
-          { name = "luasnip" },
+          -- { name = "luasnip" },
           { name = "buffer" },
           { name = "path" },
-          { name = "cmdline" },
-          {
-            name = "spell",
-            option = {
-              keep_all_entries = false,
-              enable_in_context = function()
-                return true
-              end,
-            },
-          }, -- spell dictionary
+          -- { name = "cmdline" },
+          -- {
+          --   name = "spell",
+          --   option = {
+          --     keep_all_entries = false,
+          --     enable_in_context = function()
+          --       return true
+          --     end,
+          --   },
+          -- }, -- spell dictionary
         },
         formatting = {
           fields = { "kind", "abbr", "menu" },
