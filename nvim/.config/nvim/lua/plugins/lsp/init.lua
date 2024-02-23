@@ -288,6 +288,9 @@ return {
         show_server_name = true,
         extend_gitsigns = true,
       },
+      diagnostic = {
+        jump_num_shortcut = false,
+      },
       finder = {
         default = "def+ref+imp+tyd",
       },
