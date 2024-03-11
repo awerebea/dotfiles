@@ -4,6 +4,8 @@ param (
     [switch]$vvv = $false,
     [switch]$silent = $false,
 
+    [switch]$removeOriginal = $false,
+
     [string]$sourceDirectory,
     [string]$backupPrefix
 )
@@ -326,6 +328,72 @@ function Write-Confirmation ($filesToBackup, $fileMapping)
     }
 }
 
+function Remove-InefficientOrigFiles ($fileMapping)
+{
+    $filesToRemove = New-Object System.Collections.ArrayList
+    foreach ($convertedFile in $fileMapping.Keys | Sort-Object)
+    {
+        $compressionEfficiency = $fileMapping[$convertedFile]["compressionEfficiency"]
+        if ($compressionEfficiency -gt 0)
+        {
+            $null = $filesToRemove.Add($convertedFile)
+        }
+    }
+
+    if ($filesToRemove.Count -gt 0)
+    {
+        Write-Output "Number of files to remove: $($filesToRemove.Count)`n"
+        if (-not $silent)
+        {
+            foreach ($convertedFile in $filesToRemove)
+            {
+                Write-Output "$($fileMapping[$convertedFile]["origFile"]) : $(
+                $fileMapping[$convertedFile]["origFileSize"]
+            ) => $(
+                $fileMapping[$convertedFile]["convertedFileSize"]
+            ), Compression: $(
+                $fileMapping[$convertedFile]["compressionEfficiencyFormatted"]
+            )"
+            }
+            Write-Output ""
+        }
+        if (-not (Get-Confirmation))
+        {
+            Write-Output "Script execution aborted."
+            exit
+        }
+    } else
+    {
+        Write-Output "No files to remove."
+    }
+
+    foreach ($convertedFile in $filesToRemove)
+    {
+        $origFile = $fileMapping[$convertedFile]["origFile"]
+
+        # Move the file from the original path to the backup path with confirmation
+        Remove-Item -Path "$origFile" -Force
+
+        # Move the sidecar file if exists
+        $sidecarFileExists = $false
+        if (Test-Path "$origFile.xmp")
+        {
+            $sidecarFileExists = $true
+            Remove-Item -Path "$origFile.xmp" -Force
+        }
+
+        if (-not $silent)
+        {
+            Write-Output "$origFile removed"
+            if ($sidecarFileExists)
+            {
+                Write-Output "Sidecar file removed"
+            }
+            Write-Output ""
+        }
+    }
+}
+
 # Start program here.
 function Start-Program
 {
@@ -340,6 +408,11 @@ function Start-Program
     Expand-DataTableWithBackupLocation -fileMapping $fileMapping
 
     Move-FilesToBackupLocation -fileMapping $fileMapping
+
+    if ($removeOriginal)
+    {
+        Remove-InefficientOrigFiles -fileMapping $fileMapping
+    }
 }
 
 Start-Program
