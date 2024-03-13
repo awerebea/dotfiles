@@ -10,7 +10,7 @@ return {
           library = { plugins = { "neotest", "nvim-dap-ui" }, types = true },
         },
       },
-      { "j-hui/fidget.nvim", config = true },
+      { "j-hui/fidget.nvim",  config = true },
       -- { "smjonas/inc-rename.nvim", config = true },
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
@@ -100,7 +100,7 @@ return {
       ensure_installed = {
         "prettierd",
         "stylua",
-        "eslint_d",
+        -- "eslint_d",
         -- "autopep8",
         -- "flake8",
         -- "yapf",
@@ -113,7 +113,7 @@ return {
         -- "tflint",
         "shellcheck",
         "shellharden",
-        "beautysh",
+        -- "beautysh",
         "debugpy",
         "codelldb",
         "powershell-editor-services",
@@ -155,12 +155,12 @@ return {
           refurb,
           nls.builtins.formatting.prettierd,
           nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
-          nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
-            -- only enable eslint if root has .eslintrc.js
-            condition = function(utils)
-              return utils.root_has_file ".eslintrc.js" -- change file extension if you use something else
-            end,
-          },
+          -- nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
+          --   -- only enable eslint if root has .eslintrc.js
+          --   condition = function(utils)
+          --     return utils.root_has_file ".eslintrc.js" -- change file extension if you use something else
+          --   end,
+          -- },
           -- nls.builtins.formatting.yapf.with {
           --   extra_args = {
           --     "--style={based_on_style: google, column_limit: 88, indent_width: 4}",
@@ -187,7 +187,7 @@ return {
           -- nls.builtins.diagnostics.pydocstyle,
           -- nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
-          nls.builtins.formatting.beautysh,
+          -- nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
           -- nls.builtins.formatting.shfmt,
         },
@@ -228,6 +228,7 @@ return {
           diagnostics_mode = 0
         end
       end
+
       vim.keymap.set("n", "<leader>td", "<Cmd>lua ToggleDiagnosticsMode()<CR>")
     end,
   },
