@@ -10,8 +10,8 @@ return {
           library = { plugins = { "neotest", "nvim-dap-ui" }, types = true },
         },
       },
-      { "j-hui/fidget.nvim",  config = true },
-      -- { "smjonas/inc-rename.nvim", config = true },
+      { "j-hui/fidget.nvim", config = true },
+      { "smjonas/inc-rename.nvim", config = true },
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
       "hrsh7th/cmp-nvim-lsp",
@@ -278,28 +278,6 @@ return {
           require("trouble").toggle "lsp_references"
         end,
         desc = "Trouble LSP references",
-      },
-    },
-  },
-  {
-    "glepnir/lspsaga.nvim",
-    event = "VeryLazy",
-    opts = {
-      code_action = {
-        show_server_name = true,
-        extend_gitsigns = true,
-      },
-      diagnostic = {
-        jump_num_shortcut = false,
-      },
-      finder = {
-        default = "def+ref+imp+tyd",
-      },
-      lightbulb = {
-        enable = true,
-      },
-      symbol_in_winbar = {
-        enable = false,
       },
     },
   },
