@@ -8,7 +8,7 @@ return {
     --   return { "treesitter", "indent" }
     -- end,
     open_fold_hl_timeout = 400,
-    close_fold_kinds = {
+    close_fold_kinds_for_ft = {
       "imports",
       -- "comment", -- do not close folds in comments on startup
     },
