@@ -4,29 +4,36 @@ function M.on_attach(client, buffer)
   local self = M.new(client, buffer)
 
   self:map("<leader>rs", "LspRestart", { desc = "Restart LSP server" })
-  self:map("gd", "Lspsaga goto_definition", { desc = "Goto Definition" })
-  self:map("gD", "Lspsaga peek_definition", { desc = "Peek Definition" })
-  self:map("gf", "Lspsaga finder", { desc = "References" })
-  self:map("gr", "Telescope lsp_references", { desc = "References" })
-  self:map("gI", "Lspsaga incoming_calls", { desc = "Call hierarchy, incoming calls" })
-  self:map("gO", "Lspsaga outgoing_calls", { desc = "Call hierarchy, outgoing calls" })
+  self:map("gd", vim.lsp.buf.definition, { desc = "Goto Definition" })
+  self:map("gD", vim.lsp.buf.declaration, { desc = "Peek Definition" })
+  self:map("gr", vim.lsp.buf.references, { desc = "References" })
+  self:map("gf", "Telescope lsp_references", { desc = "Telescope References" })
+  self:map("gI", vim.lsp.buf.implementation, { desc = "Implementations" })
   self:map("gy", function()
     require("telescope.builtin").lsp_type_definitions { reuse_win = true }
   end, { desc = "Goto Type Definition" })
   self:map("gY", function()
     require("telescope.builtin").lsp_implementations { reuse_win = true }
   end, { desc = "Goto Implementation" })
-  self:map("K", "Lspsaga hover_doc ++keep", { desc = "Hover" }) -- keybind is defined in nvim-ufo settings
+  self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
-  self:map("]d", M.diagnostic_goto(true), { desc = "Next Diagnostic" })
-  self:map("[d", M.diagnostic_goto(false), { desc = "Prev Diagnostic" })
-  self:map("]e", M.diagnostic_goto(true, "ERROR"), { desc = "Next Error" })
-  self:map("[e", M.diagnostic_goto(false, "ERROR"), { desc = "Prev Error" })
-  self:map("]w", M.diagnostic_goto(true, "WARNING"), { desc = "Next Warning" })
-  -- self:map("[w", M.diagnostic_goto(false, "WARNING"), { desc = "Prev Warning" })
+  self:map("]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
+  self:map("[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
+  self:map("]e", function()
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+  end, { desc = "Next Error" })
+  self:map("[e", function()
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+  end, { desc = "Prev Error" })
+  self:map("]w", function()
+    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARN }
+  end, { desc = "Next Warning" })
+  self:map("[w", function()
+    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARN }
+  end, { desc = "Prev Warning" })
   self:map(
     "<leader>ca",
-    "Lspsaga code_action",
+    vim.lsp.buf.code_action,
     { desc = "Code Action", mode = { "n", "v" }, has = "codeAction" }
   )
 
@@ -37,7 +44,10 @@ function M.on_attach(client, buffer)
     format,
     { desc = "Format Range", mode = "v", has = "documentRangeFormatting" }
   )
-  self:map("<leader>rn", M.rename, { expr = true, desc = "Rename", has = "rename" })
+  -- self:map("<leader>rn", vim.lsp.buf.rename, { expr = true, desc = "Rename", has = "rename" })
+  self:map("<leader>rn", function()
+    return ":IncRename " .. vim.fn.expand "<cword>"
+  end, { expr = true, desc = "Rename", has = "rename" })
 
   self:map(
     "<leader>cs",
@@ -85,25 +95,6 @@ function M:map(lhs, rhs, opts)
     ---@diagnostic disable-next-line: no-unknown
     { silent = true, buffer = self.buffer, expr = opts.expr, desc = opts.desc }
   )
-end
-
-function M.rename()
-  if pcall(require, "lspsaga") then
-    return "<Cmd>Lspsaga rename<CR>"
-  else
-    vim.lsp.buf.rename()
-  end
-end
-
-function M.diagnostic_goto(next, severity)
-  severity = severity and vim.diagnostic.severity[severity] or nil
-  return function()
-    if next then
-      require("lspsaga.diagnostic"):goto_next { severity = severity }
-    else
-      require("lspsaga.diagnostic"):goto_prev { severity = severity }
-    end
-  end
 end
 
 return M
