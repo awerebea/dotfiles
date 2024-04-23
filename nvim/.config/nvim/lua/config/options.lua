@@ -35,7 +35,7 @@ vim.opt.wildignore:append "go/bin" -- Go bin files
 vim.opt.wildignore:append "go/bin-vagrant" -- Go bin-vagrant files
 vim.opt.wildignore:append "*.pyc" -- Python byte code
 vim.opt.wildignore:append "*.orig" -- Merge resolution files
--- }}}
+-- }}} end of Wildmenu completion
 
 -- line wrapping
 vim.opt.wrap = false -- disable line wrapping
@@ -104,7 +104,7 @@ vim.opt.undofile = true
 vim.opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
 vim.opt.viewoptions:remove { "folds" }
--- }}}
+-- }}} end of Backup, Undo and Swap files settings
 
 -- {{{ spell check
 -- vim.opt.spelllang = "en_us"
@@ -120,7 +120,7 @@ for d in glob('~/.config/nvim/spell/*.add', 1, 1)
   endif
 endfor
 ]]
--- }}}
+-- }}} end of spell check
 
 -- {{{ tabs (indentation) settings
 -- tabs & indentation
@@ -179,7 +179,7 @@ augroup filetypeRelatedSettings
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab textwidth=99
 augroup END
 ]]
--- }}}
+-- }}} end of tabs (indentation) settings
 
 -- {{{ Tabs navigation
 vim.opt.switchbuf = "usetab,newtab"
@@ -206,39 +206,73 @@ end
 --   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
 --   { desc = "Toggle Tab switcher mode." }
 -- )
--- }}}
+-- }}} end of Tabs navigation
 
 -- {{{ Smart relativenumbers
+local SmartRelativenumbers_group_name = "SmartRelativenumbers"
+local SmartRelativenumbers_group =
+  vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = false })
+
 function SetRelativeNumberAutocmd(events, mode)
   vim.api.nvim_create_autocmd(events, {
-    group = vim.api.nvim_create_augroup("SmartRelativenumbers", { clear = false }),
+    group = SmartRelativenumbers_group,
     pattern = "*",
     callback = function()
       local blacklist = { "toggleterm" }
       if not vim.tbl_contains(blacklist, vim.bo.filetype) then
-        vim.wo.relativenumber = mode
+        if mode then
+          if vim.o.number and vim.api.nvim_get_mode().mode ~= "i" then
+            vim.opt.relativenumber = true
+          end
+        else
+          if vim.o.number then
+            vim.opt.relativenumber = false
+            vim.cmd "redraw"
+          end
+        end
       end
     end,
   })
 end
 
-SetRelativeNumberAutocmd({ "InsertEnter", "BufLeave" }, false)
-SetRelativeNumberAutocmd({ "InsertLeave", "BufEnter" }, true)
+SetRelativeNumberAutocmd(
+  { "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" },
+  false
+)
+SetRelativeNumberAutocmd(
+  { "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" },
+  true
+)
 vim.g.SmartRelativenumbersEnabled = true
 
 function _G.ToggleSmartRelativenumbers()
   if not vim.g.SmartRelativenumbersEnabled then
-    SetRelativeNumberAutocmd({ "InsertEnter", "BufLeave" }, false)
-    SetRelativeNumberAutocmd({ "InsertLeave", "BufEnter" }, true)
-    vim.o.relativenumber = true
+    SetRelativeNumberAutocmd(
+      { "BufLeave", "FocusLost", "InsertEnter", "CmdlineEnter", "WinLeave" },
+      false
+    )
+    SetRelativeNumberAutocmd(
+      { "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" },
+      true
+    )
+    if vim.o.number and vim.api.nvim_get_mode().mode ~= "i" then
+      vim.opt.relativenumber = true
+    end
     vim.g.SmartRelativenumbersEnabled = true
   else
-    vim.api.nvim_create_augroup("SmartRelativenumbers", { clear = true })
-    vim.o.relativenumber = false
+    vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = true })
+    if vim.o.number then
+      vim.opt.relativenumber = false
+      vim.cmd "redraw"
+    end
     vim.g.SmartRelativenumbersEnabled = false
   end
 end
--- }}}
+-- this keymap is defined in config/keymaps.lua
+-- vim.keymap.set("n", "<leader><leader>rn", function()
+--   ToggleSmartRelativenumbers()
+-- end, { desc = "Toggle smart relative numbers." })
+-- }}} end of Smart relativenumbers
 
 -- {{{ Word wrap
 vim.opt.textwidth = 99
@@ -277,7 +311,7 @@ endfunction
 --   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
 --   { desc = "Toggle automatic wrapping of long lines." }
 -- )
--- }}}
+-- }}} end of Word wrap
 
 -- {{{ Auto save/load view
 -- List of filenames to skip mkview
@@ -314,7 +348,7 @@ augroup vimrcAutoView
     autocmd BufWinEnter ?* if MakeViewCheck() | silent! loadview | endif
 augroup end
 ]]
--- }}}
+-- }}} end of Auto save/load view
 
 -- Change cursor view:
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1"
