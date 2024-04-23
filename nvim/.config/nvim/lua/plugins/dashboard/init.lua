@@ -52,8 +52,14 @@ return {
           .. vim.version().patch
         local fortune = require "alpha.fortune"
         local quote = table.concat(fortune(), "\n")
-        local plugins = "⚡Neovim loaded " .. stats.count .. " plugins in " .. ms .. "ms"
-        local footer = "\t" .. version .. "\t" .. plugins .. "\n" .. quote
+        local plugins = "⚡Neovim loaded "
+          .. stats.loaded
+          .. "/"
+          .. stats.count
+          .. " plugins in "
+          .. ms
+          .. "ms"
+        local footer = version .. "\t" .. plugins .. "\n" .. quote
         dashboard.section.footer.val = footer
         pcall(vim.cmd.AlphaRedraw)
       end,
