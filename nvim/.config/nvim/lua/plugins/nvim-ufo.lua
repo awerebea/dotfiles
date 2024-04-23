@@ -3,10 +3,10 @@ return {
   dependencies = "kevinhwang91/promise-async",
   event = "VeryLazy",
   opts = {
-    -- INFO: Uncomment to use treeitter as fold provider, otherwise nvim lsp is used
-    -- provider_selector = function(bufnr, filetype, buftype)
-    --   return { "treesitter", "indent" }
-    -- end,
+    -- INFO: Uncomment to use treesitter as fold provider, otherwise nvim lsp is used
+    provider_selector = function(bufnr, filetype, buftype)
+      return { "treesitter", "indent" }
+    end,
     open_fold_hl_timeout = 400,
     close_fold_kinds_for_ft = {
       "imports",
