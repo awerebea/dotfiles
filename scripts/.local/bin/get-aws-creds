@@ -3,7 +3,7 @@
 VALID_ENVS=(
     "all"
     torana-{sand,dev,test,stage,prod,audit,shared}
-    hnb-cp-{dev,qa,stage,prod}
+    hnb-cp-{prdev,dev,qa,stage,prod,mgt}
 )
 
 

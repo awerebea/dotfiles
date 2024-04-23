@@ -9,11 +9,13 @@ g_apply=false
 
 VALID_ENVS=(
     sand
+    prdev
     dev
     test
     qa
     stage
     prod
+    mgt
     shared
     audit
 )
