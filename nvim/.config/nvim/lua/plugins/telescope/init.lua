@@ -2,6 +2,7 @@ return {
   require "plugins.telescope.dependencies",
   {
     "nvim-telescope/telescope.nvim",
+    commit = "10d57f38f538cd6c22330a2a4b74efe132ff35b5",
     dependencies = {
       "nvim-lua/plenary.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
