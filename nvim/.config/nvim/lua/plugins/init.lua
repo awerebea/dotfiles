@@ -520,7 +520,7 @@ return {
       {
         "<leader>gwm",
         function()
-          require("telescope").extensions.git_worktree.git_worktrees()
+          require("telescope").extensions.git_worktree.git_worktrees { path_display = {} }
         end,
         desc = "Manage",
       },
