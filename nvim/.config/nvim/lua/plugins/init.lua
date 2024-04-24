@@ -491,9 +491,7 @@ return {
     end,
   },
   {
-    -- "ThePrimeagen/git-worktree.nvim",
-    "brandoncc/git-worktree.nvim",
-    branch = "catch-and-handle-telescope-related-error",
+    "ThePrimeagen/git-worktree.nvim",
     opts = {},
     config = function()
       require("telescope").load_extension "git_worktree"
