@@ -33,6 +33,13 @@ return {
       desc = "Manage",
     },
     {
+      "<leader>gwt",
+      function()
+        require("telescope").extensions.git_worktree.git_worktrees { path_display = {} }
+      end,
+      desc = "Manage",
+    },
+    {
       "<leader>gwa",
       function()
         require("telescope").extensions.git_worktree.create_git_worktree()
