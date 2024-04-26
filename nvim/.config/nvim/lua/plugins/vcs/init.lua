@@ -29,13 +29,6 @@ return {
     },
   },
   {
-    "tpope/vim-fugitive",
-    cmd = { "Git", "GBrowse", "Gdiffsplit", "Gvdiffsplit" },
-    dependencies = {
-      "tpope/vim-rhubarb",
-    },
-  },
-  {
     "lewis6991/gitsigns.nvim",
     dependencies = { "petertriho/nvim-scrollbar" },
     event = "BufReadPre",
