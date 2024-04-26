@@ -35,12 +35,11 @@ return {
     -- vim.keymap.set("n", "<A-j>", require("smart-splits").resize_down)
     -- vim.keymap.set("n", "<A-k>", require("smart-splits").resize_up)
     -- vim.keymap.set("n", "<A-l>", require("smart-splits").resize_right)
-    -- swapping buffers between windows
-    -- The following keymaps are used by hop plugin
-    -- vim.keymap.set("n", "<leader><leader><leader><leader>h", require("smart-splits").swap_buf_left)
-    -- vim.keymap.set("n", "<leader><leader><leader><leader>j", require("smart-splits").swap_buf_down)
-    -- vim.keymap.set("n", "<leader><leader><leader><leader>k", require("smart-splits").swap_buf_up)
-    -- vim.keymap.set("n", "<leader><leader><leader><leader>l", require("smart-splits").swap_buf_right)
     -- }}}
+    -- swapping buffers between windows
+    vim.keymap.set("n", "<leader><leader><leader>h", require("smart-splits").swap_buf_left)
+    vim.keymap.set("n", "<leader><leader><leader>j", require("smart-splits").swap_buf_down)
+    vim.keymap.set("n", "<leader><leader><leader>k", require("smart-splits").swap_buf_up)
+    vim.keymap.set("n", "<leader><leader><leader>l", require("smart-splits").swap_buf_right)
   end,
 }
