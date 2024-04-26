@@ -143,4 +143,19 @@ return {
       -- vim.g.skip_ts_context_commentstring_module = true
     end,
   },
+  {
+    "nvim-treesitter/nvim-treesitter-context",
+    event = "VeryLazy",
+    enabled = true,
+    opts = { mode = "cursor", max_lines = 3 },
+    keys = {
+      {
+        "<leader>tTc",
+        function()
+          require("treesitter-context").toggle()
+        end,
+        desc = "Toggle Treesitter Context",
+      },
+    },
+  },
 }
