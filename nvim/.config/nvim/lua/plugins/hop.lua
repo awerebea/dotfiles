@@ -62,7 +62,7 @@ return {
 
     local keymap = vim.keymap.set
 
-    keymap("", "<leader><leader><leader>", "<Cmd>HopWord<CR>")
+    -- keymap("", "<leader><leader><leader>", "<Cmd>HopWord<CR>")
     keymap("", "<leader><leader>W", "<Cmd>HopWordMW<CR>")
     keymap("", "<leader><leader>w", "<Cmd>HopWordAC<CR>")
     keymap("", "<leader><leader>b", "<Cmd>HopWordBC<CR>")
