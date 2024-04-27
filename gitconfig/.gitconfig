@@ -45,21 +45,52 @@ trustExitCode = true
 	whitespace-error-style = 22 reverse
 	navigate = true
 	tabs = 4
-	syntax-theme = zenburn
-	; plus-style = syntax "#004000"
-	; minus-style = syntax "#5c0809"
-	; folke/tokyonight
-	minus-style                   = syntax "#37222c"
-	minus-non-emph-style          = syntax "#37222c"
-	minus-emph-style              = syntax "#713137"
-	minus-empty-line-marker-style = syntax "#37222c"
-	line-numbers-minus-style      = "#c25d64"
-	plus-style                    = syntax "#20303b"
-	plus-non-emph-style           = syntax "#20303b"
-	plus-emph-style               = syntax "#2c5a66"
-	plus-empty-line-marker-style  = syntax "#20303b"
-	line-numbers-plus-style       = "#399a96"
-	line-numbers-zero-style       = "#3b4261"
+	side-by-side = false
+
+	; folke/tokyonight theme
+	; minus-style                   = syntax "#37222c"
+	; minus-non-emph-style          = syntax "#37222c"
+	; minus-emph-style              = syntax "#713137"
+	; minus-empty-line-marker-style = syntax "#37222c"
+	; plus-style                    = syntax "#20303b"
+	; plus-non-emph-style           = syntax "#20303b"
+	; plus-emph-style               = syntax "#2c5a66"
+	; plus-empty-line-marker-style  = syntax "#20303b"
+	; line-numbers-minus-style      = "#c25d64"
+	; line-numbers-zero-style       = "#3b4261"
+	; line-numbers-plus-style       = "#399a96"
+
+	; catppuccin-mocha theme
+	blame-palette = "#1e1e2e #181825 #11111b #313244 #45475a"
+	; commit-decoration-style = "box ul"
+	dark = true
+	; file-decoration-style = "#cdd6f4"
+	; file-style = "#cdd6f4"
+	hunk-header-decoration-style = "box ul #2c5a66"
+	; hunk-header-file-style = "bold"
+	; hunk-header-line-number-style = "bold #a6adc8"
+	hunk-header-style = "file line-number syntax"
+	line-numbers = true
+	line-numbers-left-style = "#6c7086"
+	line-numbers-minus-style = "#f38ba8"
+	line-numbers-plus-style = "#a6e3a1"
+	line-numbers-right-style = "#6c7086"
+	line-numbers-zero-style = "#6c7086"
+	# 25% red 75% base
+	minus-emph-style = "bold syntax #53394c"
+	# 10% red 90% base
+	minus-style = "syntax #35293b"
+	# 25% green 75% base
+	plus-emph-style = "bold syntax #40504b"
+	# 10% green 90% base
+	plus-style = "syntax #2c333a"
+	map-styles = \
+		bold purple => syntax "#494060", \
+		bold blue => syntax "#394361", \
+		bold cyan => syntax "#384d5e", \
+		bold yellow => syntax "#544f4e"
+	# Should match the name of the bat theme
+	syntax-theme = "Catppuccin-mocha"
 
 [delta "decorations"]
 	commit-decoration-style = bold yellow box ul
