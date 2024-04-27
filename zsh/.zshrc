@@ -1059,6 +1059,14 @@ ZSH_CUSTOM_AUTOUPDATE_QUIET=false
 #   tmux
 # fi
 
+# fzf-git
+if [[ ! -f "$HOME/.fzf-git/fzf-git.sh" ]]; then
+  git clone https://github.com/junegunn/fzf-git.sh.git "$HOME/.fzf-git"
+  source "$HOME/.fzf-git/fzf-git.sh"
+else
+  source "$HOME/.fzf-git/fzf-git.sh"
+fi
+
 # Lazy activate fzf-marks plugin
 fzm-hotkey-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
@@ -1068,7 +1076,7 @@ fzm-hotkey-lazy-load () {
 # Make a keyboard widget out of the function above.
 zle -N fzm-hotkey-lazy-load
 # Bind the widget to Ctrl-g in the `v` keymap.
-bindkey -v '^g' fzm-hotkey-lazy-load
+# bindkey -v '^g' fzm-hotkey-lazy-load # Ctrl-g is used by fzf-git
 fzm-lazy-load () {
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
   unset -f fzm-hotkey-lazy-load fzm-lazy-load

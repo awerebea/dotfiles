@@ -947,3 +947,24 @@ set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
 set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
 
 bind-key -r i run-shell "tmux neww tmux-cht.sh"
+
+# Compatibility with fzf-git.sh
+bind-key -n -T root C-g switch-client -T ctrl_g_mode
+bind-key -T ctrl_g_mode C-B send-keys C-g C-B
+bind-key -T ctrl_g_mode C-E send-keys C-g C-E
+bind-key -T ctrl_g_mode C-F send-keys C-g C-F
+bind-key -T ctrl_g_mode C-H send-keys C-g C-H
+bind-key -T ctrl_g_mode C-L send-keys C-g C-L
+bind-key -T ctrl_g_mode C-R send-keys C-g C-R
+bind-key -T ctrl_g_mode C-S send-keys C-g C-S
+bind-key -T ctrl_g_mode C-T send-keys C-g C-T
+bind-key -T ctrl_g_mode C-W send-keys C-g C-W
+bind-key -T ctrl_g_mode b send-keys C-g b
+bind-key -T ctrl_g_mode e send-keys C-g e
+bind-key -T ctrl_g_mode f send-keys C-g f
+bind-key -T ctrl_g_mode h send-keys C-g h
+bind-key -T ctrl_g_mode l send-keys C-g l
+bind-key -T ctrl_g_mode r send-keys C-g r
+bind-key -T ctrl_g_mode s send-keys C-g s
+bind-key -T ctrl_g_mode t send-keys C-g t
+bind-key -T ctrl_g_mode w send-keys C-g w
