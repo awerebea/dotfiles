@@ -1082,11 +1082,8 @@ fzm-lazy-load () {
   unset -f fzm-hotkey-lazy-load fzm-lazy-load
 }
 fzm () { fzm-lazy-load; $0 "$@" }
-mark-lazy-load () {
-  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  unset -f fzm-hotkey-lazy-load fzm-lazy-load
-}
-mark () { mark-lazy-load; $0 "$@" }
+mark () { fzm-lazy-load; $0 "$@" }
+alias fm=fzm
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
@@ -1284,6 +1281,7 @@ alias gcd='git switch $(git_develop_branch)'
 alias gpf='git push --force-with-lease'
 alias gbsc='git branch --show-current'
 alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
+alias gdh='git -c delta.side-by-side=true diff'
 
 # Execute any alias or command in dotfiles repo
 dots() {
