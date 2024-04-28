@@ -1068,21 +1068,23 @@ else
 fi
 
 # Lazy activate fzf-marks plugin
-fzm-hotkey-lazy-load () {
+export FZF_MARKS_JUMP="^g^g"
+fzm-lazy-load () {
+  unset -f fzm-hotkey-lazy-load fzm-lazy-load fzm mark
   source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  unset -f fzm-hotkey-lazy-load fzm-lazy-load
+  bindkey -v '^g^g' fzm # Ctrl-g is used by fzf-git
+}
+fzm () { fzm-lazy-load; $0 "$@" }
+mark () { fzm-lazy-load; $0 "$@" }
+fzm-hotkey-lazy-load () {
+  unset -f fzm-hotkey-lazy-load fzm-lazy-load fzm mark
+  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
   fzm
 }
 # Make a keyboard widget out of the function above.
 zle -N fzm-hotkey-lazy-load
-# Bind the widget to Ctrl-g in the `v` keymap.
-# bindkey -v '^g' fzm-hotkey-lazy-load # Ctrl-g is used by fzf-git
-fzm-lazy-load () {
-  source "$ZSH/custom/plugins/fzf-marks/fzf-marks.plugin.zsh"
-  unset -f fzm-hotkey-lazy-load fzm-lazy-load
-}
-fzm () { fzm-lazy-load; $0 "$@" }
-mark () { fzm-lazy-load; $0 "$@" }
+# Bind the widget to Ctrl-g Ctrl-g in the `v` keymap.
+bindkey -v '^g^g' fzm-hotkey-lazy-load # Ctrl-g is used by fzf-git
 alias mm=fzm
 
 # Emulate <C-o> vim behavior
