@@ -959,6 +959,7 @@ bind-key -T ctrl_g_mode C-R send-keys C-g C-R
 bind-key -T ctrl_g_mode C-S send-keys C-g C-S
 bind-key -T ctrl_g_mode C-T send-keys C-g C-T
 bind-key -T ctrl_g_mode C-W send-keys C-g C-W
+bind-key -T ctrl_g_mode C-G send-keys C-g C-G # used by fzf-marks
 bind-key -T ctrl_g_mode b send-keys C-g b
 bind-key -T ctrl_g_mode e send-keys C-g e
 bind-key -T ctrl_g_mode f send-keys C-g f
@@ -968,3 +969,4 @@ bind-key -T ctrl_g_mode r send-keys C-g r
 bind-key -T ctrl_g_mode s send-keys C-g s
 bind-key -T ctrl_g_mode t send-keys C-g t
 bind-key -T ctrl_g_mode w send-keys C-g w
+bind-key -T ctrl_g_mode g send-keys C-g g # used by fzf-marks
