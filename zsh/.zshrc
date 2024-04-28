@@ -1083,7 +1083,7 @@ fzm-lazy-load () {
 }
 fzm () { fzm-lazy-load; $0 "$@" }
 mark () { fzm-lazy-load; $0 "$@" }
-alias fm=fzm
+alias mm=fzm
 
 # Emulate <C-o> vim behavior
 vi-cmd () {
