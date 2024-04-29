@@ -453,7 +453,7 @@ return {
         defaults = {
           layout_strategy = "horizontal",
           sorting_strategy = "ascending",
-          path_display = { "truncate" },
+          path_display = { "filename_first" },
           layout_config = {
             horizontal = {
               prompt_position = "top",
