@@ -1,12 +1,36 @@
 return {
   "s1n7ax/nvim-window-picker",
   enabled = true,
-  version = "2.0.1",
+  version = "2.*",
   keys = { "<leader>w" },
   opts = {
-    fg_color = "#000000",
-    other_win_hl_color = "#1abc9c",
-    hint = "floating-big-letter",
+    highlights = {
+      statusline = {
+        focused = {
+          fg = "#ededed",
+          bg = "#1abc9c",
+          bold = true,
+        },
+        unfocused = {
+          fg = "#ededed",
+          bg = "#e35e4f",
+          bold = true,
+        },
+      },
+      winbar = {
+        focused = {
+          fg = "#ededed",
+          bg = "#1abc9c",
+          bold = true,
+        },
+        unfocused = {
+          fg = "#ededed",
+          bg = "#e35e4f",
+          bold = true,
+        },
+      },
+    },
+    hint = "floating-big-letter", -- 'statusline-winbar' | 'floating-big-letter'
     show_prompt = false,
     picker_config = { floating_big_letter = { font = "ansi-shadow" } },
     filter_rules = {
