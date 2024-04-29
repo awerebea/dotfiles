@@ -192,17 +192,17 @@ return {
           },
           ["<2-LeftMouse>"] = "open",
           ["<cr>"] = "open",
+          -- ["<cr>"] = "open_drop",
           ["l"] = "open",
           ["<esc>"] = "cancel", -- close preview or floating neo-tree window
           ["P"] = { "toggle_preview", config = { use_float = true, use_image_nvim = true } },
           -- Read `# Preview Mode` for more information
           ["F"] = "focus_preview",
-          ["S"] = "open_split",
-          ["s"] = "open_vsplit",
-          -- ["S"] = "split_with_window_picker",
-          -- ["s"] = "vsplit_with_window_picker",
+          -- ["S"] = "open_split",
+          -- ["s"] = "open_vsplit",
+          ["S"] = "split_with_window_picker",
+          ["s"] = "vsplit_with_window_picker",
           ["t"] = "open_tabnew",
-          -- ["<cr>"] = "open_drop",
           -- ["t"] = "open_tab_drop",
           ["w"] = "open_with_window_picker",
           --["P"] = "toggle_preview", -- enter preview mode, which shows the current node without focusing
@@ -225,14 +225,20 @@ return {
           ["y"] = "copy_to_clipboard",
           ["x"] = "cut_to_clipboard",
           ["p"] = "paste_from_clipboard",
-          ["c"] = "copy", -- takes text input for destination, also accepts the optional config.show_path option like "add":
-          -- ["c"] = {
-          --  "copy",
-          --  config = {
-          --    show_path = "none" -- "none", "relative", "absolute"
-          --  }
-          --}
-          ["m"] = "move", -- takes text input for destination, also accepts the optional config.show_path option like "add".
+          -- ["c"] = "copy", -- takes text input for destination, also accepts the optional config.show_path option like "add":
+          ["c"] = {
+            "copy",
+            config = {
+              show_path = "relative", -- "none", "relative", "absolute"
+            },
+          },
+          -- ["m"] = "move", -- takes text input for destination, also accepts the optional config.show_path option like "add".
+          ["m"] = {
+            "move",
+            config = {
+              show_path = "relative", -- "none", "relative", "absolute"
+            },
+          },
           ["q"] = "close_window",
           ["R"] = "refresh",
           ["?"] = "show_help",
@@ -392,7 +398,6 @@ return {
       if vim.bo.filetype == "neo-tree" then
         require("neo-tree.command").execute { action = "close" }
       else
-        require("neo-tree.command").execute { action = "close" }
         require("neo-tree.command").execute(neotree_opts)
       end
     end
