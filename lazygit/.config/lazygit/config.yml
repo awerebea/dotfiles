@@ -22,3 +22,9 @@ gui:
       - "#cdd6f4"
     searchingActiveBorderColor:
       - "#f9e2af"
+
+customCommands:
+  - key: '<c-c>'
+    context: 'global'
+    command: "git commit --verbose"
+    subprocess: true
