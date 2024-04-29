@@ -412,12 +412,11 @@ return {
     end, { desc = "Toggle neo-tree" })
 
     vim.keymap.set("n", "<leader><F2>", function()
-      local reveal_path = get_reveal_path()
       conditional_neotree_exec {
         action = "focus",
         source = "filesystem",
         position = "right",
-        reveal_file = reveal_path, -- path to file or folder to reveal
+        reveal_file = get_reveal_path(), -- path to file or folder to reveal
         reveal_force_cwd = true,
       }
     end, { desc = "Toggle neo-tree at current file or working directory" })
