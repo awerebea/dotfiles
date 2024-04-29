@@ -196,6 +196,7 @@ return {
     lazy = false,
     config = function()
       require("possession").setup {
+        prompt_no_cr = true, -- don't add a carriage return to the prompt
         autosave = {
           current = true, -- or fun(name): boolean
         },
@@ -256,6 +257,8 @@ return {
         elseif cmd == "save" then
           -- close_neo_tree()
           require("possession").save(session_name)
+          -- Overwrite without confirmation
+          -- require("possession").save(session_name, { no_confirm = true })
           print("Session CWD is: " .. session_cwd)
         end
       end
@@ -273,6 +276,8 @@ return {
           function(session_name)
             if session_name ~= "" then
               require("possession").save(session_name)
+              -- Overwrite without confirmation
+              -- require("possession").save(session_name, { no_confirm = true })
             end
           end
         )
@@ -312,12 +317,14 @@ return {
           vim.api.nvim_set_current_dir(vim.g.CWD_initial)
           local session_name = get_session_name()
           require("possession").save(session_name)
+          -- Overwrite without confirmation
+          -- require("possession").save(session_name, { no_confirm = true })
         end,
       })
 
-      vim.keymap.set("n", "<leader>qa", function()
+      vim.keymap.set("n", "<leader>ql", function()
         require("telescope").extensions.possession.list()
-      end, { desc = "Show All sessions" })
+      end, { desc = "List sessions" })
       vim.keymap.set("n", "<leader>fb", function()
         require("telescope").extensions.scope.buffers()
       end, { desc = "Buffers accross all tabs" })
