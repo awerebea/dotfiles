@@ -513,7 +513,8 @@ return {
             find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
           },
           buffers = {
-            ignore_current_buffer = true,
+            ignore_current_buffer = false,
+            sort_lastused = true,
             sort_mru = true,
           },
         },
