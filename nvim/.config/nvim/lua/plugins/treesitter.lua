@@ -5,7 +5,7 @@ return {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/nvim-treesitter-textobjects",
-      "HiPhish/nvim-ts-rainbow2",
+      { "awerebea/nvim-ts-rainbow2", branch = "eliminate_deprecation_warning" },
       "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
