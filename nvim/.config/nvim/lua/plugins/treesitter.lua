@@ -5,7 +5,7 @@ return {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/nvim-treesitter-textobjects",
-      "p00f/nvim-ts-rainbow",
+      "HiPhish/nvim-ts-rainbow2",
       "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
