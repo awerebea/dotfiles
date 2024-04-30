@@ -4,7 +4,7 @@ return {
   dependencies = { "anuvyklack/middleclass" },
   opts = { autowidth = { winwidth = 12 } },
   config = function(_, opts)
-    vim.opt.winminwidth = 5
+    vim.opt.winminwidth = 0
     vim.opt.winheight = 5
     vim.opt.winminheight = 0
     vim.opt.equalalways = false
