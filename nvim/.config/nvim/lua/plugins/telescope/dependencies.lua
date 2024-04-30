@@ -80,6 +80,7 @@ return {
   },
   {
     "AckslD/nvim-neoclip.lua",
+    enabled = false,
     keys = {
       {
         "<leader>fc",
