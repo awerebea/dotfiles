@@ -490,13 +490,14 @@ set -g status-interval 1      # redraw status line every 1 second
 bind "\\" split-window -h
 bind M-\\ split-window -hb # create new pane left of current-pane
 # split current window horizontally
+bind - split-window -v
 bind M-- split-window -vb # create new pane above current-pane
 # split current pane full width into two, left and right
-bind | split-window -fhb # create new pane left of target-pane
-bind M-| split-window -fh
+bind M-| split-window -fhb # create new pane left of target-pane
+bind | split-window -fh
 # split current pane full height into two, top and bottom
-bind _ split-window -fvb # create new pane above target-pane
-bind M-_ split-window -fv
+bind M-_ split-window -fvb # create new pane above target-pane
+bind _ split-window -fv
 
 # swap windows
 bind S-Left swap-window -t -1 \; previous-window
