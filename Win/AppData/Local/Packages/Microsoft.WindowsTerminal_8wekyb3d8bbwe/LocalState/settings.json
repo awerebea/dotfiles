@@ -38,6 +38,10 @@
         {
             "command": "unbound",
             "keys": "alt+shift+minus"
+        },
+        {
+            "command": "unbound",
+            "keys": "alt+shift+plus"
         }
     ],
     "centerOnLaunch": true,
@@ -95,18 +99,6 @@
                 "intenseTextStyle": "bold",
                 "name": "PowerShell",
                 "source": "Windows.Terminal.PowershellCore"
-            },
-            {
-                "guid": "{b0eccf3b-f94f-5eb3-9471-2d29282659d5}",
-                "hidden": false,
-                "name": "Developer Command Prompt for VS 2022",
-                "source": "Windows.Terminal.VisualStudio"
-            },
-            {
-                "guid": "{584d8512-2090-57f1-9d9f-fba11bc325f3}",
-                "hidden": false,
-                "name": "Developer PowerShell for VS 2022",
-                "source": "Windows.Terminal.VisualStudio"
             },
             {
                 "bellStyle": "taskbar",
@@ -479,6 +471,7 @@
             "name": "Catppuccin Frappe",
             "tab": {
                 "background": "#303446FF",
+                "iconStyle": "default",
                 "showCloseButton": "always",
                 "unfocusedBackground": null
             },
@@ -488,6 +481,9 @@
             },
             "window": {
                 "applicationTheme": "dark",
+                "experimental.rainbowFrame": false,
+                "frame": null,
+                "unfocusedFrame": null,
                 "useMica": false
             }
         },
@@ -495,6 +491,7 @@
             "name": "Catppuccin Latte",
             "tab": {
                 "background": "#EFF1F5FF",
+                "iconStyle": "default",
                 "showCloseButton": "always",
                 "unfocusedBackground": null
             },
@@ -504,6 +501,9 @@
             },
             "window": {
                 "applicationTheme": "light",
+                "experimental.rainbowFrame": false,
+                "frame": null,
+                "unfocusedFrame": null,
                 "useMica": false
             }
         },
@@ -511,6 +511,7 @@
             "name": "Catppuccin Macchiato",
             "tab": {
                 "background": "#24273AFF",
+                "iconStyle": "default",
                 "showCloseButton": "always",
                 "unfocusedBackground": null
             },
@@ -520,6 +521,9 @@
             },
             "window": {
                 "applicationTheme": "dark",
+                "experimental.rainbowFrame": false,
+                "frame": null,
+                "unfocusedFrame": null,
                 "useMica": false
             }
         },
@@ -527,6 +531,7 @@
             "name": "Catppuccin Mocha",
             "tab": {
                 "background": "#1E1E2EFF",
+                "iconStyle": "default",
                 "showCloseButton": "always",
                 "unfocusedBackground": null
             },
@@ -536,6 +541,9 @@
             },
             "window": {
                 "applicationTheme": "dark",
+                "experimental.rainbowFrame": false,
+                "frame": null,
+                "unfocusedFrame": null,
                 "useMica": false
             }
         }
