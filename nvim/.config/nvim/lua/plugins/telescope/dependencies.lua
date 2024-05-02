@@ -257,9 +257,9 @@ return {
           end
         elseif cmd == "save" then
           -- close_neo_tree()
-          require("possession").save(session_name)
+          -- require("possession").save(session_name)
           -- Overwrite without confirmation
-          -- require("possession").save(session_name, { no_confirm = true })
+          require("possession").save(session_name, { no_confirm = true })
           print("Session CWD is: " .. session_cwd)
         end
       end
@@ -276,9 +276,9 @@ return {
           { prompt = "Session name: ", default = last_part or "" },
           function(session_name)
             if session_name ~= "" then
-              require("possession").save(session_name)
+              -- require("possession").save(session_name)
               -- Overwrite without confirmation
-              -- require("possession").save(session_name, { no_confirm = true })
+              require("possession").save(session_name, { no_confirm = true })
             end
           end
         )
@@ -317,9 +317,9 @@ return {
           handle_current_cwd_session "save"
           vim.api.nvim_set_current_dir(vim.g.CWD_initial)
           local session_name = get_session_name()
-          require("possession").save(session_name)
+          -- require("possession").save(session_name)
           -- Overwrite without confirmation
-          -- require("possession").save(session_name, { no_confirm = true })
+          require("possession").save(session_name, { no_confirm = true })
         end,
       })
 
