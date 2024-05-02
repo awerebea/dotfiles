@@ -1,6 +1,6 @@
 return {
   "AckslD/nvim-neoclip.lua",
-  enabled = false,
+  enabled = true,
   keys = {
     {
       "<leader>fc",
