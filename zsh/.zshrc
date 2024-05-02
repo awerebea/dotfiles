@@ -857,14 +857,19 @@ vimprj () {
 # enable zoxide
 if [[ $commands[zoxide] ]]; then
   eval "$(zoxide init zsh)"
+  EZA_ZOXIDE_OPTS="eza --tree --level=2 --group-directories-first --color=always --color-scale \
+    --icons --all --git {2}"
   export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
-    --bind=tab:up,shift-tab:down \
+    --preview '${EZA_ZOXIDE_OPTS/$\'\n\'/}' \
+    --bind=tab:down,shift-tab:up \
     --height=40% \
     --info=inline \
     --no-sort \
     --reverse \
     --select-1 \
+    --cycle \
     "
+  alias cd="z"
 fi
 
 # git add all changed files and commit
