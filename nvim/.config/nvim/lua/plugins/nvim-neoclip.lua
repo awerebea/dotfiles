@@ -17,6 +17,7 @@ return {
     continuous_sync = true,
     db_path = vim.fn.stdpath "data" .. "/databases/neoclip.sqlite3",
     default_register = "+",
+    content_spec_column = true,
     keys = {
       telescope = {
         i = {
