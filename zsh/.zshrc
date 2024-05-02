@@ -944,7 +944,17 @@ elif [[ $commands[fdfind] ]]; then
   FD_BIN_NAME="fdfind"
 fi
 if [[ -n $FD_BIN_NAME ]]; then
-  export FZF_DEFAULT_COMMAND="$FD_BIN_NAME --type file --follow --hidden --exclude .git"
+  # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+  # - The first argument to the function ($1) is the base path to start traversal
+  # - See the source code (completion.{bash,zsh}) for the details.
+  _fzf_compgen_path() {
+    eval "$FD_BIN_NAME --hidden --exclude .git . \"$1\" | sed 's@^\./@@'"
+  }
+  # Use fd to generate the list for directory completion
+  _fzf_compgen_dir() {
+    eval "$FD_BIN_NAME --type=d --hidden --exclude .git . \"$1\" | sed 's@^\./@@'"
+  }
+  export FZF_DEFAULT_COMMAND="$FD_BIN_NAME --strip-cwd-prefix --type file --follow --hidden --exclude .git"
 else
   export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
 fi
@@ -953,7 +963,7 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 # Set fzf preview options
 FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
 2> /dev/null || cat --number {} 2> /dev/null)) || ([[ -d {} ]] && \
-(eza --oneline --group-directories-first --color=always --color-scale --icons \
+(eza --tree --level=2 --color=always --color-scale --icons --group-directories-first \
 --all --git {} 2> /dev/null || tree -a -C -L 1 -v --dirsfirst {} \
 2> /dev/null)) || echo {} 2> /dev/null | head -200"
 export FZF_DEFAULT_OPTS=" \
@@ -973,6 +983,36 @@ export FZF_DEFAULT_OPTS=" \
   --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8
   "
 export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
+
+if [[ $commands[eza] ]]; then
+  export FZF_CTRL_T_OPTS="--preview '${FZF_PREVIEW_STRING/$\'\n\'/}'"
+  export FZF_ALT_C_OPTS="--preview 'eza --tree --level=2 --color=always --icons --all --git {}'"
+
+  # Advanced customization of fzf options via _fzf_comprun function
+  # - The first argument to the function is the name of the command.
+  # - You should make sure to pass the rest of the arguments to fzf.
+  _fzf_comprun() {
+    local command=$1
+    shift
+
+    case "$command" in
+      cd|z)
+        EZA_OPTS="eza --tree --level=2 --group-directories-first --color=always --color-scale \
+          --icons --all --git {}"
+        fzf --preview "${EZA_OPTS/$\'\n\'/}" "$@"
+        ;;
+      export|unset)
+        fzf --preview "eval 'echo \${}'" "$@"
+        ;;
+      ssh)
+        fzf --preview "dig {}" "$@"
+        ;;
+      *)
+        fzf --preview "${FZF_PREVIEW_STRING/$\'\n\'/}" "$@"
+        ;;
+    esac
+  }
+fi
 
 # ranger filemanager plugins
 # fzf_marks
