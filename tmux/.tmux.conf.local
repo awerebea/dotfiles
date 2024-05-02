@@ -513,7 +513,6 @@ set -g @plugin "tmux-plugins/tmux-sidebar"
 set -g @plugin "samoshkin/tmux-plugin-sysstat"
 set -g @plugin "CrispyConductor/tmux-copy-toolkit"
 set -g @plugin "laktak/extrakto"
-set -g @plugin "olimorris/tmux-pomodoro-plus"
 set -g @plugin "tmux-plugins/tmux-yank"
 set -g @plugin "MunifTanjim/tmux-mode-indicator"
 set -g @plugin "MunifTanjim/tmux-suspend"
@@ -650,7 +649,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
-tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #[fg=colour249]#(sensors | grep -A 0 'temp1:' | cut -c16-18 | tr -d .)°C #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #{pomodoro_status}#[fg=default]%a %F %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #[fg=colour249]#(sensors | grep -A 0 'temp1:' | cut -c16-18 | tr -d .)°C #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]%a %F %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
@@ -786,16 +785,6 @@ bind C-x setw synchronize-panes
 
 # tmux suspend
 set -g @suspend_key 'F12'
-
-# pomodoro
-# Options
-set -g @pomodoro_mins 25
-set -g @pomodoro_break_mins 5
-set -g @pomodoro_on "#[fg=#ff0000] "
-set -g @pomodoro_complete "#[fg=#00ff00] "
-# Keybindings
-set -g @pomodoro_start 'v'
-set -g @pomodoro_cancel 'V'
 
 # override buffer keybinds
 bind C-b choose-buffer -Z # choose which buffer to paste from
