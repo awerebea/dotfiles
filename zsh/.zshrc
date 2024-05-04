@@ -1523,6 +1523,6 @@ function nvs() {
 
 if [[ $commands[atuin] ]]; then
   export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
-  eval "$(atuin init zsh)"
+  eval "$(atuin init zsh --disable-up-arrow)"
   bindkey -M vicmd 'k' atuin-up-search-vicmd
 fi
