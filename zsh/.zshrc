@@ -1057,11 +1057,6 @@ ZVM_OPPEND_MODE_CURSOR="$ZVM_CURSOR_BLINKING_UNDERLINE"
 
 ZVM_LINE_INIT_MODE="$ZVM_MODE_INSERT"
 
-# The plugin will auto execute this zvm_after_init function
-zvm_after_init () {
-  [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
-}
-
 # docker plugin
 zstyle ':completion:*:*:docker:*' option-stacking yes
 zstyle ':completion:*:*:docker-*:*' option-stacking yes
@@ -1521,8 +1516,15 @@ function nvs() {
   NVIM_APPNAME=$config nvim $@
 }
 
-if [[ $commands[atuin] ]]; then
-  export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
-  eval "$(atuin init zsh --disable-up-arrow)"
-  bindkey -M vicmd 'k' atuin-up-search-vicmd
-fi
+# The plugin will auto execute this zvm_after_init function
+zvm_after_init () {
+  [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
+
+  if hash atuin 2> /dev/null; then
+    export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
+    eval "$(atuin init zsh --disable-up-arrow)"
+    bindkey -M vicmd 'j' atuin-up-search-vicmd
+    bindkey -M vicmd '^R' atuin-search-vicmd
+    bindkey -M viins '^R' atuin-search-vicmd
+  fi
+}
