@@ -1,0 +1,17 @@
+bleopt default_keymap=vi
+
+function blerc/vim-mode-hook {
+    bleopt keymap_vi_mode_show=
+}
+blehook/eval-after-load keymap_vi blerc/vim-mode-hook
+
+bleopt exec_errexit_mark=
+bleopt exec_exit_mark=
+
+ble-bind -m auto_complete -f 'M-;' auto_complete/insert
+
+ble-bind -m vi_nmap --cursor 1
+ble-bind -m vi_imap --cursor 5
+# ble-bind -m vi_omap --cursor 4
+# ble-bind -m vi_xmap --cursor 2
+# ble-bind -m vi_cmap --cursor 0
