@@ -1520,3 +1520,9 @@ function nvs() {
   fi
   NVIM_APPNAME=$config nvim $@
 }
+
+if [[ $commands[atuin] ]]; then
+  export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
+  eval "$(atuin init zsh)"
+  bindkey -M vicmd 'k' atuin-up-search-vicmd
+fi

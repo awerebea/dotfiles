@@ -420,3 +420,12 @@ if command -v zoxide &> /dev/null; then
     --select-1 \
     "
 fi
+
+eval_atuin() {
+    if command -v atuin &> /dev/null; then
+        export ATUIN_CONFIG_DIR="$HOME/.config/atuin/bash"
+        eval "$(atuin init bash)"
+    fi
+}
+
+eval_atuin
