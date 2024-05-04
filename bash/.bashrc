@@ -424,7 +424,7 @@ fi
 eval_atuin() {
     if command -v atuin &> /dev/null; then
         export ATUIN_CONFIG_DIR="$HOME/.config/atuin/bash"
-        eval "$(atuin init bash)"
+        eval "$(atuin init bash --disable-up-arrow)"
     fi
 }
 
