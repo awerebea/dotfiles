@@ -427,6 +427,27 @@ vim.keymap.set(
 )
 -- }}}
 
+-- {{{ Toggle QuickFix window
+function QFToggle()
+  local qf_exists = false
+  for _, win in pairs(vim.fn.getwininfo()) do
+    if win["quickfix"] == 1 then
+      qf_exists = true
+    end
+  end
+  if qf_exists == true then
+    vim.cmd "cclose"
+    return
+  end
+  if not vim.tbl_isempty(vim.fn.getqflist()) then
+    vim.cmd "copen"
+  end
+end
+vim.keymap.set("n", "<leader>qf", function()
+  return QFToggle()
+end, { desc = "Toggle QuickFix" })
+-- }}} end of Toggle QuickFix window
+
 -- Easily search and replace using quickfix window
 vim.cmd [[
   function! QuickfixMapping()
