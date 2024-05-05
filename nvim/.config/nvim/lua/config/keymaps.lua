@@ -275,3 +275,12 @@ vim.keymap.set("n", "<F4>", [[:set paste!<CR>:set paste?<CR>]], { noremap = true
 -- append empty line above
 -- stylua: ignore
 vim.keymap.set({ "n", "i" }, "<M-CR>", "<Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>")
+
+-- Blazingly fast macros!
+-- (https://www.reddit.com/r/neovim/comments/1cgoz22/blazingly_fast_macros)
+vim.cmd [[
+  nnoremap @ <Cmd>set lazyredraw <bar> execute "noautocmd norm! " . v:count1 . "@" . getcharstr() <bar> set nolazyredraw<CR>
+  xnoremap @ :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! " . v:count1 . "@" . getcharstr()<bar> set nolazyredraw<CR>
+  nnoremap Q <Cmd>set lazyredraw <bar> execute "noautocmd norm! Q" <bar> set nolazyredraw<cr>
+  xnoremap Q :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! Q" <bar> set nolazyredraw<cr>
+]]
