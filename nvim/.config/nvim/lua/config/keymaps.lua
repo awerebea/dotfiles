@@ -284,3 +284,11 @@ vim.cmd [[
   nnoremap Q <Cmd>set lazyredraw <bar> execute "noautocmd norm! Q" <bar> set nolazyredraw<cr>
   xnoremap Q :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! Q" <bar> set nolazyredraw<cr>
 ]]
+
+-- Yank the line on `dd` only if it is non-empty
+vim.keymap.set("n", "dd", function()
+  if vim.fn.getline("."):match "^%s*$" then
+    return '"_dd'
+  end
+  return "dd"
+end, { expr = true })
