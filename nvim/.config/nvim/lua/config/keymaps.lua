@@ -292,3 +292,8 @@ vim.keymap.set("n", "dd", function()
   end
   return "dd"
 end, { expr = true })
+
+-- Dot "." command in visual mode
+vim.keymap.set("x", ".", ":norm .<CR>", { silent = false })
+-- Execute "q" macro in visual mode
+vim.keymap.set("x", "@", ":norm @q<CR>", { silent = false })
