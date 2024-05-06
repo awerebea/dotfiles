@@ -21,7 +21,7 @@ return {
   },
   {
     "ggandor/flit.nvim",
-    enabled = false,
+    enabled = true,
     keys = function()
       local ret = {}
       for _, key in ipairs { "f", "F", "t", "T" } do
