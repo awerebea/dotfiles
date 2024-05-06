@@ -7,7 +7,7 @@ return {
       { "gs", mode = { "n", "x", "o" }, desc = "Leap from Windows" },
     },
     opts = {
-      safe_labels = {},
+      -- safe_labels = {}, -- Set to {} to disable auto-jumping to first match
     },
     config = function(_, opts)
       local leap = require "leap"
