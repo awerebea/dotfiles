@@ -27,6 +27,23 @@ return {
           },
         },
       },
+      hooks = {
+        after_load = function(name, user_data)
+          local buffers = vim.api.nvim_list_bufs()
+          for _, buf in ipairs(buffers) do
+            local path = vim.api.nvim_buf_get_name(buf)
+            if vim.fn.filereadable(path) == 0 then
+              local success, bufdel = pcall(require, "bufdel")
+              if success then
+                bufdel.setup()
+                vim.api.nvim_command("BufDel! " .. buf)
+              else
+                vim.api.nvim_buf_delete(buf, { force = true })
+              end
+            end
+          end
+        end,
+      },
     }
 
     local path_delim = require("utils").path_delim()
