@@ -10,6 +10,8 @@ return {
   },
   lazy = false,
   config = function()
+    vim.opt.sessionoptions:remove { "curdir" } -- don't save current directory in session
+    --                                            to avoid conflicts with possession plugin
     require("possession").setup {
       prompt_no_cr = true, -- don't add a carriage return to the prompt
       autosave = {
