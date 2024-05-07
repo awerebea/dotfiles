@@ -95,8 +95,6 @@ vim.opt.updatecount = 100
 -- Viminfo stores the state of your previous editing session
 vim.opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
 vim.opt.viminfo:append("n" .. vim.fn.stdpath "data" .. "/nviminfo")
-vim.opt.sessionoptions:remove { "curdir" } -- don't save current directory in session
---                                            to avoid conflicts with possession plugin
 -- vim.opt.sessionoptions:remove { "folds" } -- don't keep folds between sessions
 -- vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 
