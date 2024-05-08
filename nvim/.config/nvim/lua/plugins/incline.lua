@@ -1,6 +1,6 @@
 return {
   "b0o/incline.nvim",
-  enabled = false, -- Disabled as conflicts with vim-maximizer
+  enabled = true,
   event = "VeryLazy",
   opts = { hide = { cursorline = "focused_win" } },
   config = true,
