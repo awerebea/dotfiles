@@ -5,7 +5,7 @@ return {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/nvim-treesitter-textobjects",
-      { "HiPhish/rainbow-delimiters.nvim" },
+      { "HiPhish/rainbow-delimiters.nvim", submodules = false },
       "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
