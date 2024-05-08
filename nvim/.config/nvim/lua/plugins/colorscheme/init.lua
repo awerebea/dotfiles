@@ -92,6 +92,8 @@ return {
       }
       catppuccin.load()
 
+      -- Set the CursorColumn bg color the same sa the CursorLine
+      vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#2a2b3c" })
       -- {{{ Colors for words that failed spell check
       -- Word not recognized
       vim.api.nvim_set_hl(0, "SpellBad", {})
