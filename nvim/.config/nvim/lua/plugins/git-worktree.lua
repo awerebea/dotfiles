@@ -1,5 +1,6 @@
 return {
-  "ThePrimeagen/git-worktree.nvim",
+  "awerebea/git-worktree.nvim",
+  branch = "main",
   opts = {},
   config = function()
     require("telescope").load_extension "git_worktree"
