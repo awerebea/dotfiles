@@ -8,6 +8,10 @@ return {
     },
     opts = {
       -- safe_labels = {}, -- Set to {} to disable auto-jumping to first match
+
+      -- Define equivalence classes for brackets and quotes, in addition to
+      -- the default whitespace group.
+      equivalence_classes = { " \t\r\n", "([{", ")]}", "'\"`" },
     },
     config = function(_, opts)
       local leap = require "leap"
