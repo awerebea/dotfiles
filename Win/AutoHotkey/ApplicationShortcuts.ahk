@@ -13,13 +13,13 @@ SwitchToApp(appTitle, appPath)
     if (windowIsAlreadyActive)
     {
       ; Minimize the window.
-      WinMinimize("`"ahk_id " windowHandleId "`"")
+      WinMinimize(windowHandleId)
     }
     else
     {
       ; Put the window in focus.
-      WinActivate("`"ahk_id " windowHandleId "`"")
-      WinShow("`"ahk_id " windowHandleId "`"")
+      WinActivate(windowHandleId)
+      WinShow(windowHandleId)
     }
   }
   ; Else it's not already open, so launch it.
