@@ -28,7 +28,7 @@ return {
         multi_line = true,
         -- When using jump labels, don't use these keys
         -- This allows using those keys directly after the motion
-        label = { exclude = "hjkliardcxs" },
+        label = { exclude = "hjkliardcxsbwerRpy" },
       },
       search = { enabled = false },
     },
