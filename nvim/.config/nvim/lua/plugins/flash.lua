@@ -13,7 +13,7 @@ return {
           -- disable jump labels when not enabled, when using a count,
           -- or when recording/executing registers
           opts.jump_labels = opts.jump_labels
-            -- and vim.v.count == 0 -- override the default: show jump labels even with count
+            and vim.v.count == 0
             and vim.fn.reg_executing() == ""
             and vim.fn.reg_recording() == ""
 
@@ -21,7 +21,7 @@ return {
           -- opts.jump_labels = vim.v.count == 0 and vim.fn.mode(true):find("o")
         end,
         -- hide after jump when not using jump labels
-        autohide = false,
+        autohide = true,
         -- show jump labels
         jump_labels = true,
         -- set to `false` to use the current line only
