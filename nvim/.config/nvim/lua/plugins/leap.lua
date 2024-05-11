@@ -24,11 +24,12 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)")
 
       -- Linewise motions
-      local function get_line_starts(winid, skip_range)
+      local function get_line_starts(winid, skip_range, is_upward)
         local wininfo = vim.fn.getwininfo(winid)[1]
         local cur_line = vim.fn.line "."
         -- Skip lines close to the cursor.
         local skip_range = skip_range or 2
+        local is_directional = is_upward ~= nil and true or false
 
         -- Get targets.
         local targets = {}
@@ -39,9 +40,17 @@ return {
           if fold_end ~= -1 then
             lnum = fold_end + 1
           else
+            if is_directional then
+              if is_upward and lnum > cur_line - skip_range then
+                break
+              elseif not is_upward and lnum < cur_line + skip_range then
+                goto continue
+              end
+            end
             if (lnum < cur_line - skip_range) or (lnum > cur_line + skip_range) then
               table.insert(targets, { pos = { lnum, 1 } })
             end
+            ::continue::
             lnum = lnum + 1
           end
         end
@@ -63,11 +72,11 @@ return {
 
       -- You can pass an argument to specify a range to be skipped
       -- before/after the cursor (default is +/-2).
-      function leap_line_start(skip_range)
+      function leap_line_start(skip_range, is_upward)
         local winid = vim.api.nvim_get_current_win()
         require("leap").leap {
           target_windows = { winid },
-          targets = get_line_starts(winid, skip_range),
+          targets = get_line_starts(winid, skip_range, is_upward),
         }
       end
 
@@ -82,7 +91,13 @@ return {
       vim.keymap.set("o", "|", "V<cmd>lua leap_line_start()<cr>", { desc = "Leap to line start" })
       vim.keymap.set("n", "|", function()
         leap_line_start()
-      end, { desc = "Leap to line start" })
+      end, { desc = "Leap to line start upwards" })
+      vim.keymap.set("n", "<leader><leader>j", function()
+        leap_line_start(2, false)
+      end, { desc = "Leap to line start downwards" })
+      vim.keymap.set("n", "<leader><leader>k", function()
+        leap_line_start(2, true)
+      end, { desc = "Leap to line start upwards" })
     end,
   },
   {
