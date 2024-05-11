@@ -128,10 +128,10 @@ return {
   },
   session_name = {
     function()
-      return "📌 " .. require("possession.session").session_name
+      return "📌 " .. require("possession.session").get_session_name()
     end,
     cond = function()
-      return require("possession.session").session_name ~= nil
+      return require("possession.session").get_session_name() ~= nil
     end,
   },
 }
