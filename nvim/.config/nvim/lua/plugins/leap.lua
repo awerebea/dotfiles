@@ -24,16 +24,26 @@ return {
       vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)")
 
       -- Linewise motions
-      local function get_line_starts(winid, skip_range, is_upward)
+      local function get_line_len(bufid, line_number)
+        local line_content =
+          vim.api.nvim_buf_get_lines(bufid, line_number - 1, line_number, false)[1]
+        return string.len(line_content)
+      end
+
+      local function get_line_starts(winid, skip_range, is_upward, keep_column)
         local wininfo = vim.fn.getwininfo(winid)[1]
+        local bufid = vim.api.nvim_win_get_buf(winid)
         local cur_line = vim.fn.line "."
+        local cur_col = vim.fn.col "."
         -- Skip lines close to the cursor.
         local skip_range = skip_range or 2
+        local keep_column = keep_column or false
         local is_directional = is_upward ~= nil and true or false
 
         -- Get targets.
         local targets = {}
         local lnum = wininfo.topline
+        local cnum = 1
         while lnum <= wininfo.botline do
           local fold_end = vim.fn.foldclosedend(lnum)
           -- Skip folded ranges.
@@ -47,8 +57,11 @@ return {
                 goto continue
               end
             end
+            if keep_column then
+              cnum = math.min(cur_col, get_line_len(bufid, lnum))
+            end
             if (lnum < cur_line - skip_range) or (lnum > cur_line + skip_range) then
-              table.insert(targets, { pos = { lnum, 1 } })
+              table.insert(targets, { pos = { lnum, cnum } })
             end
             ::continue::
             lnum = lnum + 1
@@ -70,13 +83,15 @@ return {
         end
       end
 
-      -- You can pass an argument to specify a range to be skipped
-      -- before/after the cursor (default is +/-2).
-      function leap_line_start(skip_range, is_upward)
+      -- You can pass a table of arguments to specify the jump behavior:
+      -- skip_range - range to be skipped before/after the cursor (default is +/-2)
+      -- is_upward - set the jump direction, true - up, false - down (default nil - bidirectional)
+      -- keep_column - whether to try to keep the column after the jump (default false)
+      function leap_line_start(skip_range, is_upward, keep_column)
         local winid = vim.api.nvim_get_current_win()
         require("leap").leap {
           target_windows = { winid },
-          targets = get_line_starts(winid, skip_range, is_upward),
+          targets = get_line_starts(winid, skip_range, is_upward, keep_column),
         }
       end
 
@@ -97,6 +112,12 @@ return {
       end, { desc = "Leap to line start downwards" })
       vim.keymap.set("n", "<leader><leader>k", function()
         leap_line_start(2, true)
+      end, { desc = "Leap to line start upwards" })
+      vim.keymap.set("n", "<leader><leader>J", function()
+        leap_line_start(2, false, true)
+      end, { desc = "Leap to line start downwards" })
+      vim.keymap.set("n", "<leader><leader>K", function()
+        leap_line_start(2, true, true)
       end, { desc = "Leap to line start upwards" })
     end,
   },
