@@ -2,7 +2,7 @@ return {
   "awerebea/hop.nvim",
   branch = "fix-cursor-on-empty-line",
   event = "VeryLazy",
-  opts = { keys = "asdfghjklqwertyuiopzxcvbnm;" },
+  opts = { keys = "asdfghjklqwertyuiopzxcvbnmASDFGHJKLQWERTYUIOPZXCVBNM" },
   config = function(_, opts)
     local hop = require "hop"
     hop.setup(opts)
