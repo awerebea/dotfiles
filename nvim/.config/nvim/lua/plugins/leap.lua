@@ -87,7 +87,7 @@ return {
       -- skip_range - range to be skipped before/after the cursor (default is +/-2)
       -- is_upward - set the jump direction, true - up, false - down (default nil - bidirectional)
       -- keep_column - whether to try to keep the column after the jump (default false)
-      function leap_line_start(args)
+      function leap_vertically(args)
         local args = args or {}
         local skip_range = args.skip_range
         local is_upward = args.is_upward
@@ -105,23 +105,23 @@ return {
         if vim.fn.mode(1) ~= "V" then
           vim.cmd "normal! V"
         end
-        leap_line_start()
+        leap_vertically()
       end, { desc = "Leap to line start" })
       vim.keymap.set("o", "|", "V<cmd>lua leap_line_start()<cr>", { desc = "Leap to line start" })
       vim.keymap.set("n", "|", function()
-        leap_line_start { keep_column = true }
+        leap_vertically { keep_column = true }
       end, { desc = "Leap to line start upwards" })
       vim.keymap.set("n", "<leader><leader>j", function()
-        leap_line_start { is_upward = false }
+        leap_vertically { is_upward = false }
       end, { desc = "Leap to line start downwards" })
       vim.keymap.set("n", "<leader><leader>k", function()
-        leap_line_start { is_upward = true }
+        leap_vertically { is_upward = true }
       end, { desc = "Leap to line start upwards" })
       vim.keymap.set("n", "<leader><leader>J", function()
-        leap_line_start { is_upward = false, keep_column = true }
+        leap_vertically { is_upward = false, keep_column = true }
       end, { desc = "Leap downwards" })
       vim.keymap.set("n", "<leader><leader>K", function()
-        leap_line_start { is_upward = true, keep_column = true }
+        leap_vertically { is_upward = true, keep_column = true }
       end, { desc = "Leap upwards" })
     end,
   },
