@@ -51,17 +51,6 @@ return {
 
     local path_delim = require("utils").path_delim()
 
-    local function transform_cwd(cwd)
-      if cwd then
-        return cwd:gsub(path_delim, "@_@"):gsub(":", "@+@")
-      end
-    end
-
-    local function get_session_name()
-      local session_name, _ = vim.fn.getcwd(-1, -1):gsub(path_delim, "@_@"):gsub(":", "@+@")
-      return session_name
-    end
-
     local function get_session_file(session_name)
       local session_file = vim.fn.stdpath "data"
         .. path_delim
@@ -79,7 +68,7 @@ return {
 
     local function handle_current_cwd_session(cmd)
       local session_cwd, _ = vim.fn.getcwd(-1, -1)
-      local session_name = transform_cwd(session_cwd)
+      local session_name = require("utils").url_encode(session_cwd)
       local session_file = get_session_file(session_name)
       if cmd == "load" then
         if vim.fn.filereadable(session_file) == 1 then
@@ -147,7 +136,8 @@ return {
         end
         handle_current_cwd_session "save"
         vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-        local session_name = get_session_name()
+        local session_cwd, _ = vim.fn.getcwd(-1, -1)
+        local session_name = require("utils").url_encode(session_cwd)
         -- require("possession").save(session_name)
         -- Overwrite without confirmation
         require("possession").save(session_name, { no_confirm = true })
