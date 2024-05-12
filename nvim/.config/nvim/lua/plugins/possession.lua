@@ -18,6 +18,24 @@ return {
       prompt_no_cr = true, -- don't add a carriage return to the prompt
       autosave = {
         current = true, -- or fun(name): boolean
+        tmp = false, -- or fun(): boolean
+        -- tmp = function()
+        --   local ignore_filetypes = {
+        --     "git",
+        --     "gitcommit",
+        --     "gitconfig",
+        --     "gitrebase",
+        --     "gitsendemail",
+        --   }
+        --   local buf_filetype = vim.bo.filetype
+        --   for _, str in ipairs(ignore_filetypes) do
+        --     if str == buf_filetype then
+        --       return false
+        --     end
+        --   end
+        --   return true
+        -- end,
+        tmp_name = vim.fn.getcwd(-1, -1),
       },
       plugins = { delete_hidden_buffers = { hooks = {} } },
       telescope = {
