@@ -2,11 +2,21 @@ return {
   {
     "ggandor/leap.nvim",
     enabled = true,
-    keys = {
-      { "s", mode = { "n", "x", "o" }, desc = "Leap (bidirectional)" },
-      { "gs", mode = { "n", "x", "o" }, desc = "Leap from Windows" },
-      { "|", mode = { "n", "x", "o" }, desc = "Leap to line start" },
-    },
+    keys = function()
+      local ret = {}
+      for key, desc in pairs {
+        ["<leader><leader>J"] = "Leap to line start downwards",
+        ["<leader><leader>K"] = "Leap to line start upwards",
+        ["<leader><leader>j"] = "Leap downwards",
+        ["<leader><leader>k"] = "Leap upwards",
+      } do
+        ret[#ret + 1] = { key, mode = { "n" }, desc = desc }
+      end
+      ret[#ret + 1] = { "s", mode = { "n", "x", "o" }, desc = "Leap (bidirectional)" }
+      ret[#ret + 1] = { "gs", mode = { "n", "x", "o" }, desc = "Leap from Windows" }
+      ret[#ret + 1] = { "|", mode = { "n", "x", "o" }, desc = "Leap to line start" }
+      return ret
+    end,
     opts = {
       -- safe_labels = {}, -- Set to {} to disable auto-jumping to first match
 
