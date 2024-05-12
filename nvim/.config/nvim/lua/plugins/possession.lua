@@ -51,16 +51,10 @@ return {
       -- },
     }
 
-    local path_delim = require("utils").path_delim()
+    local sep = require("utils").path_separator()
 
     local function get_session_file(session_name)
-      local session_file = vim.fn.stdpath "data"
-        .. path_delim
-        .. "possession"
-        .. path_delim
-        .. session_name
-        .. ".json"
-      return session_file
+      return vim.fn.stdpath "data" .. sep .. "possession" .. sep .. session_name .. ".json"
     end
 
     local function close_neo_tree()
