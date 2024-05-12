@@ -111,16 +111,16 @@ return {
       vim.keymap.set("n", "|", function()
         leap_vertically { keep_column = true }
       end, { desc = "Leap to line start upwards" })
-      vim.keymap.set("n", "<leader><leader>j", function()
+      vim.keymap.set("n", "<leader><leader>J", function()
         leap_vertically { is_upward = false }
       end, { desc = "Leap to line start downwards" })
-      vim.keymap.set("n", "<leader><leader>k", function()
+      vim.keymap.set("n", "<leader><leader>K", function()
         leap_vertically { is_upward = true }
       end, { desc = "Leap to line start upwards" })
-      vim.keymap.set("n", "<leader><leader>J", function()
+      vim.keymap.set("n", "<leader><leader>j", function()
         leap_vertically { is_upward = false, keep_column = true }
       end, { desc = "Leap downwards" })
-      vim.keymap.set("n", "<leader><leader>K", function()
+      vim.keymap.set("n", "<leader><leader>k", function()
         leap_vertically { is_upward = true, keep_column = true }
       end, { desc = "Leap upwards" })
     end,
