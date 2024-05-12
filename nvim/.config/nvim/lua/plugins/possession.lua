@@ -11,32 +11,12 @@ return {
   },
   lazy = false,
   config = function()
-    vim.opt.sessionoptions:remove { "curdir" } -- don't save current directory in session
-    --                                            to avoid conflicts with possession plugin
+    -- don't save current directory in session to avoid erros and dead buffers when loading session
+    vim.opt.sessionoptions:remove { "curdir" }
     require("possession").setup {
       session_name_encode = true,
       prompt_no_cr = true, -- don't add a carriage return to the prompt
-      autosave = {
-        current = true, -- or fun(name): boolean
-        tmp = false, -- or fun(): boolean
-        -- tmp = function()
-        --   local ignore_filetypes = {
-        --     "git",
-        --     "gitcommit",
-        --     "gitconfig",
-        --     "gitrebase",
-        --     "gitsendemail",
-        --   }
-        --   local buf_filetype = vim.bo.filetype
-        --   for _, str in ipairs(ignore_filetypes) do
-        --     if str == buf_filetype then
-        --       return false
-        --     end
-        --   end
-        --   return true
-        -- end,
-        tmp_name = vim.fn.getcwd(-1, -1),
-      },
+      autosave = { current = true },
       plugins = { delete_hidden_buffers = { hooks = {} } },
       telescope = {
         list = {
@@ -49,27 +29,9 @@ return {
           },
         },
       },
-      -- hooks = {
-      --   after_load = function(name, user_data)
-      --     -- Delete buffers that are not present on disk
-      --     local buffers = vim.api.nvim_list_bufs()
-      --     for _, buf in ipairs(buffers) do
-      --       local path = vim.api.nvim_buf_get_name(buf)
-      --       if vim.fn.filereadable(path) == 0 then
-      --         local success, bufdel = pcall(require, "bufdel")
-      --         if success then
-      --           bufdel.setup()
-      --           vim.api.nvim_command("BufDel! " .. buf)
-      --         else
-      --           vim.api.nvim_buf_delete(buf, { force = true })
-      --         end
-      --       end
-      --     end
-      --   end,
-      -- },
     }
 
-    local sep = require("utils").path_separator()
+    local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
     local function get_session_file(session_name)
       return vim.fn.stdpath "data" .. sep .. "possession" .. sep .. session_name .. ".json"
@@ -81,40 +43,40 @@ return {
     end
 
     local function handle_current_cwd_session(cmd)
-      local session_cwd, _ = vim.fn.getcwd(-1, -1)
-      local session_file = get_session_file(require("utils").url_encode(session_cwd))
+      local session_cwd = vim.fn.getcwd(-1, -1)
+      local session_name = session_cwd:gsub("^" .. vim.loop.os_homedir(), "~")
+      local session_file = get_session_file(require("utils").url_encode(session_name))
       if cmd == "load" then
         if vim.fn.filereadable(session_file) == 1 then
-          require("possession").load(session_cwd)
+          require("possession").load(session_name)
         end
       elseif cmd == "delete" then
         if vim.fn.filewritable(session_file) == 1 then
-          require("possession").delete(session_cwd)
+          require("possession").delete(session_name)
         end
       elseif cmd == "save" then
         -- close_neo_tree()
-        -- require("possession").save(session_cwd)
         -- Overwrite without confirmation
-        require("possession").save(session_cwd, { no_confirm = true })
+        require("possession").save(session_name, { no_confirm = true })
         print("Session CWD is: " .. session_cwd)
       end
     end
 
     local function save_session()
-      local session_cwd, _ = vim.fn.getcwd(-1, -1) -- /foo/bar/baz or C:\foo\bar\baz
-      local pathsep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
+      local session_cwd = vim.fn.getcwd(-1, -1)
       local parts = {}
       if session_cwd then
-        parts = vim.fn.split(session_cwd, pathsep)
+        parts = vim.fn.split(session_cwd, sep)
       end
-      local last_part = parts[#parts]
-      vim.ui.input({ prompt = "Session name: ", default = last_part or "" }, function(session_name)
-        if session_name ~= "" then
-          -- require("possession").save(session_name)
-          -- Overwrite without confirmation
-          require("possession").save(session_name, { no_confirm = true })
+      vim.ui.input(
+        { prompt = "Session name: ", default = parts[#parts] or "" },
+        function(session_name)
+          if session_name ~= "" then
+            -- Overwrite without confirmation
+            require("possession").save(session_name, { no_confirm = true })
+          end
         end
-      end)
+      )
     end
 
     local config_group = vim.api.nvim_create_augroup("SessionManagerCustom", {})
@@ -148,11 +110,12 @@ return {
           end
         end
         handle_current_cwd_session "save"
-        vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-        local session_cwd, _ = vim.fn.getcwd(-1, -1)
-        -- require("possession").save(session_cwd)
-        -- Overwrite without confirmation
-        require("possession").save(session_cwd, { no_confirm = true })
+        if vim.g.CWD_initial ~= nil and vim.g.CWD_initial ~= vim.fn.getcwd(-1, -1) then
+          vim.api.nvim_set_current_dir(vim.g.CWD_initial)
+          local session_name = vim.g.CWD_initial:gsub("^" .. vim.loop.os_homedir(), "~")
+          -- Overwrite without confirmation
+          require("possession").save(session_name, { no_confirm = true })
+        end
       end,
     })
 
