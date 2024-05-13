@@ -1526,7 +1526,6 @@ zvm_after_init () {
   if hash atuin 2> /dev/null; then
     export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
     eval "$(atuin init zsh --disable-up-arrow)"
-    bindkey -M vicmd 'j' atuin-up-search-vicmd
     bindkey -M vicmd '^R' atuin-search-vicmd
     bindkey -M viins '^R' atuin-search-vicmd
     bindkey -M emacs '^R' atuin-search-vicmd
