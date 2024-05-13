@@ -10,7 +10,7 @@ return {
         ["<leader><leader>j"] = "Leap downwards",
         ["<leader><leader>k"] = "Leap upwards",
       } do
-        ret[#ret + 1] = { key, mode = { "n" }, desc = desc }
+        ret[#ret + 1] = { key, mode = { "n", "x", "o" }, desc = desc }
       end
       ret[#ret + 1] = { "s", mode = { "n", "x", "o" }, desc = "Leap (bidirectional)" }
       ret[#ret + 1] = { "gs", mode = { "n", "x", "o" }, desc = "Leap from Windows" }
@@ -40,7 +40,7 @@ return {
         return string.len(line_content)
       end
 
-      local function get_line_starts(winid, skip_range, is_upward, keep_column)
+      local function get_line_targets(winid, skip_range, is_upward, keep_column)
         local wininfo = vim.fn.getwininfo(winid)[1]
         local bufid = vim.api.nvim_win_get_buf(winid)
         local cur_line = vim.fn.line "."
@@ -105,34 +105,48 @@ return {
         local winid = vim.api.nvim_get_current_win()
         require("leap").leap {
           target_windows = { winid },
-          targets = get_line_starts(winid, skip_range, is_upward, keep_column),
+          targets = get_line_targets(winid, skip_range, is_upward, keep_column),
         }
       end
 
       -- For maximum comfort, force linewise selection in the mappings:
-      vim.keymap.set("x", "|", function()
-        -- Only force V if not already in it (otherwise it would exit Visual mode).
-        if vim.fn.mode(1) ~= "V" then
-          vim.cmd "normal! V"
+      for key, args in pairs {
+        ["|"] = { { keep_column = true }, { desc = "Leap vertically" } },
+        ["<leader><leader>J"] = {
+          { is_upward = false },
+          { desc = "Leap to line start downwards" },
+        },
+        ["<leader><leader>K"] = {
+          { is_upward = true },
+          { desc = "Leap to line start upwards" },
+        },
+        ["<leader><leader>j"] = {
+          { is_upward = false, keep_column = true },
+          { desc = "Leap downwards" },
+        },
+        ["<leader><leader>k"] = {
+          { is_upward = true, keep_column = true },
+          { desc = "Leap upwards" },
+        },
+      } do
+        for mode, rhs_expr in pairs {
+          n = function()
+            leap_vertically(args[1])
+          end,
+          x = function()
+            -- Only force V if not already in it (otherwise it would exit Visual mode).
+            if vim.fn.mode(1) ~= "V" then
+              vim.cmd "normal! V"
+            end
+            leap_vertically(args[1])
+          end,
+          o = "V<Cmd>lua leap_vertically(" .. require("utils")
+            .serialize_table(args[1])
+            :gsub("\n", "") .. ")<CR>",
+        } do
+          vim.keymap.set(mode, key, rhs_expr, args[2])
         end
-        leap_vertically()
-      end, { desc = "Leap to line start" })
-      vim.keymap.set("o", "|", "V<cmd>lua leap_line_start()<cr>", { desc = "Leap to line start" })
-      vim.keymap.set("n", "|", function()
-        leap_vertically { keep_column = true }
-      end, { desc = "Leap to line start upwards" })
-      vim.keymap.set("n", "<leader><leader>J", function()
-        leap_vertically { is_upward = false }
-      end, { desc = "Leap to line start downwards" })
-      vim.keymap.set("n", "<leader><leader>K", function()
-        leap_vertically { is_upward = true }
-      end, { desc = "Leap to line start upwards" })
-      vim.keymap.set("n", "<leader><leader>j", function()
-        leap_vertically { is_upward = false, keep_column = true }
-      end, { desc = "Leap downwards" })
-      vim.keymap.set("n", "<leader><leader>k", function()
-        leap_vertically { is_upward = true, keep_column = true }
-      end, { desc = "Leap upwards" })
+      end
     end,
   },
   {
