@@ -33,6 +33,33 @@ return {
 
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
+    local path_aliases_file = vim.fn.stdpath "config" .. sep .. "path_aliases.json"
+
+    -- Load custom path aliases
+    local path_aliases = {}
+    if vim.fn.filereadable(path_aliases_file) == 1 then
+      path_aliases = vim.fn.json_decode(vim.fn.readfile(path_aliases_file))
+      vim.validate { path_aliases = { path_aliases, "table" } }
+    end
+
+    if next(path_aliases) ~= nil then
+      for alias, path in pairs(path_aliases) do
+        vim.validate {
+          alias = { alias, "string" },
+          path = { path, "string" },
+        }
+      end
+    end
+
+    ---@param session_path string
+    local function collapse_path(session_path)
+      local path = session_path:gsub("^" .. vim.loop.os_homedir(), "~")
+      for alias, alias_path in pairs(path_aliases) do
+        path = path:gsub("^" .. alias_path, alias)
+      end
+      return path
+    end
+
     local function get_session_file(session_name)
       return vim.fn.stdpath "data" .. sep .. "possession" .. sep .. session_name .. ".json"
     end
@@ -44,7 +71,7 @@ return {
 
     local function handle_current_cwd_session(cmd)
       local session_cwd = vim.fn.getcwd(-1, -1)
-      local session_name = session_cwd:gsub("^" .. vim.loop.os_homedir(), "~")
+      local session_name = collapse_path(session_cwd)
       local session_file = get_session_file(require("utils").url_encode(session_name))
       if cmd == "load" then
         if vim.fn.filereadable(session_file) == 1 then
@@ -112,9 +139,8 @@ return {
         handle_current_cwd_session "save"
         if vim.g.CWD_initial ~= nil and vim.g.CWD_initial ~= vim.fn.getcwd(-1, -1) then
           vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-          local session_name = vim.g.CWD_initial:gsub("^" .. vim.loop.os_homedir(), "~")
           -- Overwrite without confirmation
-          require("possession").save(session_name, { no_confirm = true })
+          require("possession").save(collapse_path(vim.g.CWD_initial), { no_confirm = true })
         end
       end,
     })
