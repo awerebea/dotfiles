@@ -12,3 +12,4 @@ ranger/.config/ranger/tagged
 ranger/.config/ranger/**/__init__.py
 !ranger/.config/ranger/plugins/ranger_devicons/__init__.py
 /__/*
+nvim/.config/nvim/path_aliases.json
