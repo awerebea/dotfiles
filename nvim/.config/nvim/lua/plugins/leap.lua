@@ -68,7 +68,7 @@ return {
               end
             end
             if keep_column then
-              cnum = math.min(cur_col, get_line_len(bufid, lnum))
+              cnum = math.max(1, math.min(cur_col, get_line_len(bufid, lnum)))
             end
             if (lnum < cur_line - skip_range) or (lnum > cur_line + skip_range) then
               table.insert(targets, { pos = { lnum, cnum } })
@@ -97,7 +97,7 @@ return {
       -- skip_range - range to be skipped before/after the cursor (default is +/-2)
       -- is_upward - set the jump direction, true - up, false - down (default nil - bidirectional)
       -- keep_column - whether to try to keep the column after the jump (default false)
-      function leap_vertically(args)
+      local function leap_vertically(args)
         local args = args or {}
         local skip_range = args.skip_range
         local is_upward = args.is_upward
