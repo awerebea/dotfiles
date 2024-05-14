@@ -134,7 +134,6 @@ return {
   },
   {
     "johmsalas/text-case.nvim",
-    event = "VeryLazy",
     dependencies = { "nvim-telescope/telescope.nvim" },
     -- Author's Note: If default keymappings fail to register (possible config issue in my local setup),
     -- verify lazy loading functionality. On failure, disable lazy load and report issue
