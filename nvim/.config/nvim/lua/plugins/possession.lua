@@ -26,40 +26,40 @@ return {
     end
 
     if next(path_aliases) ~= nil then
-      for alias, path in pairs(path_aliases) do
+      for alias, paths in pairs(path_aliases) do
         vim.validate {
           alias = { alias, "string" },
-          path = { path, "string" },
+          paths = { paths, { "string", "table" } },
         }
+        if type(paths) == "table" then
+          for _, path in ipairs(paths) do
+            vim.validate { path = { path, "string" } }
+          end
+        end
       end
     end
 
-    -- Function to sort tables keys
-    ---@param tbl table
-    local function sort_keys(tbl)
-      local keys = {}
-      for k in pairs(tbl) do
-        table.insert(keys, k)
-      end
-      table.sort(keys)
-      return keys
-    end
-
+    -- Function to collapse path to alias
     ---@param session_path string
     local function collapse_path(session_path)
       local path = string.gsub(session_path, "^" .. vim.loop.os_homedir(), "~")
-      local alias_path = ""
-      for _, alias in ipairs(sort_keys(path_aliases)) do
-        -- for alias, alias_path in pairs(path_aliases) do
-        alias_path = string.gsub(path_aliases[alias], "^" .. vim.loop.os_homedir(), "~")
-        path, replacements = string.gsub(
-          path,
-          -- escape special characters in the alias path
-          "^" .. string.gsub(alias_path, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"),
-          alias,
-          1
-        )
-        print("alias: " .. alias .. " alias_path: " .. alias_path .. " path: " .. path)
+      local escape_pattern = "([%^%$%(%)%%%.%[%]%*%+%-%?])" -- escape special characters pattern
+      for alias, alias_paths in pairs(path_aliases) do
+        local replacements = 0
+        if type(alias_paths) == "table" then
+          for _, alias_path in ipairs(alias_paths) do
+            alias_path = string.gsub(alias_path, "^" .. vim.loop.os_homedir(), "~")
+            path, replacements =
+              string.gsub(path, "^" .. string.gsub(alias_path, escape_pattern, "%%%1"), alias, 1)
+            if replacements > 0 then
+              break
+            end
+          end
+        else
+          local alias_path = string.gsub(alias_paths, "^" .. vim.loop.os_homedir(), "~")
+          path, replacements =
+            string.gsub(path, "^" .. string.gsub(alias_path, escape_pattern, "%%%1"), alias, 1)
+        end
       end
       return path
     end
