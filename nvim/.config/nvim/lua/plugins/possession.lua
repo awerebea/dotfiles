@@ -36,9 +36,20 @@ return {
 
     ---@param session_path string
     local function collapse_path(session_path)
-      local path = session_path:gsub("^" .. vim.loop.os_homedir(), "~")
+      local path = string.gsub(session_path, "^" .. vim.loop.os_homedir(), "~")
+      local replacements = 0
       for alias, alias_path in pairs(path_aliases) do
-        path = (path:gsub("^" .. alias_path, alias))
+        alias_path = string.gsub(alias_path, "^" .. vim.loop.os_homedir(), "~")
+        path, replacements = string.gsub(
+          path,
+          -- escape special characters in the alias path
+          "^" .. string.gsub(alias_path, "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1"),
+          alias,
+          1
+        )
+        if replacements > 0 then
+          break
+        end
       end
       return path
     end
