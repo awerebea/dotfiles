@@ -34,12 +34,24 @@ return {
       end
     end
 
+    -- Function to sort tables keys
+    ---@param tbl table
+    local function sort_keys(tbl)
+      local keys = {}
+      for k in pairs(tbl) do
+        table.insert(keys, k)
+      end
+      table.sort(keys)
+      return keys
+    end
+
     ---@param session_path string
     local function collapse_path(session_path)
       local path = string.gsub(session_path, "^" .. vim.loop.os_homedir(), "~")
-      local replacements = 0
-      for alias, alias_path in pairs(path_aliases) do
-        alias_path = string.gsub(alias_path, "^" .. vim.loop.os_homedir(), "~")
+      local alias_path = ""
+      for _, alias in ipairs(sort_keys(path_aliases)) do
+        -- for alias, alias_path in pairs(path_aliases) do
+        alias_path = string.gsub(path_aliases[alias], "^" .. vim.loop.os_homedir(), "~")
         path, replacements = string.gsub(
           path,
           -- escape special characters in the alias path
@@ -47,9 +59,7 @@ return {
           alias,
           1
         )
-        if replacements > 0 then
-          break
-        end
+        print("alias: " .. alias .. " alias_path: " .. alias_path .. " path: " .. path)
       end
       return path
     end
