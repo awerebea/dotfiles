@@ -25,42 +25,56 @@ return {
       vim.validate { path_aliases = { path_aliases, "table" } }
     end
 
+    ---@param str string
+    ---@return string collapsed path in the home directory
+    local function home_to_tilde(str)
+      str, _ = string.gsub(str, "^" .. vim.loop.os_homedir(), "~")
+      return str
+    end
+
     if next(path_aliases) ~= nil then
-      for alias, paths in pairs(path_aliases) do
+      for alias, path in pairs(path_aliases) do
         vim.validate {
           alias = { alias, "string" },
-          paths = { paths, { "string", "table" } },
+          path = { path, "string" },
         }
-        if type(paths) == "table" then
-          for _, path in ipairs(paths) do
-            vim.validate { path = { path, "string" } }
-          end
+        -- normilize paths in home directory
+        path = home_to_tilde(path)
+        -- remove trailing path separators
+        while string.sub(path, -1) == sep do
+          path = string.sub(path, 1, -2)
         end
+        path_aliases[alias] = path
       end
     end
 
     -- Function to collapse path to alias
-    ---@param session_path string
-    local function collapse_path(session_path)
-      local path = string.gsub(session_path, "^" .. vim.loop.os_homedir(), "~")
-      local escape_pattern = "([%^%$%(%)%%%.%[%]%*%+%-%?])" -- escape special characters pattern
-      for alias, alias_paths in pairs(path_aliases) do
-        local replacements = 0
-        if type(alias_paths) == "table" then
-          for _, alias_path in ipairs(alias_paths) do
-            alias_path = string.gsub(alias_path, "^" .. vim.loop.os_homedir(), "~")
-            path, replacements =
-              string.gsub(path, "^" .. string.gsub(alias_path, escape_pattern, "%%%1"), alias, 1)
-            if replacements > 0 then
-              break
-            end
-          end
-        else
-          local alias_path = string.gsub(alias_paths, "^" .. vim.loop.os_homedir(), "~")
-          path, replacements =
-            string.gsub(path, "^" .. string.gsub(alias_path, escape_pattern, "%%%1"), alias, 1)
+    ---@param path string
+    ---@return string name of the session
+    local function collapse_path(path)
+      -- normilize paths in home directory
+      path = home_to_tilde(path)
+      local best_alias = ""
+      local longest_length = 0
+
+      for alias, alias_path in pairs(path_aliases) do
+        local length = string.len(alias_path)
+        if string.sub(path, 1, length) == alias_path and length > longest_length then
+          best_alias = alias
+          longest_length = length
         end
       end
+
+      if best_alias ~= "" then
+        -- gsub arguments to escape special characters
+        local subst_args = { "([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1" }
+        path = string.gsub(
+          path,
+          "^" .. string.gsub(path_aliases[best_alias], subst_args[1], subst_args[2]),
+          best_alias
+        )
+      end
+
       return path
     end
 
