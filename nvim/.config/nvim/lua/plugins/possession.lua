@@ -117,7 +117,6 @@ return {
         -- close_neo_tree()
         -- Overwrite without confirmation
         require("possession").save(session_name, args)
-        print("Session CWD is: " .. session_cwd)
       end
     end
 
