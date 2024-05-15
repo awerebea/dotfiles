@@ -321,3 +321,5 @@ vim.keymap.set("c", "<M-b>", "<S-Left>", { desc = "move to prev word" })
 vim.keymap.set("c", "<M-b>", "<S-Left>", { desc = "move to prev word" })
 vim.keymap.set("c", "<M-f>", "<S-Right>", { desc = "move to next word" })
 vim.keymap.set("c", "<M-w>", "<S-Right>", { desc = "move to next word" })
+
+vim.keymap.set("n", "::", "<Cmd>update<CR>", { desc = "Save file if it was changed" })
