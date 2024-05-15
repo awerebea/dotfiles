@@ -1,6 +1,6 @@
 return {
   "sustech-data/wildfire.nvim",
-  event = "VeryLazy",
+  event = "BufReadPost",
   dependencies = { "nvim-treesitter/nvim-treesitter" },
   config = true,
 }
