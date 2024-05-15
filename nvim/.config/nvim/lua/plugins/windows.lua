@@ -1,7 +1,21 @@
 return {
   "anuvyklack/windows.nvim",
-  event = "VeryLazy",
   dependencies = { "anuvyklack/middleclass" },
+  cmd = {
+    "WindowsMaximize",
+    "WindowsMaximizeVertically",
+    "WindowsMaximizeHorizontally",
+    "WindowsEqualize",
+    "WindowsToggleAutowidth",
+  },
+  keys = {
+    { "<C-w>z", "<Cmd>WindowsMaximize<CR>", desc = "Maximize window" },
+    { "<leader>z", "<Cmd>WindowsMaximize<CR>", desc = "Maximize window" },
+    { "<C-w>-", "<Cmd>WindowsMaximizeVertically<CR>", desc = "Maximize window vertically" },
+    { "<C-w>\\", "<Cmd>WindowsMaximizeHorizontally<CR>", desc = "Maximize window horizontally" },
+    { "<C-w>=", "<Cmd>WindowsEqualize<CR>", desc = "Equalize windows" },
+    { "<C-w>t", "<Cmd>WindowsToggleAutowidth<CR>", desc = "Toggle autowidth" },
+  },
   opts = { autowidth = { winwidth = 12 } },
   config = function(_, opts)
     vim.opt.winminwidth = 0
@@ -9,14 +23,5 @@ return {
     vim.opt.winminheight = 0
     vim.opt.equalalways = false
     require("windows").setup(opts)
-    local function cmd(command)
-      return table.concat { "<Cmd>", command, "<CR>" }
-    end
-    vim.keymap.set("n", "<C-w>z", cmd "WindowsMaximize")
-    vim.keymap.set("n", "<leader>z", cmd "WindowsMaximize")
-    vim.keymap.set("n", "<C-w>-", cmd "WindowsMaximizeVertically")
-    vim.keymap.set("n", "<C-w>\\", cmd "WindowsMaximizeHorizontally")
-    vim.keymap.set("n", "<C-w>=", cmd "WindowsEqualize")
-    vim.keymap.set("n", "<C-w>t", cmd "WindowsToggleAutowidth")
   end,
 }
