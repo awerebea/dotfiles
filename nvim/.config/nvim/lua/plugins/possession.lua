@@ -222,6 +222,9 @@ return {
     vim.keymap.set("n", "<leader>qs", function()
       save_session { no_confirm = false }
     end, { desc = "Save session" })
+    vim.keymap.set("n", "<leader>qx", function()
+      require("possession.session").close()
+    end, { desc = "Close current session" })
 
     require("telescope").load_extension "possession"
     require("telescope").load_extension "scope"
