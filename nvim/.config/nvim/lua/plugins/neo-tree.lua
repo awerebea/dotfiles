@@ -1,6 +1,11 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
-  event = "VeryLazy",
+  cmd = { "Neotree" },
+  keys = {
+    { "<F2>", desc = "Toggle neo-tree" },
+    { "<leader><F2>", desc = "Toggle neo-tree at current file or working directory" },
+    { "<leader><leader><F2>", desc = "Toggle neo-tree with custom Git base" },
+  },
   branch = "v3.x",
   dependencies = {
     "nvim-lua/plenary.nvim",
