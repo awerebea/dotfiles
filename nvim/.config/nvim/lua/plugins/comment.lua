@@ -3,7 +3,6 @@ return {
     enabled = true,
     "numToStr/Comment.nvim",
     dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-    event = "VeryLazy",
     keys = {
       "gc",
       "gC",
