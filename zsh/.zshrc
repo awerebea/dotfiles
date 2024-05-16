@@ -1518,5 +1518,5 @@ function nvs() {
 
 # The plugin will auto execute this zvm_after_init function
 zvm_after_init () {
-  [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
+  [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|")"
 }
