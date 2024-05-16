@@ -42,6 +42,7 @@ return {
           "Git, ChatGPT",
           c = {
             "Conflicts, Advanced Git search",
+            l = "Telescope Git log",
             r = "Conflicts refresh",
             q = "Conflicts to quickfix list",
           },
