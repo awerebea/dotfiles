@@ -454,15 +454,15 @@ vim.cmd [[
     " Make the quickfix list modifiable and set errorformat
     setlocal errorformat+=%f\|%l\ col\ %c\|%m, modifiable
     " Go to the previous location and stay in the quickfix window
-    nnoremap <buffer> K :cprev<CR>zz:cclose<CR>:copen<CR>
+    nnoremap <buffer> K :cprev<CR>zz:cclose<CR>:botright copen<CR>
     " Go to the next location and stay in the quickfix window
-    nnoremap <buffer> J :cnext<CR>zz:cclose<CR>:copen<CR>
+    nnoremap <buffer> J :cnext<CR>zz:cclose<CR>:botright copen<CR>
     " Save the changes in the quickfix window
-    cnoremap <buffer> w :cgetbuffer<CR>:cclose<CR>:copen<CR>
+    cnoremap <buffer> w :cgetbuffer<CR>:cclose<CR>:botright copen<CR>
     " Begin the search and replace
     nnoremap <buffer> <leader>r :cdo s/// \| update<C-Left><C-Left><Left><Left><Left>
     " Open location and re-open quickfix window
-    nnoremap <buffer> <CR> <CR>zz:cclose<CR>:copen<CR>
+    nnoremap <buffer> <CR> <CR>zz:cclose<CR>:botright copen<CR>
   endfunction
 
   augroup quickfix_group
