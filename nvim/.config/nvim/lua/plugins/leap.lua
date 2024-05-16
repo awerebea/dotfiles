@@ -23,6 +23,10 @@ return {
       -- Define equivalence classes for brackets and quotes, in addition to
       -- the default whitespace group.
       equivalence_classes = { " \t\r\n", "([{", ")]}", "'\"`" },
+      special_keys = {
+        next_target = "<tab>",
+        prev_target = nil,
+      },
     },
     config = function(_, opts)
       local leap = require "leap"
