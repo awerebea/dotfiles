@@ -3,7 +3,7 @@ return {
   lazy = false,
   config = function()
     local dashboard = require "alpha.themes.dashboard"
-    dashboard.section.header.val = require("plugins.dashboard.logo")["random"]
+    dashboard.section.header.val = require("plugins.dashboard.logo")[2] -- "random" key is allowed
     dashboard.section.buttons.val = {
       dashboard.button("f", " " .. " Find file", "<Cmd>Telescope find_files<CR>"),
       dashboard.button("n", " " .. " New file", "<Cmd>enew <BAR> startinsert<CR>"),
