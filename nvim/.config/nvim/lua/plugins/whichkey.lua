@@ -68,10 +68,6 @@ return {
           N = "Neotest",
           o = "Overseer",
         },
-        v = {
-          "VGit, View",
-          g = { "VGit", l = "All hunks in the repo" },
-        },
         q = "Session manager",
         m = "Select Harpoon mark",
         n = "Navbuddy",
