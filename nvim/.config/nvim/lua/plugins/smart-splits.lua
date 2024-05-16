@@ -1,6 +1,25 @@
 return {
   "mrjones2014/smart-splits.nvim",
-  event = "VeryLazy",
+  -- stylua: ignore
+  keys = {
+    -- Move between splits
+    { "<C-h>", function() require("smart-splits").move_cursor_left() end, desc = "Move cursor left" },
+    { "<C-j>", function() require("smart-splits").move_cursor_down() end, desc = "Move cursor down" },
+    { "<C-k>", function() require("smart-splits").move_cursor_up() end, desc = "Move cursor up" },
+    { "<C-l>", function() require("smart-splits").move_cursor_right() end, desc = "Move cursor right" },
+    { "<leader><leader><leader>h", function() require("smart-splits").swap_buf_left() end, desc = "Swap buffer left" },
+    { "<leader><leader><leader>j", function() require("smart-splits").swap_buf_down() end, desc = "Swap buffer down" },
+    { "<leader><leader><leader>k", function() require("smart-splits").swap_buf_up() end, desc = "Swap buffer up" },
+    { "<leader><leader><leader>l", function() require("smart-splits").swap_buf_right() end, desc = "Swap buffer right", },
+    -- {{{ Use winresizer plugin instead
+    -- { "<C-e>", function() require("smart-splits").start_resize_mode() end, desc = "Start resize mode", },
+    -- The following keymaps are used by mini.move plugin
+    -- { "<A-h>", function() require("smart-splits").resize_left() end, desc = "Resize left" },
+    -- { "<A-j>", function() require("smart-splits").resize_down() end, desc = "Resize down" },
+    -- { "<A-k>", function() require("smart-splits").resize_up() end, desc = "Resize up" },
+    -- { "<A-l>", function() require("smart-splits").resize_right() end, desc = "Resize right" },
+    -- }}}
+  },
   opts = {
     at_edge = "wrap",
     disable_multiplexer_nav_when_zoomed = true,
@@ -21,25 +40,5 @@ return {
   },
   config = function(_, opts)
     require("smart-splits").setup(opts)
-    -- moving between splits
-    vim.keymap.set("n", "<C-h>", require("smart-splits").move_cursor_left)
-    vim.keymap.set("n", "<C-j>", require("smart-splits").move_cursor_down)
-    vim.keymap.set("n", "<C-k>", require("smart-splits").move_cursor_up)
-    vim.keymap.set("n", "<C-l>", require("smart-splits").move_cursor_right)
-    -- {{{ Use winresizer plugin instead
-    -- vim.keymap.set("n", "<C-e>", function()
-    --   require("smart-splits").start_resize_mode()
-    -- end, { desc = "Start resize mode" })
-    -- The following keymaps are used by mini.move plugin
-    -- vim.keymap.set("n", "<A-h>", require("smart-splits").resize_left)
-    -- vim.keymap.set("n", "<A-j>", require("smart-splits").resize_down)
-    -- vim.keymap.set("n", "<A-k>", require("smart-splits").resize_up)
-    -- vim.keymap.set("n", "<A-l>", require("smart-splits").resize_right)
-    -- }}}
-    -- swapping buffers between windows
-    vim.keymap.set("n", "<leader><leader><leader>h", require("smart-splits").swap_buf_left)
-    vim.keymap.set("n", "<leader><leader><leader>j", require("smart-splits").swap_buf_down)
-    vim.keymap.set("n", "<leader><leader><leader>k", require("smart-splits").swap_buf_up)
-    vim.keymap.set("n", "<leader><leader><leader>l", require("smart-splits").swap_buf_right)
   end,
 }
