@@ -1519,15 +1519,4 @@ function nvs() {
 # The plugin will auto execute this zvm_after_init function
 zvm_after_init () {
   [ -f "$HOME/.fzf.zsh" ] && source "$HOME/.fzf.zsh"
-  bindkey -M vicmd '^E' fzf-history-widget
-  bindkey -M viins '^E' fzf-history-widget
-  bindkey -M emacs '^E' fzf-history-widget
-
-  if hash atuin 2> /dev/null; then
-    export ATUIN_CONFIG_DIR="$HOME/.config/atuin/zsh"
-    eval "$(atuin init zsh --disable-up-arrow)"
-    bindkey -M vicmd '^R' atuin-search-vicmd
-    bindkey -M viins '^R' atuin-search-vicmd
-    bindkey -M emacs '^R' atuin-search-vicmd
-  fi
 }
