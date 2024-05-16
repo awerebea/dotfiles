@@ -421,13 +421,6 @@ if command -v zoxide &> /dev/null; then
     "
 fi
 
-eval_atuin() {
-    if command -v atuin &> /dev/null; then
-        export ATUIN_CONFIG_DIR="$HOME/.config/atuin/bash"
-        eval "$(atuin init bash --disable-up-arrow)"
-    fi
-}
-
 # Enable vim mode
 if [[ $- == *i* ]]; then # in interactive session
     set -o vi
@@ -435,7 +428,6 @@ fi
 
 if [ -f "$HOME/.local/share/blesh/ble.sh" ]; then
     source "$HOME/.local/share/blesh/ble.sh"
-    eval_atuin
 else
     echo "ble.sh is not installed. Install it by running the following commands:"
     git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git \
