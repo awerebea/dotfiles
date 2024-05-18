@@ -46,7 +46,7 @@ return {
   lsp_client = {
     function(msg)
       msg = msg or ""
-      local buf_clients = vim.lsp.get_active_clients { bufnr = 0 }
+      local buf_clients = vim.lsp.get_clients { bufnr = 0 }
 
       if next(buf_clients) == nil then
         if type(msg) == "boolean" or #msg == 0 then
