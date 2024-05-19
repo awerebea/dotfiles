@@ -5,7 +5,7 @@ return {
   event = "InsertEnter",
   opts = {
     panel = {
-      enabled = true,
+      enabled = false,
       auto_refresh = true,
       keymap = {
         jump_prev = "[[",
@@ -21,15 +21,15 @@ return {
     },
     suggestion = {
       enabled = true,
-      auto_trigger = true,
+      auto_trigger = false, -- use next/pref to trigger suggestions
       debounce = 75,
       keymap = {
         accept = "<M-;>",
         accept_word = "<M-w>",
-        accept_line = "<M-a>",
-        next = "<M-]>",
-        prev = "<M-[>",
-        dismiss = "<C-]>",
+        accept_line = "<M-l>",
+        next = "<M-j>",
+        prev = "<M-k>",
+        dismiss = "<M-h>",
       },
     },
     filetypes = {
