@@ -161,49 +161,6 @@ return {
       )
     end
 
-    local config_group = vim.api.nvim_create_augroup("SessionManagerCustom", {})
-    vim.api.nvim_create_autocmd({ "VimEnter" }, {
-      pattern = "*",
-      callback = function()
-        if
-          vim.fn.argc() ~= 0 -- git or `nvim ...`.
-        then
-          return
-        end
-        vim.g.CWD_initial = vim.fn.getcwd(-1, -1)
-        -- Load the current CWD session if it exists automatically.
-        -- handle_current_cwd_session "load"
-      end,
-    })
-    vim.api.nvim_create_autocmd({ "VimLeavePre" }, {
-      group = config_group,
-      callback = function()
-        local git_filetypes = {
-          "git",
-          "gitcommit",
-          "gitconfig",
-          "gitrebase",
-          "gitsendemail",
-        }
-        local buf_filetype = vim.bo.filetype
-        for _, str in ipairs(git_filetypes) do
-          if str == buf_filetype then
-            return
-          end
-        end
-        if
-          require("possession.session").get_session_name() ~= collapse_path(vim.fn.getcwd(-1, -1))
-        then
-          handle_current_cwd_session("save", { no_confirm = false })
-        end
-        -- if vim.g.CWD_initial ~= nil and vim.g.CWD_initial ~= vim.fn.getcwd(-1, -1) then
-        --   vim.api.nvim_set_current_dir(vim.g.CWD_initial)
-        --   -- Overwrite without confirmation
-        --   require("possession").save(collapse_path(vim.g.CWD_initial), { no_confirm = false })
-        -- end
-      end,
-    })
-
     vim.keymap.set("n", "<leader>ql", function()
       require("telescope").extensions.possession.list()
     end, { desc = "List sessions" })
