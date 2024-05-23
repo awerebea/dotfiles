@@ -82,6 +82,16 @@ return {
               vim.keymap.set("n", "<leader>dL", function()
                 require("osv").launch { port = 8086 }
               end, { buffer = buffer, desc = "OSV Launch" })
+            elseif client.name == "pyright" then
+              vim.keymap.set("n", "<leader>tC", function()
+                require("dap-python").test_class()
+              end, { buffer = buffer, desc = "Debug Class" })
+              vim.keymap.set("n", "<leader>tM", function()
+                require("dap-python").test_method()
+              end, { buffer = buffer, desc = "Debug Method" })
+              vim.keymap.set("v", "<leader>tS", function()
+                require("dap-python").debug_selection()
+              end, { buffer = buffer, desc = "Debug Selection" })
             end
           end)
         end,
