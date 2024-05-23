@@ -356,8 +356,10 @@ if [ -d "$HOME/go/bin" ] &&
   [[ ":$PATH:" != *":$HOME/go/bin:"* ]]; then
     export PATH="$HOME/go/bin:$PATH"
 fi
-if [ ! -d "$HOME/.fzf/bin" ] &&
-  [ -d "$HOME/.vim/plugged/fzf/bin" ] &&
+if [ -d "$HOME/.fzf/bin" ] &&
+  [[ ":$PATH:" != *":/$HOME/.fzf/bin:"* ]]; then
+    export PATH="$HOME/.fzf/bin:$PATH"
+elif [ -d "$HOME/.vim/plugged/fzf/bin" ] &&
   [[ ":$PATH:" != *":$HOME/.vim/plugged/fzf/bin:"* ]]; then
     export PATH="$HOME/.vim/plugged/fzf/bin:$PATH"
 fi
