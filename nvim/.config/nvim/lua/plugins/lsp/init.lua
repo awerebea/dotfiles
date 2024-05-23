@@ -54,9 +54,13 @@ return {
         tsserver = {},
         pyright = {
           settings = {
+            pyright = {
+              disableOrganizeImports = true, -- Use Ruff's import organizer
+            },
             python = {
               analysis = {
-                typeCheckingMode = "on",
+                -- ignore = { "*" }, -- Ignore all files to exclusively use Ruff for linting
+                typeCheckingMode = "on", -- "on", "basic", "off" (off to use mypy)
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
                 diagnosticMode = "workspace",
@@ -68,7 +72,7 @@ return {
         bashls = {},
         rust_analyzer = {},
         gopls = {},
-        ruff_lsp = { init_options = { settings = { args = { "--line-length=88" } } } },
+        ruff = {},
         marksman = {},
       },
       setup = {
@@ -92,6 +96,9 @@ return {
               vim.keymap.set("v", "<leader>tS", function()
                 require("dap-python").debug_selection()
               end, { buffer = buffer, desc = "Debug Selection" })
+            elseif client.name == "ruff" then
+              -- Disable hover in favor of Pyright
+              client.server_capabilities.hoverProvider = false
             end
           end)
         end,
