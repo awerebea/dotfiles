@@ -1,7 +1,7 @@
 return {
   {
     "ggandor/leap.nvim",
-    enabled = true,
+    enabled = false,
     keys = function()
       local ret = {}
       for key, desc in pairs {
@@ -18,7 +18,7 @@ return {
       return ret
     end,
     opts = {
-      -- safe_labels = {}, -- Set to {} to disable auto-jumping to first match
+      safe_labels = {}, -- Set to {} to disable auto-jumping to first match
 
       -- Define equivalence classes for brackets and quotes, in addition to
       -- the default whitespace group.
