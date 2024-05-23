@@ -7,9 +7,10 @@ return {
     local hop = require "hop"
     hop.setup(opts)
 
-    vim.api.nvim_command "highlight HopNextKey cterm=bold gui=bold guifg=#ff0000"
-    vim.api.nvim_command "highlight HopNextKey1 cterm=bold gui=bold guifg=#ffb400"
-    vim.api.nvim_command "highlight HopNextKey2 cterm=bold gui=bold guifg=#b98300"
+    vim.api.nvim_set_hl(0, "HopNextKey", { fg = "Black", bg = "#ccff88" })
+    vim.api.nvim_set_hl(0, "HopNextKey1", { fg = "Black", bg = "#ff0000" })
+    vim.api.nvim_set_hl(0, "HopNextKey2", { fg = "Black", bg = "#b98300" })
+    vim.api.nvim_set_hl(0, "HopUnmatched", { fg = "#6c7086" })
 
     local directions = require("hop.hint").HintDirection
     local position = require("hop.hint").HintPosition
@@ -79,10 +80,10 @@ return {
     keymap("", "<C-s>", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>2s", "<Cmd>HopChar2<CR>")
     keymap("", "<leader><leader>d", "<Cmd>HopChar2<CR>")
-    -- keymap("", "<leader><leader>j", "<Cmd>HopLineAC<CR>")
-    -- keymap("", "<leader><leader>k", "<Cmd>HopLineBC<CR>")
-    -- keymap("", "<leader><leader>J", "<Cmd>HopVerticalAC<CR>")
-    -- keymap("", "<leader><leader>K", "<Cmd>HopVerticalBC<CR>")
+    keymap("", "<leader><leader>J", "<Cmd>HopLineAC<CR>")
+    keymap("", "<leader><leader>K", "<Cmd>HopLineBC<CR>")
+    keymap("", "<leader><leader>j", "<Cmd>HopVerticalAC<CR>")
+    keymap("", "<leader><leader>k", "<Cmd>HopVerticalBC<CR>")
     keymap("", "<leader><leader>/", "<Cmd>HopPattern<CR>")
   end,
 }
