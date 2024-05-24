@@ -1,5 +1,5 @@
 return {
-  "awerebea/possession.nvim",
+  "awerebea/possession.nvim", -- Temporary switch to fork
   branch = "urlencoded_session_names",
   enabled = true,
   dependencies = {

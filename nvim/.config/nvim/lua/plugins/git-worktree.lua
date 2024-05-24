@@ -1,5 +1,5 @@
 return {
-  "awerebea/git-worktree.nvim",
+  "awerebea/git-worktree.nvim", -- Temporary switch to fork
   branch = "main",
   opts = {},
   config = function()
