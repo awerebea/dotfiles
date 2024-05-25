@@ -72,7 +72,7 @@ return {
         desc = "Fuzzy grep in current buffer",
       },
       {
-        "<leader>fg",
+        "<leader>fG",
         function()
           local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
           if not ok then
