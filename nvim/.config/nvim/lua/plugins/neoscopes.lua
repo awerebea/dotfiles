@@ -86,7 +86,7 @@ return {
     vim.keymap.set("n", "<leader>f?", function()
       neoscopes_live_grep_args()
     end, { desc = "Live grep (custom args)" })
-    vim.keymap.set("n", "<leader>fag", function()
+    vim.keymap.set("n", "<leader>fg", function()
       neoscopes_fuzzy_grep()
     end, { desc = "Fuzzy Grep (menufacture)" })
     vim.keymap.set("n", "<leader>fw", function()
