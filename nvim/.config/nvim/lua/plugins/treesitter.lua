@@ -5,7 +5,8 @@ return {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "RRethy/nvim-treesitter-endwise",
       "nvim-treesitter/nvim-treesitter-textobjects",
-      { "HiPhish/rainbow-delimiters.nvim", submodules = false },
+      -- Temporary switch to fork
+      { "Danielkonge/rainbow-delimiters.nvim", branch = "cleanup", submodules = false },
       "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
