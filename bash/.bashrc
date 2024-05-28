@@ -425,15 +425,3 @@ fi
 if [[ $- == *i* ]]; then # in interactive session
     set -o vi
 fi
-
-if [ -f "$HOME/.local/share/blesh/ble.sh" ]; then
-    source "$HOME/.local/share/blesh/ble.sh"
-else
-    echo "ble.sh is not installed. Install it by running the following commands:"
-    git clone --recursive --depth 1 --shallow-submodules https://github.com/akinomyoga/ble.sh.git \
-        "$HOME/.local/share/blesh_install"
-    make -C "$HOME/.local/share/blesh_install" install PREFIX=~/.local
-    rm -rf "$HOME/.local/share/blesh_install"
-    source "$HOME/.local/share/blesh/ble.sh"
-    eval_atuin
-fi
