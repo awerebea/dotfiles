@@ -1,5 +1,5 @@
 return {
-  "petobens/nvim-neoclip.lua", -- Temporary switch to fork
+  "AckslD/nvim-neoclip.lua",
   enabled = true,
   keys = {
     {
