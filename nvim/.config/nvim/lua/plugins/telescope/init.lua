@@ -385,7 +385,6 @@ return {
       local icons = require "config.icons"
       local actions = require "telescope.actions"
       local actions_layout = require "telescope.actions.layout"
-      local trouble = require "trouble.providers.telescope"
       local path_actions = require "telescope_insert_path"
       local lga_actions = require "telescope-live-grep-args.actions"
 
@@ -405,7 +404,7 @@ return {
           ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
           ["<C-c"] = actions.close,
           ["<Esc><Esc>"] = actions.close,
-          ["<C-t>"] = trouble.open_with_trouble,
+          ["<C-t>"] = require("trouble.sources.telescope").open,
           ["<C-h>"] = function(prompt_bufnr)
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
@@ -440,7 +439,7 @@ return {
         n = {
           ["<C-p>"] = actions_layout.toggle_preview,
           ["dd"] = actions.delete_buffer,
-          ["<C-t>"] = trouble.open_with_trouble,
+          ["<C-t>"] = require("trouble.sources.telescope").open,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
           ["z"] = open_terminal,
