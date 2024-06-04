@@ -79,7 +79,7 @@ return {
     end
 
     require("possession").setup {
-      url_encode_name = true,
+      percent_encode_name = true,
       prompt_no_cr = true, -- don't add a carriage return to the prompt
       autosave = {
         current = true,
