@@ -177,16 +177,7 @@ return {
       { "<leader>gcr", "<Cmd>GitConflictRefresh<CR>" },
       { "<leader>gcq", "<Cmd>GitConflictListQf<CR>" },
     },
-    opts = {
-      default_mappings = {
-        ours = "co",
-        theirs = "ct",
-        none = "c0",
-        both = "cb",
-        next = "]x",
-        prev = "[x",
-      },
-    },
+    opts = {},
     config = function(_, opts)
       require("git-conflict").setup(opts)
     end,
