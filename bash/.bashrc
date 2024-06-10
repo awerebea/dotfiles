@@ -425,3 +425,7 @@ fi
 if [[ $- == *i* ]]; then # in interactive session
     set -o vi
 fi
+
+if [[ ! -d "$HOME/IceCream-Bash" ]]; then
+  git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
+fi

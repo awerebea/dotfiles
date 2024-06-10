@@ -160,6 +160,10 @@ git-flow-completion.plugin.zsh" ]]; then
     "$ZSH/custom/plugins/git-flow-completion"
 fi
 
+if [[ ! -d "$HOME/IceCream-Bash" ]]; then
+  git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
+fi
+
 # terraform plugin with resource names detection
 if [[ ! -f "$ZSH/custom/plugins/terraform/terraform.plugin.zsh" ]]; then
   git clone https://github.com/macunha1/zsh-terraform \
