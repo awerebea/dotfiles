@@ -1,6 +1,5 @@
 return {
-  "awerebea/possession.nvim", -- Temporary switch to fork
-  branch = "urlencoded_session_names",
+  "jedrzejboczar/possession.nvim", -- Temporary switch to fork
   enabled = true,
   dependencies = {
     { "nvim-lua/plenary.nvim" },
@@ -79,7 +78,6 @@ return {
     end
 
     require("possession").setup {
-      percent_encode_name = true,
       prompt_no_cr = true, -- don't add a carriage return to the prompt
       autosave = {
         current = true,
