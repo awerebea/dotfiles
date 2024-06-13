@@ -1,14 +1,6 @@
 zmodload zsh/zprof
 zstyle ':omz:update' mode disabled
 
-# shellcheck disable=2034
-typeset -g POWERLEVEL9K_INSTANT_PROMPT=off
-
-# shellcheck disable=1090,2296
-if [[ -r "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-    source "${XDG_CACHE_HOME:-${HOME}/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # Add neovim installation path, installed by bob
 # https://github.com/MordechaiHadad/bob
 if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
@@ -199,15 +191,6 @@ if [[ ! -f "$ZSH_PLUGINS/easy_motion/easy_motion.plugin.zsh" ]]; then
     git clone https://github.com/IngoMeyer441/zsh-easy-motion "$ZSH_PLUGINS/easy_motion"
 fi
 
-# Install powerlevel10k theme if it's not there yet.
-if [[ ! -f "$ZSH/custom/themes/powerlevel10k/powerlevel10k.zsh-theme" ]]; then
-    git clone --depth=1 https://github.com/romkatv/powerlevel10k "$ZSH/custom/themes/powerlevel10k"
-fi
-
-# Set name of the theme to load
-# shellcheck disable=2034
-ZSH_THEME="powerlevel10k/powerlevel10k"
-
 # forgit plugin settings
 # aliases
 # shellcheck disable=2034
@@ -357,6 +340,15 @@ elif [[ -d "$HOME/.vim/plugged/fzf/bin" && ":$PATH:" != *":$HOME/.vim/plugged/fz
 fi
 
 [[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
+
+if [[ ! "${commands[oh-my-posh]}" ]]; then
+    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+else
+    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+        eval "$(oh-my-posh init zsh --config \
+          "$GIT_DOTFILES"/Win/AppData/Local/Programs/oh-my-posh/themes/awerebea.omp.yaml)"
+    fi
+fi
 
 # Detect and setup current environment
 if [[ "$(uname)" == "Linux" ]]; then
@@ -537,10 +529,6 @@ if [ -f "$BR_SCRIPT" ]; then
     source "$BR_SCRIPT"
 fi
 unset BR_SCRIPT
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-# shellcheck disable=1094
-[[ ! -f "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
 
 # Personal aliases
 # shellcheck disable=2139
