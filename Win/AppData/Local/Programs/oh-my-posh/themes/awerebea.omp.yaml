@@ -31,14 +31,23 @@ blocks:
         end
       }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{
         end
-      }}{{ if .Staging.Changed
-      }} <#D7AF00></> {{ .Staging.String }}{{
+      }}{{ if .Staging.Changed }} <#D7AF00></> {{ .Staging.String }}{{
         end
-      }}{{ if and (.Working.Changed)
-      (.Staging.Changed) }} |{{
+      }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{
         end
-      }}{{ if .Working.Changed }} <#D7AF00></> {{ .Working.String
-      }}{{ end }}
+      }}{{ if .Working.Changed }} <#D7AF00></>{{
+        end
+      }}{{ if .Working.Added }} <#5FD700>+{{ .Working.Added }}</>{{
+        end
+      }}{{ if .Working.Modified }} <#D7AF00>~{{ .Working.Modified }}</>{{
+        end
+      }}{{ if .Working.Deleted }} <#F38BA8>-{{ .Working.Deleted }}</>{{
+        end
+      }}{{ if .Working.Unmerged }} <#F38BA8>x{{ .Working.Unmerged }}</>{{
+        end
+      }}{{ if .Working.Untracked }} <#00AFFF>?{{ .Working.Untracked }}</>{{
+        end
+      }}
     type: git
   type: prompt
 - alignment: right
