@@ -26,11 +26,19 @@ blocks:
       fetch_upstream_icon: true
       github_icon: ''
     style: plain
-    template: " {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if
-      gt .StashCount 0 }} \U000F0193 {{ .StashCount }}{{ end }}{{ if .Staging.Changed
-      }} <#D7AF00></> {{ .Staging.String }}{{ end }}{{ if and (.Working.Changed)
-      (.Staging.Changed) }} |{{ end }}{{ if .Working.Changed }} <#D7AF00></> {{ .Working.String
-      }}{{ end }} "
+    template: >
+       {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{
+        end
+      }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{
+        end
+      }}{{ if .Staging.Changed
+      }} <#D7AF00></> {{ .Staging.String }}{{
+        end
+      }}{{ if and (.Working.Changed)
+      (.Staging.Changed) }} |{{
+        end
+      }}{{ if .Working.Changed }} <#D7AF00></> {{ .Working.String
+      }}{{ end }}
     type: git
   type: prompt
 - alignment: right
