@@ -31,7 +31,17 @@ blocks:
         end
       }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{
         end
-      }}{{ if .Staging.Changed }} <#D7AF00></> {{ .Staging.String }}{{
+      }}{{ if .Staging.Changed }} <#D7AF00></>{{
+        end
+      }}{{ if .Staging.Added }} <#5FD700>+{{ .Staging.Added }}</>{{
+        end
+      }}{{ if .Staging.Modified }} <#D7AF00>~{{ .Staging.Modified }}</>{{
+        end
+      }}{{ if .Staging.Deleted }} <#F38BA8>-{{ .Staging.Deleted }}</>{{
+        end
+      }}{{ if .Staging.Unmerged }} <#F38BA8>x{{ .Staging.Unmerged }}</>{{
+        end
+      }}{{ if .Staging.Untracked }} <#00AFFF>?{{ .Staging.Untracked }}</>{{
         end
       }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{
         end
