@@ -7,7 +7,7 @@
         {
           "foreground": "#d3d7cf",
           "style": "plain",
-          "template": "{{ if .WSL }}WSL at {{ end }}{{.Icon}} ",
+          "template": "{{.Icon}}{{ if .WSL }} \ue62a{{ end }} ",
           "type": "os"
         },
         {
@@ -28,8 +28,8 @@
         {
           "foreground": "#5FD700",
           "properties": {
-            "branch_ahead_icon": "<#88C0D0>\u21e1 </>",
-            "branch_behind_icon": "<#88C0D0>\u21e3 </>",
+            "branch_ahead_icon": "<#88C0D0>\u21e1</>",
+            "branch_behind_icon": "<#88C0D0>\u21e3</>",
             "branch_icon": "",
             "fetch_stash_count": true,
             "fetch_status": true,
@@ -37,7 +37,7 @@
             "github_icon": ""
           },
           "style": "plain",
-          "template": "\uf126 {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if .Working.Changed }} <#D7AF00>\uf044</> {{ .Working.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }}{{ end }}{{ if .Staging.Changed }} <#D7AF00>\uf046</> {{ .Staging.String }}{{ end }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{ end }} ",
+          "template": "\uf126 {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{ end }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{ end }}{{ if .Staging.Changed }} <#D7AF00>\uf046</> {{ .Staging.String }}{{ end }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{ end }}{{ if .Working.Changed }} <#D7AF00>\uf044</> {{ .Working.String }}{{ end }} ",
           "type": "git"
         }
       ],
@@ -180,7 +180,9 @@
       "segments": [
         {
           "foreground": "#5FD700",
-          "foreground_templates": ["{{ if gt .Code 0 }}#D70000{{ end }}"],
+          "foreground_templates": [
+            "{{ if gt .Code 0 }}#D70000{{ end }}"
+          ],
           "properties": {
             "always_enabled": true
           },
@@ -195,7 +197,9 @@
   "console_title_template": "{{if .Root}}(Admin){{end}} {{.PWD}}",
   "transient_prompt": {
     "foreground": "#5FD700",
-    "foreground_templates": ["{{ if gt .Code 0 }}#D70000{{ end }}"],
+    "foreground_templates": [
+      "{{ if gt .Code 0 }}#D70000{{ end }}"
+    ],
     "template": "\u276f "
   },
   "version": 2
