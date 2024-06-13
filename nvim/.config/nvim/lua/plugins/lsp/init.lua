@@ -69,7 +69,7 @@ return {
           },
         },
         ["terraformls@0.28.1"] = {},
-        bashls = {},
+        bashls = { filetypes = { "sh", "zsh" } },
         rust_analyzer = {},
         gopls = {},
         ruff = {},
@@ -130,7 +130,8 @@ return {
         -- "tflint",
         "shellcheck",
         "shellharden",
-        -- "beautysh",
+        "beautysh",
+        "shfmt",
         "debugpy",
         "codelldb",
         "powershell-editor-services",
@@ -157,7 +158,10 @@ return {
   {
     "nvimtools/none-ls.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    dependencies = { "mason.nvim" },
+    dependencies = {
+      "mason.nvim",
+      "nvimtools/none-ls-extras.nvim",
+    },
     config = function()
       local nls = require "null-ls"
       local refurb = require "plugins.lsp.refurb"
@@ -204,9 +208,9 @@ return {
           -- nls.builtins.diagnostics.pydocstyle,
           -- nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
-          -- nls.builtins.formatting.beautysh,
           nls.builtins.formatting.shellharden,
-          -- nls.builtins.formatting.shfmt,
+          nls.builtins.formatting.shfmt.with { extra_args = { "-i", "4" } },
+          require("none-ls.formatting.beautysh").with { filetypes = { "zsh" } },
         },
       }
     end,
