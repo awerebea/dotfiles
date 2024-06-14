@@ -19,8 +19,9 @@ palette:
   bg-teal-600: "#5F8787"
   bg-blue-300: "#88C0D0"
   bg-blue-500: "#4063D8"
-  bg-cyan-500: "#00AFFF"
-  bg-cyan-600: "#0087AF"
+  bg-cyan-400: "#22D3EE"
+  bg-cyan-500: "#06B6D4"
+  bg-cyan-600: "#0AA6CD"
   bg-gray-300: "#d3d7cf"
   bg-stone-700: "#444444"
 
@@ -185,7 +186,6 @@ blocks:
 
 - type: prompt
   alignment: left
-  newline: true
   segments:
   - type: path
     foreground: p:bg-cyan-600
@@ -193,6 +193,7 @@ blocks:
     style: plain
     properties:
       style: full
+      right_format: "<b>%s</>"
     template: "{{ .Path }} "
 
 - type: prompt
