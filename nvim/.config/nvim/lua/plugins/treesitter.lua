@@ -42,7 +42,7 @@ return {
         additional_vim_regex_highlighting = true,
         disable = { "gitcommit" },
       },
-      indent = { enable = true, disable = { "python" } },
+      indent = { enable = true, disable = { "python", "yaml" } },
       incremental_selection = {
         enable = true,
         keymaps = {
