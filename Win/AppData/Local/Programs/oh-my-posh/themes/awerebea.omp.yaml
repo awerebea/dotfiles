@@ -5,23 +5,42 @@ version: 2
 final_space: true
 console_title_template: "{{if .Root}}(Admin){{end}} {{.PWD}}"
 
+palette:
+  bg-pink-400: "#F38BA8"
+  bg-red-600: "#D70000"
+  bg-red-700: "#AE1401"
+  bg-yellow-200: "#FFFF66"
+  bg-yellow-500: "#D7AF00"
+  bg-yellow-600: "#87875F"
+  bg-amber-500: "#FEAC19"
+  bg-green-400: "#5FD700"
+  bg-green-500: "#689f63"
+  bg-teal-500: "#00AFAF"
+  bg-teal-600: "#5F8787"
+  bg-blue-300: "#88C0D0"
+  bg-blue-500: "#4063D8"
+  bg-cyan-500: "#00AFFF"
+  bg-cyan-600: "#0087AF"
+  bg-gray-300: "#d3d7cf"
+  bg-stone-700: "#444444"
+
 blocks:
 - type: prompt
   alignment: left
   newline: true
   segments:
   - type: os
-    foreground: "#d3d7cf"
+    foreground: "p:bg-gray-300"
     style: plain
     template: "{{.Icon}}{{ if .WSL }} {{ end }} "
 
   - type: git
-    foreground: "#5FD700"
+    foreground: "p:bg-green-400"
     background: transparent
     style: plain
     properties:
-      branch_ahead_icon: "<#88C0D0>⇡</>"
-      branch_behind_icon: "<#88C0D0>⇣</>"
+      branch_ahead_icon: "<p:bg-blue-300>⇡</>"
+      branch_behind_icon: "<p:bg-blue-300>⇣</>"
       branch_icon: " "
       branch_identical_icon: "≡ "
       branch_gone_icon: "≢ "
@@ -49,31 +68,31 @@ blocks:
         end
       }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{
         end
-      }}{{ if .Staging.Changed }} <#D7AF00></>{{
+      }}{{ if .Staging.Changed }} <p:bg-yellow-500></>{{
         end
-      }}{{ if .Staging.Added }} <#5FD700>+{{ .Staging.Added }}</>{{
+      }}{{ if .Staging.Added }} <p:bg-green-400>+{{ .Staging.Added }}</>{{
         end
-      }}{{ if .Staging.Modified }} <#D7AF00>~{{ .Staging.Modified }}</>{{
+      }}{{ if .Staging.Modified }} <p:bg-yellow-500>~{{ .Staging.Modified }}</>{{
         end
-      }}{{ if .Staging.Deleted }} <#F38BA8>-{{ .Staging.Deleted }}</>{{
+      }}{{ if .Staging.Deleted }} <p:bg-pink-400>-{{ .Staging.Deleted }}</>{{
         end
-      }}{{ if .Staging.Unmerged }} <#F38BA8>x{{ .Staging.Unmerged }}</>{{
+      }}{{ if .Staging.Unmerged }} <p:bg-pink-400>x{{ .Staging.Unmerged }}</>{{
         end
-      }}{{ if .Staging.Untracked }} <#00AFFF>?{{ .Staging.Untracked }}</>{{
+      }}{{ if .Staging.Untracked }} <p:bg-cyan-500>?{{ .Staging.Untracked }}</>{{
         end
       }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{
         end
-      }}{{ if .Working.Changed }} <#D7AF00></>{{
+      }}{{ if .Working.Changed }} <p:bg-yellow-500></>{{
         end
-      }}{{ if .Working.Added }} <#5FD700>+{{ .Working.Added }}</>{{
+      }}{{ if .Working.Added }} <p:bg-green-400>+{{ .Working.Added }}</>{{
         end
-      }}{{ if .Working.Modified }} <#D7AF00>~{{ .Working.Modified }}</>{{
+      }}{{ if .Working.Modified }} <p:bg-yellow-500>~{{ .Working.Modified }}</>{{
         end
-      }}{{ if .Working.Deleted }} <#F38BA8>-{{ .Working.Deleted }}</>{{
+      }}{{ if .Working.Deleted }} <p:bg-pink-400>-{{ .Working.Deleted }}</>{{
         end
-      }}{{ if .Working.Unmerged }} <#F38BA8>x{{ .Working.Unmerged }}</>{{
+      }}{{ if .Working.Unmerged }} <p:bg-pink-400>x{{ .Working.Unmerged }}</>{{
         end
-      }}{{ if .Working.Untracked }} <#00AFFF>?{{ .Working.Untracked }}</>{{
+      }}{{ if .Working.Untracked }} <p:bg-cyan-500>?{{ .Working.Untracked }}</>{{
         end
       }}{{ if true }} {{
         end
@@ -81,31 +100,31 @@ blocks:
 
 - type: prompt
   alignment: right
-  filler: "<#444444>·</>"
+  filler: "<p:bg-stone-700>·</>"
   segments:
   - type: node
-    foreground: "#689f63"
+    foreground: "p:bg-green-500"
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: "  {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }}"
   - type: go
-    foreground: "#00acd7"
+    foreground: "p:bg-cyan-500"
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: julia
-    foreground: "#4063D8"
+    foreground: "p:bg-blue-500"
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: python
-    foreground: "#00AFAF"
+    foreground: "p:bg-teal-500"
     background: transparent
     properties:
       display_mode: files
@@ -113,7 +132,7 @@ blocks:
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
       end }}{{ end }}"
-  - foreground: "#AE1401"
+  - foreground: "p:bg-red-700"
     background: transparent
     properties:
       display_mode: files
@@ -121,7 +140,7 @@ blocks:
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
     type: ruby
-  - foreground: "#FEAC19"
+  - foreground: "p:bg-amber-500"
     background: transparent
     properties:
       display_mode: files
@@ -130,33 +149,33 @@ blocks:
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
     type: azfunc
   - background_templates:
-    - '{{if contains "default" .Profile}}#FFA400{{end}}'
-    - '{{if contains "jan" .Profile}}#f1184c{{end}}'
-    foreground: "#ffffff"
+    - '{{if contains "default" .Profile}}p:bg-amber-500{{end}}'
+    - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
+    foreground: "white"
     background: transparent
     properties:
       display_default: false
     style: plain
     template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
     type: aws
-  - foreground: "#111111"
-    background: "#ffff66"
+  - foreground: "black"
+    background: "p:bg-yellow-200"
     style: plain
     template: "  "
     type: root
-  - foreground: "#87875F"
+  - foreground: "p:bg-yellow-600"
     background: transparent
     style: plain
     template: "  {{ .FormattedMs }} "
     type: executiontime
-  - foreground: "#D70000"
+  - foreground: "p:bg-red-600"
     background: transparent
     properties:
       always_enabled: true
     style: plain
     template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }} "
     type: exit
-  - foreground: "#5F8787"
+  - foreground: "p:bg-teal-600"
     background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
@@ -167,7 +186,7 @@ blocks:
   newline: true
   segments:
   - type: path
-    foreground: "#0087AF"
+    foreground: "p:bg-cyan-600"
     background: transparent
     style: plain
     properties:
@@ -179,19 +198,18 @@ blocks:
   newline: true
   segments:
   - type: text
-    foreground: "#5FD700"
+    foreground: "p:bg-green-400"
     background: transparent
     foreground_templates:
-    - "{{ if gt .Code 0 }}#D70000{{ end }}"
+    - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
     style: plain
     properties:
       always_enabled: true
     template: "❯"
 
 transient_prompt:
-  foreground: "#5FD700"
+  foreground: "p:bg-green-400"
   foreground_templates:
-  - "{{ if gt .Code 0 }}#D70000{{ end }}"
+  - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
   background: transparent
-  filler: "<#444444>·</>"
   template: "❯ "
