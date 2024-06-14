@@ -1,0 +1,8 @@
+allow_duplicate_keys = false
+explicit_start = true
+indent_mapping = 2
+indent_offset = 0
+indent_sequence = 2
+line_length = 80
+section_whitelines = 0
+quote_representation = '"'
