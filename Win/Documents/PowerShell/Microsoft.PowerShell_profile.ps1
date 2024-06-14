@@ -1,4 +1,4 @@
-oh-my-posh init pwsh --config "$env:POSH_THEMES_PATH/awerebea.omp.yaml" | Invoke-Expression
+oh-my-posh init pwsh --config "$env:HOME/.oh-my-posh.yaml" | Invoke-Expression
 
 # Vi mode
 Set-PSReadlineOption -EditMode Vi
