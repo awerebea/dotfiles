@@ -30,12 +30,12 @@ blocks:
   newline: true
   segments:
   - type: os
-    foreground: "p:bg-gray-300"
+    foreground: p:bg-gray-300
     style: plain
     template: "{{.Icon}}{{ if .WSL }} {{ end }} "
 
   - type: git
-    foreground: "p:bg-green-400"
+    foreground: p:bg-green-400
     background: transparent
     style: plain
     properties:
@@ -105,28 +105,28 @@ blocks:
   filler: "<p:bg-stone-700>·</>"
   segments:
   - type: node
-    foreground: "p:bg-green-500"
+    foreground: p:bg-green-500
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: "  {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }}"
   - type: go
-    foreground: "p:bg-cyan-500"
+    foreground: p:bg-cyan-500
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: julia
-    foreground: "p:bg-blue-500"
+    foreground: p:bg-blue-500
     background: transparent
     properties:
       fetch_version: true
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: python
-    foreground: "p:bg-teal-500"
+    foreground: p:bg-teal-500
     background: transparent
     properties:
       display_mode: files
@@ -134,7 +134,7 @@ blocks:
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
       end }}{{ end }}"
-  - foreground: "p:bg-red-700"
+  - foreground: p:bg-red-700
     background: transparent
     properties:
       display_mode: files
@@ -142,7 +142,7 @@ blocks:
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
     type: ruby
-  - foreground: "p:bg-amber-500"
+  - foreground: p:bg-amber-500
     background: transparent
     properties:
       display_mode: files
@@ -153,31 +153,31 @@ blocks:
   - background_templates:
     - '{{if contains "default" .Profile}}p:bg-amber-500{{end}}'
     - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
-    foreground: "white"
+    foreground: white
     background: transparent
     properties:
       display_default: false
     style: plain
     template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
     type: aws
-  - foreground: "black"
-    background: "p:bg-yellow-200"
-    style: plain
-    template: "  "
-    type: root
-  - foreground: "p:bg-yellow-600"
+  - foreground: p:bg-yellow-600
     background: transparent
     style: plain
-    template: "  {{ .FormattedMs }} "
+    template: "  {{ .FormattedMs }}"
     type: executiontime
-  - foreground: "p:bg-red-600"
+  - foreground: p:bg-red-600
     background: transparent
     properties:
       always_enabled: true
     style: plain
-    template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }} "
+    template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }}"
     type: exit
-  - foreground: "p:bg-teal-600"
+  - foreground: p:bg-yellow-200
+    background: transparent
+    style: plain
+    template: "  "
+    type: root
+  - foreground: p:bg-teal-600
     background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
@@ -188,7 +188,7 @@ blocks:
   newline: true
   segments:
   - type: path
-    foreground: "p:bg-cyan-600"
+    foreground: p:bg-cyan-600
     background: transparent
     style: plain
     properties:
@@ -200,7 +200,7 @@ blocks:
   newline: true
   segments:
   - type: text
-    foreground: "p:bg-green-400"
+    foreground: p:bg-green-400
     background: transparent
     foreground_templates:
     - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
@@ -210,7 +210,7 @@ blocks:
     template: "❯"
 
 transient_prompt:
-  foreground: "p:bg-green-400"
+  foreground: p:bg-green-400
   foreground_templates:
   - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
   background: transparent
