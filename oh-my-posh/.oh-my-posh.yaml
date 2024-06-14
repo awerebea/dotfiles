@@ -35,6 +35,12 @@ blocks:
     style: plain
     template: "{{.Icon}}{{ if .WSL }} {{ end }} "
 
+  - type: root
+    foreground: p:bg-yellow-200
+    background: transparent
+    style: plain
+    template: " "
+
   - type: git
     foreground: p:bg-green-400
     background: transparent
@@ -135,54 +141,49 @@ blocks:
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
       end }}{{ end }}"
-  - foreground: p:bg-red-700
+  - type: ruby
+    foreground: p:bg-red-700
     background: transparent
     properties:
       display_mode: files
       fetch_version: true
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
-    type: ruby
-  - foreground: p:bg-amber-500
+  - type: azfunc
+    foreground: p:bg-amber-500
     background: transparent
     properties:
       display_mode: files
       fetch_version: false
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
-    type: azfunc
-  - background_templates:
-    - '{{if contains "default" .Profile}}p:bg-amber-500{{end}}'
-    - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
+  - type: aws
     foreground: white
     background: transparent
+    background_templates:
+    - '{{if contains "default" .Profile}}p:bg-amber-500{{end}}'
+    - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
     properties:
       display_default: false
     style: plain
     template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
-    type: aws
-  - foreground: p:bg-yellow-600
+  - type: executiontime
+    foreground: p:bg-yellow-600
     background: transparent
     style: plain
     template: "  {{ .FormattedMs }}"
-    type: executiontime
-  - foreground: p:bg-red-600
+  - type: exit
+    foreground: p:bg-red-600
     background: transparent
     properties:
       always_enabled: true
     style: plain
     template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }}"
-    type: exit
-  - foreground: p:bg-yellow-200
-    background: transparent
-    style: plain
-    template: "  "
-    type: root
-  - foreground: p:bg-teal-600
+  - type: time
+    foreground: p:bg-teal-600
     background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
-    type: time
 
 - type: prompt
   alignment: left
