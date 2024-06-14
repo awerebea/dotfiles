@@ -345,8 +345,7 @@ if [[ ! "${commands[oh-my-posh]}" ]]; then
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
 else
     if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-        eval "$(oh-my-posh init zsh --config \
-          "$GIT_DOTFILES"/Win/AppData/Local/Programs/oh-my-posh/themes/awerebea.omp.yaml)"
+        eval "$(oh-my-posh init zsh --config "$HOME"/.oh-my-posh.yaml)"
     fi
 fi
 
