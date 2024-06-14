@@ -1,35 +1,53 @@
 ---
+version: 2
 "$schema": https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+
+final_space: true
+console_title_template: "{{if .Root}}(Admin){{end}} {{.PWD}}"
+
 blocks:
-- alignment: left
+- type: prompt
+  alignment: left
+  newline: true
   segments:
-  - foreground: "#d3d7cf"
+  - type: os
+    foreground: "#d3d7cf"
     style: plain
-    template: "{{.Icon}}{{ if .WSL }} {{ end }} "
-    type: os
-  - foreground: "#0087AF"
-    properties:
-      style: full
+    template: "{{.Icon}}{{ if .WSL }} {{ end }} "
+
+  - type: git
+    foreground: "#5FD700"
+    background: transparent
     style: plain
-    template: "{{ .Path }} "
-    type: path
-  type: prompt
-- alignment: left
-  segments:
-  - foreground: "#5FD700"
     properties:
       branch_ahead_icon: "<#88C0D0>⇡</>"
       branch_behind_icon: "<#88C0D0>⇣</>"
-      branch_icon: ''
+      branch_icon: " "
+      branch_identical_icon: "≡ "
+      branch_gone_icon: "≢ "
+      branch_max_length: 25
+      truncate_symbol: "…"
+      commit_icon: " "
+      tag_icon: " "
+      rebase_icon: " "
+      cherry_pick_icon: " "
+      revert_icon: " "
+      merge_icon: " "
+      no_commits_icon: " "
+      github_icon: " "
+      gitlab_icon: " "
+      bitbucket_icon: " "
+      azure_devops_icon: " "
+      codecommit_icon: " "
+      codeberg_icon: " "
+      git_icon: " "
       fetch_stash_count: true
       fetch_status: true
       fetch_upstream_icon: true
-      github_icon: ''
-    style: plain
     template: >
-       {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{
+      {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{
         end
-      }}{{ if gt .StashCount 0 }} 󰆓 {{ .StashCount }}{{
+      }}{{ if gt .StashCount 0 }}  {{ .StashCount }}{{
         end
       }}{{ if .Staging.Changed }} <#D7AF00></>{{
         end
@@ -45,7 +63,7 @@ blocks:
         end
       }}{{ if and (.Working.Changed) (.Staging.Changed) }} |{{
         end
-      }}{{ if .Working.Changed }} <#D7AF00></>{{
+      }}{{ if .Working.Changed }} <#D7AF00></>{{
         end
       }}{{ if .Working.Added }} <#5FD700>+{{ .Working.Added }}</>{{
         end
@@ -57,124 +75,123 @@ blocks:
         end
       }}{{ if .Working.Untracked }} <#00AFFF>?{{ .Working.Untracked }}</>{{
         end
+      }}{{ if true }} {{
+        end
       }}
-    type: git
-  type: prompt
-- alignment: right
+
+- type: prompt
+  alignment: right
+  filler: "<#444444>·</>"
   segments:
-  - background: "#689f63"
-    foreground: "#ffffff"
-    invert_powerline: true
-    powerline_symbol: ""
+  - type: node
+    foreground: "#689f63"
+    background: transparent
     properties:
       fetch_version: true
-    style: powerline
-    template: " {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{
-      .Full }}  "
-    type: node
-  - background: "#00acd7"
-    foreground: "#111111"
-    invert_powerline: true
-    powerline_symbol: ""
+    style: plain
+    template: "  {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }}"
+  - type: go
+    foreground: "#00acd7"
+    background: transparent
     properties:
       fetch_version: true
-    style: powerline
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}  "
-    type: go
-  - background: "#4063D8"
-    foreground: "#111111"
-    invert_powerline: true
-    powerline_symbol: ""
+    style: plain
+    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
+  - type: julia
+    foreground: "#4063D8"
+    background: transparent
     properties:
       fetch_version: true
-    style: powerline
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}  "
-    type: julia
-  - background: "#FFDE57"
-    foreground: "#111111"
-    invert_powerline: true
-    powerline_symbol: ""
+    style: plain
+    template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
+  - type: python
+    foreground: "#00AFAF"
+    background: transparent
     properties:
       display_mode: files
       fetch_virtual_env: false
-    style: powerline
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}  "
-    type: python
-  - background: "#AE1401"
-    foreground: "#ffffff"
-    invert_powerline: true
-    powerline_symbol: ""
+    style: plain
+    template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
+      end }}{{ end }}"
+  - foreground: "#AE1401"
+    background: transparent
     properties:
       display_mode: files
       fetch_version: true
-    style: powerline
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}  "
+    style: plain
+    template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
     type: ruby
-  - background: "#FEAC19"
-    foreground: "#ffffff"
-    invert_powerline: true
-    powerline_symbol: ""
+  - foreground: "#FEAC19"
+    background: transparent
     properties:
       display_mode: files
       fetch_version: false
-    style: powerline
-    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }} "
+    style: plain
+    template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
     type: azfunc
   - background_templates:
     - '{{if contains "default" .Profile}}#FFA400{{end}}'
     - '{{if contains "jan" .Profile}}#f1184c{{end}}'
     foreground: "#ffffff"
-    invert_powerline: true
-    powerline_symbol: ""
+    background: transparent
     properties:
       display_default: false
-    style: powerline
-    template: " {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}  "
+    style: plain
+    template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
     type: aws
-  - background: "#ffff66"
-    foreground: "#111111"
-    invert_powerline: true
-    powerline_symbol: ""
-    style: powerline
+  - foreground: "#111111"
+    background: "#ffff66"
+    style: plain
     template: "  "
     type: root
   - foreground: "#87875F"
-    invert_powerline: true
-    powerline_symbol: ""
+    background: transparent
     style: plain
     template: "  {{ .FormattedMs }} "
     type: executiontime
   - foreground: "#D70000"
-    invert_powerline: true
-    powerline_symbol: ""
+    background: transparent
     properties:
       always_enabled: true
     style: plain
-    template: " {{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end
-      }} "
+    template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }} "
     type: exit
   - foreground: "#5F8787"
-    invert_powerline: true
+    background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
     type: time
-  type: prompt
-- alignment: left
+
+- type: prompt
+  alignment: left
   newline: true
   segments:
-  - foreground: "#5FD700"
+  - type: path
+    foreground: "#0087AF"
+    background: transparent
+    style: plain
+    properties:
+      style: full
+    template: "{{ .Path }} "
+
+- type: prompt
+  alignment: left
+  newline: true
+  segments:
+  - type: text
+    foreground: "#5FD700"
+    background: transparent
     foreground_templates:
     - "{{ if gt .Code 0 }}#D70000{{ end }}"
+    style: plain
     properties:
       always_enabled: true
-    style: plain
-    template: "❯ "
-    type: exit
-  type: prompt
-console_title_template: "{{if .Root}}(Admin){{end}} {{.PWD}}"
+    template: "❯"
+
 transient_prompt:
   foreground: "#5FD700"
   foreground_templates:
   - "{{ if gt .Code 0 }}#D70000{{ end }}"
+  background: transparent
+  filler: "<#444444>·</>"
   template: "❯ "
-version: 2
