@@ -1,0 +1,8 @@
+---
+formatter:
+  include_document_start: true
+  indent: 2
+  indentless_arrays: true
+  max_line_length: 90
+  pad_line_comments: 2
+  retain_line_breaks_single: true
