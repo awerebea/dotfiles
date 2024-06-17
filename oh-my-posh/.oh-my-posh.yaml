@@ -212,6 +212,11 @@ blocks:
       always_enabled: true
     template: "❯"
 
+secondary_prompt:
+  foreground: p:bg-green-400
+  background: transparent
+  template: "\U000F17A9  "
+
 transient_prompt:
   foreground: p:bg-green-400
   foreground_templates:
