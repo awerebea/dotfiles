@@ -193,8 +193,9 @@ blocks:
     background: transparent
     style: plain
     properties:
-      style: full
+      style: powerlevel
       right_format: "<b>%s</>"
+      max_width: "{{ .Env.POSH_PATH_MAX_WIDTH }}"
     template: "{{ .Path }} "
 
 - type: prompt
