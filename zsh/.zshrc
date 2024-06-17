@@ -1507,9 +1507,8 @@ if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
     export DISPLAY
     if [[ -n $(pgrep ssh-agent) ]]; then
         if [[ -z $SSH_AGENT_PID ]]; then
-            declare SSH_AGENT_PID; SSH_AGENT_PID="$(pgrep ssh-agent | head -n1)"
-            export SSH_AGENT_PID
-            declare SSH_AUTH_SOCK; SSH_AUTH_SOCK="$(
+            SSH_AGENT_PID="$(pgrep ssh-agent | head -n1)"; export SSH_AGENT_PID
+            SSH_AUTH_SOCK="$(
                 find /tmp -type s -name "agent.$((SSH_AGENT_PID-1))" 2>/dev/null
             )"
             export SSH_AUTH_SOCK
