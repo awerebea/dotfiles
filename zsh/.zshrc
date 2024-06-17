@@ -1,6 +1,17 @@
 zmodload zsh/zprof
 zstyle ':omz:update' mode disabled
 
+[[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && \
+    export PATH="$HOME/.local/bin:$PATH"
+
+if [[ ! "${commands[oh-my-posh]}" ]]; then
+    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+else
+    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+        eval "$(oh-my-posh init zsh --config "$HOME"/.oh-my-posh.yaml)"
+    fi
+fi
+
 # Add neovim installation path, installed by bob
 # https://github.com/MordechaiHadad/bob
 if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
@@ -319,9 +330,6 @@ export GIT_WORKSPACE="$HOME/Github/workspace"
 [[ -d "$HOME/Library/Python/3.10/bin" && ":$PATH:" != *":$HOME/Library/Python/3.10/bin:"* ]] && \
     export PATH="$HOME/Library/Python/3.10/bin:$PATH"
 
-[[ -d "$HOME/.local/bin" && ":$PATH:" != *":$HOME/.local/bin:"* ]] && \
-    export PATH="$HOME/.local/bin:$PATH"
-
 [[ -d "/var/lib/gems/2.7.0" && ":$PATH:" != *":/var/lib/gems/2.7.0:"* ]] && \
     export PATH="/var/lib/gems/2.7.0:$PATH"
 
@@ -340,14 +348,6 @@ elif [[ -d "$HOME/.vim/plugged/fzf/bin" && ":$PATH:" != *":$HOME/.vim/plugged/fz
 fi
 
 [[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
-
-if [[ ! "${commands[oh-my-posh]}" ]]; then
-    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
-else
-    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-        eval "$(oh-my-posh init zsh --config "$HOME"/.oh-my-posh.yaml)"
-    fi
-fi
 
 # Detect and setup current environment
 if [[ "$(uname)" == "Linux" ]]; then
