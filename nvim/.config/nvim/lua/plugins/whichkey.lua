@@ -75,7 +75,8 @@ return {
         u = "Toggle Undo-tree",
         w = "Pick a window",
         c = {
-          "Code, Copy path",
+          "Code, Copy path, CopilotChat",
+          c = { "CopilotChat", h = "Help actions", p = "Prompt actions" },
           g = "neogen",
           p = {
             "Copy path to clipboard",
