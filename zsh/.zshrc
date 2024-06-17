@@ -1605,3 +1605,7 @@ function nvs() {
 zvm_after_init() {
     [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed -e "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|; s|LBUFFER=\"\$selected\"|selected=\"\${selected#* * }\"; LBUFFER=\"\${selected#* }\"|")"
 }
+
+set_poshcontext() {
+    POSH_PATH_MAX_WIDTH="$(tput cols)"; export POSH_PATH_MAX_WIDTH
+}
