@@ -199,18 +199,7 @@ return {
           --     vim.loop.os_homedir() .. "/.yamlfix.toml",
           --   },
           -- },
-          nls.builtins.formatting.yamlfmt.with {
-            extra_args = {
-              "-formatter",
-              "indent=2"
-                .. ",include_document_start=true"
-                .. ",indentless_arrays=true"
-                .. ",max_line_length=90"
-                .. ",pad_line_comments=2"
-                .. ",retain_line_breaks_single=true",
-              -- .. ",scan_folded_as_literal=true",
-            },
-          },
+          nls.builtins.formatting.yamlfmt,
           nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
           -- nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
           --   -- only enable eslint if root has .eslintrc.js

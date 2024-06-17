@@ -166,7 +166,7 @@ set noexpandtab
 augroup filetypeRelatedSettings
   autocmd!
   autocmd BufRead,BufNewFile Chart.yaml set ft=helm
-  autocmd BufRead,BufNewFile .yamllint set ft=yaml
+  autocmd BufRead,BufNewFile .yamllint,.yamlfmt set ft=yaml
   autocmd BufRead,BufNewFile *.tf,*.hcl,*.tfvars,.terraformrc,terraform.rc set ft=terraform
   autocmd BufRead,BufNewFile *.tfstate,*.json.tpl* set ft=json
   autocmd FileType bash,sh,json*,dockerfile,python,cmake
