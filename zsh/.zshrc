@@ -6,10 +6,12 @@ zstyle ':omz:update' mode disabled
 
 if [[ ! "${commands[oh-my-posh]}" ]]; then
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+fi
+
+if [[ ! "${commands[aliae]}" ]]; then
+    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
 else
-    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
-        eval "$(oh-my-posh init zsh --config "$HOME"/.oh-my-posh.yaml)"
-    fi
+    eval "$(aliae init zsh --config "$HOME"/.aliae.yaml)"
 fi
 
 # Add neovim installation path, installed by bob
