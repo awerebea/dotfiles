@@ -1,4 +1,4 @@
-oh-my-posh init pwsh --config "$env:HOME/.oh-my-posh.yaml" | Invoke-Expression
+aliae init pwsh --config "$HOME/.aliae.yaml" | Invoke-Expression
 
 # Vi mode
 Set-PSReadlineOption -EditMode Vi
