@@ -1,0 +1,13 @@
+---
+env:
+- name: POSH_THEME
+  value: "{{ .Home }}/.oh-my-posh.yaml"
+  if: hasCommand "oh-my-posh"
+
+script:
+- value: |
+    oh-my-posh init pwsh | Invoke-Expression
+  if: and (hasCommand "oh-my-posh") (match .Shell "pwsh")
+- value: |
+    eval "$(oh-my-posh init {{ .Shell }})"
+  if: and (hasCommand "oh-my-posh") (match .Shell "bash" "zsh")
