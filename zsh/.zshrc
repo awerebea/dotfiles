@@ -988,15 +988,21 @@ if [[ -n $FD_BIN_NAME ]]; then
     # - The first argument to the function ($1) is the base path to start traversal
     # - See the source code (completion.{bash,zsh}) for the details.
     _fzf_compgen_path() {
-        eval "$FD_BIN_NAME --hidden --exclude .git . \"$1\" | sed 's@^\./@@'"
+        eval "$FD_BIN_NAME --strip-cwd-prefix --hidden --exclude .git --exclude .venv . \"$1\""
     }
     # Use fd to generate the list for directory completion
     _fzf_compgen_dir() {
-        eval "$FD_BIN_NAME --type=d --hidden --exclude .git . \"$1\" | sed 's@^\./@@'"
+        eval "$FD_BIN_NAME --strip-cwd-prefix --type directory --hidden --exclude .git --exclude .venv . \"$1\""
     }
-    export FZF_DEFAULT_COMMAND="$FD_BIN_NAME --strip-cwd-prefix --type file --follow --hidden --exclude .git"
+    FZF_DEFAULT_COMMAND="$FD_BIN_NAME --strip-cwd-prefix --follow --hidden --exclude .git --exclude .venv"
+    export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type directory"
+    FZF_DEFAULT_COMMAND+=" --type file --type symlink"
+    export FZF_DEFAULT_COMMAND
 else
-    export FZF_DEFAULT_COMMAND='find . -type f,l -not -path "*/.git/*" | sed "s|^./||"'
+    export FZF_DEFAULT_COMMAND="find . \( -path \"*/.git\" -o -path \"*/.venv\" \) \
+      -prune -o -type f,l ! -name '.' -printf '%P\n' | sort -V"
+    export FZF_ALT_C_COMMAND="find . \( -path \"*/.git\" -o -path \"*/.venv\" \) \
+      -prune -o -type d ! -name '.' -printf '%P\n' | sort -V"
 fi
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
@@ -1020,8 +1026,6 @@ export FZF_DEFAULT_OPTS="--height=100% \
   --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
   --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
   --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
-# shellcheck disable=2016
-export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
 
 if [[ "${commands[eza]}" ]]; then
     export FZF_CTRL_T_OPTS="--preview '${FZF_PREVIEW_STRING/$\'\n\'/}'"
