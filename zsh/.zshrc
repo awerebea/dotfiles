@@ -1476,12 +1476,11 @@ if [[ "${commands[direnv]}" ]]; then
 fi
 
 # Repeat given char N times using shell function
-rep(){
+rep() {
     local start=1
     local end=${1:-80}
     local str="${2:-=}"
-    # shellcheck disable=2051
-    printf "$str%0.s" {"$start".."$end"}
+    eval "printf '$str%0.s' {$start..$end}"
 }
 
 # Go to the given number of levels up
