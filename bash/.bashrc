@@ -422,8 +422,8 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         alias gwt='fgb worktree total --confirm'
         fgb "$@"
     }
-    unalias gwt
-    unalias gbl
+    # unalias gwt
+    # unalias gbl
     function fgb {
         lazy_fgb "$@"
     }
