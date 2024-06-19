@@ -9,8 +9,10 @@ export OSH="/home/$USER/.oh-my-bash"
 
 # Set name of the theme to load. Optionally, if you set this to "random"
 # it'll load a random theme each time that oh-my-bash is loaded.
+# shellcheck disable=2034
 THEME_SHOW_SUDO="fasle"
 __PB10K_PROMPT_LOCAL_USER_INFO="false"
+# shellcheck disable=2034
 OSH_THEME="powerbash10k"
 
 # Uncomment the following line to use case-sensitive completion.
@@ -18,6 +20,7 @@ OSH_THEME="powerbash10k"
 
 # Uncomment the following line to use hyphen-insensitive completion. Case
 # sensitive completion must be off. _ and - will be interchangeable.
+# shellcheck disable=2034
 OMB_HYPHEN_SENSITIVE="false"
 
 # Uncomment the following line to disable bi-weekly auto-update checks.
@@ -33,9 +36,11 @@ OMB_HYPHEN_SENSITIVE="false"
 # DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
+# shellcheck disable=2034
 ENABLE_CORRECTION="true"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
+# shellcheck disable=2034
 COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you want to disable marking untracked files
@@ -45,6 +50,7 @@ COMPLETION_WAITING_DOTS="true"
 
 # Uncomment the following line if you don't want the repository to be considered dirty
 # if there are untracked files.
+# shellcheck disable=2034
 SCM_GIT_DISABLE_UNTRACKED_DIRTY="true"
 
 # Uncomment the following line if you want to completely ignore the presence
@@ -65,6 +71,7 @@ SCM_GIT_DISABLE_UNTRACKED_DIRTY="true"
 
 # Uncomment the following line if you do not want OMB to overwrite the existing
 # aliases by the default OMB aliases defined in lib/*.sh
+# shellcheck disable=2034
 OMB_DEFAULT_ALIASES="check"
 
 # Would you like to use another custom folder than $OSH/custom?
@@ -72,9 +79,11 @@ OMB_DEFAULT_ALIASES="check"
 
 # To disable the uses of "sudo" by oh-my-bash, please set "false" to
 # this variable.  The default behavior for the empty value is "true".
+# shellcheck disable=2034
 OMB_USE_SUDO=true
 
 # To enable/disable display of Python virtualenv and condaenv
+# shellcheck disable=2034
 OMB_PROMPT_SHOW_PYTHON_VENV=true # enable
 # OMB_PROMPT_SHOW_PYTHON_VENV=false # disable
 
@@ -82,6 +91,7 @@ OMB_PROMPT_SHOW_PYTHON_VENV=true # enable
 # Custom completions may be added to ~/.oh-my-bash/custom/completions/
 # Example format: completions=(ssh git bundler gem pip pip3)
 # Add wisely, as too many completions slow down shell startup.
+# shellcheck disable=2034
 completions=(
     awscli
     brew
@@ -104,6 +114,7 @@ completions=(
 # Custom aliases may be added to ~/.oh-my-bash/custom/aliases/
 # Example format: aliases=(vagrant composer git-avh)
 # Add wisely, as too many aliases slow down shell startup.
+# shellcheck disable=2034
 aliases=(
     chmod
     docker
@@ -118,6 +129,7 @@ aliases=(
 # Custom plugins may be added to ~/.oh-my-bash/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+# shellcheck disable=2034
 plugins=(
     git
     bashmarks
@@ -132,6 +144,7 @@ plugins=(
 #      plugins+=(tmux-autoattach)
 #  fi
 
+# shellcheck disable=1091
 source "$OSH"/oh-my-bash.sh
 
 # User configuration
@@ -221,14 +234,17 @@ fi
 
 export TERM=xterm-256color
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash
-[ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source ~/fzf-marks/fzf-marks.plugin.bash
+# shellcheck disable=1091
+[ -f ~/.fzf.bash ] && source "$HOME"/.fzf.bash
+# shellcheck disable=1091
+[ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source "$HOME"/fzf-marks/fzf-marks.plugin.bash
 
 if [ -d "$HOME/.local/bin" ] &&
     [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
+# shellcheck disable=2139
 alias v="$EDITOR"
 
 # Repeat given char N times using shell function
@@ -236,7 +252,7 @@ rep() {
     local start=1
     local end=${1:-80}
     local str="${2:-=}"
-    printf "$str%0.s" {"$start..$end"}
+    eval "printf '$str%0.s' {$start..$end}"
 }
 
 # Go to the given number of levels up
@@ -269,8 +285,11 @@ is_command "terragrunt" && alias tg="terragrunt"
 
 alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
 
+# shellcheck disable=2139
 alias c="eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
+# shellcheck disable=2139
 alias vf="fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR"
+# shellcheck disable=2139
 alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
 
 alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
@@ -294,7 +313,9 @@ fi
 # Load nvm if exists
 if [ -d "$HOME/.nvm" ]; then
     [ "$NVM_DIR" = "" ] && export NVM_DIR="$HOME/.nvm"
+    # shellcheck disable=SC1091
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    # shellcheck disable=SC1091
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 fi
 
@@ -354,7 +375,9 @@ export FZF_DEFAULT_OPTS=" \
   --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
   --bind=ctrl-f:page-down,ctrl-b:page-up \
   "
-export FZF_ALT_C_COMMAND='cd $(ls -d */ | fzf)'
+FZF_ALT_C_COMMAND="cd $(find . -mindepth 1 -maxdepth 1 -type d -exec basename {} \; |
+    sort -V | fzf)"
+export FZF_ALT_C_COMMAND
 
 # fzf_marks
 export FZF_MARKS_FILE="$HOME/.fzf-marks"
@@ -379,6 +402,7 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
             gwm \
             gwt \
             lazy_fgb
+        # shellcheck disable=SC1091
         if ! source "$HOME/.fzf-git-branches/fzf-git-branches.sh"; then
             echo "Failed to load fzf-git-branches" >&2
             return 1
