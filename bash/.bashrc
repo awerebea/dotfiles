@@ -1,7 +1,7 @@
 # Enable the subsequent settings only in interactive sessions
 case $- in
-    *i*) ;;
-    *) return ;;
+*i*) ;;
+*) return ;;
 esac
 
 # Path to your oh-my-bash installation.
@@ -75,7 +75,7 @@ OMB_DEFAULT_ALIASES="check"
 OMB_USE_SUDO=true
 
 # To enable/disable display of Python virtualenv and condaenv
-OMB_PROMPT_SHOW_PYTHON_VENV=true  # enable
+OMB_PROMPT_SHOW_PYTHON_VENV=true # enable
 # OMB_PROMPT_SHOW_PYTHON_VENV=false # disable
 
 # Which completions would you like to load? (completions can be found in ~/.oh-my-bash/completions/*)
@@ -180,32 +180,40 @@ HISTFILESIZE=200000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-if command -v direnv &> /dev/null; then
+is_command() {
+    if command -v "$1" &>/dev/null; then
+        echo true
+    else
+        echo false
+    fi
+}
+
+if is_command "direnv"; then
     eval "$(direnv hook bash)"
 fi
 
 # Add neovim installation path, installed by bob
 # https://github.com/MordechaiHadad/bob
 if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
+    [[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
     export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
 fi
 
 # Add neovim installation path, installed manually from release page
 # https://github.com/neovim/neovim/releases
 if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/share/nvim-release/bin:"* ]]; then
+    [[ ":$PATH:" != *":$HOME/.local/share/nvim-release/bin:"* ]]; then
     export PATH="$HOME/.local/share/nvim-release/bin:$PATH"
 fi
 
 # Define default editor nvim, vim, vi or nano
-if command -v nvim &> /dev/null; then
+if is_command "nvim"; then
     export EDITOR='nvim'
     alias vimdiff="nvim -d"
     # alias vim="nvim"
-elif command -v vim &> /dev/null; then
+elif is_command "vim"; then
     export EDITOR='vim'
-elif command -v vi &> /dev/null; then
+elif is_command "vi"; then
     export EDITOR='vi'
 else
     export EDITOR='nano'
@@ -217,14 +225,14 @@ export TERM=xterm-256color
 [ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source ~/fzf-marks/fzf-marks.plugin.bash
 
 if [ -d "$HOME/.local/bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
     export PATH="$HOME/.local/bin:$PATH"
 fi
 
 alias v="$EDITOR"
 
 # Repeat given char N times using shell function
-rep(){
+rep() {
     local start=1
     local end=${1:-80}
     local str="${2:-=}"
@@ -232,29 +240,32 @@ rep(){
 }
 
 # Go to the given number of levels up
-up(){
+up() {
     local num=${1:-1}
     if [[ ! $num =~ ^[0-9]+$ ]]; then
         echo "Invalid input of the number of levels to go up."
         return
     fi
-    eval "$(echo -n 'cd '; rep "$num" '../')"
+    eval "$(
+        echo -n 'cd '
+        rep "$num" '../'
+    )"
 }
 
 # Store the terraform cache in a shared directory between all projects
-if command -v terraform &> /dev/null; then
+if is_command "terraform"; then
     tf_cache_path="$HOME/.cache/tf-plugins-cache"
     [ -d "$tf_cache_path" ] || mkdir -p "$tf_cache_path"
     export TF_PLUGIN_CACHE_DIR="$tf_cache_path"
     unset tf_cache_path
 fi
 
-if command -v aws-vault &> /dev/null; then
+if is_command "aws-vault"; then
     export AWS_VAULT_BACKEND=file
 fi
 
-command -v terraform &> /dev/null && alias tf="terraform"
-command -v terragrunt &> /dev/null && alias tg="terragrunt"
+is_command "terraform" && alias tf="terraform"
+is_command "terragrunt" && alias tg="terragrunt"
 
 alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
 
@@ -264,10 +275,10 @@ alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_G
 
 alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 
-command -v trash &> /dev/null && alias rm="trash-put"
+is_command "trash" && alias rm="trash-put"
 
 # Define eza aliases conditionally
-if command -v eza &> /dev/null; then
+if is_command "eza"; then
     alias l="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
     alias lle="eza --long --all --header --links --git --icons --color=always \
@@ -295,10 +306,10 @@ if [ -d "$HOME/.rbenv/bin" ]; then
     eval "$(rbenv init - bash)"
 fi
 # Setup ruby environment
-export_all_ruby_versions_bin_dirs () {
+export_all_ruby_versions_bin_dirs() {
     local version versions
     if [ -d "$HOME/.rbenv/versions" ]; then
-        read -ra versions <<< "$(find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d)"
+        read -ra versions <<<"$(find "$HOME/.rbenv/versions" -mindepth 1 -maxdepth 1 -type d)"
         for version in "${versions[@]}"; do
             if [ -d "$version/bin" ] && [[ ":$PATH:" != *":$version/bin:"* ]]; then
                 export PATH="$version/bin:$PATH"
@@ -312,9 +323,9 @@ export_all_ruby_versions_bin_dirs
 export BAT_THEME="TwoDark"
 
 # FZF settings
-if command -v fd &> /dev/null; then
+if is_command "fd"; then
     FD_BIN_NAME="fd"
-elif command -v fdfind &> /dev/null; then
+elif is_command "fdfind"; then
     FD_BIN_NAME="fdfind"
 fi
 if [[ -n $FD_BIN_NAME ]]; then
@@ -358,7 +369,7 @@ if [[ ! -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]]; then
 fi
 # Lazy load
 if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
-    lazy_fgb () {
+    lazy_fgb() {
         unset -f \
             fgb \
             gbl \
@@ -409,7 +420,7 @@ fi
 alias cdq='cd "$(fd -t d . | fzf)"'
 
 # enable zoxide
-if command -v zoxide &> /dev/null; then
+if is_command "zoxide"; then
     eval "$(zoxide init bash)"
     export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
     --bind=tab:up,shift-tab:down \
@@ -427,5 +438,5 @@ if [[ $- == *i* ]]; then # in interactive session
 fi
 
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
-  git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
+    git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
