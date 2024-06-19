@@ -32,8 +32,22 @@ blocks:
   segments:
   - type: os
     foreground: p:bg-gray-300
+    background: transparent
     style: plain
-    template: "{{.Icon}}{{ if .WSL }} {{ end }} "
+    template: "{{ .Icon }}{{ if .WSL }} {{ end }} "
+
+  - type: shell
+    foreground: p:bg-gray-300
+    background: transparent
+    style: plain
+    properties:
+      mapped_shell_names:
+        bash: ""
+        cmd: ""
+        nu: "<p:bg-green-500>nu</>"
+        pwsh: ""
+        zsh: "<i>zsh</>"
+    template: "{{ .Name }} "
 
   - type: root
     foreground: p:bg-yellow-200
