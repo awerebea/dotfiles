@@ -12,6 +12,12 @@ export OSH="/home/$USER/.oh-my-bash"
 # shellcheck disable=2034
 THEME_SHOW_SUDO="fasle"
 
+if ! command -v "aliae" &>/dev/null; then
+    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+else
+    eval "$(aliae init bash --config "$HOME"/.aliae.yaml)"
+fi
+
 # Uncomment the following line to use case-sensitive completion.
 # OMB_CASE_SENSITIVE="true"
 
@@ -189,21 +195,7 @@ HISTFILESIZE=200000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-is_command() {
-    if command -v "$1" &>/dev/null; then
-        echo true
-    else
-        echo false
-    fi
-}
-
-if ! is_command "aliae"; then
-    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
-else
-    eval "$(aliae init zsh --config "$HOME"/.aliae.yaml)"
-fi
-
-if is_command "direnv"; then
+if command -v "direnv" &>/dev/null; then
     eval "$(direnv hook bash)"
 fi
 
@@ -222,13 +214,13 @@ if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
 fi
 
 # Define default editor nvim, vim, vi or nano
-if is_command "nvim"; then
+if command -v "nvim" &>/dev/null; then
     export EDITOR='nvim'
     alias vimdiff="nvim -d"
     # alias vim="nvim"
-elif is_command "vim"; then
+elif command -v "vim" &>/dev/null; then
     export EDITOR='vim'
-elif is_command "vi"; then
+elif command -v "vi" &>/dev/null; then
     export EDITOR='vi'
 else
     export EDITOR='nano'
@@ -271,19 +263,19 @@ up() {
 }
 
 # Store the terraform cache in a shared directory between all projects
-if is_command "terraform"; then
+if command -v "terraform" &>/dev/null; then
     tf_cache_path="$HOME/.cache/tf-plugins-cache"
     [ -d "$tf_cache_path" ] || mkdir -p "$tf_cache_path"
     export TF_PLUGIN_CACHE_DIR="$tf_cache_path"
     unset tf_cache_path
 fi
 
-if is_command "aws-vault"; then
+if command -v "aws-vault" &>/dev/null; then
     export AWS_VAULT_BACKEND=file
 fi
 
-is_command "terraform" && alias tf="terraform"
-is_command "terragrunt" && alias tg="terragrunt"
+command -v "terraform" &>/dev/null && alias tf="terraform"
+command -v "terragrunt" &>/dev/null && alias tg="terragrunt"
 
 alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
 
@@ -296,10 +288,10 @@ alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_G
 
 alias rr='ranger --choosedir=$HOME/.rangerdir; cd "$(cat $HOME/.rangerdir)" > /dev/null 2>&1'
 
-is_command "trash" && alias rm="trash-put"
+command -v "trash" &>/dev/null && alias rm="trash-put"
 
 # Define eza aliases conditionally
-if is_command "eza"; then
+if command -v "eza" &>/dev/null; then
     alias l="eza --long --all --header --links --git --icons --color=always \
     --group-directories-first --color-scale"
     alias lle="eza --long --all --header --links --git --icons --color=always \
@@ -346,9 +338,9 @@ export_all_ruby_versions_bin_dirs
 export BAT_THEME="TwoDark"
 
 # FZF settings
-if is_command "fd"; then
+if command -v "fd" &>/dev/null; then
     FD_BIN_NAME="fd"
-elif is_command "fdfind"; then
+elif command -v "fdfind" &>/dev/null; then
     FD_BIN_NAME="fdfind"
 fi
 if [[ -n $FD_BIN_NAME ]]; then
@@ -446,7 +438,7 @@ fi
 alias cdq='cd "$(fd -t d . | fzf)"'
 
 # enable zoxide
-if is_command "zoxide"; then
+if command -v "zoxide" &>/dev/null; then
     eval "$(zoxide init bash)"
     export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
     --bind=tab:up,shift-tab:down \
