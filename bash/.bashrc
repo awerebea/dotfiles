@@ -11,9 +11,6 @@ export OSH="/home/$USER/.oh-my-bash"
 # it'll load a random theme each time that oh-my-bash is loaded.
 # shellcheck disable=2034
 THEME_SHOW_SUDO="fasle"
-__PB10K_PROMPT_LOCAL_USER_INFO="false"
-# shellcheck disable=2034
-OSH_THEME="powerbash10k"
 
 # Uncomment the following line to use case-sensitive completion.
 # OMB_CASE_SENSITIVE="true"
@@ -148,7 +145,6 @@ plugins=(
 source "$OSH"/oh-my-bash.sh
 
 # User configuration
-pb10k show python
 
 # export MANPATH="/usr/local/man:$MANPATH"
 
@@ -200,6 +196,12 @@ is_command() {
         echo false
     fi
 }
+
+if ! is_command "aliae"; then
+    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+else
+    eval "$(aliae init zsh --config "$HOME"/.aliae.yaml)"
+fi
 
 if is_command "direnv"; then
     eval "$(direnv hook bash)"
