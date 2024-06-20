@@ -78,7 +78,15 @@ return {
     end
 
     vim.keymap.set("n", "<leader>ff", function()
-      neoscopes_find_files()
+      require("telescope.builtin").find_files {
+        search_dirs = get_search_dirs(),
+      }
+    end, { desc = "Find files (menufacture)" })
+    vim.keymap.set("v", "<leader>ff", function()
+      require("telescope.builtin").find_files {
+        search_dirs = get_search_dirs(),
+        default_text = require("utils").get_visual_selection_text()[1],
+      }
     end, { desc = "Find files (menufacture)" })
     vim.keymap.set("n", "<leader>f/", function()
       neoscopes_live_grep()
