@@ -285,7 +285,6 @@ plugins=(
     forgit
     fzf-tab
     git-flow
-    git
     git-extra-commands
     git-flow-completion
     gunstage
@@ -1354,46 +1353,14 @@ zvm_vi_yank() {
 }
 
 # Git. Fetch all origin remote branches
-# shellcheck disable=2154
-alias glall='git branch -r | grep -v "\->" | while read remote; do git branch --track "${remote#origin/}" "$remote"; done'
-
 # Git aliases
-# Git. Amend commit, preserve committer date
-alias gcpd!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit -v --amend'
-# Git. Amend commit, preserve committer date, no-edit
-alias gcpdn!='GIT_COMMITTER_DATE=$(git log -n 1 --format=%aD) git commit --amend --no-edit'
-# Git. Amend commit, update author date
-alias gcud!='git commit -v --amend --date=now'
-# Git. Amend commit, update author date, no-edit
-alias gcudn!='git commit --amend --date=now --no-edit'
-# Rebase preserving merges
-alias grbrm='git rebase --rebase-merges'
-# Rebase preserving merges and committer date
-alias grbpdrm='git rebase --committer-date-is-author-date --rebase-merges'
-# Rebase interactively preserving merges
-alias grbirm='git rebase -i --rebase-merges'
-# Rebase interactively preserving merges and committer date
-alias grbipdrm='git rebase -i --committer-date-is-author-date --rebase-merges'
-# Rebase preserving committer date
-alias grbpd='git rebase --committer-date-is-author-date'
-# Rebase interactively preserving committer date
-alias grbipd='git rebase -i --committer-date-is-author-date'
-alias glpf='git log --pretty=fuller'
 alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
-alias glsa='git ls-files $(git rev-parse --show-toplevel)'
 alias -g GR='$(git rev-parse --show-toplevel)'
-alias cdgr='cd "$(git rev-parse --show-toplevel)"'
 # Prune local tracking branches that do not exist on remote anymore
 cleanup-git-branches() {
     git fetch -p ; git branch -r | awk '{print $1}' | grep -E -v -f /dev/fd/0 <(git branch -vv | \
         grep origin) | awk '{print $1}' | xargs git branch -d
 }
-alias gcm='git switch $(git_main_branch)'
-alias gcd='git switch $(git_develop_branch)'
-alias gpf='git push --force-with-lease'
-alias gbsc='git branch --show-current'
-alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
-alias gdh='git -c delta.side-by-side=true diff'
 
 # Execute any alias or command in dotfiles repo
 dots() {
@@ -1566,8 +1533,6 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         alias gwt='fgb worktree total --confirm'
         fgb "$@"
     }
-    unalias gwt
-    unalias gbl
     function fgb() {
         lazy_fgb "$@"
     }

@@ -134,7 +134,6 @@ aliases=(
 # Add wisely, as too many plugins slow down shell startup.
 # shellcheck disable=2034
 plugins=(
-    git
     bashmarks
     progress
     sudo
@@ -422,8 +421,6 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         alias gwt='fgb worktree total --confirm'
         fgb "$@"
     }
-    # unalias gwt
-    # unalias gbl
     function fgb {
         lazy_fgb "$@"
     }
