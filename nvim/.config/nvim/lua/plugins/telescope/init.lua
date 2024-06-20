@@ -31,6 +31,16 @@ return {
       --   desc = "Find files (menufacture)",
       -- },
       -- {
+      --   "<leader>ff",
+      --   mode = "x",
+      --   function()
+      --     require("telescope").extensions.menufacture.find_files {
+      --       default_text = require("utils").get_visual_selection_text()[1],
+      --     }
+      --   end,
+      --   desc = "Find files (menufacture)",
+      -- },
+      -- {
       --   "<leader>f/",
       --   function()
       --     require("telescope").extensions.menufacture.live_grep()
