@@ -11,3 +11,288 @@ script:
 - value: |
     eval "$(oh-my-posh init {{ .Shell }})"
   if: and (hasCommand "oh-my-posh") (match .Shell "bash" "zsh")
+  # Remove all existing conflicting aliases
+- value: |
+    Remove-Alias -Force -Name g 2>&1 | out-null
+    Remove-Alias -Force -Name ga 2>&1 | out-null
+    Remove-Alias -Force -Name gaa 2>&1 | out-null
+    Remove-Alias -Force -Name gapa 2>&1 | out-null
+    Remove-Alias -Force -Name gau 2>&1 | out-null
+    Remove-Alias -Force -Name gap 2>&1 | out-null
+    Remove-Alias -Force -Name gb 2>&1 | out-null
+    Remove-Alias -Force -Name gbD 2>&1 | out-null
+    Remove-Alias -Force -Name gba 2>&1 | out-null
+    Remove-Alias -Force -Name gbd 2>&1 | out-null
+    Remove-Alias -Force -Name gc 2>&1 | out-null
+    Remove-Alias -Force -Name gcs 2>&1 | out-null
+    Remove-Alias -Force -Name gc! 2>&1 | out-null
+    Remove-Alias -Force -Name gcl 2>&1 | out-null
+    Remove-Alias -Force -Name gclean 2>&1 | out-null
+    Remove-Alias -Force -Name gcn! 2>&1 | out-null
+    Remove-Alias -Force -Name gco 2>&1 | out-null
+    Remove-Alias -Force -Name gcp 2>&1 | out-null
+    Remove-Alias -Force -Name gcpa 2>&1 | out-null
+    Remove-Alias -Force -Name gcpc 2>&1 | out-null
+    Remove-Alias -Force -Name gcpd! 2>&1 | out-null
+    Remove-Alias -Force -Name gcpdn! 2>&1 | out-null
+    Remove-Alias -Force -Name gcud! 2>&1 | out-null
+    Remove-Alias -Force -Name gcudn! 2>&1 | out-null
+    Remove-Alias -Force -Name gd 2>&1 | out-null
+    Remove-Alias -Force -Name gdca 2>&1 | out-null
+    Remove-Alias -Force -Name gdcw 2>&1 | out-null
+    Remove-Alias -Force -Name gds 2>&1 | out-null
+    Remove-Alias -Force -Name ggsup 2>&1 | out-null
+    Remove-Alias -Force -Name gl 2>&1 | out-null
+    Remove-Alias -Force -Name glr 2>&1 | out-null
+    Remove-Alias -Force -Name glg 2>&1 | out-null
+    Remove-Alias -Force -Name glgp 2>&1 | out-null
+    Remove-Alias -Force -Name glo 2>&1 | out-null
+    Remove-Alias -Force -Name gloga 2>&1 | out-null
+    Remove-Alias -Force -Name glpf 2>&1 | out-null
+    Remove-Alias -Force -Name gm 2>&1 | out-null
+    Remove-Alias -Force -Name gma 2>&1 | out-null
+    Remove-Alias -Force -Name gp 2>&1 | out-null
+    Remove-Alias -Force -Name gpf 2>&1 | out-null
+    Remove-Alias -Force -Name gpf! 2>&1 | out-null
+    Remove-Alias -Force -Name gpsup 2>&1 | out-null
+    Remove-Alias -Force -Name gra 2>&1 | out-null
+    Remove-Alias -Force -Name grb 2>&1 | out-null
+    Remove-Alias -Force -Name grba 2>&1 | out-null
+    Remove-Alias -Force -Name grbc 2>&1 | out-null
+    Remove-Alias -Force -Name grbs 2>&1 | out-null
+    Remove-Alias -Force -Name grbi 2>&1 | out-null
+    Remove-Alias -Force -Name grbipd 2>&1 | out-null
+    Remove-Alias -Force -Name grbpd 2>&1 | out-null
+    Remove-Alias -Force -Name grbpdrm 2>&1 | out-null
+    Remove-Alias -Force -Name grev 2>&1 | out-null
+    Remove-Alias -Force -Name grh 2>&1 | out-null
+    Remove-Alias -Force -Name grhh 2>&1 | out-null
+    Remove-Alias -Force -Name grs 2>&1 | out-null
+    Remove-Alias -Force -Name grv 2>&1 | out-null
+    Remove-Alias -Force -Name gss 2>&1 | out-null
+    Remove-Alias -Force -Name gst 2>&1 | out-null
+    Remove-Alias -Force -Name gsta 2>&1 | out-null
+    Remove-Alias -Force -Name gstaa 2>&1 | out-null
+    Remove-Alias -Force -Name gstc 2>&1 | out-null
+    Remove-Alias -Force -Name gstd 2>&1 | out-null
+    Remove-Alias -Force -Name gstl 2>&1 | out-null
+    Remove-Alias -Force -Name gstp 2>&1 | out-null
+    Remove-Alias -Force -Name gsts 2>&1 | out-null
+    Remove-Alias -Force -Name gsts 2>&1 | out-null
+    Remove-Alias -Force -Name gsu 2>&1 | out-null
+    Remove-Alias -Force -Name gsw 2>&1 | out-null
+    Remove-Alias -Force -Name gswc 2>&1 | out-null
+    Remove-Alias -Force -Name gupv 2>&1 | out-null
+    Remove-Alias -Force -Name gpd 2>&1 | out-null
+    Remove-Alias -Force -Name gr 2>&1 | out-null
+    Remove-Alias -Force -Name grmv 2>&1 | out-null
+    Remove-Alias -Force -Name grrm 2>&1 | out-null
+    Remove-Alias -Force -Name grset 2>&1 | out-null
+    Remove-Alias -Force -Name gbs  2>&1 | out-null
+    Remove-Alias -Force -Name gbsb 2>&1 | out-null
+    Remove-Alias -Force -Name gbsg 2>&1 | out-null
+    Remove-Alias -Force -Name gbsr 2>&1 | out-null
+    Remove-Alias -Force -Name gbss 2>&1 | out-null
+    Remove-Alias -Force -Name gcm 2>&1 | out-null
+    Remove-Alias -Force -Name grt 2>&1 | out-null
+  if: match .Shell "pwsh"
+
+alias:
+# Git
+- name: g
+  value: git
+- name: ga
+  value: git add
+- name: gaa
+  value: git add --all
+- name: gau
+  value: git add --update
+- name: gap
+  value: git apply
+- name: gb
+  value: git branch
+- name: gba
+  value: git branch -a
+- name: gbd
+  value: git branch -d
+- name: gbD
+  value: git branch -D
+- name: gc
+  value: git commit -v
+- name: gc
+  value: git commit -v -S
+- name: gc!
+  value: git commit -v --amend
+- name: gcl
+  value: git clone --recurse-submodules
+- name: gclean
+  value: git clean -id
+- name: gcn!
+  value: git commit -v --no-edit --amend
+- name: gco
+  value: git checkout
+- name: gcp
+  value: git cherry-pick
+- name: gcpa
+  value: git cherry-pick --abort
+- name: gcpc
+  value: git cherry-pick --continue
+- name: gcpd!
+  value: "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD; git commit --amend $args; Remove-Item
+    Env:GIT_COMMITTER_DATE"
+  type: function
+  if: and (eq .OS "windows") (match .Shell "pwsh")
+- name: gcpdn!
+  value: "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD; git commit --amend --no-edit
+    $args; Remove-Item Env:GIT_COMMITTER_DATE"
+  type: function
+  if: and (eq .OS "windows") (match .Shell "pwsh")
+- name: gcud!
+  value: git commit -v --amend --date=now
+- name: gd
+  value: git diff
+- name: gdca
+  value: git diff --cached
+- name: gdcw
+  value: git diff --cached --word-diff
+- name: gds
+  value: git diff --staged
+- name: ggsup
+  value: git branch --set-upstream-to=origin
+- name: gl
+  value: git pull
+- name: glr
+  value: git pull --rebase=merges -v
+- name: glg
+  value: git log --stat
+- name: glgp
+  value: git log --stat -p
+- name: glo
+  value: git log --oneline --decorate
+- name: gloga
+  value: git log --oneline --decorate --graph --all
+- name: glpf
+  value: git log --pretty=fuller
+- name: gm
+  value: git merge
+- name: gma
+  value: git merge --abort
+- name: gp
+  value: git push
+- name: gpf
+  value: git push --force-with-lease
+- name: gpf!
+  value: git push --force
+- name: gpsup
+  value: git push --set-upstream origin $(git branch --show-current)
+  type: function
+- name: gra
+  value: git remote add
+- name: grb
+  value: git rebase
+- name: grba
+  value: git rebase --abort
+- name: grbc
+  value: git rebase --continue
+- name: grbs
+  value: git rebase --skip
+- name: grbi
+  value: git rebase -i
+- name: grbipd
+  value: git rebase -i --committer-date-is-author-date
+- name: grbpd
+  value: git rebase --committer-date-is-author-date
+- name: grbipdrm
+  value: git rebase -i --committer-date-is-author-date --rebase-merges
+- name: grbpdrm
+  value: git rebase --committer-date-is-author-date --rebase-merges
+- name: grev
+  value: git revert
+- name: grh
+  value: git reset
+- name: grhh
+  value: git reset --hard
+- name: grs
+  value: git restore
+- name: grv
+  value: git remote -v
+- name: gss
+  value: git status -s
+- name: gst
+  value: git status
+- name: gsta
+  value: git stash push
+- name: gstaa
+  value: git stash apply
+- name: gstc
+  value: git stash clear
+- name: gstd
+  value: git stash drop
+- name: gstl
+  value: git stash list
+- name: gstp
+  value: git stash pop
+- name: gsts
+  value: git stash show --text
+- name: gsu
+  value: git submodule update
+- name: gsw
+  value: git switch
+- name: gswc
+  value: git switch -c
+- name: gupv
+  value: git pull --rebase -v
+- name: gpd
+  value: git push --dry-run
+- name: gr
+  value: git remote
+- name: grmv
+  value: git remote rename
+- name: grrm
+  value: git remote remove
+- name: grset
+  value: git remote set-url
+- name: gbs
+  value: git bisect
+- name: gbsb
+  value: git bisect bad
+- name: gbsg
+  value: git bisect good
+- name: gbsr
+  value: git bisect reset
+- name: gbss
+  value: git bisect start
+- name: gcm
+  value: git switch main || git switch master
+  type: function
+  if: and (eq .OS "windows") (match .Shell "pwsh")
+- name: grt
+  value: cd "$(git rev-parse --show-toplevel)"
+  type: function
+
+- name: v
+  value: nvim
+  if: and (eq .OS "windows") (hasCommand "nvim")
+- name: lg
+  value: lazygit
+  if: and (eq .OS "windows") (hasCommand "lazygit")
+- name: activate
+  value: |
+    param (
+        [string]$venvName = ".venv"
+    )
+
+    # Create the virtual environment
+    python -m venv $venvName
+
+    # Activate the virtual environment
+    $activateScript = Join-Path $venvName "Scripts\Activate.ps1"
+    if (Test-Path $activateScript)
+    {
+        . $activateScript
+    } else
+    {
+        Write-Error "Failed to find Activate.ps1 script in the virtual environment."
+    }
+  type: function
+  if: and (eq .OS "windows") (match .Shell "pwsh")
