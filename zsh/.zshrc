@@ -987,11 +987,11 @@ if [[ -n $FD_BIN_NAME ]]; then
     # - The first argument to the function ($1) is the base path to start traversal
     # - See the source code (completion.{bash,zsh}) for the details.
     _fzf_compgen_path() {
-        eval "$FD_BIN_NAME --strip-cwd-prefix --hidden --exclude .git --exclude .venv . \"$1\""
+        eval "$FD_BIN_NAME --hidden --exclude .git --exclude .venv . \"$1\" | sed 's|^\./||'"
     }
     # Use fd to generate the list for directory completion
     _fzf_compgen_dir() {
-        eval "$FD_BIN_NAME --strip-cwd-prefix --type directory --hidden --exclude .git --exclude .venv . \"$1\""
+        eval "$FD_BIN_NAME --type directory --hidden --exclude .git --exclude .venv . \"$1\" | sed 's|^\./||'"
     }
     FZF_DEFAULT_COMMAND="$FD_BIN_NAME --strip-cwd-prefix --follow --hidden --exclude .git --exclude .venv"
     export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type directory"
