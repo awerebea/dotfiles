@@ -34,7 +34,7 @@ blocks:
     foreground: p:bg-gray-300
     background: transparent
     style: plain
-    template: "{{ .Icon }}{{ if .WSL }} {{ end }} "
+    template: "{{ .Icon }} "
 
   - type: shell
     foreground: p:bg-gray-300
