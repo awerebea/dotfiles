@@ -132,3 +132,9 @@ Set-PSReadLineKeyHandler -Chord "Ctrl+RightArrow" -Function ForwardWord
 Set-PSReadLineKeyHandler -Chord "Alt+k" -Function ForwardWord
 
 Set-PSReadLineKeyHandler -Chord "Alt+l" -Function ClearScreen
+
+function Set-EnvVar
+{
+    $env:POSH_PATH_MAX_WIDTH = $Host.UI.RawUI.WindowSize.Width
+}
+New-Alias -Name 'Set-PoshContext' -Value 'Set-EnvVar' -Scope Global -Force
