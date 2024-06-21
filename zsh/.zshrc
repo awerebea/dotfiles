@@ -1012,16 +1012,25 @@ FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
 --all --git {} 2>/dev/null || tree -a -C -L 1 -v --dirsfirst {} \
 2>/dev/null)) || echo {} 2>/dev/null | head -200"
 export FZF_DEFAULT_OPTS="--height=100% \
+  --inline-info \
+  --ansi \
+  --scheme=history \
   --preview '${FZF_PREVIEW_STRING/$\'\n\'/}' \
   --preview-window=up:60%:hidden \
   --bind=ctrl-/:toggle-preview \
-  --bind=alt-j:preview-down,alt-k:preview-up \
-  --bind=alt-b:preview-page-up,alt-f:preview-page-down \
-  --bind=alt-u:preview-half-page-up,alt-d:preview-half-page-down \
-  --bind=alt-up:preview-top,alt-down:preview-bottom \
+  --bind=alt-j:preview-down \
+  --bind=alt-k:preview-up \
+  --bind=alt-b:preview-page-up \
+  --bind=alt-f:preview-page-down \
+  --bind=alt-u:preview-half-page-up \
+  --bind=alt-d:preview-half-page-down \
+  --bind=alt-up:preview-top \
+  --bind=alt-down:preview-bottom \
   --bind=ctrl-space:toggle+up \
-  --bind=ctrl-d:half-page-down,ctrl-u:half-page-up \
-  --bind=ctrl-f:page-down,ctrl-b:page-up \
+  --bind=ctrl-d:half-page-down \
+  --bind=ctrl-u:half-page-up \
+  --bind=ctrl-f:page-down \
+  --bind=ctrl-b:page-up \
   --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
   --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
   --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
