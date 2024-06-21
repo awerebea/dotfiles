@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/delete_empty_dirs.sh

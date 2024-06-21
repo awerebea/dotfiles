@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/restart-kernel-input-system.sh

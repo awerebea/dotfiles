@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/sync_partitions.sh

@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/startup_minimized.py

@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/thin-out-timeshift-snapshots.sh
