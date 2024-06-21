@@ -754,8 +754,8 @@ set -g @sidebar-tree-width '60'
 
 # extracto
 set -g @extrakto_key "Bspace"
-set -g @extrakto_filter_order "line word all"
-set -g @extrakto_grab_area recent
+set -g @extrakto_filter_order "all word line url path hash"
+set -g @extrakto_grab_area "recent"
 set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 
 # Add keybinds with modifiers to use the original with other commands
