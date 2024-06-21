@@ -1,0 +1,1 @@
+../../../scripts/.local/bin/touchpad_toggle.sh
