@@ -33,6 +33,7 @@ script:
     Remove-Alias -Force -Name gcp 2>&1 | out-null
     Remove-Alias -Force -Name gcpa 2>&1 | out-null
     Remove-Alias -Force -Name gcpc 2>&1 | out-null
+    Remove-Alias -Force -Name gcps 2>&1 | out-null
     Remove-Alias -Force -Name gcpd! 2>&1 | out-null
     Remove-Alias -Force -Name gcpdn! 2>&1 | out-null
     Remove-Alias -Force -Name gcud! 2>&1 | out-null
@@ -50,6 +51,7 @@ script:
     Remove-Alias -Force -Name gloga 2>&1 | out-null
     Remove-Alias -Force -Name glpf 2>&1 | out-null
     Remove-Alias -Force -Name gm 2>&1 | out-null
+    Remove-Alias -Force -Name gmc 2>&1 | out-null
     Remove-Alias -Force -Name gma 2>&1 | out-null
     Remove-Alias -Force -Name gp 2>&1 | out-null
     Remove-Alias -Force -Name gpf 2>&1 | out-null
@@ -219,6 +221,8 @@ alias:
   value: git cherry-pick --abort
 - name: gcpc
   value: git cherry-pick --continue
+- name: gcps
+  value: git cherry-pick --skip
 - name: gcpd!
   value: "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD; git commit --amend $args; Remove-Item
     Env:GIT_COMMITTER_DATE"
@@ -267,6 +271,8 @@ alias:
   value: git log --pretty=fuller
 - name: gm
   value: git merge
+- name: gmc
+  value: git merge --continue
 - name: gma
   value: git merge --abort
 - name: gp
