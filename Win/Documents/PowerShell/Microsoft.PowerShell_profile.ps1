@@ -48,7 +48,8 @@ Import-Module PSFzf
 # replace 'Ctrl+t' and 'Ctrl+r' with your preferred bindings:
 Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
-$env:FZF_DEFAULT_COMMAND='fd --type f --follow --hidden --exclude .git'
+$env:FZF_DEFAULT_COMMAND = "fd --strip-cwd-prefix --follow --hidden --exclude .git --exclude .venv --type file --type symlink"
+$env:FZF_ALT_C_COMMAND = "fd --strip-cwd-prefix --follow --hidden --exclude .git --exclude .venv --type directory"
 $env:FZF_CTRL_T_COMMAND=$env:FZF_DEFAULT_COMMAND
 $env:FZF_DEFAULT_OPTS = @"
 --height=100%
@@ -127,5 +128,7 @@ Set-PSReadLineKeyHandler -Chord "Alt+Enter" -ScriptBlock {
 }
 # Ctrl+Alt+l to move to the next word
 Set-PSReadLineKeyHandler -Chord "Ctrl+Alt+l" -Function ForwardWord
+Set-PSReadLineKeyHandler -Chord "Ctrl+RightArrow" -Function ForwardWord
+Set-PSReadLineKeyHandler -Chord "Alt+k" -Function ForwardWord
 
 Set-PSReadLineKeyHandler -Chord "Alt+l" -Function ClearScreen
