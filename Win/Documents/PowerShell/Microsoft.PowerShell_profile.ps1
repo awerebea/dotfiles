@@ -1,4 +1,13 @@
-aliae init pwsh --config "$HOME/.aliae.yaml" | Invoke-Expression
+if (-not (Get-Command oh-my-posh -ErrorAction SilentlyContinue))
+{
+    Set-ExecutionPolicy Bypass -Scope Process -Force
+    Invoke-Expression (
+        (New-Object System.Net.WebClient).DownloadString('https://ohmyposh.dev/install.ps1')
+    )
+} else
+{
+    oh-my-posh init pwsh --config "$env:HOME/.oh-my-posh.yaml" | Invoke-Expression
+}
 
 # Vi mode
 Set-PSReadlineOption -EditMode Vi
@@ -133,8 +142,4 @@ Set-PSReadLineKeyHandler -Chord "Alt+k" -Function ForwardWord
 
 Set-PSReadLineKeyHandler -Chord "Alt+l" -Function ClearScreen
 
-function Set-EnvVar
-{
-    $env:POSH_PATH_MAX_WIDTH = $Host.UI.RawUI.WindowSize.Width
-}
-New-Alias -Name 'Set-PoshContext' -Value 'Set-EnvVar' -Scope Global -Force
+. "$HOME\.aliases_pwsh.ps1"

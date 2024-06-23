@@ -1,0 +1,1 @@
+../aliases/.aliases_pwsh.ps1
