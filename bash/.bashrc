@@ -12,10 +12,12 @@ export OSH="/home/$USER/.oh-my-bash"
 # shellcheck disable=2034
 THEME_SHOW_SUDO="fasle"
 
-if ! command -v "aliae" &>/dev/null; then
-    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
+if ! command -v "oh-my-posh" &>/dev/null; then
+    curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
 else
-    eval "$(aliae init bash --config "$HOME"/.aliae.yaml)"
+    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+        eval "$(oh-my-posh init bash --config "$HOME"/.oh-my-posh.yaml)"
+    fi
 fi
 
 # Uncomment the following line to use case-sensitive completion.
@@ -468,3 +470,6 @@ fi
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
+
+# shellcheck disable=1091
+source "$HOME/.aliases_sh.sh"

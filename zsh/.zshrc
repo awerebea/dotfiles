@@ -6,12 +6,10 @@ zstyle ':omz:update' mode disabled
 
 if [[ ! "${commands[oh-my-posh]}" ]]; then
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
-fi
-
-if [[ ! "${commands[aliae]}" ]]; then
-    curl -s https://aliae.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
 else
-    eval "$(aliae init zsh --config "$HOME"/.aliae.yaml)"
+    if [ "$TERM_PROGRAM" != "Apple_Terminal" ]; then
+        eval "$(oh-my-posh init zsh --config "$HOME"/.oh-my-posh.yaml)"
+    fi
 fi
 
 # Add neovim installation path, installed by bob
@@ -1585,6 +1583,6 @@ zvm_after_init() {
     [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed -e "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|; s|LBUFFER=\"\$selected\"|selected=\"\${selected#* * }\"; LBUFFER=\"\${selected#* }\"|")"
 }
 
-set_poshcontext() {
-    POSH_PATH_MAX_WIDTH="$(tput cols)"; export POSH_PATH_MAX_WIDTH
-}
+# Aliases
+# shellcheck disable=1091
+source "$HOME/.aliases_sh.sh"
