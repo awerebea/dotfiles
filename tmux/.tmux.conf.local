@@ -495,6 +495,9 @@ tmux_conf_uninstall_plugins_on_reload=false
 
 # My overrides
 
+# Update plugins: <prefix> + U
+set -g @tpm-update "U"
+
 # Determine Tmux version for version-specific commands
 run-shell 'tmux setenv -g TMUX_VERSION $(tmux -V | \
   sed -En "s/^tmux[^0-9]*([.0-9]+).*/\1/p")'
