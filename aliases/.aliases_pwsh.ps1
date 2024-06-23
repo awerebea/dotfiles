@@ -1,10 +1,10 @@
 if (Get-Command oh-my-posh -ErrorAction SilentlyContinue)
 {
-    function Set-EnvVar
+    function Set-PoshEnvVars
     {
         $env:POSH_PATH_MAX_WIDTH = $Host.UI.RawUI.WindowSize.Width
     }
-    New-Alias -Name 'Set-PoshContext' -Value 'Set-EnvVar' -Scope Global -Force
+    New-Alias -Name 'Set-PoshContext' -Value 'Set-PoshEnvVars' -Scope Global -Force
 }
 
 
