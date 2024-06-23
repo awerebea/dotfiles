@@ -152,11 +152,11 @@ function Invoke-GitCloneRecursesubmodules
 }
 New-Alias -Name 'gcl' -Value 'Invoke-GitCloneRecursesubmodules' -Scope Global -Force
 
-function Invoke-GitCleanId
+function Invoke-GitCleanInteractiveWithDirectories
 {
-    git clean -id $args
+    git clean --interactive -d $args
 }
-New-Alias -Name 'gclean' -Value 'Invoke-GitCleanId' -Scope Global -Force
+New-Alias -Name 'gclean' -Value 'Invoke-GitCleanInteractiveWithDirectories' -Scope Global -Force
 
 function Invoke-GitSwitchMainBranch
 {
