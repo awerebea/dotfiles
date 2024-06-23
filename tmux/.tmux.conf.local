@@ -861,7 +861,8 @@ if-shell '[ $(uname -s) = Linux ]' {
     tmux display-message "Copied multiple items!"'
 }
 # tmux-fzf
-TMUX_FZF_LAUNCH_KEY="M-f" # prefix Alt-f
+bind-key "M-f" command-prompt { find-window -Z "%%" }
+TMUX_FZF_LAUNCH_KEY="f" # prefix Alt-f
 
 # tmux-fzf-url
 set -g @fzf-url-bind 'u'
