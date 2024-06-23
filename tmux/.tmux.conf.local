@@ -560,6 +560,7 @@ set -g @plugin "kiyoon/treemux"
 set -g @plugin "aserowy/tmux.nvim"
 set -g @plugin "roy2220/easyjump.tmux"
 set -g @plugin "omerxx/tmux-sessionx"
+set -g @plugin 'graemedavidson/tmux-pane-focus'
 
 # treemux
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
@@ -679,7 +680,7 @@ tmux_conf_theme_window_status_last_bg='default'
 tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
-tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S '
+tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S |#[fg=colour255,bg=colour237] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default]'
 tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #[fg=colour249]#(sensors | grep -A 0 'temp1:' | cut -c16-18 | tr -d .)°C #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]%a %F %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
@@ -1001,3 +1002,8 @@ set -g @sessionx-custom-paths-subdirectories "true"
 set -g @sessionx-filter-current "false"
 set -g @sessionx-window-mode "on"
 set -g @sessionx-zoxide-mode "off"
+
+# tmux-pane-focus
+# Press <prefix> + T to override settings for the current window
+set -g @pane-focus-size '50'
+set -g @pane-focus-direction '+'
