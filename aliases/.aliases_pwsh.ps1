@@ -447,6 +447,24 @@ function Invoke-GitRevert
 }
 New-Alias -Name 'grev' -Value 'Invoke-GitRevert' -Scope Global -Force
 
+function Invoke-GitRevertAbort
+{
+    git revert --abort $args
+}
+New-Alias -Name 'greva' -Value 'Invoke-GitRevertAbort' -Scope Global -Force
+
+function Invoke-GitRevertContinue
+{
+    git revert --continue $args
+}
+New-Alias -Name 'grevc' -Value 'Invoke-GitRevertContinue' -Scope Global -Force
+
+function Invoke-GitRevertQuit
+{
+    git revert --quit $args
+}
+New-Alias -Name 'grevq' -Value 'Invoke-GitRevertQuit' -Scope Global -Force
+
 function Invoke-GitReset
 {
     git reset $args
