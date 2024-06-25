@@ -502,10 +502,25 @@ return {
         pickers = {
           find_files = {
             hidden = true,
-            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv" },
           },
           live_grep = {
             only_sort_text = true,
+            vimgrep_arguments = {
+              "rg",
+              "--color=never",
+              "--no-heading",
+              "--with-filename",
+              "--line-number",
+              "--column",
+              "--smart-case",
+              "--hidden",
+              "-g",
+              "!.git",
+              "-g",
+              "!.venv",
+              "--multiline",
+            },
           },
           git_commits = {
             layout_strategy = "vertical",
@@ -518,7 +533,7 @@ return {
           },
           git_files = {
             hidden = true,
-            find_command = { "rg", "--files", "--hidden", "-g", "!.git" },
+            find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv" },
           },
           buffers = {
             ignore_current_buffer = false,
