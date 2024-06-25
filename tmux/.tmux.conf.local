@@ -999,7 +999,7 @@ bind-key -T ctrl_g_mode g send-keys C-g g # used by fzf-marks
 bind-key O select-pane -t :.+
 set -g @sessionx-bind "o"
 set -g @sessionx-x-path ""
-set -g @sessionx-custom-paths "$HOME/git,$HOME/Projects,$HOME/work,$HOME/Github"
+set -g @sessionx-custom-paths "$HOME/git,$HOME/git/dpt-repos,$HOME/git/hnb-repos,$HOME/Projects,$HOME/work,$HOME/Github"
 set -g @sessionx-custom-paths-subdirectories "true"
 set -g @sessionx-filter-current "true"
 set -g @sessionx-window-mode "off"
