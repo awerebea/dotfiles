@@ -1176,7 +1176,7 @@ fzm-lazy-load() {
     unset -f fzm-hotkey-lazy-load fzm-lazy-load fzm mark
     # shellcheck disable=1091
     source "$ZSH_PLUGINS/fzf-marks/fzf-marks.plugin.zsh"
-    bindkey -v '^g^g' fzm # Ctrl-g is used by fzf-git
+    bindkey -M viins '^g^g' fzm # Ctrl-g is used by fzf-git
 }
 # shellcheck disable=2120
 fzm() {
@@ -1195,7 +1195,7 @@ fzm-hotkey-lazy-load() {
 # Make a keyboard widget out of the function above.
 zle -N fzm-hotkey-lazy-load
 # Bind the widget to Ctrl-g Ctrl-g in the `v` keymap.
-bindkey -v '^g^g' fzm-hotkey-lazy-load # Ctrl-g is used by fzf-git
+bindkey -M viins '^g^g' fzm-hotkey-lazy-load # Ctrl-g is used by fzf-git
 alias mm=fzm
 
 # Emulate <C-o> vim behavior
