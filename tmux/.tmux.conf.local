@@ -1008,4 +1008,4 @@ set -g @sessionx-zoxide-mode "off"
 # tmux-pane-focus
 # Press <prefix> + T to override settings for the current window
 set -g @pane-focus-size '50'
-set -g @pane-focus-direction '+'
+set -g @pane-focus-direction '-'
