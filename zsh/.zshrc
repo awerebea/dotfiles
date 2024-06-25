@@ -1174,9 +1174,9 @@ fi
 export FZF_MARKS_JUMP="^g^g"
 fzm-lazy-load() {
     unset -f fzm-hotkey-lazy-load fzm-lazy-load fzm mark
+    zle -D fzm-hotkey-lazy-load
     # shellcheck disable=1091
     source "$ZSH_PLUGINS/fzf-marks/fzf-marks.plugin.zsh"
-    bindkey -M viins '^g^g' fzm # Ctrl-g is used by fzf-git
 }
 # shellcheck disable=2120
 fzm() {
@@ -1186,10 +1186,7 @@ mark() {
     fzm-lazy-load; $0 "$@"
 }
 fzm-hotkey-lazy-load() {
-    unset -f fzm-hotkey-lazy-load fzm-lazy-load fzm mark
-    # shellcheck disable=1091
-    source "$ZSH_PLUGINS/fzf-marks/fzf-marks.plugin.zsh"
-    # shellcheck disable=2119
+    fzm-lazy-load
     fzm
 }
 # Make a keyboard widget out of the function above.
@@ -1209,6 +1206,10 @@ vi-cmd() {
 zle -N vi-cmd
 # Bind the widget to Ctrl-o in the `viins` keymap.
 bindkey -v '^o' vi-cmd
+
+# Required for fzf-marks and fzf-git plugins.
+# For some reason it must be specifically after the block above
+bindkey -r '^g'
 
 # This speeds up pasting w/ autosuggest
 # https://github.com/zsh-users/zsh-autosuggestions/issues/238
