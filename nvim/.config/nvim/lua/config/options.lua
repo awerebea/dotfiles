@@ -459,8 +459,10 @@ vim.cmd [[
     nnoremap <buffer> J :cnext<CR>zz:cclose<CR>:botright copen<CR>
     " Save the changes in the quickfix window
     cnoremap <buffer> w :cgetbuffer<CR>:cclose<CR>:botright copen<CR>
-    " Begin the search and replace
+    " Begin the search and replace for each item in QF
     nnoremap <buffer> <leader>r :cdo s/// \| update<C-Left><C-Left><Left><Left><Left>
+    " Begin the search and replace for each filie in QF
+    nnoremap <buffer> <leader>R :cfdo s/// \| update<C-Left><C-Left><Left><Left><Left>
     " Open location and re-open quickfix window
     nnoremap <buffer> <CR> <CR>zz:cclose<CR>:botright copen<CR>
   endfunction
