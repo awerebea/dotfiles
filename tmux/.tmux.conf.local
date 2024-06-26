@@ -562,6 +562,7 @@ set -g @plugin "roy2220/easyjump.tmux"
 set -g @plugin "omerxx/tmux-sessionx"
 set -g @plugin "graemedavidson/tmux-pane-focus"
 set -g @plugin "jaclu/tmux-power-zoom"
+set -g @plugin "awerebea/tmux-named-snapshot#switch_client_keybinds"
 
 # treemux
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
@@ -1009,3 +1010,8 @@ set -g @sessionx-zoxide-mode "off"
 # Press <prefix> + T to override settings for the current window
 set -g @pane-focus-size '50'
 set -g @pane-focus-direction '-'
+
+# tmux-named-snapshot
+set -g @named-snapshot-switch-client 'N:tns'
+set -g @named-snapshot-save 'm:manual p:* d:dev'
+set -g @named-snapshot-restore 'M:manual P:* D:dev'
