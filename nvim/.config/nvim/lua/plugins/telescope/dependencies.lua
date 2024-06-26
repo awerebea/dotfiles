@@ -81,6 +81,7 @@ return {
   },
   {
     "ThePrimeagen/harpoon",
+    branch = "harpoon2",
     -- From the quickmenu, open a file in:
     -- Vertical split with <ctrl-v>
     -- Horizontal split with <ctrl-x>
