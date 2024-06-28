@@ -115,14 +115,14 @@ return {
         desc = "Help tags",
       },
       {
-        "<leader>fs",
+        "<leader>fSd",
         function()
           require("plugins.telescope.telescopePickers").prettyDocumentSymbols()
         end,
         desc = "Document symbols",
       },
       {
-        "<leader>fS",
+        "<leader>fSw",
         function()
           require("plugins.telescope.telescopePickers").prettyWorkspaceSymbols()
         end,
