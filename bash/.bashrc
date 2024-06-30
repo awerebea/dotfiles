@@ -12,6 +12,11 @@ export OSH="/home/$USER/.oh-my-bash"
 # shellcheck disable=2034
 THEME_SHOW_SUDO="fasle"
 
+if [ -d "$HOME/.local/bin" ] &&
+    [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
+    export PATH="$HOME/.local/bin:$PATH"
+fi
+
 if ! command -v "oh-my-posh" &>/dev/null; then
     curl -s https://ohmyposh.dev/install.sh | bash -s -- -d "$HOME"/.local/bin
 else
@@ -233,11 +238,6 @@ export TERM=xterm-256color
 [ -f ~/.fzf.bash ] && source "$HOME"/.fzf.bash
 # shellcheck disable=1091
 [ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source "$HOME"/fzf-marks/fzf-marks.plugin.bash
-
-if [ -d "$HOME/.local/bin" ] &&
-    [[ ":$PATH:" != *":$HOME/.local/bin:"* ]]; then
-    export PATH="$HOME/.local/bin:$PATH"
-fi
 
 # shellcheck disable=2139
 alias v="$EDITOR"
