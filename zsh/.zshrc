@@ -363,8 +363,7 @@ if [[ "$(uname -n)" == "pc-home" && "$(uname)" == "Darwin" ]]; then
     # Home macOS
     alias o='a -e open' # quick opening files with open
     alias sudo='sudo '
-    # shellcheck disable=2139
-    alias sudoedit="sudo $EDITOR"
+    alias sudoedit='sudo $EDITOR'
     [[ -d "$HOME/Library/Python/3.7/bin" && ":$PATH:" != *":$HOME/Library/Python/3.7/bin:"* ]] && \
         export PATH="$HOME/Library/Python/3.7/bin:$PATH"
     # Use manually installed vim
@@ -529,14 +528,10 @@ fi
 unset BR_SCRIPT
 
 # Personal aliases
-# shellcheck disable=2139
-alias zshconfig="$EDITOR ~/.zshrc"
-# shellcheck disable=2139
-alias vimconfig="$EDITOR ~/.vimrc"
-# shellcheck disable=2139
-alias rangerconfig="$EDITOR ~/.config/ranger/rc.conf"
-# shellcheck disable=2139
-alias zhistedit="$EDITOR ~/.zsh_history"
+alias zshconfig='$EDITOR ~/.zshrc'
+alias vimconfig='$EDITOR ~/.vimrc'
+alias rangerconfig='$EDITOR ~/.config/ranger/rc.conf'
+alias zhistedit='$EDITOR ~/.zsh_history'
 alias vless="/usr/local/share/vim/vim82/macros/less.sh"
 alias cls="clear"
 alias -g B='| bat -n'
@@ -564,16 +559,12 @@ alias 18='cd -18'
 alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
-alias vv='"$EDITOR" "$(fzf)"'
-alias vvv='f -e "$EDITOR"'
-# shellcheck disable=2139
-alias v="$EDITOR"
-# shellcheck disable=2139
-alias c="eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
-# shellcheck disable=2139
-alias vf="fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR"
-# shellcheck disable=2139
-alias cf="fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code"
+alias vv='$EDITOR "$(fzf)"'
+alias vvv='f -e $EDITOR'
+alias v='$EDITOR'
+alias c='eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code'
+alias vf='fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR'
+alias cf='fd --type f --hidden --exclude .git | fzf --reverse | xargs ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code'
 
 # tmux aliases
 alias tksv='tmux kill-server'
@@ -955,7 +946,7 @@ export RANGER_LOAD_DEFAULT_RC=FALSE
 export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 
 # set $EDITOR as the default pager for man pages
-export MANPAGER='nvim +Man!'
+export MANPAGER="$EDITOR +Man!"
 
 # Set Bat theme
 if [[ "${commands[bat]}" ]]; then
