@@ -306,9 +306,6 @@ export_all_ruby_versions_bin_dirs() {
 }
 export_all_ruby_versions_bin_dirs
 
-# Set Bat theme
-export BAT_THEME="TwoDark"
-
 # fzf-git-branches https://github.com/awerebea/fzf-git-branches
 # Auto install
 if [[ ! -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]]; then

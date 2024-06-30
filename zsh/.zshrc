@@ -919,23 +919,6 @@ export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 # set $EDITOR as the default pager for man pages
 export MANPAGER="$EDITOR +Man!"
 
-# Set Bat theme
-if [[ "${commands[bat]}" ]]; then
-    # catppuccin theme
-    bat_config="$(bat --config-dir)"
-    if [[ ! -d "$bat_config/catppuccin" ]]; then
-        mkdir -p "$bat_config"/themes
-        git clone https://github.com/catppuccin/bat.git "$bat_config"/catppuccin
-        for file in "$bat_config"/catppuccin/Catppuccin-*.tmTheme; do
-            if [ -e "$file" ]; then
-                ln -s "$file" "$bat_config"/themes/
-            fi
-        done
-        bat cache --build
-    fi
-    export BAT_THEME="Catppuccin-mocha"
-fi
-
 # Create and launch python VENV
 alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
 alias activate38="python3.8 -m venv .venv && source .venv/bin/activate"

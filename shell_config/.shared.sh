@@ -133,6 +133,23 @@ export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
 # Pass storage path
 export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
 
+# Set Bat theme
+if command -v "bat" &>/dev/null; then
+    # catppuccin theme
+    bat_config="$(bat --config-dir)"
+    if [[ ! -d "$bat_config/catppuccin" ]]; then
+        mkdir -p "$bat_config"/themes
+        git clone https://github.com/catppuccin/bat.git "$bat_config"/catppuccin
+        for file in "$bat_config"/catppuccin/Catppuccin-*.tmTheme; do
+            if [ -e "$file" ]; then
+                ln -s "$file" "$bat_config"/themes/
+            fi
+        done
+        bat cache --build
+    fi
+    export BAT_THEME="Catppuccin-mocha"
+fi
+
 # Git helper functions
 git_current_branch() {
     command git rev-parse --git-dir &>/dev/null || return
