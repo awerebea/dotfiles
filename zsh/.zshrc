@@ -12,35 +12,6 @@ else
     fi
 fi
 
-# Add neovim installation path, installed by bob
-# https://github.com/MordechaiHadad/bob
-if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
-    export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
-fi
-
-# Add neovim installation path, installed manually from release page
-# https://github.com/neovim/neovim/releases
-if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
-[[ ":$PATH:" != *":$HOME/.local/share/nvim-release/bin:"* ]]; then
-    export PATH="$HOME/.local/share/nvim-release/bin:$PATH"
-fi
-
-# Define default editor nvim, vim, vi or nano
-if [[ "${commands[nvim]}" ]]; then
-    export EDITOR='nvim'
-    alias vimdiff="nvim -d"
-    # alias vim="nvim"
-elif [[ "${commands[vim]}" ]]; then
-    export EDITOR='vim'
-elif [[ "${commands[vi]}" ]]; then
-    export EDITOR='vi'
-else
-    export EDITOR='nano'
-fi
-
-export TERM=xterm-256color
-
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_PLUGINS="$ZSH"/custom/plugins
 

@@ -205,35 +205,6 @@ if command -v "direnv" &>/dev/null; then
     eval "$(direnv hook bash)"
 fi
 
-# Add neovim installation path, installed by bob
-# https://github.com/MordechaiHadad/bob
-if [ -d "$HOME/.local/share/bob/nvim-bin" ] &&
-    [[ ":$PATH:" != *":$HOME/.local/share/bob/nvim-bin:"* ]]; then
-    export PATH="$HOME/.local/share/bob/nvim-bin:$PATH"
-fi
-
-# Add neovim installation path, installed manually from release page
-# https://github.com/neovim/neovim/releases
-if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
-    [[ ":$PATH:" != *":$HOME/.local/share/nvim-release/bin:"* ]]; then
-    export PATH="$HOME/.local/share/nvim-release/bin:$PATH"
-fi
-
-# Define default editor nvim, vim, vi or nano
-if command -v "nvim" &>/dev/null; then
-    export EDITOR='nvim'
-    alias vimdiff="nvim -d"
-    # alias vim="nvim"
-elif command -v "vim" &>/dev/null; then
-    export EDITOR='vim'
-elif command -v "vi" &>/dev/null; then
-    export EDITOR='vi'
-else
-    export EDITOR='nano'
-fi
-
-export TERM=xterm-256color
-
 # shellcheck disable=1091
 [ -f ~/.fzf.bash ] && source "$HOME"/.fzf.bash
 # shellcheck disable=1091
