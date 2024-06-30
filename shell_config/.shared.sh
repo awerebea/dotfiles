@@ -32,6 +32,107 @@ fi
 
 export TERM=xterm-256color
 
+# FZF settings
+if command -v "fd" &>/dev/null; then
+    FD_BIN_NAME="fd"
+elif command -v "fdfind" &>/dev/null; then
+    FD_BIN_NAME="fdfind"
+fi
+if [[ -n $FD_BIN_NAME ]]; then
+    # Use fd (https://github.com/sharkdp/fd) for listing path candidates.
+    # - The first argument to the function ($1) is the base path to start traversal
+    # - See the source code (completion.{bash,zsh}) for the details.
+    _fzf_compgen_path() {
+        eval "$FD_BIN_NAME --hidden --exclude .git --exclude .venv . \"$1\" | sed 's|^\./||'"
+    }
+    # Use fd to generate the list for directory completion
+    _fzf_compgen_dir() {
+        eval "$FD_BIN_NAME --type directory --hidden --exclude .git --exclude .venv . \"$1\" | sed 's|^\./||'"
+    }
+    FZF_DEFAULT_COMMAND="$FD_BIN_NAME --strip-cwd-prefix --follow --hidden --exclude .git --exclude .venv"
+    export FZF_ALT_C_COMMAND="$FZF_DEFAULT_COMMAND --type directory"
+    FZF_DEFAULT_COMMAND+=" --type file --type symlink"
+    export FZF_DEFAULT_COMMAND
+else
+    export FZF_DEFAULT_COMMAND="find . \( -path \"*/.git\" -o -path \"*/.venv\" \) \
+      -prune -o -type f,l ! -name '.' -printf '%P\n' | sort -V"
+    export FZF_ALT_C_COMMAND="find . \( -path \"*/.git\" -o -path \"*/.venv\" \) \
+      -prune -o -type d ! -name '.' -printf '%P\n' | sort -V"
+fi
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Set fzf preview options
+FZF_PREVIEW_STRING="([[ -f {} ]] && (bat --style=numbers --color=always {} \
+2>/dev/null || cat --number {} 2>/dev/null)) || ([[ -d {} ]] && \
+(eza --tree --level=2 --color=always --color-scale --icons --group-directories-first \
+--all --git {} 2>/dev/null || tree -a -C -L 1 -v --dirsfirst {} \
+2>/dev/null)) || echo {} 2>/dev/null | head -200"
+export FZF_DEFAULT_OPTS="--height=100% \
+  --inline-info \
+  --ansi \
+  --scheme=history \
+  --preview '${FZF_PREVIEW_STRING/$\'\n\'/}' \
+  --preview-window=up:60%:hidden \
+  --bind=ctrl-/:toggle-preview \
+  --bind=alt-j:preview-down \
+  --bind=alt-k:preview-up \
+  --bind=alt-b:preview-page-up \
+  --bind=alt-f:preview-page-down \
+  --bind=alt-u:preview-half-page-up \
+  --bind=alt-d:preview-half-page-down \
+  --bind=alt-up:preview-top \
+  --bind=alt-down:preview-bottom \
+  --bind=ctrl-space:toggle+up \
+  --bind=ctrl-d:half-page-down \
+  --bind=ctrl-u:half-page-up \
+  --bind=ctrl-f:page-down \
+  --bind=ctrl-b:page-up \
+  --color=bg+:#313244,bg:#1e1e2e,spinner:#f5e0dc,hl:#f38ba8 \
+  --color=fg:#cdd6f4,header:#f38ba8,info:#cba6f7,pointer:#f5e0dc \
+  --color=marker:#f5e0dc,fg+:#cdd6f4,prompt:#cba6f7,hl+:#f38ba8"
+
+if command -v "eza" &>/dev/null; then
+    export FZF_CTRL_T_OPTS="--preview '${FZF_PREVIEW_STRING/$\'\n\'/}'"
+    export FZF_ALT_C_OPTS="--preview 'eza --tree --level=2 --color=always --icons --all --git {}'"
+
+    # Advanced customization of fzf options via _fzf_comprun function
+    # - The first argument to the function is the name of the command.
+    # - You should make sure to pass the rest of the arguments to fzf.
+    _fzf_comprun() {
+        local command=$1
+        shift
+
+        case "$command" in
+        cd | z)
+            EZA_OPTS="eza --tree --level=2 --group-directories-first --color=always --color-scale \
+          --icons --all --git {}"
+            fzf --preview "${EZA_OPTS/$\'\n\'/}" "$@"
+            ;;
+        export | unset)
+            fzf --preview "eval 'echo \${}'" "$@"
+            ;;
+        ssh)
+            fzf --preview "dig {}" "$@"
+            ;;
+        *)
+            fzf --preview "${FZF_PREVIEW_STRING/$\'\n\'/}" "$@"
+            ;;
+        esac
+    }
+fi
+
+# ranger filemanager plugins
+# fzf_marks
+export FZF_MARKS_FILE="$HOME/.fzf-marks"
+export FZF_MARKS_CMD="fzf"
+export FZF_FZM_OPTS="--cycle +m --ansi --bind=ctrl-o:accept,ctrl-t:toggle --select-1"
+export FZF_DMARK_OPTS="--cycle -m --ansi --bind=ctrl-o:accept,ctrl-t:toggle"
+# ranger_gpg
+export DEFAULT_RECIPIENT="awerebea.21@gmail.com"
+
+# Pass storage path
+export PASSWORD_STORE_DIR="$GIT_WORKSPACE/.password-store"
+
 # Git helper functions
 git_current_branch() {
     command git rev-parse --git-dir &>/dev/null || return
