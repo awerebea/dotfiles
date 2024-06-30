@@ -1577,4 +1577,4 @@ zvm_after_init() {
 
 # Aliases
 # shellcheck disable=1091
-source "$HOME/.aliases_sh.sh"
+source "$HOME/.shared.sh"
