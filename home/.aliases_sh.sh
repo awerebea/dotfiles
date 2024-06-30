@@ -1,1 +1,0 @@
-../aliases/.aliases_sh.sh

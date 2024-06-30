@@ -142,4 +142,4 @@ Set-PSReadLineKeyHandler -Chord "Alt+k" -Function ForwardWord
 
 Set-PSReadLineKeyHandler -Chord "Alt+l" -Function ClearScreen
 
-. "$HOME\.aliases_pwsh.ps1"
+. "$HOME\.shared.ps1"
