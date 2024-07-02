@@ -596,7 +596,7 @@ return {
             -- use_delta = true,
             use_custom_command = { "bash", "-c", "echo '$DIFF' | delta" },
             side_by_side = true,
-            diff_context_lines = vim.o.scrolloff,
+            vim_diff_opts = { ctxlen = vim.o.scrolloff },
             entry_format = "state #$ID, $STAT, $TIME",
             time_format = "",
             mappings = {
