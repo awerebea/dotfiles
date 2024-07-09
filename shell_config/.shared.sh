@@ -280,3 +280,16 @@ alias gsu='git submodule update'
 alias gsw='git switch'
 alias gswc='git switch --create'
 alias gupv='git pull --rebase --verbose'
+
+# yazi file manager
+if command -v "yazi" &>/dev/null; then
+    function yy() {
+        local tmp
+        tmp="$(mktemp -t "yazi-cwd.XXXXXX")"
+        yazi "$@" --cwd-file="$tmp"
+        if cwd="$(cat -- "$tmp")" && [ "$cwd" != "" ] && [ "$cwd" != "$PWD" ]; then
+            \cd -- "$cwd" || return
+        fi
+        rm -f -- "$tmp"
+    }
+fi
