@@ -275,7 +275,12 @@ return {
         end
       end
 
-      vim.keymap.set("n", "<leader>td", "<Cmd>lua ToggleDiagnosticsMode()<CR>")
+      vim.keymap.set(
+        "n",
+        "<leader>td",
+        "<Cmd>lua ToggleDiagnosticsMode()<CR>",
+        { desc = "Toggle Diagnostics Mode" }
+      )
     end,
   },
   {
