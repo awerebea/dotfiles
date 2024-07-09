@@ -75,6 +75,7 @@ return {
         ruff = {},
         marksman = {},
         yamlls = {},
+        taplo = {},
       },
       setup = {
         lua_ls = function(_, _)
