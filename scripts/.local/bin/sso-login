@@ -2,13 +2,12 @@
 
 VALID_ENVS=(
     "all"
-    torana-{sand,dev,test,stage,prod,audit,shared}
+    torana-{dev,test,stage,prod,audit,shared}
     hnb-cp-{prdev,dev,qa,stage,prod,mgt}
 )
 
-
 _check_inputs() {
-    if ! command -v aws &> /dev/null; then
+    if ! command -v aws &>/dev/null; then
         echo "AWS CLI is not installed." >&2
         exit 1
     fi
@@ -18,7 +17,6 @@ _check_inputs() {
         exit 1
     fi
 }
-
 
 _get_envs() {
     local envs_raw arg seen_elements envs element env
@@ -51,7 +49,6 @@ _get_envs() {
     echo "${envs[@]}"
 }
 
-
 _main() {
     local envs env
     _check_inputs "$@"
@@ -62,12 +59,11 @@ _main() {
 
     for env in "${envs[@]}"; do
         aws sso login --profile="$env" 2>/dev/null |
-        stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
-        stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
+            stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
+            stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
         echo
     done
 }
-
 
 # Start program here
 _main "$@"

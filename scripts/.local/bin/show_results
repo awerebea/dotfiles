@@ -8,7 +8,6 @@ g_plan=false
 g_apply=false
 
 VALID_ENVS=(
-    sand
     prdev
     dev
     test
@@ -21,8 +20,8 @@ VALID_ENVS=(
 )
 
 # Define colors
-COLOR_RED='\e[1;31m'    # Red
-NO_COLOR='\e[0m'        # No Color
+COLOR_RED='\e[1;31m' # Red
+NO_COLOR='\e[0m'     # No Color
 
 __join_by() {
     local d f
@@ -35,21 +34,21 @@ __join_by() {
 _process_cmd_options() {
     while [[ -n "$1" ]]; do
         case "$1" in
-            "-p" | "--plan" )
-                g_plan=true
-                ;;
-            "-a" | "--apply" )
-                g_apply=true
-                ;;
-            "-o" | "--out" | "--output" | "--outputs" )
-                g_output=true
-                ;;
-            "-e" | "--err" | "--error" | "--errors" )
-                g_error=true
-                ;;
-            *)
-                g_positional_args+=("$1")
-                ;;
+        "-p" | "--plan")
+            g_plan=true
+            ;;
+        "-a" | "--apply")
+            g_apply=true
+            ;;
+        "-o" | "--out" | "--output" | "--outputs")
+            g_output=true
+            ;;
+        "-e" | "--err" | "--error" | "--errors")
+            g_error=true
+            ;;
+        *)
+            g_positional_args+=("$1")
+            ;;
         esac
         shift
     done

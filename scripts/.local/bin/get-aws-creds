@@ -2,13 +2,12 @@
 
 VALID_ENVS=(
     "all"
-    torana-{sand,dev,test,stage,prod,audit,shared}
+    torana-{dev,test,stage,prod,audit,shared}
     hnb-cp-{prdev,dev,qa,stage,prod,mgt}
 )
 
-
 _check_inputs() {
-    if ! command -v aws-vault &> /dev/null; then
+    if ! command -v aws-vault &>/dev/null; then
         echo "aws-vault is not installed." >&2
         exit 1
     fi
@@ -18,7 +17,6 @@ _check_inputs() {
         exit 1
     fi
 }
-
 
 _get_envs() {
     local envs_raw arg seen_elements envs element env
@@ -51,7 +49,6 @@ _get_envs() {
     echo "${envs[@]}"
 }
 
-
 _main() {
     local envs creds creds_temp creds_addon creds_temp_dir env
     _check_inputs "$@"
@@ -63,7 +60,7 @@ _main() {
     creds_temp_dir="$(dirname "$creds_temp")"
 
     mkdir -p "$creds_temp_dir" 2>/dev/null || exit 1
-    : >"$creds_temp"    # Clear the file
+    : >"$creds_temp" # Clear the file
     for env in "${envs[@]}"; do
         aws-vault exec "$env" --json >"$creds_temp_dir/$env.json"
         {
@@ -78,7 +75,6 @@ _main() {
 
     [ -f "$creds_addon" ] && echo >>"$creds_temp" && cat "$creds_addon" >>"$creds"
 }
-
 
 # Start program here
 _main "$@"
