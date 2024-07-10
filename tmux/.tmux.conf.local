@@ -562,7 +562,7 @@ set -g @plugin "roy2220/easyjump.tmux"
 set -g @plugin "omerxx/tmux-sessionx"
 set -g @plugin "graemedavidson/tmux-pane-focus"
 set -g @plugin "jaclu/tmux-power-zoom"
-set -g @plugin "awerebea/tmux-named-snapshot#switch_client_keybinds"
+set -g @plugin "spywhere/tmux-named-snapshot"
 
 # treemux
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
