@@ -346,3 +346,25 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
         lazy_fgb worktree total --confirm "$@"
     }
 fi
+
+# enable zoxide
+if command -v "zoxide" &>/dev/null; then
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        eval "$(zoxide init zsh)"
+    else
+        eval "$(zoxide init bash)"
+    fi
+    EZA_ZOXIDE_OPTS="eza --tree --level=2 --group-directories-first --color=always --color-scale \
+    --icons --all --git {2}"
+    export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
+    --preview '${EZA_ZOXIDE_OPTS/$\'\n\'/}' \
+    --bind=tab:down,shift-tab:up \
+    --height=40% \
+    --info=inline \
+    --no-sort \
+    --reverse \
+    --select-1 \
+    --cycle \
+    "
+    alias cd="z"
+fi

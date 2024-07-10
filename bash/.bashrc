@@ -309,19 +309,6 @@ export_all_ruby_versions_bin_dirs
 # Personal aliases
 alias cdq='cd "$(fd -t d . | fzf)"'
 
-# enable zoxide
-if command -v "zoxide" &>/dev/null; then
-    eval "$(zoxide init bash)"
-    export _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS \
-    --bind=tab:up,shift-tab:down \
-    --height=40% \
-    --info=inline \
-    --no-sort \
-    --reverse \
-    --select-1 \
-    "
-fi
-
 # Enable vim mode
 if [[ $- == *i* ]]; then # in interactive session
     set -o vi
