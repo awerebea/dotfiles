@@ -1331,27 +1331,6 @@ if [[ -e "$HOME/.config/fsh/$fsh_theme.ini" ]]; then
     fast-theme XDG:"$fsh_theme" --quiet
 fi
 
-# oh-my-tmux https://github.com/gpakosz/.tmux.git
-if [[ "${commands[tmux]}" ]] && [ ! -d "$HOME/.tmux" ]; then
-    git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
-    ln -s "$HOME/.tmux/.tmux.conf" "$HOME/.tmux.conf"
-fi
-
-# nvim-switcher
-alias vl="NVIM_APPNAME=LazyVim nvim"
-
-function nvs() {
-    items=("default" "LazyVim")
-    config=$(printf "%s\n" "${items[@]}" | fzf --prompt=" Neovim Config: " --height=~50% --layout=reverse --border --exit-0)
-    if [[ -z $config ]]; then
-        echo "Nothing selected"
-        return 0
-    elif [[ $config == "default" ]]; then
-        config=""
-    fi
-    NVIM_APPNAME=$config nvim "$@"
-}
-
 # The plugin will auto execute this zvm_after_init function
 zvm_after_init() {
     [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed -e "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|; s|LBUFFER=\"\$selected\"|selected=\"\${selected#* * }\"; LBUFFER=\"\${selected#* }\"|")"

@@ -368,3 +368,9 @@ if command -v "zoxide" &>/dev/null; then
     "
     alias cd="z"
 fi
+
+# oh-my-tmux https://github.com/gpakosz/.tmux.git
+if command -v "tmux" &>/dev/null && [ ! -d "$HOME/.tmux" ]; then
+    git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
+    ln -s "$HOME/.tmux/.tmux.conf" "$HOME/.tmux.conf"
+fi
