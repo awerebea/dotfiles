@@ -22,7 +22,12 @@ require("lazy").setup {
   },
   defaults = { lazy = true, version = nil },
   install = { missing = true, colorscheme = { "catppuccin" } },
-  checker = { enabled = false },
+  checker = {
+    enabled = true,
+    notify = false,
+    frequency = 3600,
+    check_pinned = false,
+  },
   performance = {
     cache = {
       enabled = true,
