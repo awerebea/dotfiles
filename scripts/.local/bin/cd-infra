@@ -6,6 +6,6 @@ fi
 
 git_root="$(git rev-parse --show-toplevel)"
 
-if cd "$(pwd | sed -E "s|(${git_root}/envs/)(.*/)?(prdev\|dev\|test\|qa\|stage\|prod\|mgt)(/.*)?|\\1\\2${1}\\4|")"; then
+if cd "$(pwd | sed -E "s|(${git_root}/envs/)(.*/)?(prdev\|dev\|test\|qa\|stage\|prod)(/.*)?|\\1\\2${1}\\4|")"; then
     echo "${PWD//$git_root/}"
 fi

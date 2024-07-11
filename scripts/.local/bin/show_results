@@ -14,7 +14,6 @@ VALID_ENVS=(
     qa
     stage
     prod
-    mgt
     shared
     audit
 )

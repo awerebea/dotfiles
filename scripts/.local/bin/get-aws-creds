@@ -3,7 +3,7 @@
 VALID_ENVS=(
     "all"
     torana-{dev,test,stage,prod,audit,shared}
-    hnb-cp-{prdev,dev,qa,stage,prod,mgt}
+    hnb-cp-{prdev,dev,qa,stage,prod}
 )
 
 _check_inputs() {
