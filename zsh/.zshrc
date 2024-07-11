@@ -1336,6 +1336,16 @@ zvm_after_init() {
     [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed -e "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|; s|LBUFFER=\"\$selected\"|selected=\"\${selected#* * }\"; LBUFFER=\"\${selected#* }\"|")"
 }
 
+zhistclean() {
+    # Remove duplicates from the history file, keeping only the last occurrence of each command.
+    # ref: https://stackoverflow.com/a/72293998/14110650
+    local tmp
+    tmp="$(mktemp -t "zsh_history.XXXXXX")"
+    sed ':start; /\\$/ { N; s/\\\n/\\\x00/; b start }' "$HOME"/.zsh_history |
+    nl -nrz | tac | sort -t';' -u -k2 | sort | cut -d$'\t' -f2- | tr '\000' '\n' >"$tmp" &&
+    mv -f "$tmp" "$HOME"/.zsh_history
+}
+
 # Aliases
 # shellcheck disable=1091
 source "$HOME/.shared.sh"
