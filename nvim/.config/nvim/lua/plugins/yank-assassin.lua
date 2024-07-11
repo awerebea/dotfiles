@@ -1,6 +1,6 @@
 return {
   "svban/YankAssassin.nvim",
-  event = "WinEnter",
+  event = "VeryLazy",
   opts = {
     auto_normal = true,
     auto_visual = true,
