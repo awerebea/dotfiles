@@ -1,6 +1,6 @@
 return {
   "anuvyklack/windows.nvim",
-  event = "WinEnter",
+  event = "VeryLazy",
   dependencies = { "anuvyklack/middleclass" },
   cmd = {
     "WindowsMaximize",
