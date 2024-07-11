@@ -1,6 +1,6 @@
 return {
   "smoka7/hop.nvim",
-  event = "WinEnter",
+  event = "VeryLazy",
   opts = { keys = "etovxqpdygfblzhckisuran" },
   config = function(_, opts)
     local hop = require "hop"
