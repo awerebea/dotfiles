@@ -206,7 +206,6 @@ if command -v "direnv" &>/dev/null; then
 fi
 
 # shellcheck disable=1091
-[ -f ~/.fzf.bash ] && eval "$(fzf --bash)"
 [ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source "$HOME"/fzf-marks/fzf-marks.plugin.bash
 
 # shellcheck disable=2139
@@ -316,6 +315,9 @@ fi
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
+
+# shellcheck disable=1091
+[ -f ~/.fzf.bash ] && eval "$(fzf --bash)"
 
 # shellcheck disable=1091
 source "$HOME/.shared.sh"
