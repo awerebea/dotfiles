@@ -1,0 +1,13 @@
+# A TOML linter such as https://taplo.tamasfe.dev/ can use this schema to validate your config.
+# If you encounter any issues, please make an issue at https://github.com/yazi-rs/schemas.
+"$schema" = "https://yazi-rs.github.io/schemas/yazi.json"
+
+[manager]
+ratio         = [2, 3, 4]
+sort_by       = "natural"
+show_hidden   = true
+sort_translit = true
+linemode      = "none"
+show_symlink  = true
+scrolloff     = 5
+mouse_events  = ["click", "scroll"]
