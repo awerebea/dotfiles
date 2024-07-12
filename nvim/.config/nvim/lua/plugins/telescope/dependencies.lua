@@ -93,8 +93,17 @@ return {
 
     -- stylua: ignore
     keys = {
-      { "<leader><leader>m",
-        function() require("harpoon.mark").add_file() end,
+      {
+        "<leader><leader>m",
+        function()
+          local filename = vim.api.nvim_buf_get_name(0)
+          if filename == "" then
+            vim.notify("Couldn't find a valid file name to mark, sorry.")
+            return
+          end
+          vim.notify("Add Harpoon mark for file: " .. vim.fn.fnamemodify(filename, ":."))
+          require("harpoon.mark").add_file()
+        end,
         desc = "Add Harpoon mark",
       },
       {
