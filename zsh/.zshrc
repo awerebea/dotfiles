@@ -1343,7 +1343,8 @@ zhistclean() {
     tmp="$(mktemp -t "zsh_history.XXXXXX")"
     sed ':start; /\\$/ { N; s/\\\n/\\\x00/; b start }' "$HOME"/.zsh_history |
     nl -nrz | tac | sort -t';' -u -k2 | sort | cut -d$'\t' -f2- | tr '\000' '\n' >"$tmp" &&
-    mv -f "$tmp" "$HOME"/.zsh_history
+    mv -f "$HOME"/.zsh_history  "$HOME"/.zsh_history_bak &&
+    mv "$tmp" "$HOME"/.zsh_history
 }
 
 # Aliases
