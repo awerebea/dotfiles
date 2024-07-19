@@ -11,133 +11,96 @@ return {
   },
   {
     "folke/which-key.nvim",
-    dependencies = {
-      "mrjones2014/legendary.nvim",
-    },
     event = "VeryLazy",
-    config = function()
+    dependencies = { "echasnovski/mini.icons", "nvim-tree/nvim-web-devicons" },
+    opts = {
+      plugins = { spelling = { enabled = false } },
+      win = { border = "single" },
+      -- triggers = {
+      --   { "<leader>", mode = { "n", "v" } },
+      --   { "[", mode = { "n", "v" } },
+      --   { "]", mode = { "n", "v" } },
+      --   { "g", mode = { "n", "v" } },
+      -- },
+    },
+    keys = {
+      {
+        "<leader>?",
+        function()
+          require("which-key").show { global = false }
+        end,
+        desc = "Buffer Local Keymaps (which-key)",
+      },
+    },
+    config = function(_, opts)
       local wk = require "which-key"
-      wk.setup {
-        show_help = true,
-        plugins = { spelling = false },
-        key_labels = { ["<leader>"] = "Leader", ["<localleader>"] = "Local Leader" },
-        triggers = "auto",
-        window = {
-          border = "single", -- none, single, double, shadow
-          position = "bottom", -- bottom, top
-        },
-        triggers_blacklist = {
-          n = { "y", ">", "<" },
-          i = { "<leader>" },
-          c = { "w" },
+      wk.setup(opts)
+      wk.add {
+        -- stylua: ignore
+        {
+          mode = { "n", "v" },
+          { "<leader><space>", group = "Hop, Harpoon" },
+          { "<leader><space>2", group = "Hop" },
+          { "<leader>M", group = "Multiple Renamer (muren)" },
+          { "<leader>S", group = "Spectre" },
+          { "<leader>T", group = "Test" },
+          { "<leader>Tn", group = "Neotest" },
+          { "<leader>To", group = "Overseer" },
+          { "<leader>Tt", group = "vim-test" },
+          { "<leader>a", group = "AI" },
+          { "<leader>b", group = "Buffer" },
+          { "<leader>c", group = "Code, Copy path, CopilotChat" },
+          { "<leader>cX", group = "Swap Previous" },
+          { "<leader>cXc", group = "Class" },
+          { "<leader>cXf", group = "Function" },
+          { "<leader>cXp", group = "Parameter" },
+          { "<leader>cc", group = "CopilotChat" },
+          { "<leader>cch", group = "Help actions" },
+          { "<leader>ccp", group = "Prompt actions" },
+          { "<leader>cg", group = "neogen" },
+          { "<leader>cp", group = "Copy path to clipboard" },
+          { "<leader>cpd", group = "Directory" },
+          { "<leader>cpf", group = "File" },
+          { "<leader>cr", group = "refurb" },
+          { "<leader>cri", "<cmd>cexpr system('refurb --quiet ' . shellescape(expand('%'))) | copen<cr>", desc = "Inspect" },
+          { "<leader>cx", group = "Swap Next" },
+          { "<leader>cxc", group = "Class" },
+          { "<leader>cxf", group = "Function" },
+          { "<leader>cxp", group = "Parameter" },
+          { "<leader>d", group = "Debug" },
+          { "<leader>f", group = "Telescope" },
+          { "<leader>fa", group = "Additional" },
+          { "<leader>g", group = "Git, ChatGPT" },
+          { "<leader>g", group = "Git, ChatGPT" },
+          { "<leader>gc", group = "Conflicts, Advanced Git search" },
+          { "<leader>gcq", group = "Conflicts to quickfix list" },
+          { "<leader>gcr", group = "Conflicts refresh" },
+          { "<leader>gd", group = "DiffView" },
+          { "<leader>gl", group = "Telescope git_commits" },
+          { "<leader>gp", group = "ChatGPT" },
+          { "<leader>gpr", group = "Run command" },
+          { "<leader>gs", group = "Git status" },
+          { "<leader>gw", group = "Git Worktree" },
+          { "<leader>h", group = "Help, Harpoon" },
+          { "<leader>k", group = "Open from quickfix, Macrothis" },
+          { "<leader>kk", group = "Macrothis" },
+          { "<leader>l", group = "Toggle non-printable symbols" },
+          { "<leader>m", group = "Select Harpoon mark" },
+          { "<leader>n", group = "Navbuddy" },
+          { "<leader>q", group = "Session manager" },
+          { "<leader>r", group = "Remove duplicates, Restart LSP, rename symbol" },
+          { "<leader>s", group = "Spellcheck, Neoscope" },
+          { "<leader>t", group = "Tabs, Toggle LSP" },
+          { "<leader>tN", group = "Neotest" },
+          { "<leader>tg", group = "Toglle LSP" },
+          { "<leader>to", group = "Overseer" },
+          { "<leader>u", group = "Toggle Undo-tree" },
+          { "<leader>w", group = "Pick a window" },
+          { "<leader>x", group = "Trouble, diagnostics" },
+          { "<leader>/", group = "Fuzzy grep" },
+          { "<localleader>d", group = "Diff actions" },
         },
       }
-
-      wk.register({
-        a = "AI",
-        b = "Buffer",
-        d = "Debug",
-        f = { "Telescope", a = "Additional" },
-        g = {
-          "Git, ChatGPT",
-          c = {
-            "Conflicts, Advanced Git search",
-            l = "Telescope Git log",
-            r = "Conflicts refresh",
-            q = "Conflicts to quickfix list",
-          },
-          d = "DiffView",
-          m = "Git messenger",
-          l = "Telescope git_commits",
-          p = { "ChatGPT", r = "Run command" },
-          s = "Git status",
-          w = "Git Worktree",
-        },
-        h = "Help, Harpoon",
-        k = { "Open from quickfix, Macrothis", k = "Macrothis" },
-        l = "Toggle non-printable symbols",
-        M = "Multiple Renamer (muren)",
-        T = {
-          "Test",
-          n = "Neotest",
-          o = "Overseer",
-          t = "vim-test",
-        },
-        t = {
-          "Tabs, Toggle LSP",
-          g = "Toglle LSP",
-          N = "Neotest",
-          o = "Overseer",
-        },
-        q = "Session manager",
-        m = "Select Harpoon mark",
-        n = "Navbuddy",
-        u = "Toggle Undo-tree",
-        w = "Pick a window",
-        c = {
-          "Code, Copy path, CopilotChat",
-          c = { "CopilotChat", h = "Help actions", p = "Prompt actions" },
-          g = "neogen",
-          p = {
-            "Copy path to clipboard",
-            f = "File",
-            d = "Directory",
-          },
-          x = {
-            "Swap Next",
-            f = "Function",
-            p = "Parameter",
-            c = "Class",
-          },
-          X = {
-            "Swap Previous",
-            f = "Function",
-            p = "Parameter",
-            c = "Class",
-          },
-          r = {
-            "refurb",
-            i = {
-              "<cmd>cexpr system('refurb --quiet ' . shellescape(expand('%'))) | copen<cr>",
-              "Inspect",
-            },
-          },
-        },
-        S = {
-          "Spectre",
-          s = "Replace in workplace",
-          w = "Replace word under curson in workplace",
-          f = "Replace in current file",
-        },
-        r = "Remove duplicates, Restart LSP, rename symbol",
-        s = "Spellcheck, Neoscope",
-        x = "Trouble, diagnostics",
-        ["<space>"] = {
-          "Hop, Harpoon",
-          m = "Add Harpoon mark",
-          ["2"] = { "Hop" },
-        },
-        ["["] = {
-          "Harpoon, ToDo-comments",
-          b = "Move Bufferline tab left",
-          h = "Go to prev Harpoon mark",
-        },
-        ["]"] = {
-          "Harpoon, ToDo-comments",
-          b = "Move Bufferline tab right",
-          h = "Go to next Harpoon mark",
-        },
-      }, { prefix = "<leader>" })
-      wk.register({
-        g = {
-          "Git, ChatGPT",
-          c = "Advanced Git search",
-          p = { "ChatGPT", r = "Run command" },
-        },
-      }, { mode = "v", prefix = "<leader>" })
-      wk.register({
-        d = "Diff actions",
-      }, { prefix = "<localleader>" })
     end,
   },
 }
