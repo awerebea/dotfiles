@@ -744,7 +744,7 @@ return {
 
       vim.keymap.set("n", "<leader>ka", function()
         QuickFixOpenAll()
-      end, { noremap = true, silent = false })
+      end, { noremap = true, silent = false, desc = "Open all files from QuickFix" })
 
       local telescope_previewers = require "telescope.previewers"
 
