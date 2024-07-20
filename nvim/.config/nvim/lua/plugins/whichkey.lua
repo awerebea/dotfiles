@@ -16,12 +16,7 @@ return {
     opts = {
       plugins = { spelling = { enabled = false } },
       win = { border = "single" },
-      -- triggers = {
-      --   { "<leader>", mode = { "n", "v" } },
-      --   { "[", mode = { "n", "v" } },
-      --   { "]", mode = { "n", "v" } },
-      --   { "g", mode = { "n", "v" } },
-      -- },
+      triggers = { "<auto>", mode = "nxsotc" },
     },
     keys = {
       {
