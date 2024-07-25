@@ -254,7 +254,6 @@ alias grbpd='git rebase --committer-date-is-author-date'
 alias grbpdrm='git rebase --committer-date-is-author-date --rebase-merges'
 alias grbrm='git rebase --rebase-merges'
 alias grbs='git rebase --skip'
-alias grefs='git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"'
 alias grev='git revert'
 alias greva='git revert --abort'
 alias grevc='git revert --continue'
@@ -292,6 +291,12 @@ git_track_all_remote_branches() {
     done <<<"$(git branch -r | grep -v '\->' | grep "^\s\+$remote_name/")"
 }
 alias git-track-remotes='git_track_all_remote_branches'
+
+git_remote_fetch_references() {
+    local remote_name="${1:-origin}"
+    git config remote."$remote_name".fetch "+refs/heads/*:refs/remotes/$remote_name/*"
+}
+alias grefs='git_remote_fetch_references'
 
 # yazi file manager
 if command -v "yazi" &>/dev/null; then
