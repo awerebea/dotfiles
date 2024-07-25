@@ -281,6 +281,18 @@ alias gsw='git switch'
 alias gswc='git switch --create'
 alias gupv='git pull --rebase --verbose'
 
+git_track_all_remote_branches() {
+    local remote_name="${1:-origin}" remote
+    while IFS= read -r remote; do
+        remote="${remote##*( )}"
+        local branch_name="${remote#"$remote_name"/}"
+        if ! git show-ref --verify --quiet "refs/heads/$branch_name"; then
+            git branch --track "$branch_name" "$remote"
+        fi
+    done <<<"$(git branch -r | grep -v '\->' | grep "^\s\+$remote_name/")"
+}
+alias git-track-remotes='git_track_all_remote_branches'
+
 # yazi file manager
 if command -v "yazi" &>/dev/null; then
     function yy() {
