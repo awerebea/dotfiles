@@ -65,6 +65,7 @@ return {
           { "<leader>d", group = "Debug" },
           { "<leader>f", group = "Telescope" },
           { "<leader>fa", group = "Additional" },
+          { "<leader>fc", group = "Neoclip" },
           { "<leader>g", group = "Git, ChatGPT" },
           { "<leader>g", group = "Git, ChatGPT" },
           { "<leader>gc", group = "Conflicts, Advanced Git search" },

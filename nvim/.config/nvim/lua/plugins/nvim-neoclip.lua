@@ -3,11 +3,25 @@ return {
   enabled = true,
   keys = {
     {
-      "<leader>fc",
+      "<leader>fcc",
       function()
         require("telescope").extensions.neoclip.default()
       end,
       desc = "Clipboard",
+    },
+    {
+      "<leader>fcl",
+      function()
+        require("neoclip").db_pull()
+      end,
+      desc = "Pull database",
+    },
+    {
+      "<leader>fcp",
+      function()
+        require("neoclip").db_push()
+      end,
+      desc = "Push database",
     },
   },
   dependencies = { "kkharji/sqlite.lua" },
