@@ -14,7 +14,7 @@ return {
   event = "VeryLazy",
   opts = {
     enable_persistent_history = true,
-    continuous_sync = true,
+    continuous_sync = false,
     db_path = vim.fn.stdpath "data" .. "/databases/neoclip.sqlite3",
     default_register = "+",
     content_spec_column = true,
