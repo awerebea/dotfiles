@@ -17,6 +17,7 @@ return {
     local win_width = 40
     require("neo-tree").setup {
       close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
+      use_default_mappings = false,
       event_handlers = {
         {
           event = "vim_buffer_enter",
@@ -28,7 +29,9 @@ return {
         },
         {
           event = "neo_tree_popup_input_ready",
+          ---@diagnostic disable-next-line
           ---@param input NuiInput
+          ---@diagnostic disable-next-line
           handler = function(input)
             -- enter input popup with normal mode by default.
             vim.cmd "stopinsert"
