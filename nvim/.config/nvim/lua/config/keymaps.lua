@@ -164,9 +164,9 @@ vim.cmd [[
 ]]
 
 --stylua: ignore
-vim.keymap.set("n", "zj", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
+vim.keymap.set("n", "zJ", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
 --stylua: ignore
-vim.keymap.set("n", "zk", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
+vim.keymap.set("n", "zK", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
 -- Insert empty line above/below (functions from vim-unimpaired)
 vim.cmd [[
