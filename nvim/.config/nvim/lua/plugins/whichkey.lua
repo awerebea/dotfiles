@@ -43,7 +43,7 @@ return {
           { "<leader>To", group = "Overseer" },
           { "<leader>Tt", group = "vim-test" },
           { "<leader>a", group = "AI" },
-          { "<leader>b", group = "Buffer" },
+          { "<leader>b", group = "Buffer Reopen" },
           { "<leader>c", group = "Code, Copy path, CopilotChat" },
           { "<leader>cX", group = "Swap Previous" },
           { "<leader>cXc", group = "Class" },
