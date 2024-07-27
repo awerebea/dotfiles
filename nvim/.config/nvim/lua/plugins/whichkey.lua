@@ -72,6 +72,7 @@ return {
           { "<leader>gcq", group = "Conflicts to quickfix list" },
           { "<leader>gcr", group = "Conflicts refresh" },
           { "<leader>gd", group = "DiffView" },
+          { "<leader>gf", group = "Vim-Flog" },
           { "<leader>gl", group = "Telescope git_commits" },
           { "<leader>gp", group = "ChatGPT" },
           { "<leader>gpr", group = "Run command" },
