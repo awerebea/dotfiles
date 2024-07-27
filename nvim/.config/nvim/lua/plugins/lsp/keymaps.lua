@@ -15,7 +15,7 @@ function M.on_attach(client, buffer)
   self:map("gY", function()
     require("telescope.builtin").lsp_implementations { reuse_win = true }
   end, { desc = "Goto Implementation" })
-  self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
+  -- self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
   self:map("]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
   self:map("[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
