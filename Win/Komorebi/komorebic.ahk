@@ -1,4 +1,480 @@
+#Requires AutoHotkey v2.0.2
 #SingleInstance Force
+
+; Contents of komorebic.lib.ahk
+; https://github.com/LGUG2Z/komorebi/blob/master/komorebic.lib.ahk
+Start(ffm := "", await_configuration := "", tcp_port := "") {
+    ; Construct the command with optional arguments
+    command := "komorebic.exe start"
+    if (ffm != "") {
+        command .= " " ffm
+    }
+    if (await_configuration != "") {
+        command .= " --await-configuration " await_configuration
+    }
+    if (tcp_port != "") {
+        command .= " --tcp-port " tcp_port
+    }
+    ; Run the command
+    RunWait(command, , "Hide")
+}
+
+Stop() {
+    RunWait("komorebic.exe stop", , "Hide")
+}
+
+State() {
+    RunWait("komorebic.exe state", , "Hide")
+}
+
+Query(state_query) {
+    RunWait("komorebic.exe query " state_query, , "Hide")
+}
+
+Subscribe(named_pipe) {
+    RunWait("komorebic.exe subscribe " named_pipe, , "Hide")
+}
+
+Unsubscribe(named_pipe) {
+    RunWait("komorebic.exe unsubscribe " named_pipe, , "Hide")
+}
+
+Log() {
+    RunWait("komorebic.exe log", , "Hide")
+}
+
+QuickSaveResize() {
+    RunWait("komorebic.exe quick-save-resize", , "Hide")
+}
+
+QuickLoadResize() {
+    RunWait("komorebic.exe quick-load-resize", , "Hide")
+}
+
+SaveResize(path) {
+    RunWait("komorebic.exe save-resize " path, , "Hide")
+}
+
+LoadResize(path) {
+    RunWait("komorebic.exe load-resize " path, , "Hide")
+}
+
+Focus(operation_direction) {
+    RunWait("komorebic.exe focus " operation_direction, , "Hide")
+}
+
+Move(operation_direction) {
+    RunWait("komorebic.exe move " operation_direction, , "Hide")
+}
+
+Minimize() {
+    RunWait("komorebic.exe minimize", , "Hide")
+}
+
+Close() {
+    RunWait("komorebic.exe close", , "Hide")
+}
+
+ForceFocus() {
+    RunWait("komorebic.exe force-focus", , "Hide")
+}
+
+CycleFocus(cycle_direction) {
+    RunWait("komorebic.exe cycle-focus " cycle_direction, , "Hide")
+}
+
+CycleMove(cycle_direction) {
+    RunWait("komorebic.exe cycle-move " cycle_direction, , "Hide")
+}
+
+Stack(operation_direction) {
+    RunWait("komorebic.exe stack " operation_direction, , "Hide")
+}
+
+Resize(edge, sizing) {
+    RunWait("komorebic.exe resize " edge " " sizing, , "Hide")
+}
+
+ResizeAxis(axis, sizing) {
+    RunWait("komorebic.exe resize-axis " axis " " sizing, , "Hide")
+}
+
+Unstack() {
+    RunWait("komorebic.exe unstack", , "Hide")
+}
+
+CycleStack(cycle_direction) {
+    RunWait("komorebic.exe cycle-stack " cycle_direction, , "Hide")
+}
+
+MoveToMonitor(target) {
+    RunWait("komorebic.exe move-to-monitor " target, , "Hide")
+}
+
+CycleMoveToMonitor(cycle_direction) {
+    RunWait("komorebic.exe cycle-move-to-monitor " cycle_direction, , "Hide")
+}
+
+MoveToWorkspace(target) {
+    RunWait("komorebic.exe move-to-workspace " target, , "Hide")
+}
+
+MoveToNamedWorkspace(workspace) {
+    RunWait("komorebic.exe move-to-named-workspace " workspace, , "Hide")
+}
+
+CycleMoveToWorkspace(cycle_direction) {
+    RunWait("komorebic.exe cycle-move-to-workspace " cycle_direction, , "Hide")
+}
+
+SendToMonitor(target) {
+    RunWait("komorebic.exe send-to-monitor " target, , "Hide")
+}
+
+CycleSendToMonitor(cycle_direction) {
+    RunWait("komorebic.exe cycle-send-to-monitor " cycle_direction, , "Hide")
+}
+
+SendToWorkspace(target) {
+    RunWait("komorebic.exe send-to-workspace " target, , "Hide")
+}
+
+SendToNamedWorkspace(workspace) {
+    RunWait("komorebic.exe send-to-named-workspace " workspace, , "Hide")
+}
+
+CycleSendToWorkspace(cycle_direction) {
+    RunWait("komorebic.exe cycle-send-to-workspace " cycle_direction, , "Hide")
+}
+
+SendToMonitorWorkspace(target_monitor, target_workspace) {
+    RunWait("komorebic.exe send-to-monitor-workspace " target_monitor " " target_workspace, , "Hide")
+}
+
+FocusMonitor(target) {
+    RunWait("komorebic.exe focus-monitor " target, , "Hide")
+}
+
+FocusWorkspace(target) {
+    RunWait("komorebic.exe focus-workspace " target, , "Hide")
+}
+
+FocusMonitorWorkspace(target_monitor, target_workspace) {
+    RunWait("komorebic.exe focus-monitor-workspace " target_monitor " " target_workspace, , "Hide")
+}
+
+FocusNamedWorkspace(workspace) {
+    RunWait("komorebic.exe focus-named-workspace " workspace, , "Hide")
+}
+
+CycleMonitor(cycle_direction) {
+    RunWait("komorebic.exe cycle-monitor " cycle_direction, , "Hide")
+}
+
+CycleWorkspace(cycle_direction) {
+    RunWait("komorebic.exe cycle-workspace " cycle_direction, , "Hide")
+}
+
+MoveWorkspaceToMonitor(target) {
+    RunWait("komorebic.exe move-workspace-to-monitor " target, , "Hide")
+}
+
+NewWorkspace() {
+    RunWait("komorebic.exe new-workspace", , "Hide")
+}
+
+ResizeDelta(pixels) {
+    RunWait("komorebic.exe resize-delta " pixels, , "Hide")
+}
+
+InvisibleBorders(left, top, right, bottom) {
+    RunWait("komorebic.exe invisible-borders " left " " top " " right " " bottom, , "Hide")
+}
+
+GlobalWorkAreaOffset(left, top, right, bottom) {
+    RunWait("komorebic.exe global-work-area-offset " left " " top " " right " " bottom, , "Hide")
+}
+
+MonitorWorkAreaOffset(monitor, left, top, right, bottom) {
+    RunWait("komorebic.exe monitor-work-area-offset " monitor " " left " " top " " right " " bottom, , "Hide")
+}
+
+AdjustContainerPadding(sizing, adjustment) {
+    RunWait("komorebic.exe adjust-container-padding " sizing " " adjustment, , "Hide")
+}
+
+AdjustWorkspacePadding(sizing, adjustment) {
+    RunWait("komorebic.exe adjust-workspace-padding " sizing " " adjustment, , "Hide")
+}
+
+ChangeLayout(default_layout) {
+    RunWait("komorebic.exe change-layout " default_layout, , "Hide")
+}
+
+CycleLayout(operation_direction) {
+    RunWait("komorebic.exe cycle-layout " operation_direction, , "Hide")
+}
+
+LoadCustomLayout(path) {
+    RunWait("komorebic.exe load-custom-layout " path, , "Hide")
+}
+
+FlipLayout(axis) {
+    RunWait("komorebic.exe flip-layout " axis, , "Hide")
+}
+
+Promote() {
+    RunWait("komorebic.exe promote", , "Hide")
+}
+
+PromoteFocus() {
+    RunWait("komorebic.exe promote-focus", , "Hide")
+}
+
+Retile() {
+    RunWait("komorebic.exe retile", , "Hide")
+}
+
+MonitorIndexPreference(index_preference, left, top, right, bottom) {
+    RunWait("komorebic.exe monitor-index-preference " index_preference " " left " " top " " right " " bottom, , "Hide")
+}
+
+EnsureWorkspaces(monitor, workspace_count) {
+    RunWait("komorebic.exe ensure-workspaces " monitor " " workspace_count, , "Hide")
+}
+
+EnsureNamedWorkspaces(monitor, names) {
+    RunWait("komorebic.exe ensure-named-workspaces " monitor " " names, , "Hide")
+}
+
+ContainerPadding(monitor, workspace, size) {
+    RunWait("komorebic.exe container-padding " monitor " " workspace " " size, , "Hide")
+}
+
+NamedWorkspaceContainerPadding(workspace, size) {
+    RunWait("komorebic.exe named-workspace-container-padding " workspace " " size, , "Hide")
+}
+
+WorkspacePadding(monitor, workspace, size) {
+    RunWait("komorebic.exe workspace-padding " monitor " " workspace " " size, , "Hide")
+}
+
+NamedWorkspacePadding(workspace, size) {
+    RunWait("komorebic.exe named-workspace-padding " workspace " " size, , "Hide")
+}
+
+WorkspaceLayout(monitor, workspace, value) {
+    RunWait("komorebic.exe workspace-layout " monitor " " workspace " " value, , "Hide")
+}
+
+NamedWorkspaceLayout(workspace, value) {
+    RunWait("komorebic.exe named-workspace-layout " workspace " " value, , "Hide")
+}
+
+WorkspaceCustomLayout(monitor, workspace, path) {
+    RunWait("komorebic.exe workspace-custom-layout " monitor " " workspace " " path, , "Hide")
+}
+
+NamedWorkspaceCustomLayout(workspace, path) {
+    RunWait("komorebic.exe named-workspace-custom-layout " workspace " " path, , "Hide")
+}
+
+WorkspaceLayoutRule(monitor, workspace, at_container_count, layout) {
+    RunWait("komorebic.exe workspace-layout-rule " monitor " " workspace " " at_container_count " " layout, , "Hide")
+}
+
+NamedWorkspaceLayoutRule(workspace, at_container_count, layout) {
+    RunWait("komorebic.exe named-workspace-layout-rule " workspace " " at_container_count " " layout, , "Hide")
+}
+
+WorkspaceCustomLayoutRule(monitor, workspace, at_container_count, path) {
+    RunWait("komorebic.exe workspace-custom-layout-rule " monitor " " workspace " " at_container_count " " path, , "Hide")
+}
+
+NamedWorkspaceCustomLayoutRule(workspace, at_container_count, path) {
+    RunWait("komorebic.exe named-workspace-custom-layout-rule " workspace " " at_container_count " " path, , "Hide")
+}
+
+ClearWorkspaceLayoutRules(monitor, workspace) {
+    RunWait("komorebic.exe clear-workspace-layout-rules " monitor " " workspace, , "Hide")
+}
+
+ClearNamedWorkspaceLayoutRules(workspace) {
+    RunWait("komorebic.exe clear-named-workspace-layout-rules " workspace, , "Hide")
+}
+
+WorkspaceTiling(monitor, workspace, value) {
+    RunWait("komorebic.exe workspace-tiling " monitor " " workspace " " value, , "Hide")
+}
+
+NamedWorkspaceTiling(workspace, value) {
+    RunWait("komorebic.exe named-workspace-tiling " workspace " " value, , "Hide")
+}
+
+WorkspaceName(monitor, workspace, value) {
+    RunWait("komorebic.exe workspace-name " monitor " " workspace " " value, , "Hide")
+}
+
+ToggleWindowContainerBehaviour() {
+    RunWait("komorebic.exe toggle-window-container-behaviour", , "Hide")
+}
+
+TogglePause() {
+    RunWait("komorebic.exe toggle-pause", , "Hide")
+}
+
+ToggleTiling() {
+    RunWait("komorebic.exe toggle-tiling", , "Hide")
+}
+
+ToggleFloat() {
+    RunWait("komorebic.exe toggle-float", , "Hide")
+}
+
+ToggleMonocle() {
+    RunWait("komorebic.exe toggle-monocle", , "Hide")
+}
+
+ToggleMaximize() {
+    RunWait("komorebic.exe toggle-maximize", , "Hide")
+}
+
+RestoreWindows() {
+    RunWait("komorebic.exe restore-windows", , "Hide")
+}
+
+Manage() {
+    RunWait("komorebic.exe manage", , "Hide")
+}
+
+Unmanage() {
+    RunWait("komorebic.exe unmanage", , "Hide")
+}
+
+ReloadConfiguration() {
+    RunWait("komorebic.exe reload-configuration", , "Hide")
+}
+
+WatchConfiguration(boolean_state) {
+    RunWait("komorebic.exe watch-configuration " boolean_state, , "Hide")
+}
+
+CompleteConfiguration() {
+    RunWait("komorebic.exe complete-configuration", , "Hide")
+}
+
+AltFocusHack(boolean_state) {
+    RunWait("komorebic.exe alt-focus-hack " boolean_state, , "Hide")
+}
+
+WindowHidingBehaviour(hiding_behaviour) {
+    RunWait("komorebic.exe window-hiding-behaviour " hiding_behaviour, , "Hide")
+}
+
+CrossMonitorMoveBehaviour(move_behaviour) {
+    RunWait("komorebic.exe cross-monitor-move-behaviour " move_behaviour, , "Hide")
+}
+
+ToggleCrossMonitorMoveBehaviour() {
+    RunWait("komorebic.exe toggle-cross-monitor-move-behaviour", , "Hide")
+}
+
+UnmanagedWindowOperationBehaviour(operation_behaviour) {
+    RunWait("komorebic.exe unmanaged-window-operation-behaviour " operation_behaviour, , "Hide")
+}
+
+FloatRule(identifier, id) {
+    RunWait("komorebic.exe float-rule " identifier " `"" id "`"", , "Hide")
+}
+
+ManageRule(identifier, id) {
+    RunWait("komorebic.exe manage-rule " identifier " `"" id "`"", , "Hide")
+}
+
+WorkspaceRule(identifier, id, monitor, workspace) {
+    RunWait("komorebic.exe workspace-rule " identifier " `"" id "`" " monitor " " workspace, , "Hide")
+}
+
+NamedWorkspaceRule(identifier, id, workspace) {
+    RunWait("komorebic.exe named-workspace-rule " identifier " `"" id "`" " workspace, , "Hide")
+}
+
+IdentifyObjectNameChangeApplication(identifier, id) {
+    RunWait("komorebic.exe identify-object-name-change-application " identifier " `"" id "`"", , "Hide")
+}
+
+IdentifyTrayApplication(identifier, id) {
+    RunWait("komorebic.exe identify-tray-application " identifier " `"" id "`"", , "Hide")
+}
+
+IdentifyLayeredApplication(identifier, id) {
+    RunWait("komorebic.exe identify-layered-application " identifier " `"" id "`"", , "Hide")
+}
+
+IdentifyBorderOverflowApplication(identifier, id) {
+    RunWait("komorebic.exe identify-border-overflow-application " identifier " `"" id "`"", , "Hide")
+}
+
+ActiveWindowBorder(boolean_state) {
+    RunWait("komorebic.exe active-window-border " boolean_state, , "Hide")
+}
+
+ActiveWindowBorderColour(r, g, b, window_kind) {
+    RunWait("komorebic.exe active-window-border-colour " r " " g " " b " --window-kind " window_kind, , "Hide")
+}
+
+ActiveWindowBorderWidth(width) {
+    RunWait("komorebic.exe active-window-border-width " width, , "Hide")
+}
+
+ActiveWindowBorderOffset(offset) {
+    RunWait("komorebic.exe active-window-border-offset " offset, , "Hide")
+}
+
+FocusFollowsMouse(boolean_state, implementation) {
+    RunWait("komorebic.exe focus-follows-mouse " boolean_state " --implementation " implementation, , "Hide")
+}
+
+ToggleFocusFollowsMouse(implementation) {
+    RunWait("komorebic.exe toggle-focus-follows-mouse  --implementation " implementation, , "Hide")
+}
+
+MouseFollowsFocus(boolean_state) {
+    RunWait("komorebic.exe mouse-follows-focus " boolean_state, , "Hide")
+}
+
+ToggleMouseFollowsFocus() {
+    RunWait("komorebic.exe toggle-mouse-follows-focus", , "Hide")
+}
+
+AhkLibrary() {
+    RunWait("komorebic.exe ahk-library", , "Hide")
+}
+
+AhkAppSpecificConfiguration(path, override_path) {
+    RunWait("komorebic.exe ahk-app-specific-configuration " path " " override_path, , "Hide")
+}
+
+PwshAppSpecificConfiguration(path, override_path) {
+    RunWait("komorebic.exe pwsh-app-specific-configuration " path " " override_path, , "Hide")
+}
+
+FormatAppSpecificConfiguration(path) {
+    RunWait("komorebic.exe format-app-specific-configuration " path, , "Hide")
+}
+
+NotificationSchema() {
+    RunWait("komorebic.exe notification-schema", , "Hide")
+}
+
+SocketSchema() {
+    RunWait("komorebic.exe socket-schema", , "Hide")
+}
+; -------------------------------------------------------------------------------------------------
+
+
+; Based on contents of komorebic.ahk
+; https://gist.github.com/crosstyan/dafacc0778dabf693ce9236c57b201cd#file-komorebic-ahk
 
 WorkspaceNumber := 9
 
@@ -16,56 +492,58 @@ global numbers := ArrayFromZero(WorkspaceNumber)
 
 init(){
   ;; focus-follows-mouse feels buggy
-  Run "komorebic focus-follows-mouse disable", ,"Hide"
+  FocusFollowsMouse("disable", "windows")
 
   ;; From
   ;; https://github.com/LGUG2Z/komorebi/blob/master/komorebi.sample.ahk
   ; Always float IntelliJ popups, matching on class
-  Run "komorebic float-rule class SunAwtDialog", , "Hide"
+  FloatRule("class", "SunAwtDialog")
   ; Always float Control Panel, matching on title
-  Run "komorebic float-rule title 'Control Panel'", , "Hide"
+  FloatRule("title", "Control Panel")
   ; Always float Task Manager, matching on class
-  Run "komorebic float-rule class TaskManagerWindow", , "Hide"
+  FloatRule("class", "TaskManagerWindow")
   ; Always float Wally, matching on executable name
-  Run "komorebic float-rule exe Wally.exe", , "Hide"
-  Run "komorebic float-rule exe wincompose.exe", , "Hide"
+  FloatRule("exe", "Wally.exe")
+  FloatRule("exe", "wincompose.exe")
   ; Always float Calculator app, matching on window title
-  Run "komorebic float-rule title Calculator", , "Hide"
-  Run "komorebic float-rule exe 1Password.exe", , "Hide"
+  FloatRule("title", "Calculator")
+  ; Always float password managers
+  FloatRule("exe", "1Password.exe")
+  FloatRule("exe", "KeePass.exe")
 
   ;; For BandZip annoying updater
-  Run "komorebic float-rule exe Updater.exe", ,"Hide"
-  Run "komorebic float-rule exe ScreenToGif.exe", ,"Hide"
+  FloatRule("exe", "Updater.exe")
+  FloatRule("exe", "ScreenToGif.exe")
   ;; No tiling for Settings
-  Run "komorebic float-rule title Settings", ,"Hide"
+  FloatRule("title", "Settings")
 
-  Run "komorebic identify-tray-application exe Discord.exe", ,"Hide"
-  Run "komorebic identify-tray-application exe Telegram.exe", ,"Hide"
-  Run "komorebic identify-tray-application exe cloudmusic.exe", ,"Hide"
-  Run "komorebic identify-tray-application exe everything.exe", ,"Hide"
-  Run "komorebic identify-tray-application exe GoldenDict.exe", ,"Hide"
-  Run "komorebic identify-tray-application exe 'Clash for Windows.exe'", ,"Hide"
+  IdentifyTrayApplication("exe", "Discord.exe")
+  IdentifyTrayApplication("exe", "Telegram.exe")
+  IdentifyTrayApplication("exe", "cloudmusic.exe")
+  IdentifyTrayApplication("exe", "everything.exe")
+  IdentifyTrayApplication("exe", "GoldenDict.exe")
+  IdentifyTrayApplication("exe", "Clash for Windows.exe")
 
   ;; Fix for the infamous TIM
-  Run("komorebic identify-tray-application exe TIM.exe",,"Hide")
-  Run("komorebic float-rule title TXMenuWindow", ,"Hide")
-  Run("komorebic manage-rule class TXGuiFoundation",,"Hide")
-  
-  ;; Infamous WeChat from Microsoft Store
-  Run("komorebic identify-tray-application exe WeChatStore.exe",,"Hide")
-  Run("komorebic manage-rule exe WeChatStore.exe", ,"Hide")
-  Run("komorebic float-rule class SetMenuWnd",,"Hide")
-  Run("komorebic float-rule class CefWebViewWnd",,"Hide")
+  IdentifyTrayApplication("exe", "TIM.exe")
+  FloatRule("title", "TXMenuWindow")
+  ManageRule("class", "TXGuiFoundation")
 
-  ;; IDM can't not be handle properly 
+  ;; Infamous WeChat from Microsoft Store
+  IdentifyTrayApplication("exe", "WeChatStore.exe")
+  ManageRule("exe", "WeChatStore.exe")
+  FloatRule("class", "SetMenuWnd")
+  FloatRule("class", "CefWebViewWnd")
+
+  ;; IDM can't not be handle properly
   ;; I don't like it tiling anyway. So I just comment it
-  ;; Run("komorebic manage-rule exe IDMan.exe",,"Hide")
-  run("komorebic ensure-workspaces 0 " . workspacenumber, ,"hide")
+  ; ManageRule("exe", "IDMan.exe")
+  EnsureWorkspaces(0, workspacenumber)
 
   ; set the padding to all the workspaces
   for num in numbers{
-    runwait("komorebic workspace-padding 0 " . num . " 10",,"hide")
-    RunWait("komorebic container-padding 0 " . num . " 8",,"Hide")
+    WorkspacePadding(0, num, 10)
+    ContainerPadding(0, num, 8)
   }
 }
 
@@ -74,76 +552,76 @@ init()
 
 
 ; Change the focused window, Alt + Vim direction keys
-!h::{ 
-  Run "komorebic focus left", , "Hide"
+!h::{
+  Focus("left")
 }
 
-!j::{ 
-  Run "komorebic focus down", , "Hide"
+!j::{
+  Focus("down")
 }
 
-!k::{ 
-  Run "komorebic focus up", , "Hide"
+!k::{
+  Focus("up")
 }
 
-!l::{ 
-  Run "komorebic focus right", , "Hide"
+!l::{
+  Focus("right")
 }
 
 ; Move the focused window in a given direction, Alt + Shift + Vim direction keys
-!+h::{ 
-  Run "komorebic move left", ,"Hide"
+!+h::{
+  Move("left")
 }
 
-!+j::{ 
-  Run "komorebic move down", ,"Hide"
+!+j::{
+  Move("down")
 }
 
-!+k::{ 
-  Run "komorebic move up", ,"Hide"
+!+k::{
+  Move("up")
 }
 
-!+l::{ 
-  Run "komorebic move right", ,"Hide"
+!+l::{
+  Move("right")
 }
 
-;; Stack feels buggy here. 
+;; Stack feels buggy here.
 ;; Personally I don't use it So I just comment it
 ; Stack the focused window in a given direction, ,Alt + direction keys
-; !Left::{ 
-;   Run "komorebic stack left", ,"Hide"
+; !Left::{
+;   Stack("left")
 ; }
 
-; !Down::{ 
-;   Run "komorebic stack down", ,"Hide"
+; !Down::{
+;   Stack("down")
 ; }
 
-; !Up::{ 
-;   Run "komorebic stack up", ,"Hide"
+; !Up::{
+;   Stack("up")
 ; }
 
-; !Right::{ 
-;   Run "komorebic stack right", ,"Hide"
+; !Right::{
+;   Stack("right")
 ; }
 
-; !]::{ 
-;   Run "komorebic cycle-stack next", , "Hide"
+; !]::{
+;   CycleStack("next")
 ; }
 
-; ![::{ 
-;   Run "komorebic cycle-stack previous", , "Hide"
+; ![::{
+;   CycleStack("previous")
 ; }
 ; ; Unstack the focused window
-; !d::{ 
-;   Run "komorebic unstack", ,"Hide"
+; !d::{
+;   Unstack()
 ; }
 
 ; Promote the focused window to the top of the tree, ,Alt + Shift + Enter
-!+Enter::{ 
-  Run "komorebic promote", ,"Hide"
+!+Enter::{
+  Promote()
 }
 
-; Is there any way to parse the state of focused workspace? 
+; Is there any way to parse the state of focused workspace?
 ; Switch to an equal-height
 ; max-width column layout on the main workspace, Alt + Shift + C
 ; ------------
@@ -151,8 +629,8 @@ init()
 ; ------------
 ; |          |
 ; ------------
-!+r::{ 
-  Run "komorebic change-layout rows", ,"Hide"
+!+r::{
+  ChangeLayout("rows")
 }
 
 ; Switch to an equal-width
@@ -161,8 +639,8 @@ init()
 ; |   |   |   |
 ; |   |   |   |
 ; -------------
-!+c::{ 
-  Run "komorebic change-layout columns", ,"Hide"
+!+c::{
+  ChangeLayout("columns")
 }
 
 ; Switch to the default bsp tiling layout on the main workspace, Alt + Shift + T
@@ -173,16 +651,16 @@ init()
 ; |    |   |   |
 ; --------------
 
-!+b::{ 
-  Run "komorebic change-layout bsp", ,"Hide"
+!+b::{
+  ChangeLayout("bsp")
 }
 
 ; Toggle the Monocle layout for the focused window, ,Alt + Shift + F
 ; Monocle is similar to maximizing, but it will pinned the focused
 ; window down
 !+f::
-{ 
-  Run "komorebic toggle-monocle", ,"Hide"
+{
+  ToggleMonocle()
 }
 
 ; Use Alt + F to toggle maximize window
@@ -190,50 +668,50 @@ init()
 ; or komorebi won't handle it like issue #12
 ; https://github.com/LGUG2Z/komorebi/issues/12
 !f::{
-  RunWait("komorebic toggle-maximize",,"Hide")
+  ToggleMaximize()
 }
 
 ; Flip horizontally, ,Alt + Shift + X
-!+x::{ 
-  Run "komorebic flip-layout horizontal", ,"Hide"
+!+x::{
+  FlipLayout("horizontal")
 }
 
 ; Flip vertically, ,Alt + Shift + Y
-!+y::{ 
-  Run "komorebic flip-layout vertical", ,"Hide"
+!+y::{
+  FlipLayout("vertical")
 }
 
 ; Float the focused window Alt + T
-!t::{ 
-  Run "komorebic toggle-float", ,"Hide"
+!t::{
+  ToggleFloat()
 }
 ; Toggle Tiling for workspace. Alt + Shift + T
-!+t::{ 
-  Run "komorebic toggle-tiling", ,"Hide"
+!+t::{
+  ToggleTiling()
 }
 
 ; Pause responding to any window events or komorebic commands Alt + P
-!p::{ 
-  Run "komorebic toggle-pause", ,"Hide"
+!p::{
+  TogglePause()
 }
 
 ; Switch to workspace
 ; Alt + 1~9
 ; Equal to bind key !1 to !9 to workspace 0 ~ 8
 For num in numbers{
-  Hotkey("!" . (num+1), (key) => Run("komorebic focus-workspace " . Integer(SubStr(key, 2))-1, ,"Hide"))
+  Hotkey("!" . (num+1), (key) => FocusWorkspace(Integer(SubStr(key, 2))-1))
 }
 
 ; Move window to workspace
 ; Alt + Shift + 1~9
 ; Equal to bind key !+1 to !+9 to workspace 0 ~ 8
 For num in numbers{
-  Hotkey("!+" . (num+1), (key) => Run("komorebic move-to-workspace " . Integer(SubStr(key, 3))-1, ,"Hide"))
+  Hotkey("!+" . (num+1), (key) => MoveToWorkspace(Integer(SubStr(key, 3))-1))
 }
 
 ; Force a retile if things get janky Ctrl + Shift + R
-^+r::{ 
-  Run "komorebic retile", ,"Hide"
+^+r::{
+  Retile()
 }
 
 ;; Native (AHK) Windows Key Rebinding
@@ -243,17 +721,17 @@ For num in numbers{
   WinClose("A")
 }
 
-;; Restart komorebi in a hard way
+;; Restart komorebi in a hard way Alt + Shift + Q
 !+q::{
-  RunWait("komorebic restore-windows",,"Hide")
+  RestoreWindows()
   RunWait("powershell " . "Stop-Process -Name 'komorebi'",,"Hide")
-  RunWait("komorebic start") ;; intend to not hide it
+  Start("", "", "")
   ;; Delay 1000 milisecond
   Sleep(1000)
   init()
 }
 
-;; Get Window Info
+;; Get Window Info Alt + Shift + M
 ;; Helpful for debugging
 !+m::{
   window_id := ""
@@ -264,7 +742,7 @@ For num in numbers{
 }
 
 
-;; this is a global state. 
+;; this is a global state.
 ;; ? how to moddify it to a functional style?
 global minimized_window := ""
 ;; Window should not be minimized
