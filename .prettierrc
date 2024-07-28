@@ -21,6 +21,12 @@
       "options": {
         "tabWidth": 2
       }
+    },
+    {
+      "files": ["komorebi.json"],
+      "options": {
+        "tabWidth": 2
+      }
     }
   ]
 }
