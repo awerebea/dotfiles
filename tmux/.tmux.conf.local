@@ -778,6 +778,16 @@ set -g @sessionx-window-mode "off"
 set -g @sessionx-zoxide-mode "off"
 
 
+set -g @plugin "omerxx/tmux-floax"
+set -g @floax-bind "p"
+set -g @floax-bind-menu "C-P"
+set -g @floax-width "80%"
+set -g @floax-height "80%"
+set -g @floax-border-color "magenta"
+set -g @floax-text-color "blue"
+set -g @floax-change-path "true"
+
+
 set -g @plugin "graemedavidson/tmux-pane-focus"
 # Press <prefix> + T to override settings for the current window
 set -g @pane-focus-size '50'
