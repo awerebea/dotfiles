@@ -2,3 +2,9 @@
 	name = awerebea
 	email = awerebea.21@gmail.com
 	signingkey = 9BCC286D7490EA90
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
