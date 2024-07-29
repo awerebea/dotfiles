@@ -533,45 +533,263 @@ bind _ split-window -fv
 bind S-Left swap-window -t -1 \; previous-window
 bind S-Right swap-window -t +1 \; next-window
 
-# List of installed plugins
+# {{{ --------------- List of installed plugins with their settings -------------------------------
 set -g @plugin "tmux-plugins/tmux-sensible"
-set -g @plugin "tmux-plugins/tmux-resurrect"
-set -g @plugin "tmux-plugins/tmux-continuum"
-set -g @plugin "tmux-plugins/tmux-copycat"
-set -g @plugin "tmux-plugins/tmux-open"
-set -g @plugin "tmux-plugins/tmux-sidebar"
-set -g @plugin "samoshkin/tmux-plugin-sysstat"
-set -g @plugin "CrispyConductor/tmux-copy-toolkit"
-set -g @plugin "laktak/extrakto"
-set -g @plugin "tmux-plugins/tmux-yank"
-set -g @plugin "MunifTanjim/tmux-mode-indicator"
-set -g @plugin "MunifTanjim/tmux-suspend"
-set -g @plugin "charlietag/tmux-split-statusbar"
-set -g @plugin "fcsonline/tmux-thumbs"
-set -g @plugin "sainnhe/tmux-fzf"
-set -g @plugin "wfxr/tmux-fzf-url"
-set -g @plugin "awerebea/tmux-translator"
-set -g @plugin "addisonlynch/tmux-sidebar-plus"
-set -g @plugin "IngoMeyer441/tmux-easy-motion"
-set -g @plugin "jaclu/tmux-menus"
-set -g @plugin "roosta/tmux-fuzzback"
-set -g @plugin "tmux-plugins/tmux-logging"
-set -g @plugin "kiyoon/treemux"
-set -g @plugin "aserowy/tmux.nvim"
-set -g @plugin "roy2220/easyjump.tmux"
-set -g @plugin "omerxx/tmux-sessionx"
-set -g @plugin "graemedavidson/tmux-pane-focus"
 set -g @plugin "jaclu/tmux-power-zoom"
-set -g @plugin "spywhere/tmux-named-snapshot"
 
-# treemux
+
+set -g @plugin "tmux-plugins/tmux-resurrect"
+# save and restore window geometry for most terminals in X11
+set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
+set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.tmux/resurrect/geometry)'
+# tmux resurrect. Restoring vim and neovim sessions
+set -g @resurrect-strategy-vim 'session'
+set -g @resurrect-strategy-nvim 'session'
+
+
+set -g @plugin "tmux-plugins/tmux-continuum"
+set -g @continuum-restore 'on'
+set -g @continuum-save-interval '15'
+
+
+set -g @plugin "tmux-plugins/tmux-copycat"
+set -g @copycat_search ?
+
+
+set -g @plugin "tmux-plugins/tmux-open"
+set -g @open-S 'https://www.google.com/search?q='
+
+
+set -g @plugin "tmux-plugins/tmux-sidebar"
+# Toggle sidebar-tree and do not move focus to tree pane
+set -g @sidebar-tree ''
+# Toggle sidebar-tree and move focus to tree pane
+set -g @sidebar-tree-focus 'F2'
+# Colorize the tree directory listing in the sidebar
+set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
+# The default sidebar width
+set -g @sidebar-tree-width '60'
+
+
+set -g @plugin "samoshkin/tmux-plugin-sysstat"
+set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
+set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
+set -g @sysstat_cpu_medium_threshold "30"
+set -g @sysstat_cpu_stress_threshold "80"
+set -g @sysstat_mem_medium_threshold "50"
+set -g @sysstat_mem_stress_threshold "80"
+set -g @sysstat_mem_size_unit "M"
+set -g @sysstat_cpu_color_low "#9ece6a default default"
+set -g @sysstat_cpu_color_medium "#d7af5f default default"
+set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
+set -g @sysstat_mem_color_low "#9ece6a default default"
+set -g @sysstat_mem_color_medium "#d7af5f default default"
+set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
+
+
+set -g @plugin "CrispyConductor/tmux-copy-toolkit"
+set -g @copytk-no-default-binds on
+set -g @copytk-copy-command 'tmux load-buffer - && tmux save-buffer - | \
+  xclip -selection clipboard && \
+  tmux display-message "Copied to the system clipboard!"'
+# copytk prefix: easymotion action bindings
+# bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1" # map is used by easyjump.tmux
+bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T prefix d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T copytk S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T copytk d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T copytk k run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction backward"
+bind-key -T copytk j run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction forward"
+bind-key -T copytk n run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines"
+# copy mode: easymotion action bindings
+bind-key -T copy-mode-vi s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T copy-mode s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
+bind-key -T copy-mode-vi d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+bind-key -T copy-mode d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
+# copytk prefix: easycopy action bindings
+bind-key -T copytk y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+bind-key -T copytk Y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 2"
+# tmux prefix: easycopy action bindings
+bind-key -T prefix C-M-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
+# tmux prefix: quickcopy action bindings
+bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
+# tmux prefix: quickopen action bindings
+bind-key -T prefix C-p run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
+# bindings to enter copytk prefix
+bind-key -T copy-mode-vi a switch-client -T copytk
+bind-key -T copy-mode a switch-client -T copytk
+set -g @copytk-quickopen-open-command xdg-open
+set -g @copytk-quickopen-match-0-2 paths
+set -g @copytk-quickopen-match-0-3 filenames
+
+
+set -g @plugin "laktak/extrakto"
+set -g @extrakto_key "Bspace"
+set -g @extrakto_filter_order "all word line url path hash"
+set -g @extrakto_grab_area "recent"
+set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
+
+
+set -g @plugin "tmux-plugins/tmux-yank"
+set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
+set -g @yank_selection 'clipboard' # or 'primary' or 'secondary'
+set -g @yank_with_mouse on
+
+
+set -g @plugin "MunifTanjim/tmux-mode-indicator"
+# prompt to display when tmux prefix key is pressed
+set -g @mode_indicator_prefix_prompt ' WAIT '
+# prompt to display when tmux is in copy mode
+set -g @mode_indicator_copy_prompt ' COPY '
+# prompt to display when tmux has synchronized panes
+set -g @mode_indicator_sync_prompt ' SYNC '
+# prompt to display when tmux is in normal mode
+set -g @mode_indicator_empty_prompt ' TMUX '
+# style values for prefix prompt
+set -g @mode_indicator_prefix_mode_style 'bg=#bb9af7,fg=#16161e'
+# style values for copy prompt
+set -g @mode_indicator_copy_mode_style 'bg=#e0af68,fg=#16161e'
+# style values for sync prompt
+set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
+# style values for empty prompt
+set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
+
+
+set -g @plugin "MunifTanjim/tmux-suspend"
+set -g @suspend_key 'F12'
+
+
+set -g @plugin "charlietag/tmux-split-statusbar"
+set -g @split-statusbar-mode 'on'                 # [ on | off]
+set -g @split-statusbar-swap-lines 'on'
+set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
+# bindkey for toggle statusbar-mode
+# define yourself just like bind-key, default: M-s
+set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
+# bindkey for status-left / status-right hiding
+# define yourself just like bind-key, default: M-d
+
+
+set -g @plugin "fcsonline/tmux-thumbs"
+set -g @thumbs-key F
+set -g @thumbs-unique enabled
+set -g @thumbs-reverse enabled
+if-shell '[ $(uname -s) = Linux ]' {
+  set -g @thumbs-command 'echo -n {} | xclip -selection clipboard && \
+    tmux set-buffer -- {} && tmux display-message "Copied {}"'
+  set -g @thumbs-multi-command 'echo -n {} | xclip -selection clipboard && \
+    tmux set-buffer -- "{}" && tmux display-message "Copied multiple items!"'
+} {
+  set -g @thumbs-command 'echo -n {} | \
+    pbcopy && tmux set-buffer -- {} && tmux display-message "Copied {}"'
+  set -g @thumbs-multi-command 'echo -n {} | pbcopy && tmux set-buffer -- "{}" && \
+    tmux display-message "Copied multiple items!"'
+}
+
+
+set -g @plugin "sainnhe/tmux-fzf"
+bind-key "M-f" command-prompt { find-window -Z "%%" }
+TMUX_FZF_LAUNCH_KEY="f" # prefix Alt-f
+
+
+set -g @plugin "wfxr/tmux-fzf-url"
+set -g @fzf-url-bind 'u'
+set -g @fzf-url-history-limit '2000'
+
+
+set -g @plugin "awerebea/tmux-translator"
+# the key to trigger translation
+set -g @tmux-translator "M-t"
+# the width of popup window
+set -g @tmux-translator-width "38%"
+# the height of popup window
+set -g @tmux-translator-height "38%"
+# translate from
+set -g @tmux-translator-from "en"
+# translate to
+set -g @tmux-translator-to "ru"
+# engine
+set -g @tmux-translator-engine "google"
+
+
+set -g @plugin "addisonlynch/tmux-sidebar-plus"
+set -g @sidebar-plus-sidebar-key 'b'
+set -g @sidebar-plus-layout-key 'g'
+set -g @sidebar-plus-position 'left'
+
+
+set -g @plugin "IngoMeyer441/tmux-easy-motion"
+# change default keybind for change panes layout to use "Space" as prefix
+bind-key n next-layout
+# bind-key -T copy-mode-vi v send-keys -X begin-selection
+set -g @easy-motion-prefix "Space"
+set -g @easy-motion-binding-bd-w "Space"
+# use a single easy-motion movement, activated directly after pressing prefix
+# highlight all word beginnings (bidirectional)
+# set -g @easy-motion-default-motion "bd-w"
+
+
+set -g @plugin "jaclu/tmux-menus"
+set -g @menus_trigger '@'
+
+
+set -g @plugin "roosta/tmux-fuzzback"
+set -g @fuzzback-bind /
+if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
+  set -g @fuzzback-popup 1; \
+  set -g @fuzzback-popup-size '90%'"
+
+
+set -g @plugin "tmux-plugins/tmux-logging"
+# Logging: prefix + shift + p
+# "Screen Capture": prefix + alt + p
+# Save complete history: prefix + alt + shift + p
+set -g @logging-path "$HOME/.tmux/logs"
+set -g @screen-capture-path "$HOME/.tmux/logs"
+set -g @save-complete-history-path "$HOME/.tmux/logs"
+
+
+set -g @plugin "kiyoon/treemux"
 set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
 # set -g @treemux-tree 'Bspace'
 set -g @treemux-tree-focus 'Tab'
 
-# tmux.nvim
+
+set -g @plugin "aserowy/tmux.nvim"
 set -g @tmux-nvim-navigation false
 set -g @tmux-nvim-resize false
+
+
+set -g @plugin "roy2220/easyjump.tmux"
+set-option -g @easyjump-key-binding "s"
+set-option -g @easyjump-auto-begin-selection "off"
+set-option -g @easyjump-smart-case "on"
+
+
+set -g @plugin "omerxx/tmux-sessionx"
+bind-key O select-pane -t :.+
+set -g @sessionx-bind "o"
+set -g @sessionx-x-path ""
+set -g @sessionx-custom-paths ""
+set -g @sessionx-custom-paths-subdirectories "true"
+set -g @sessionx-filter-current "true"
+set -g @sessionx-window-mode "off"
+set -g @sessionx-zoxide-mode "off"
+
+
+set -g @plugin "graemedavidson/tmux-pane-focus"
+# Press <prefix> + T to override settings for the current window
+set -g @pane-focus-size '50'
+set -g @pane-focus-direction '-'
+
+
+set -g @plugin "spywhere/tmux-named-snapshot"
+set -g @named-snapshot-switch-client 'N:tns'
+set -g @named-snapshot-save 'm:manual p:* d:dev'
+set -g @named-snapshot-restore 'M:manual P:* D:dev'
+
+# }}} --------------- end of plugins settings -----------------------------------------------------
 
 # Show pane details.
 set -g pane-border-status top
@@ -580,18 +798,8 @@ set -g pane-border-format '[#[bold]#{?pane_active,#[fg=green],#[fg=#9e9e9e]}#P#[
 #{?pane_active,#[bold]#[fg=green],#[fg=default]}-#[fg=default,nobold]\
 [#{?pane_active,#[bold]#[fg=green],#[fg=#9e9e9e]}#{pane_current_command}#[fg=default,nobold]]'
 
-  # Morantron/tmux-fingers              \           # alternative to tmux-thumbs
-
 # unbind C-l # conflicts with pane movements
 # bind l send-keys 'C-l' # clear screen (conflicts with nested session)
-
-# continuum
-set -g @continuum-restore 'on'
-set -g @continuum-save-interval '15'
-
-# save and restore window geometry for most terminals in X11
-set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
-set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.tmux/resurrect/geometry)'
 
 #vim navigation
 is_vim="ps -o state= -o comm= -t '#{pane_tty}' \
@@ -624,8 +832,6 @@ set -g focus-events on
 
 # super useful when using "grouped sessions" and multi-monitor setup
 setw -g aggressive-resize on
-
-set -g @open-S 'https://www.google.com/search?q='
 
 # -- clipboard -----------------------------------------------------------------
 tmux_conf_copy_to_os_clipboard=true
@@ -725,21 +931,6 @@ tmux_conf_theme_mouse_attr="bold"
 tmux_conf_theme_clock_colour='#00afff'  # blue
 tmux_conf_theme_clock_style='24'
 
-set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
-set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
-set -g @sysstat_cpu_medium_threshold "30"
-set -g @sysstat_cpu_stress_threshold "80"
-set -g @sysstat_mem_medium_threshold "50"
-set -g @sysstat_mem_stress_threshold "80"
-set -g @sysstat_mem_size_unit "M"
-
-set -g @sysstat_cpu_color_low "#9ece6a default default"
-set -g @sysstat_cpu_color_medium "#d7af5f default default"
-set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
-set -g @sysstat_mem_color_low "#9ece6a default default"
-set -g @sysstat_mem_color_medium "#d7af5f default default"
-set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
-
 # Copy-mode keybinds
 bind Escape copy-mode
 
@@ -749,66 +940,9 @@ bind C-q {
   display " Toggled logging to ~/.tmux/logs/#W-#P.log"
 }
 
-# tmux-sidebar plugin settings
-# Toggle sidebar-tree and do not move focus to tree pane
-set -g @sidebar-tree ''
-# Toggle sidebar-tree and move focus to tree pane
-set -g @sidebar-tree-focus 'F2'
-# Colorize the tree directory listing in the sidebar
-set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
-# The default sidebar width
-set -g @sidebar-tree-width '60'
-
-# extracto
-set -g @extrakto_key "Bspace"
-set -g @extrakto_filter_order "all word line url path hash"
-set -g @extrakto_grab_area "recent"
-set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
-
 # Add keybinds with modifiers to use the original with other commands
 bind-key 'M-s' choose-session -Z
 bind-key 'M-w' choose-window -Z
-
-# easyjump.tmux
-set-option -g @easyjump-key-binding "s"
-set-option -g @easyjump-auto-begin-selection "off"
-set-option -g @easyjump-smart-case "on"
-
-# tmux-copy-toolkit
-set -g @copytk-no-default-binds on
-set -g @copytk-copy-command 'tmux load-buffer - && tmux save-buffer - | \
-xclip -selection clipboard && \
-tmux display-message "Copied to the system clipboard!"'
-# copytk prefix: easymotion action bindings
-# bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1" # map is used by easyjump.tmux
-bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T prefix d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copytk S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk k run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction backward"
-bind-key -T copytk j run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction forward"
-bind-key -T copytk n run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines"
-# copy mode: easymotion action bindings
-bind-key -T copy-mode-vi s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copy-mode s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copy-mode-vi d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copy-mode d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-# copytk prefix: easycopy action bindings
-bind-key -T copytk y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
-bind-key -T copytk Y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 2"
-# tmux prefix: easycopy action bindings
-bind-key -T prefix C-M-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
-# tmux prefix: quickcopy action bindings
-bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
-# tmux prefix: quickopen action bindings
-bind-key -T prefix C-p run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
-# bindings to enter copytk prefix
-bind-key -T copy-mode-vi a switch-client -T copytk
-bind-key -T copy-mode a switch-client -T copytk
-set -g @copytk-quickopen-open-command xdg-open
-set -g @copytk-quickopen-match-0-2 paths
-set -g @copytk-quickopen-match-0-3 filenames
 
 # Prefix ! will split the current pane into it's own window.  To join use
 # Prefix W then give the window number at the prompt
@@ -817,76 +951,12 @@ bind W command-prompt -p "Create pane from:" "join-pane -s ':%%'"
 # toggle synchronize-panes
 bind C-x setw synchronize-panes
 
-# tmux suspend
-set -g @suspend_key 'F12'
-
 # override buffer keybinds
 bind C-b choose-buffer -Z # choose which buffer to paste from
 
 # reorganize current pane with previous-number pane
 bind M-, move-pane -t '.-' # previous at the top, current at the bottom
 bind M-. move-pane -h -t '.-' # previous at the left, current at the right
-
-# tmux resurrect. Restoring vim and neovim sessions
-set -g @resurrect-strategy-vim 'session'
-set -g @resurrect-strategy-nvim 'session'
-
-# tmux yank
-set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
-set -g @yank_selection 'clipboard' # or 'primary' or 'secondary'
-set -g @yank_with_mouse on
-
-#  tmux-split-statusbar
-set -g @split-statusbar-mode 'on'                 # [ on | off]
-set -g @split-statusbar-swap-lines 'on'
-set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
-# bindkey for toggle statusbar-mode
-# define yourself just like bind-key, default: M-s
-set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
-# bindkey for status-left / status-right hiding
-# define yourself just like bind-key, default: M-d
-
-# tmux-thumbs
-set -g @thumbs-key F
-set -g @thumbs-unique enabled
-set -g @thumbs-reverse enabled
-if-shell '[ $(uname -s) = Linux ]' {
-  set -g @thumbs-command 'echo -n {} | xclip -selection clipboard && \
-    tmux set-buffer -- {} && tmux display-message "Copied {}"'
-  set -g @thumbs-multi-command 'echo -n {} | xclip -selection clipboard && \
-    tmux set-buffer -- "{}" && tmux display-message "Copied multiple items!"'
-} {
-  set -g @thumbs-command 'echo -n {} | \
-    pbcopy && tmux set-buffer -- {} && tmux display-message "Copied {}"'
-  set -g @thumbs-multi-command 'echo -n {} | pbcopy && tmux set-buffer -- "{}" && \
-    tmux display-message "Copied multiple items!"'
-}
-# tmux-fzf
-bind-key "M-f" command-prompt { find-window -Z "%%" }
-TMUX_FZF_LAUNCH_KEY="f" # prefix Alt-f
-
-# tmux-fzf-url
-set -g @fzf-url-bind 'u'
-set -g @fzf-url-history-limit '2000'
-
-# tmux-translator
-# the key to trigger translation
-set -g @tmux-translator "M-t"
-# the width of popup window
-set -g @tmux-translator-width "38%"
-# the height of popup window
-set -g @tmux-translator-height "38%"
-# translate from
-set -g @tmux-translator-from "en"
-# translate to
-set -g @tmux-translator-to "ru"
-# engine
-set -g @tmux-translator-engine "google"
-
-# tmux-sidebar-plus
-set -g @sidebar-plus-sidebar-key 'b'
-set -g @sidebar-plus-layout-key 'g'
-set -g @sidebar-plus-position 'left'
 
 # toggle mouse
 bind-key M {
@@ -917,59 +987,11 @@ bind-key -T marked-pane-actions d select-pane -d \; display-message "Pane disabl
 # enable a previously disabled pane
 bind-key -T marked-pane-actions e select-pane -e \; display-message "Pane enabled"
 
-# tmux-easy-motion plugin settings
-# change default keybind for change panes layout to use "Space" as prefix
-bind-key n next-layout
-# bind-key -T copy-mode-vi v send-keys -X begin-selection
-set -g @easy-motion-prefix "Space"
-set -g @easy-motion-binding-bd-w "Space"
-# use a single easy-motion movement, activated directly after pressing prefix
-# highlight all word beginnings (bidirectional)
-# set -g @easy-motion-default-motion "bd-w"
-
 # Start rectangle (block) selection in copy-mode
 bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
 
-# tmux-menus plugin settings
-set -g @menus_trigger '@'
-
-# tmux-copycat plugin settings
-set -g @copycat_search ?
-
-# tmux-fuzzback plugin settings
-set -g @fuzzback-bind /
-if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
-  set -g @fuzzback-popup 1; \
-  set -g @fuzzback-popup-size '90%'"
-
-# tmux-logging plugin settings
-# Logging: prefix + shift + p
-# "Screen Capture": prefix + alt + p
-# Save complete history: prefix + alt + shift + p
-set -g @logging-path "$HOME/.tmux/logs"
-set -g @screen-capture-path "$HOME/.tmux/logs"
-set -g @save-complete-history-path "$HOME/.tmux/logs"
-
 # Create a new window preserving the path of the current pane
 bind-key c run-shell 'tmux new-window -c "$(echo "#{pane_current_path}")"'
-
-# tmux-mode-indicator settings
-# prompt to display when tmux prefix key is pressed
-set -g @mode_indicator_prefix_prompt ' WAIT '
-# prompt to display when tmux is in copy mode
-set -g @mode_indicator_copy_prompt ' COPY '
-# prompt to display when tmux has synchronized panes
-set -g @mode_indicator_sync_prompt ' SYNC '
-# prompt to display when tmux is in normal mode
-set -g @mode_indicator_empty_prompt ' TMUX '
-# style values for prefix prompt
-set -g @mode_indicator_prefix_mode_style 'bg=#bb9af7,fg=#16161e'
-# style values for copy prompt
-set -g @mode_indicator_copy_mode_style 'bg=#e0af68,fg=#16161e'
-# style values for sync prompt
-set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
-# style values for empty prompt
-set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
 
 bind-key -r i run-shell "tmux neww tmux-cht.sh"
 
@@ -995,23 +1017,3 @@ bind-key -T ctrl_g_mode s send-keys C-g s
 bind-key -T ctrl_g_mode t send-keys C-g t
 bind-key -T ctrl_g_mode w send-keys C-g w
 bind-key -T ctrl_g_mode g send-keys C-g g # used by fzf-marks
-
-# tmux-sessionx
-bind-key O select-pane -t :.+
-set -g @sessionx-bind "o"
-set -g @sessionx-x-path ""
-set -g @sessionx-custom-paths ""
-set -g @sessionx-custom-paths-subdirectories "true"
-set -g @sessionx-filter-current "true"
-set -g @sessionx-window-mode "off"
-set -g @sessionx-zoxide-mode "off"
-
-# tmux-pane-focus
-# Press <prefix> + T to override settings for the current window
-set -g @pane-focus-size '50'
-set -g @pane-focus-direction '-'
-
-# tmux-named-snapshot
-set -g @named-snapshot-switch-client 'N:tns'
-set -g @named-snapshot-save 'm:manual p:* d:dev'
-set -g @named-snapshot-restore 'M:manual P:* D:dev'
