@@ -196,33 +196,33 @@ New-Alias -Name 'gcpc' -Value 'Invoke-GitCherrypickContinue' -Scope Global -Forc
 
 function Invoke-GitCommitAmend
 {
-    "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
+    $env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
     git commit --amend $args
-    Remove-Item Env:GIT_COMMITTER_DATE"
+    Remove-Item Env:GIT_COMMITTER_DATE
 }
 New-Alias -Name 'gcpd!' -Value 'Invoke-GitCommitAmend' -Scope Global -Force
 
 function Invoke-GitCommitAmendNoEdit
 {
-    "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
+    $env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
     git commit --amend --no-edit $args
-    Remove-Item Env:GIT_COMMITTER_DATE"
+    Remove-Item Env:GIT_COMMITTER_DATE
 }
 New-Alias -Name 'gcpdn!' -Value 'Invoke-GitCommitAmendNoEdit' -Scope Global -Force
 
 function Invoke-GitCommitAmendNoEditGpgSign
 {
-    "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
+    $env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
     git commit --amend --no-edit --gpg-sign $args
-    Remove-Item Env:GIT_COMMITTER_DATE"
+    Remove-Item Env:GIT_COMMITTER_DATE
 }
 New-Alias -Name 'gcpdns!' -Value 'Invoke-GitCommitAmendNoEditGpgSign' -Scope Global -Force
 
 function Invoke-GitCommitAmendGpgSign
 {
-    "$env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
+    $env:GIT_COMMITTER_DATE = git log -n 1 --format=%aD
     git commit --amend --gpg-sign $args
-    Remove-Item Env:GIT_COMMITTER_DATE"
+    Remove-Item Env:GIT_COMMITTER_DATE
 }
 New-Alias -Name 'gcpds!' -Value 'Invoke-GitCommitAmendGpgSign' -Scope Global -Force
 
@@ -593,8 +593,7 @@ New-Alias -Name 'grset' -Value 'Invoke-GitRemoteSeturl' -Scope Global -Force
 
 function Invoke-SetLocationGitRevParseShowtoplevel
 {
-    Set-Location "$(git rev-parse --show-toplevel)" $args
-    SetLocationGitRevParseShowtoplevel
+    Set-Location "$(git rev-parse --show-toplevel)"
 }
 New-Alias -Name 'grt' -Value 'Invoke-SetLocationGitRevParseShowtoplevel' -Scope Global -Force
 New-Alias -Name 'cdgr' -Value 'Invoke-SetLocationGitRevParseShowtoplevel' -Scope Global -Force
