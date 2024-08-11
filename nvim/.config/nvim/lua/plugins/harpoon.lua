@@ -17,7 +17,7 @@ return {
       "]h",
       "<leader>hm",
       "<leader>m",
-      "<leader>hs",
+      "<leader>hh",
     },
     config = function()
       require("telescope").load_extension "harpoon"
@@ -129,7 +129,7 @@ return {
       vim.keymap.set("n", "]h", function()
         harpoon:list():next()
       end, { desc = "Next Harpoon mark" })
-      vim.keymap.set("n", "<leader>hs", function()
+      vim.keymap.set("n", "<leader>hh", function()
         select_harpoon_item(harpoon:list())
       end, { desc = "Select Harpoon item (1-9)" })
     end,
