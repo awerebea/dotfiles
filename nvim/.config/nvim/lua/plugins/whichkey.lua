@@ -103,7 +103,7 @@ return {
           {"]h", desc = "Next Harpoon mark" },
           {"<leader>hm", desc = "Harpoon marks" },
           {"<leader>m", desc = "Harpoon marks" },
-          {"<leader>hs", desc = "Select Harpoon item 1-9" },
+          {"<leader>hh", desc = "Select Harpoon item (1-9)" },
           -- }}}
         },
       }
