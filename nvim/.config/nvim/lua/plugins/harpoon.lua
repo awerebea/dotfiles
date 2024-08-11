@@ -93,7 +93,9 @@ return {
         if choice >= 1 and choice <= 9 then
           harpoon:list():select(choice)
         elseif choice then
-          vim.notify("Invalid choice: " .. string.char(choice + 48))
+          if string.char(choice + 48) ~= "q" and string.char(choice + 48) ~= "Q" then
+            vim.notify("Invalid choice: " .. string.char(choice + 48))
+          end
         end
       end
 
