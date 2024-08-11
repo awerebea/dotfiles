@@ -74,8 +74,20 @@ return {
           :find()
       end
 
-      local function select_harpoon_item()
-        vim.api.nvim_echo({ { "Select item 1-9: ", "Normal" } }, true, {})
+      local function select_harpoon_item(harpoon_list)
+        local harpoon_items = {}
+        for i, harpoon_item in ipairs(harpoon_list.items) do
+          table.insert(harpoon_items, i .. ". " .. harpoon_item.value)
+          if i == 9 then
+            break
+          end
+        end
+        if #harpoon_items == 0 then
+          vim.notify "Harpoon's list is empty. There is nothing to select."
+          return
+        end
+        table.insert(harpoon_items, 1, "Select Harpoon item:")
+        vim.api.nvim_echo({ { table.concat(harpoon_items, "\n"), "Normal" } }, true, {})
         local choice = vim.fn.getchar() - 48
 
         if choice >= 1 and choice <= 9 then
@@ -116,8 +128,8 @@ return {
         harpoon:list():next()
       end, { desc = "Next Harpoon mark" })
       vim.keymap.set("n", "<leader>hs", function()
-        select_harpoon_item()
-      end, { desc = "Select Harpoon item 1-9" })
+        select_harpoon_item(harpoon:list())
+      end, { desc = "Select Harpoon item (1-9)" })
     end,
   },
 }
