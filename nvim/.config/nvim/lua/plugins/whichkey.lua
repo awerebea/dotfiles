@@ -96,6 +96,15 @@ return {
           { "<leader>x", group = "Trouble, diagnostics" },
           { "<leader>/", group = "Fuzzy grep" },
           { "<localleader>d", group = "Diff actions" },
+          -- {{{ Harpoon
+          {"<leader><leader>m", desc = "Add Harpoon mark" },
+          {"<leader>ha", desc = "Add Harpoon mark" },
+          {"[h", desc = "Previous Harpoon mark" },
+          {"]h", desc = "Next Harpoon mark" },
+          {"<leader>hm", desc = "Harpoon marks" },
+          {"<leader>m", desc = "Harpoon marks" },
+          {"<leader>hs", desc = "Select Harpoon item 1-9" },
+          -- }}}
         },
       }
     end,
