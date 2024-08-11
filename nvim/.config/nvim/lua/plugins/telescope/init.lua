@@ -271,14 +271,6 @@ return {
         desc = "Undo tree",
       },
       {
-        "<leader>m",
-        function()
-          require("telescope").extensions.harpoon.marks()
-        end,
-        desc = "Harpoon marks",
-      },
-      -- {{{ advanced-git-search
-      {
         "<leader>gcl",
         mode = "x",
         [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
