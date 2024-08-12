@@ -97,13 +97,13 @@ return {
           { "<leader>/", group = "Fuzzy grep" },
           { "<localleader>d", group = "Diff actions" },
           -- {{{ Harpoon
-          {"<leader><leader>m", desc = "Add Harpoon mark" },
-          {"<leader>ha", desc = "Add Harpoon mark" },
-          {"[h", desc = "Previous Harpoon mark" },
-          {"]h", desc = "Next Harpoon mark" },
-          {"<leader>hm", desc = "Harpoon marks" },
-          {"<leader>m", desc = "Harpoon marks" },
-          {"<leader>hh", desc = "Select Harpoon item (1-9)" },
+          {"<leader>ht", desc = "Harpoon list in Telescope" },
+          {"<leader>hl", desc = "Harpoon list" },
+          {"<leader><leader>h", desc = "Add a file to the Harpoon list" },
+          {"<leader>ha", desc = "Add a file to the Harpoon list" },
+          {"[h", desc = "Previous Harpoon file" },
+          {"]h", desc = "Next Harpoon file" },
+          {"<leader>i", desc = "Select Harpoon item" },
           -- }}}
         },
       }

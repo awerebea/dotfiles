@@ -11,13 +11,13 @@ return {
     -- <ctrl-x> delete the current mark
 
     keys = {
-      "<leader><leader>m",
+      "<leader>ht",
+      "<leader>hl",
+      "<leader><leader>h",
       "<leader>ha",
       "[h",
       "]h",
-      "<leader>hm",
-      "<leader>m",
-      "<leader>hh",
+      "<leader>i",
     },
     config = function()
       require("telescope").load_extension "harpoon"
@@ -117,39 +117,37 @@ return {
         end
       end
 
-      vim.keymap.set("n", "<leader>m", function()
+      local function add_file_to_harpoon_list()
+        local filename = vim.api.nvim_buf_get_name(0)
+        if filename == "" then
+          vim.notify "Couldn't find a valid file name to add to list, sorry."
+          return
+        end
+        vim.notify("Add a file to the Harpoon list: " .. vim.fn.fnamemodify(filename, ":."))
+        harpoon:list():add()
+      end
+
+      vim.keymap.set("n", "<leader>ht", function()
         toggle_telescope(harpoon:list())
-      end, { desc = "Harpoon marks" })
-      vim.keymap.set("n", "<leader><leader>m", function()
-        local filename = vim.api.nvim_buf_get_name(0)
-        if filename == "" then
-          vim.notify "Couldn't find a valid file name to mark, sorry."
-          return
-        end
-        vim.notify("Add Harpoon mark for file: " .. vim.fn.fnamemodify(filename, ":."))
-        harpoon:list():add()
-      end, { desc = "Add Harpoon mark" })
-      vim.keymap.set("n", "<leader>ha", function()
-        local filename = vim.api.nvim_buf_get_name(0)
-        if filename == "" then
-          vim.notify "Couldn't find a valid file name to mark, sorry."
-          return
-        end
-        vim.notify("Add Harpoon mark for file: " .. vim.fn.fnamemodify(filename, ":."))
-        harpoon:list():add()
-      end, { desc = "Add Harpoon mark" })
-      vim.keymap.set("n", "<leader>hm", function()
+      end, { desc = "Harpoon list in Telescope" })
+      vim.keymap.set("n", "<leader>hl", function()
         harpoon.ui:toggle_quick_menu(harpoon:list())
-      end, { desc = "Harpoon marks" })
+      end, { desc = "Harpoon list" })
+      vim.keymap.set("n", "<leader><leader>h", function()
+        add_file_to_harpoon_list()
+      end, { desc = "Add a file to the Harpoon list" })
+      vim.keymap.set("n", "<leader>ha", function()
+        add_file_to_harpoon_list()
+      end, { desc = "Add a file to the Harpoon list" })
       vim.keymap.set("n", "[h", function()
         harpoon:list():prev()
-      end, { desc = "Previous Harpoon mark" })
+      end, { desc = "Previous Harpoon file" })
       vim.keymap.set("n", "]h", function()
         harpoon:list():next()
-      end, { desc = "Next Harpoon mark" })
-      vim.keymap.set("n", "<leader>hh", function()
+      end, { desc = "Next Harpoon file" })
+      vim.keymap.set("n", "<leader>i", function()
         select_harpoon_item(harpoon:list())
-      end, { desc = "Select Harpoon item (1-9)" })
+      end, { desc = "Select Harpoon item" })
     end,
   },
 }
