@@ -75,9 +75,20 @@ return {
       end
 
       local function select_harpoon_item(harpoon_list)
+        local bindings_map = {
+          [1] = "f",
+          [2] = "s",
+          [3] = "t",
+          [4] = "r",
+          [5] = "d",
+          [6] = "w",
+          [7] = "a",
+          [8] = "v",
+          [9] = "c",
+        }
         local harpoon_items = {}
         for i, harpoon_item in ipairs(harpoon_list.items) do
-          table.insert(harpoon_items, i .. ". " .. harpoon_item.value)
+          table.insert(harpoon_items, bindings_map[i] .. ". " .. harpoon_item.value)
           if i == 9 then
             break
           end
@@ -86,16 +97,23 @@ return {
           vim.notify "Harpoon's list is empty. There is nothing to select."
           return
         end
-        table.insert(harpoon_items, 1, "Select Harpoon item:")
-        vim.api.nvim_echo({ { table.concat(harpoon_items, "\n"), "Normal" } }, true, {})
-        local choice = vim.fn.getchar() - 48
-
-        if choice >= 1 and choice <= 9 then
-          harpoon:list():select(choice)
-        elseif choice then
-          if string.char(choice + 48) ~= "q" and string.char(choice + 48) ~= "Q" then
-            vim.notify("Invalid choice: " .. string.char(choice + 48))
+        vim.api.nvim_echo(
+          { { "Select Harpoon item:\n" .. table.concat(harpoon_items, "\n"), "Normal" } },
+          true,
+          {}
+        )
+        local choice = vim.fn.getchar()
+        for i, item in ipairs(bindings_map) do
+          if i > #harpoon_items then
+            break
           end
+          if string.char(choice) == item then
+            harpoon:list():select(i)
+            return
+          end
+        end
+        if choice and string.char(choice) ~= "q" and string.char(choice) ~= "Q" then
+          vim.notify("Invalid choice: " .. string.char(choice))
         end
       end
 
