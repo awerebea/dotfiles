@@ -6,7 +6,7 @@ if (-not (Get-Command oh-my-posh -ErrorAction SilentlyContinue))
     )
 } else
 {
-    oh-my-posh init pwsh --config "$env:HOME/.oh-my-posh.yaml" | Invoke-Expression
+    oh-my-posh init pwsh --config "$HOME/.oh-my-posh.yaml" | Invoke-Expression
 }
 
 # Vi mode
