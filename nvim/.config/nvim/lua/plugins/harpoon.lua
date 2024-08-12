@@ -75,36 +75,23 @@ return {
       end
 
       local function select_harpoon_item(harpoon_list)
-        local bindings_map = {
-          [1] = "f",
-          [2] = "s",
-          [3] = "t",
-          [4] = "r",
-          [5] = "d",
-          [6] = "w",
-          [7] = "a",
-          [8] = "v",
-          [9] = "c",
-        }
-        local harpoon_items = {}
+        local bindings_table = { "f", "d", "s", "a", "r", "e", "w", "v", "c", "x" }
+        local message = "Select an item from the Harpoon list:\n"
         for i, harpoon_item in ipairs(harpoon_list.items) do
-          table.insert(harpoon_items, bindings_map[i] .. ". " .. harpoon_item.value)
-          if i == 9 then
+          message = message .. bindings_table[i] .. ". " .. harpoon_item.value
+          if i == #bindings_table then
             break
           end
+          message = message .. "\n"
         end
-        if #harpoon_items == 0 then
+        if #harpoon_list.items == 0 then
           vim.notify "Harpoon's list is empty. There is nothing to select."
           return
         end
-        vim.api.nvim_echo(
-          { { "Select Harpoon item:\n" .. table.concat(harpoon_items, "\n"), "Normal" } },
-          true,
-          {}
-        )
+        vim.api.nvim_echo({ { message, "Normal" } }, true, {})
         local choice = vim.fn.getchar()
-        for i, item in ipairs(bindings_map) do
-          if i > #harpoon_items then
+        for i, item in pairs(bindings_table) do
+          if i > #harpoon_list.items then
             break
           end
           if string.char(choice) == item then
@@ -112,9 +99,10 @@ return {
             return
           end
         end
-        if choice and string.char(choice) ~= "q" and string.char(choice) ~= "Q" then
-          vim.notify("Invalid choice: " .. string.char(choice))
+        if choice and string.lower(string.char(choice)) == "q" then
+          return
         end
+        vim.notify("Invalid choice: " .. string.char(choice))
       end
 
       local function add_file_to_harpoon_list()
