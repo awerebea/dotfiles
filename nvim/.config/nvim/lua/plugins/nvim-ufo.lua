@@ -1,6 +1,8 @@
 return {
   "kevinhwang91/nvim-ufo",
   dependencies = "kevinhwang91/promise-async",
+  enabled = true,
+  commit = "7dcb8fea3e7b3ccdb50f2c3ae7c248cdf6fe1ae1",
   event = "VeryLazy",
   opts = {
     -- INFO: Uncomment to use treesitter as fold provider, otherwise nvim lsp is used
