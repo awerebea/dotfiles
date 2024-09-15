@@ -51,7 +51,7 @@ return {
         emmet_ls = {},
         html = {},
         tailwindcss = {},
-        tsserver = {},
+        ts_ls = {},
         pyright = {
           settings = {
             pyright = {
