@@ -104,17 +104,21 @@
                 "bellStyle": "taskbar",
                 "closeOnExit": "graceful",
                 "colorScheme": "Catppuccin Mocha",
+                "commandline": "ubuntu2204.exe",
                 "cursorShape": "filledBox",
+                "elevate": false,
                 "experimental.retroTerminalEffect": false,
                 "font": {
                     "face": "JetBrainsMono Nerd Font",
+                    "size": 13.0,
                     "weight": "light"
                 },
-                "guid": "{e5a83caa-4c73-52b3-ae6b-bc438d721ef9}",
+                "guid": "{84781142-812d-42af-9dd5-7bb634af23c9}",
                 "hidden": false,
                 "intenseTextStyle": "bold",
-                "name": "Ubuntu 22.04.2 LTS",
-                "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
+                "icon": "https://assets.ubuntu.com/v1/49a1a858-favicon-32x32.png",
+                "name": "Ubuntu 22.04.5 LTS",
+                "tabTitle": "Ubuntu 22.04.5 LTS"
             }
         ]
     },
