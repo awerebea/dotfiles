@@ -355,19 +355,23 @@ augroup end
 vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkon1"
 
 -- Folding settings
--- zc fold block
--- zo unfold block
--- zM fold all blocks
--- zR unfold all blocks
--- za toggle folding
+-- zc close fold
+-- zo open fold
+-- zm close folds of lowest level
+-- zM close all open folds
+-- zr open folds of lowest level
+-- zR open all folds
+-- za toggles the fold at the cursor
 -- zf create manual fold, check :set foldmethod=manual
-vim.opt.foldmethod = "manual" -- "manual" for manual folds; "expr"
-vim.opt.foldexpr = "nvim_treesitter#foldexpr()" -- use treesitter to generate folds
-vim.opt.foldcolumn = "1"
-vim.opt.foldlevel = 2 -- fold levels opened at file opens
-vim.opt.foldlevelstart = 99
+vim.opt.foldmethod = "expr" -- "manual" for manual folds; "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- use treesitter to generate folds
+vim.opt.foldtext = ""
+-- vim.opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep:│,foldclose:]]
+vim.opt.foldcolumn = "auto:4"
+vim.opt.foldlevel = 99 -- fold levels opened at file opens
+vim.opt.foldlevelstart = 4
 -- vim.opt.foldopen = "all" -- autoopen fold when enter it
-vim.opt.foldnestmax = 3 -- max level of fold
+vim.opt.foldnestmax = 4 -- max level of fold
 
 -- A way to delete 'mkview' for current file
 vim.cmd [[
