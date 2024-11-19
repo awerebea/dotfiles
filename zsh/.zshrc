@@ -865,19 +865,21 @@ gacp() {
 }
 
 # zsh_history settings
-HISTSIZE=100500
-# shellcheck disable=2034
-SAVEHIST=100000
-setopt HIST_EXPIRE_DUPS_FIRST
-setopt HIST_FIND_NO_DUPS
-setopt HIST_IGNORE_ALL_DUPS
-setopt HIST_IGNORE_SPACE
-setopt HIST_REDUCE_BLANKS
-setopt HIST_SAVE_NO_DUPS
+export HISTSIZE=100500
+export SAVEHIST=$HISTSIZE
 
-# setopt INC_APPEND_HISTORY_TIME
-# setopt EXTENDED_HISTORY
-setopt SHARE_HISTORY
+# HISTORY
+setopt EXTENDED_HISTORY          # Write the history file in the ':start:elapsed;command' format.
+setopt HIST_EXPIRE_DUPS_FIRST    # Expire a duplicate event first when trimming history.
+setopt HIST_FIND_NO_DUPS         # Do not display a previously found event.
+setopt HIST_IGNORE_ALL_DUPS      # Delete an old recorded event if a new event is a duplicate.
+setopt HIST_IGNORE_DUPS          # Do not record an event that was just recorded again.
+setopt HIST_IGNORE_SPACE         # Do not record an event starting with a space.
+setopt HIST_SAVE_NO_DUPS         # Do not write a duplicate event to the history file.
+setopt SHARE_HISTORY             # Share history between all sessions.
+setopt HIST_IGNORE_SPACE         # Do not write an event prepended with space to the history file.
+setopt HIST_REDUCE_BLANKS        # Remove extra blanks from each command line being added to history
+# END HISTORY
 
 export HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
 export ZSH_HISTORY_FILE_NAME=".zsh_history"
