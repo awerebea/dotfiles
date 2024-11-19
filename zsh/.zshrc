@@ -1335,7 +1335,7 @@ fi
 
 # The plugin will auto execute this zvm_after_init function
 zvm_after_init() {
-    [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh | sed -e "s|fc -rl|fc -rlnt '%h/%d %H:%M:%S'|; s|LBUFFER=\"\$selected\"|selected=\"\${selected#* * }\"; LBUFFER=\"\${selected#* }\"|")"
+    [ -f "$HOME/.fzf.zsh" ] && eval "$(fzf --zsh)"
 }
 
 zhistclean() {
