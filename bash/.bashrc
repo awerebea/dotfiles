@@ -308,9 +308,9 @@ export_all_ruby_versions_bin_dirs
 alias cdq='cd "$(fd -t d . | fzf)"'
 
 # Enable vim mode
-if [[ $- == *i* ]]; then # in interactive session
-    set -o vi
-fi
+# if [[ $- == *i* ]]; then # in interactive session
+#     set -o vi
+# fi
 
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
