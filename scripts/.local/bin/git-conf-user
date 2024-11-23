@@ -11,6 +11,9 @@ SIGNING_KEY_1="3A9C9CF435A23DBB070281DE98DEAF83552D8DFA"
 USER_2="Andrey Bulgakov"
 EMAIL_2="andrey.bulgakov@clearscale.com"
 SIGNING_KEY_2="9DD1905E14C478090420E5B99A0ED9EFED1FAFE2"
+USER_3="Andrei Bulgakov"
+EMAIL_3="a.bulgakov.work@gmail.com"
+SIGNING_KEY_3="9BCC286D7490EA90CB0B36D40D29164EF13B24BD"
 
 GLOBAL=
 
@@ -19,9 +22,9 @@ SIGN_TAGS=
 UNSET=
 
 # Usage message
-usage () {
+usage() {
     local MESSAGE=
-    read -r -d '' MESSAGE << __EOM__ || true
+    read -r -d '' MESSAGE <<__EOM__ || true
 usage: ${0} [OPTIONS] USERNAME [-h|--help]
 Configure the git username and email address for the current git repository (default)
 or globally for the current user.
@@ -32,6 +35,8 @@ USERNAME:
   1, personal           User data: ${USER_1} <${EMAIL_1}>
 
   2, work               User data: ${USER_2} <${EMAIL_2}>
+
+  3, a.bulgakov.work    User data: ${USER_3} <${EMAIL_3}>
 
 OPTIONS:
   -c, --sign-commits    Sign all commits automattically
@@ -58,41 +63,46 @@ SIGNING_KEY=
 # Process command line options
 while [[ -n "$1" ]]; do
     case "$1" in
-        -g | --global)
-            GLOBAL='global'
-            ;;
-        -c | --sign-commits)
-            SIGN_COMMITS='true'
-            ;;
-        -t | --sign-tags)
-            SIGN_TAGS='true'
-            ;;
-        -u | --unset)
-            UNSET='--unset'
-            ;;
-        0 | awerebea)
-            USERNAME="$USER_0"
-            USEREMAIL="$EMAIL_0"
-            SIGNING_KEY="$SIGNING_KEY_0"
-            ;;
-        1 | personal)
-            USERNAME="$USER_1"
-            USEREMAIL="$EMAIL_1"
-            SIGNING_KEY="$SIGNING_KEY_1"
-            ;;
-        2 | work)
-            USERNAME="$USER_2"
-            USEREMAIL="$EMAIL_2"
-            SIGNING_KEY="$SIGNING_KEY_2"
-            ;;
-        -h | --help)
-            usage
-            exit
-            ;;
-        *)
-            usage
-            exit 1
-            ;;
+    -g | --global)
+        GLOBAL='global'
+        ;;
+    -c | --sign-commits)
+        SIGN_COMMITS='true'
+        ;;
+    -t | --sign-tags)
+        SIGN_TAGS='true'
+        ;;
+    -u | --unset)
+        UNSET='--unset'
+        ;;
+    0 | awerebea)
+        USERNAME="$USER_0"
+        USEREMAIL="$EMAIL_0"
+        SIGNING_KEY="$SIGNING_KEY_0"
+        ;;
+    1 | personal)
+        USERNAME="$USER_1"
+        USEREMAIL="$EMAIL_1"
+        SIGNING_KEY="$SIGNING_KEY_1"
+        ;;
+    2 | work)
+        USERNAME="$USER_2"
+        USEREMAIL="$EMAIL_2"
+        SIGNING_KEY="$SIGNING_KEY_2"
+        ;;
+    3 | a.bulgakov.work)
+        USERNAME="$USER_3"
+        USEREMAIL="$EMAIL_3"
+        SIGNING_KEY="$SIGNING_KEY_3"
+        ;;
+    -h | --help)
+        usage
+        exit
+        ;;
+    *)
+        usage
+        exit 1
+        ;;
     esac
     shift
 done
@@ -100,9 +110,8 @@ done
 # check if all required arguments are specified
 if [[ -z ${USERNAME} ]]; then
     usage
-    exit 1;
+    exit 1
 fi
-
 
 git config --"${GLOBAL:-local}" user.name "$USERNAME"
 git config --"${GLOBAL:-local}" user.email "$USEREMAIL"
@@ -117,4 +126,4 @@ if [[ -n ${SIGN_TAGS} ]]; then
 fi
 
 git config --list --show-origin |
-grep -e user.name -e user.email -e commit.gpgsign -e tag.gpgsign
+    grep -e user.name -e user.email -e commit.gpgsign -e tag.gpgsign
