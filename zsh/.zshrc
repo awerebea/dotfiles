@@ -1349,6 +1349,9 @@ zhistclean() {
     mv "$tmp" "$HOME"/.zsh_history
 }
 
+# Use emacs (bash default) keymaps
+# bindkey -e
+
 # Aliases
 # shellcheck disable=1091
 source "$HOME/.shared.sh"
