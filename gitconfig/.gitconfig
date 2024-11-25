@@ -90,7 +90,7 @@ trustExitCode = true
 		bold cyan => syntax "#384d5e", \
 		bold yellow => syntax "#544f4e"
 	# Should match the name of the bat theme
-	syntax-theme = "Catppuccin-mocha"
+	syntax-theme = "Catppuccin-Mocha"
 
 [delta "decorations"]
 	commit-decoration-style = bold yellow box ul
