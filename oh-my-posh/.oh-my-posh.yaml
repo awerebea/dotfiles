@@ -1,9 +1,6 @@
 ---
-version: 2
-"$schema": https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
-
-final_space: true
-console_title_template: "{{if .Root}}(Admin){{end}} {{.PWD}}"
+# yaml-language-server: $schema=https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/schema.json
+version: 3
 
 palette:
   bg-pink-400: "#F38BA8"
@@ -35,6 +32,8 @@ blocks:
     background: transparent
     style: plain
     template: "{{ .Icon }} "
+    properties:
+      cache_duration: none
 
   - type: shell
     foreground: p:bg-gray-300
@@ -47,6 +46,7 @@ blocks:
         nu: "<p:bg-green-500>nu</>"
         pwsh: ""
         zsh: "<i>zsh</>"
+      cache_duration: none
     template: "{{ .Name }} "
 
   - type: root
@@ -54,6 +54,8 @@ blocks:
     background: transparent
     style: plain
     template: " "
+    properties:
+      cache_duration: none
 
   - type: git
     foreground: p:bg-green-400
@@ -84,6 +86,7 @@ blocks:
       fetch_stash_count: true
       fetch_status: true
       fetch_upstream_icon: true
+      cache_duration: none
     template: >
       {{ .HEAD }}{{if .BranchStatus }} {{ .BranchStatus }}{{
         end
@@ -130,6 +133,7 @@ blocks:
     background: transparent
     properties:
       fetch_version: true
+      cache_duration: none
     style: plain
     template: "  {{ if .PackageManagerIcon }}{{ .PackageManagerIcon }} {{ end }}{{ .Full }}"
   - type: go
@@ -137,6 +141,7 @@ blocks:
     background: transparent
     properties:
       fetch_version: true
+      cache_duration: none
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: julia
@@ -144,6 +149,7 @@ blocks:
     background: transparent
     properties:
       fetch_version: true
+      cache_duration: none
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: python
@@ -152,6 +158,7 @@ blocks:
     properties:
       display_mode: files
       fetch_virtual_env: false
+      cache_duration: none
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
       end }}{{ end }}"
@@ -161,6 +168,7 @@ blocks:
     properties:
       display_mode: files
       fetch_version: true
+      cache_duration: none
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: azfunc
@@ -169,6 +177,7 @@ blocks:
     properties:
       display_mode: files
       fetch_version: false
+      cache_duration: none
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
   - type: aws
@@ -179,6 +188,7 @@ blocks:
     - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
     properties:
       display_default: false
+      cache_duration: none
     style: plain
     template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
   - type: executiontime
@@ -186,11 +196,12 @@ blocks:
     background: transparent
     style: plain
     template: "  {{ .FormattedMs }}"
-  - type: exit
+  - type: status
     foreground: p:bg-red-600
     background: transparent
     properties:
       always_enabled: true
+      cache_duration: none
     style: plain
     template: "{{ if gt .Code 0 }} ✘ {{ .Meaning }} ({{ .Code }}){{ else }}{{ end }}"
   - type: time
@@ -198,6 +209,8 @@ blocks:
     background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
+    properties:
+      cache_duration: none
 
 - type: prompt
   alignment: left
@@ -210,6 +223,7 @@ blocks:
       style: powerlevel
       right_format: "<b>%s</>"
       max_width: "{{ .Env.POSH_PATH_MAX_WIDTH }}"
+      cache_duration: none
     template: "{{ .Path }} "
 
 - type: prompt
@@ -224,6 +238,7 @@ blocks:
     style: plain
     properties:
       always_enabled: true
+      cache_duration: none
     template: "❯"
 
 secondary_prompt:
@@ -237,3 +252,7 @@ transient_prompt:
   - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
   background: transparent
   template: "❯ "
+
+console_title_template: "{{if .Root}}(Admin){{end}} {{.PWD}}"
+
+final_space: true
