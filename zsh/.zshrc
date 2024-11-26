@@ -317,7 +317,10 @@ elif [[ -d "$HOME/.vim/plugged/fzf/bin" && ":$PATH:" != *":$HOME/.vim/plugged/fz
     export PATH="$HOME/.vim/plugged/fzf/bin:$PATH"
 fi
 
+# https://github.com/tfutils/tfenv - Terraform version manager
 [[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
+# https://github.com/tgenv/tgenv - Terragrunt version manager
+[[ -d "$HOME/.tgenv" && ":$PATH:" != *":$HOME/.tgenv:"* ]] && export PATH="$HOME/.tgenv/bin:$PATH"
 
 # Detect and setup current environment
 if [[ "$(uname)" == "Linux" ]]; then
