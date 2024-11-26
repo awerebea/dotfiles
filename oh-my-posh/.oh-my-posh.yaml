@@ -156,8 +156,9 @@ blocks:
     foreground: p:bg-teal-500
     background: transparent
     properties:
+      home_enabled: true
       display_mode: files
-      fetch_virtual_env: false
+      fetch_virtual_env: true
       cache_duration: none
     style: plain
     template: "  {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ if .Venv }} {{ .Venv }}{{
