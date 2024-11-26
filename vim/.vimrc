@@ -109,7 +109,7 @@ else
 endif
 " A light and configurable statusline/tabline plugin for Vim
 Plug 'itchyny/lightline.vim'
-Plug 'macthecadillac/lightline-gitdiff'
+Plug 'niklaas/lightline-gitdiff'
 if exists('use_feature')
 " Automatically save/restore current state of Vim
 Plug 'tpope/vim-obsession'
@@ -651,7 +651,7 @@ let g:rigel_lightline = 1
 let g:lightline = {
   \ 'colorscheme': 'rigel',
   \ 'active': {
-  \   'left': [['mode', 'paste'], ['gitbranch', 'gitstatus'],
+  \   'left': [['mode', 'paste'], ['gitbranch', 'gitdiff'],
   \             ['filename', 'modified']],
   \   'right': [['lineinfo'], ['percent'], ['fileformat',
   \ 'filetype', 'fileencoding', 'charvaluehex', 'spell', 'indent',
@@ -688,13 +688,8 @@ let g:lightline = {
   \   'lineinfo': 'LightlineLineinfo',
   \   'percent': 'LightlinePercent',
   \   'spell': 'LightlineSpell',
+  \   'gitdiff': 'LightlineGitDiff',
   \ },
-  \   'component': {
-  \     'gitstatus': '%<%{lightline_gitdiff#get_status()}',
-  \   },
-  \   'component_visible_condition': {
-  \     'gitstatus': 'lightline_gitdiff#get_status() !=# ""',
-  \   },
   \ 'component_expand': {
   \   'linter_checking': 'lightline#ale#checking',
   \   'linter_infos': 'lightline#ale#infos',
@@ -808,6 +803,10 @@ function! LightlineGitbranch()
     return gitbranch#name()
   endif
   return ''
+endfunction
+
+function! LightlineGitDiff() abort
+      return winwidth(0) > 88 ? lightline#gitdiff#get() : ''
 endfunction
 
 function! LightlineSpell()
