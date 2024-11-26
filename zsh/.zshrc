@@ -904,11 +904,7 @@ export W3MIMGDISPLAY_PATH="$HOME/.local/libexec/w3m/w3mimgdisplay"
 export MANPAGER="$EDITOR +Man!"
 
 # Create and launch python VENV
-alias activate="python3.11 -m venv .venv && source .venv/bin/activate"
-alias activate38="python3.8 -m venv .venv && source .venv/bin/activate"
-alias activate39="python3.9 -m venv .venv && source .venv/bin/activate"
-alias activate310="python3.10 -m venv .venv && source .venv/bin/activate"
-alias activate311="python3.11 -m venv .venv && source .venv/bin/activate"
+alias activate="python3 -m venv .venv && source .venv/bin/activate"
 
 # Generate '.clang_complete' for VIM and C/CPP projects
 alias clangcomplgen='find . -type f -name "*.hpp" -o -name "*.h" | \
