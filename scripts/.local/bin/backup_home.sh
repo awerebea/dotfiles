@@ -3,7 +3,7 @@
 
 # Define global variables
 SOURCE_PATH="/home/andrei"
-SNAPSHOT_PATH="/media/andrei/bckp/backup"
+SNAPSHOT_PATH="/media/andrei/bckp/home_backup"
 
 # Minimal timeout in minutes (6 hours)
 SNAPSHOT_TIMEOUT=$(( 60 * 60 * 6 ))
@@ -126,10 +126,31 @@ create_snapshot() {
     cat <<- EOF > "${TMP_FILE}"
 	*/.terraform.lock.hcl
 	*/.terraform/
-	build
+	.cache
+	.cargo
+	.config/Code
+	.config/Slack
+	.config/coc
+	.config/google-chrome
+	.config/joplin-desktop
+	.config/skypeforlinux
+	.joplin
+	.local/share/nvim
+	.mozilla
+	.npm
+	.nvm
+	.rustup
+	.tfenv
+	.tgenv
+	.thunderbird
+	.vim
+	.vscode
 	Documents
 	Downloads
 	Timeshift_exclude/
+	build
+	go
+	migration
 	pCloudDrive/
 	vm
 	EOF
@@ -139,7 +160,7 @@ create_snapshot() {
         --log-file="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${LOG_FILENAME}" \
         --exclude-from="${TMP_FILE}" \
         --include="/*/.*" \
-        --exclude="/.*" \
+        --include="/.*" \
         "${SOURCE_PATH}/" "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${DATA_DIR_NAME}/" ||
         exit_err
     rm "${TMP_FILE}"
