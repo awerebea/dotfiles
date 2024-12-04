@@ -321,6 +321,8 @@ fi
 [[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
 # https://github.com/tgenv/tgenv - Terragrunt version manager
 [[ -d "$HOME/.tgenv" && ":$PATH:" != *":$HOME/.tgenv:"* ]] && export PATH="$HOME/.tgenv/bin:$PATH"
+# https://github.com/iamhsa/pkenv - Packer version manager
+[[ -d "$HOME/.pkenv" && ":$PATH:" != *":$HOME/.pkenv:"* ]] && export PATH="$HOME/.pkenv/bin:$PATH"
 
 # Detect and setup current environment
 if [[ "$(uname)" == "Linux" ]]; then
@@ -578,6 +580,10 @@ if [[ "${commands[terragrunt]}" ]]; then
     alias tgo="terragrunt output"
     alias tgsl="terragrunt state list"
     alias tgss="terragrunt state show"
+fi
+
+if [[ "${commands[packer]}" ]]; then
+    alias pk="packer"
 fi
 
 # copy/paste to/from system clipboard
