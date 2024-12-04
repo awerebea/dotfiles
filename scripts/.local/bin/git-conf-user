@@ -14,6 +14,9 @@ SIGNING_KEY_2="9DD1905E14C478090420E5B99A0ED9EFED1FAFE2"
 USER_3="Andrei Bulgakov"
 EMAIL_3="a.bulgakov.work@gmail.com"
 SIGNING_KEY_3="9BCC286D7490EA90CB0B36D40D29164EF13B24BD"
+USER_4="Andrei Bulgakov"
+EMAIL_4="andrei.bulgakov@opsfleet.com"
+SIGNING_KEY_4="15B29A629D550FAB8E319DE2AF4333636A5E4E90"
 
 GLOBAL=
 
@@ -37,6 +40,8 @@ USERNAME:
   2, work               User data: ${USER_2} <${EMAIL_2}>
 
   3, a.bulgakov.work    User data: ${USER_3} <${EMAIL_3}>
+
+  4, opsfleet           User data: ${USER_4} <${EMAIL_4}>
 
 OPTIONS:
   -c, --sign-commits    Sign all commits automattically
@@ -94,6 +99,11 @@ while [[ -n "$1" ]]; do
         USERNAME="$USER_3"
         USEREMAIL="$EMAIL_3"
         SIGNING_KEY="$SIGNING_KEY_3"
+        ;;
+    4 | opsfleet)
+        USERNAME="$USER_4"
+        USEREMAIL="$EMAIL_4"
+        SIGNING_KEY="$SIGNING_KEY_4"
         ;;
     -h | --help)
         usage
