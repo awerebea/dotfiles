@@ -1,5 +1,6 @@
 return {
   "nvim-neo-tree/neo-tree.nvim",
+  enabled = false,
   cmd = { "Neotree" },
   keys = {
     { "<F2>", desc = "Toggle neo-tree" },
