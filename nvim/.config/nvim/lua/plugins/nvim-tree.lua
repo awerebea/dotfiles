@@ -1,21 +1,9 @@
 return {
   {
     "nvim-tree/nvim-tree.lua",
-    enabled = false,
+    enabled = true,
     cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
-    keys = {
-      { "<F2>", "<Cmd>NvimTreeToggle<CR><bar><Cmd>NvimTreeRefresh<CR>", desc = "Explorer" },
-      {
-        "<leader><leader><F2>",
-        "<Cmd>:NvimTreeFocus<CR><bar><Cmd>NvimTreeRefresh<CR>",
-        desc = "Explorer",
-      },
-      {
-        "<leader><F2>",
-        "<Cmd>NvimTreeFindFile<CR><bar><Cmd>NvimTreeRefresh<CR>",
-        desc = "Explorer",
-      },
-    },
+    keys = { { "<F2>", "<leader><F2>" } },
     opts = {
       on_attach = function(bufnr)
         local api = require "nvim-tree.api"
@@ -44,6 +32,55 @@ return {
         vim.keymap.set("n", ">", function()
           require("nvim-tree.view").resize "-5"
         end, opts "Decrease size")
+
+        -- Copy the selected part of the file path {{
+        local function copy_selector()
+          local node = api.tree.get_node_under_cursor()
+          local filepath = node.absolute_path
+          local dirpath = vim.fs.dirname(filepath)
+          local filename = vim.fs.basename(filepath)
+          local modify = vim.fn.fnamemodify
+
+          local results = {
+            filepath,
+            modify(filepath, ":."),
+            modify(filepath, ":~"),
+            dirpath,
+            modify(dirpath, ":."),
+            modify(dirpath, ":~"),
+            filename,
+            modify(filename, ":r"),
+            modify(filename, ":e"),
+          }
+
+          local messages = {
+            "Choose to copy to clipboard:",
+            "1. File path absolute         : " .. results[1],
+            "2. File path relative to CWD  : " .. results[2],
+            "3. File path relative to HOME : " .. results[3],
+            "4. Dir path absolute          : " .. results[4],
+            "5. Dir path relative to CWD   : " .. results[5],
+            "6. Dir path relative to HOME  : " .. results[6],
+            "7. Filename                   : " .. results[7],
+            "8. File basename              : " .. results[8],
+            "9. Extension of the file      : " .. results[9],
+          }
+
+          vim.api.nvim_echo({ { table.concat(messages, "\n"), "Normal" } }, true, {})
+          local choice = vim.fn.getchar() - 48
+
+          if choice >= 1 and choice <= 9 then
+            local result = results[choice]
+            vim.notify(("Copied: `%s`"):format(result))
+            vim.fn.setreg("+", result)
+          elseif choice then
+            vim.notify("Invalid choice: " .. string.char(choice + 48))
+          end
+        end
+        vim.keymap.set("n", "Y", function()
+          copy_selector()
+        end, opts "Copy selector")
+        -- }}
       end,
       disable_netrw = false,
       hijack_netrw = true,
@@ -101,22 +138,16 @@ return {
       -- change color for arrows in tree to light blue
       vim.api.nvim_command "highlight NvimTreeIndentMarker guifg=#3FC5FF"
       require("nvim-tree").setup(opts)
-    end,
-  },
-  {
-    "kiyoon/tmuxsend.vim",
-    event = "VeryLazy",
-    config = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = "NvimTree",
-        callback = function()
-          vim.keymap.set({ "n", "x" }, "-", "<Plug>(tmuxsend-smart)")
-          vim.keymap.set({ "n", "x" }, "_", "<Plug>(tmuxsend-plain)", { buffer = true })
-          vim.keymap.set({ "n", "x" }, "<space>-", "<Plug>(tmuxsend-uid-smart)", { buffer = true })
-          vim.keymap.set({ "n", "x" }, "<space>_", "<Plug>(tmuxsend-uid-plain)", { buffer = true })
-          vim.keymap.set({ "n", "x" }, "<C-_>", "<Plug>(tmuxsend-tmuxbuffer)", { buffer = true })
-        end,
-      })
+      vim.keymap.set("n", "<F2>", function()
+        if vim.bo.filetype == "NvimTree" then
+          require("nvim-tree.api").tree.close()
+        else
+          require("nvim-tree.api").tree.open()
+        end
+      end, { desc = "Toggle NvimTree" })
+      vim.keymap.set("n", "<leader><F2>", function()
+        require("nvim-tree.api").tree.find_file { open = true, focus = true }
+      end, { desc = "Find file in NvimTree" })
     end,
   },
   {
