@@ -17,7 +17,6 @@ return {
       "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
-      "axkirillov/hbac.nvim",
       { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
     cmd = "Telescope",
@@ -97,15 +96,6 @@ return {
           require("telescope.builtin").buffers()
         end,
         desc = "Buffers",
-      },
-      {
-        "<leader><leader><CR>",
-        function()
-          require("telescope").extensions.hbac.buffers {
-            path_display = { "truncate" },
-          }
-        end,
-        desc = "Hbac Buffers",
       },
       {
         "<leader>fh",
@@ -663,7 +653,6 @@ return {
       telescope.load_extension "undo"
       telescope.load_extension "menufacture"
       telescope.load_extension "terraform_doc"
-      telescope.load_extension "hbac"
       telescope.load_extension "advanced_git_search"
 
       -- this is a hack to add menufacture items to all the builtin pickers
