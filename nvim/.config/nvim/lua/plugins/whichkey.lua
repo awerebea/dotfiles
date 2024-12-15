@@ -84,6 +84,7 @@ return {
           { "<leader>l", group = "Toggle non-printable symbols" },
           { "<leader>m", group = "Select Harpoon mark" },
           { "<leader>n", group = "Navbuddy" },
+          { "<leader>p", group = "Project" },
           { "<leader>q", group = "Session manager" },
           { "<leader>r", group = "Remove duplicates, Restart LSP, rename symbol" },
           { "<leader>s", group = "Spellcheck, Neoscope" },
