@@ -21,49 +21,54 @@ return {
     },
     cmd = "Telescope",
     keys = {
-      -- Following 5 keymaps are defined in nescopes.lua module
+      -- Following 6 keymaps are defined in nescopes.lua module
       -- {
       --   "<leader>ff",
       --   function()
-      --     require("telescope").extensions.menufacture.find_files()
+      --     require("telescope.builtin").find_files()
       --   end,
-      --   desc = "Find files (menufacture)",
+      --   desc = "Find files",
       -- },
       -- {
       --   "<leader>ff",
       --   mode = "x",
       --   function()
-      --     require("telescope").extensions.menufacture.find_files {
+      --     require("telescope.builtin").find_files {
       --       default_text = require("utils").get_visual_selection_text()[1],
       --     }
       --   end,
-      --   desc = "Find files (menufacture)",
+      --   desc = "Find files (with selected text)",
       -- },
       -- {
       --   "<leader>f/",
       --   function()
-      --     require("telescope").extensions.menufacture.live_grep()
+      --     require("telescope.builtin").live_grep()
       --   end,
-      --   { desc = "Live grep (menufacture)" },
+      --   desc = "Live grep",
       -- },
       -- {
       --   "<leader>f?",
       --   function()
-      --     require("telescope").extensions.live_grep_args.live_grep_args()
-      --   end,
-      --   { desc = "Live grep (custom args)" },
-      -- },
-      -- {
-      --   "<leader>fa",
-      --   function()
-      --     require("telescope").extensions.menufacture.grep_string {
+      --     require("telescope").extensions.live_grep_args.live_grep_args {
       --       shorten_path = true,
       --       word_match = "-w",
       --       only_sort_text = true,
       --       search = "",
       --     }
       --   end,
-      --   desc = "Fuzzy Grep (menufacture)",
+      --   desc = "Live grep (custom args)",
+      -- },
+      -- {
+      --   "<leader>fg",
+      --   function()
+      --     require("telescope.builtin").grep_string {
+      --       shorten_path = true,
+      --       word_match = "-w",
+      --       only_sort_text = true,
+      --       search = "",
+      --     }
+      --   end,
+      --   desc = "Fuzzy Grep",
       -- },
       -- {
       --   "<leader>fw",
