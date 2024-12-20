@@ -430,6 +430,10 @@ return {
           ["<C-M-f>"] = copy_path_of_selected_item,
           ["<M-h>"] = actions.results_scrolling_left,
           ["<M-l>"] = actions.results_scrolling_right,
+          ["<C-d>"] = actions.results_scrolling_down,
+          ["<C-u>"] = actions.results_scrolling_up,
+          ["<M-d>"] = actions.preview_scrolling_down,
+          ["<M-u>"] = actions.preview_scrolling_up,
           ["<C-/>"] = actions.which_key,
           ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
         },
@@ -442,6 +446,10 @@ return {
           ["z"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
+          ["<C-d>"] = actions.results_scrolling_down,
+          ["<C-u>"] = actions.results_scrolling_up,
+          ["<M-d>"] = actions.preview_scrolling_down,
+          ["<M-u>"] = actions.preview_scrolling_up,
         },
       }
 
