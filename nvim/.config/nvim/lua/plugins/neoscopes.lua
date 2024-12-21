@@ -1,6 +1,6 @@
 return {
   "smartpde/neoscopes",
-  enabled = false,
+  enabled = true,
   event = "VeryLazy",
   opts = {
     scopes = {
@@ -42,53 +42,5 @@ return {
     vim.keymap.set("n", "<leader>ss", function()
       require("neoscopes").select {}
     end, { desc = "Select scope" })
-
-    local function get_search_dirs()
-      if not scopes.get_current_scope() or scopes.get_current_scope() == "<disable>" then
-        return nil
-      end
-      return scopes.get_current_paths()
-    end
-
-    vim.keymap.set("n", "<leader>ff", function()
-      require("telescope.builtin").find_files {
-        search_dirs = get_search_dirs(),
-        temp__scrolling_limit = 999,
-      }
-    end, { desc = "Find files" })
-    vim.keymap.set("v", "<leader>ff", function()
-      require("telescope.builtin").find_files {
-        search_dirs = get_search_dirs(),
-        default_text = require("utils").get_visual_selection_text()[1],
-      }
-    end, { desc = "Find files (with selected text)" })
-    vim.keymap.set("n", "<leader>f/", function()
-      require("telescope.builtin").live_grep {
-        search_dirs = get_search_dirs(),
-      }
-    end, { desc = "Live grep" })
-    vim.keymap.set("n", "<leader>f?", function()
-      require("telescope").extensions.live_grep_args.live_grep_args {
-        search_dirs = get_search_dirs(),
-        shorten_path = true,
-        word_match = "-w",
-        only_sort_text = true,
-        search = "",
-      }
-    end, { desc = "Live grep (custom args)" })
-    vim.keymap.set("n", "<leader>fg", function()
-      require("telescope.builtin").grep_string {
-        search_dirs = get_search_dirs(),
-        shorten_path = true,
-        word_match = "-w",
-        only_sort_text = true,
-        search = "",
-      }
-    end, { desc = "Fuzzy Grep" })
-    vim.keymap.set("n", "<leader>fw", function()
-      require("telescope.builtin").grep_string {
-        search_dirs = get_search_dirs(),
-      }
-    end, { desc = "Find word under cursor" })
   end,
 }
