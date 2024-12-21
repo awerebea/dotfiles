@@ -208,6 +208,7 @@ return {
           find_files = {
             hidden = true,
             find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv" },
+            temp__scrolling_limit = 999,
           },
           live_grep = {
             only_sort_text = true,
@@ -226,24 +227,30 @@ return {
               "!.venv",
               "--multiline",
             },
+            temp__scrolling_limit = 999,
           },
           git_commits = {
             layout_strategy = "vertical",
+            temp__scrolling_limit = 999,
           },
           git_bcommits = {
             layout_strategy = "vertical",
+            temp__scrolling_limit = 999,
           },
           git_status = {
             layout_strategy = "vertical",
+            temp__scrolling_limit = 999,
           },
           git_files = {
             hidden = true,
             find_command = { "rg", "--files", "--hidden", "-g", "!.git", "-g", "!.venv" },
+            temp__scrolling_limit = 999,
           },
           buffers = {
             ignore_current_buffer = false,
             sort_lastused = true,
             sort_mru = true,
+            temp__scrolling_limit = 999,
           },
         },
         extensions = {
