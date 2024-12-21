@@ -13,7 +13,6 @@ return {
       "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
       "kdheepak/lazygit.nvim",
-      "nvim-telescope/telescope-z.nvim",
       "debugloop/telescope-undo.nvim",
       "ANGkeith/telescope-terraform-doc.nvim",
       { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
