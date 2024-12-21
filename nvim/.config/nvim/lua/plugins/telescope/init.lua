@@ -19,6 +19,9 @@ return {
     },
     cmd = "Telescope",
     config = function(_, _)
+      -- Show line numbers in preview
+      vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
+
       -- Open one or more selected entries in the current window
       local select_one_or_multi = function(prompt_bufnr)
         local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
