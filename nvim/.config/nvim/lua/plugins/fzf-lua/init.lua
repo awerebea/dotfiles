@@ -97,6 +97,7 @@ return {
           -- Only valid with the 'builtin' previewer
           ["<F3>"] = "toggle-preview-wrap",
           ["<F4>"] = "toggle-preview",
+          ["<C-p>"] = "toggle-preview",
           -- Rotate preview clockwise/counter-clockwise
           ["<F5>"] = "toggle-preview-ccw",
           ["<F6>"] = "toggle-preview-cw",
@@ -107,8 +108,12 @@ return {
           ["<S-Left>"] = "preview-reset",
           ["<S-down>"] = "preview-page-down",
           ["<S-up>"] = "preview-page-up",
+          ["<M-f>"] = "preview-page-down",
+          ["<M-b>"] = "preview-page-up",
           ["<M-S-down>"] = "preview-down",
           ["<M-S-up>"] = "preview-up",
+          ["<M-S-f>"] = "preview-down",
+          ["<M-S-b>"] = "preview-up",
         },
         fzf = {
           false, -- do not inherit from defaults
@@ -127,6 +132,10 @@ return {
           ["f4"] = "toggle-preview",
           ["shift-down"] = "preview-page-down",
           ["shift-up"] = "preview-page-up",
+          ["alt-f"] = "preview-page-down",
+          ["alt-b"] = "preview-page-up",
+          ["alt-k"] = "prev-history",
+          ["alt-j"] = "next-history",
         },
       },
       actions = {
