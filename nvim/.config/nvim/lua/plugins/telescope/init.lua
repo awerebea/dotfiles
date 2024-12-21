@@ -5,7 +5,6 @@ return {
     dependencies = {
       "nvim-lua/plenary.nvim",
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-      "nvim-telescope/telescope-file-browser.nvim",
       "nvim-telescope/telescope-project.nvim",
       "cljoly/telescope-repo.nvim",
       "folke/trouble.nvim",
@@ -20,294 +19,6 @@ return {
       { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
     cmd = "Telescope",
-    keys = {
-      -- Following 6 keymaps are defined in nescopes.lua module
-      -- {
-      --   "<leader>ff",
-      --   function()
-      --     require("telescope.builtin").find_files()
-      --   end,
-      --   desc = "Find files",
-      -- },
-      -- {
-      --   "<leader>ff",
-      --   mode = "x",
-      --   function()
-      --     require("telescope.builtin").find_files {
-      --       default_text = require("utils").get_visual_selection_text()[1],
-      --     }
-      --   end,
-      --   desc = "Find files (with selected text)",
-      -- },
-      -- {
-      --   "<leader>f/",
-      --   function()
-      --     require("telescope.builtin").live_grep()
-      --   end,
-      --   desc = "Live grep",
-      -- },
-      -- {
-      --   "<leader>f?",
-      --   function()
-      --     require("telescope").extensions.live_grep_args.live_grep_args {
-      --       shorten_path = true,
-      --       word_match = "-w",
-      --       only_sort_text = true,
-      --       search = "",
-      --     }
-      --   end,
-      --   desc = "Live grep (custom args)",
-      -- },
-      -- {
-      --   "<leader>fg",
-      --   function()
-      --     require("telescope.builtin").grep_string {
-      --       shorten_path = true,
-      --       word_match = "-w",
-      --       only_sort_text = true,
-      --       search = "",
-      --     }
-      --   end,
-      --   desc = "Fuzzy Grep",
-      -- },
-      -- {
-      --   "<leader>fw",
-      --   function()
-      --     require("telescope.builtin").grep_string()
-      --   end,
-      --   desc = "Find word under cursor",
-      -- },
-      { "<leader>ft", "<Cmd>Telescope<CR>", desc = "Telescope" },
-      {
-        "<leader>//",
-        function()
-          require("telescope.builtin").current_buffer_fuzzy_find()
-        end,
-        desc = "Fuzzy grep in current buffer",
-      },
-      {
-        "<leader>fG",
-        function()
-          local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
-          if not ok then
-            require("telescope").extensions.menufacture.find_files()
-          end
-        end,
-        desc = "Find Git managed files",
-      },
-      {
-        "<leader><CR>",
-        function()
-          require("telescope.builtin").buffers()
-        end,
-        desc = "Buffers",
-      },
-      {
-        "<leader>fh",
-        function()
-          require("telescope.builtin").help_tags()
-        end,
-        desc = "Help tags",
-      },
-      {
-        "<leader>fSd",
-        function()
-          require("plugins.telescope.telescopePickers").prettyDocumentSymbols()
-        end,
-        desc = "Document symbols",
-      },
-      {
-        "<leader>fSw",
-        function()
-          require("plugins.telescope.telescopePickers").prettyWorkspaceSymbols()
-        end,
-        desc = "Workspace symbols",
-      },
-      {
-        "<leader><leader>c",
-        function()
-          require("telescope.builtin").colorscheme { enable_preview = true }
-        end,
-        desc = "Colorscheme",
-      },
-
-      -- repeat last telescope command and query
-      {
-        "<leader>fr",
-        function()
-          require("telescope.builtin").resume()
-        end,
-        desc = "Resume",
-      },
-      {
-        "<leader>fo",
-        function()
-          require("telescope.builtin").oldfiles()
-        end,
-        desc = "Recent",
-      },
-      {
-        "<leader>fab",
-        function()
-          require("telescope").extensions.file_browser.file_browser()
-        end,
-        desc = "File browser",
-      },
-      {
-        "<leader>faB",
-        function()
-          require("telescope").extensions.file_browser.file_browser {
-            path = "%:p:h",
-            select_buffer = true,
-          }
-        end,
-        desc = "File browser (find file)",
-      },
-      {
-        "<leader>far",
-        function()
-          require("telescope").extensions.repo.list()
-        end,
-        desc = "Search",
-      },
-      {
-        "<leader>fP",
-        function()
-          require("telescope").extensions.project.project { display_type = "minimal" }
-        end,
-        desc = "Project extension",
-      },
-      {
-        "<leader>fd",
-        function()
-          require("telescope.builtin").diagnostics()
-        end,
-        desc = "Diagnostics",
-      },
-
-      -- list notifications
-      {
-        "<leader>fn",
-        function()
-          require("telescope").extensions.notify.notify()
-        end,
-        desc = "Notifications",
-      },
-      -- git commands
-      -- Defined later in this file using custom previewer with delta
-      {
-        "<leader>glg",
-        function()
-          -- require("telescope.builtin").git_commits()
-          Delta_git_commits {
-            git_command = {
-              "git",
-              "log",
-              "--format=%h %ad %<(20,trunc)%an %s",
-              "--date=format:%Y-%m.%d",
-              "--",
-              ".",
-            },
-          }
-        end,
-        desc = "Commits",
-      },
-      {
-        "<leader>glf",
-        function()
-          -- require("telescope.builtin").git_bcommits()
-          Delta_git_bcommits {
-            git_command = {
-              "git",
-              "log",
-              "--format=%h %ad %<(20,trunc)%an %s",
-              "--date=format:%Y-%m.%d",
-            },
-          }
-        end,
-        desc = "Commits of current file",
-      },
-      {
-        "<leader>gb",
-        function()
-          require("telescope.builtin").git_branches()
-        end,
-        desc = "Branches",
-      },
-      {
-        "<leader>gst",
-        function()
-          -- require("telescope.builtin").git_status()
-          Delta_git_status()
-        end,
-        desc = "Git status (telescope)",
-      },
-      {
-        "<leader>gss",
-        function()
-          require("utils").git_diff_picker()
-        end,
-        desc = "Changed files names only (telescope)",
-      },
-      {
-        "<leader>gz",
-        function()
-          require("telescope").extensions.z.list {
-            cmd = { "bash", "-c", "fasd", "-d" },
-          }
-        end,
-        desc = "fasd",
-      },
-      {
-        "<leader>tu",
-        function()
-          require("telescope").extensions.undo.undo()
-        end,
-        desc = "Undo tree",
-      },
-      {
-        "<leader>gcl",
-        mode = "x",
-        [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
-        desc = "selected lines Git history",
-      },
-      {
-        "<leader>gcb",
-        function()
-          require("telescope").extensions.advanced_git_search.diff_branch_file()
-        end,
-        desc = "current file diff against other branch",
-      },
-      {
-        "<leader>gcf",
-        function()
-          require("telescope").extensions.advanced_git_search.diff_commit_file()
-        end,
-        desc = "current file Git history",
-      },
-      {
-        "<leader>gclf",
-        function()
-          require("telescope").extensions.advanced_git_search.search_log_content_file()
-        end,
-        desc = "search in file log content",
-      },
-      {
-        "<leader>gclr",
-        function()
-          require("telescope").extensions.advanced_git_search.search_log_content()
-        end,
-        desc = "search in repo log content",
-      },
-      {
-        "<leader>gcs",
-        function()
-          require("telescope").extensions.advanced_git_search.show_custom_functions()
-        end,
-        desc = "show custom AdvancedGitSearch commands",
-      },
-      -- }}} advanced-git-search
-    },
     config = function(_, _)
       -- Open one or more selected entries in the current window
       local select_one_or_multi = function(prompt_bufnr)
@@ -544,12 +255,6 @@ return {
             -- FIXME: this is not working
             entry_default_author_or_date = "date", -- one of "author" or "date"
           },
-          file_browser = {
-            theme = "ivy",
-            previewer = true,
-            hijack_netrw = false,
-            mappings = mappings,
-          },
           project = {
             order_by = "asc",
             search_by = "title",
@@ -657,7 +362,6 @@ return {
 
       telescope.setup(opts)
       telescope.load_extension "fzf"
-      telescope.load_extension "file_browser"
       telescope.load_extension "project"
       telescope.load_extension "dap"
       telescope.load_extension "hop"
@@ -844,6 +548,8 @@ return {
         options.previewer = { delta_status }
         telescope_builtin.git_status(options)
       end
+
+      require("plugins.telescope.keymaps").setup()
     end,
   },
 }

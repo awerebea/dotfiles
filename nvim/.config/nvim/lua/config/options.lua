@@ -275,6 +275,26 @@ end
 -- end, { desc = "Toggle smart relative numbers." })
 -- }}} end of Smart relativenumbers
 
+-- {{{ Toggle fzf-lua/telescope keymaps
+vim.g.FuzzySearchKeymaps = "fzf-lua" -- fzf-lua|telescope
+function _G.ToggleFuzzySearchKeymaps()
+  if vim.g.FuzzySearchKeymaps == "fzf-lua" then
+    require("plugins.telescope.keymaps").setup()
+    vim.g.FuzzySearchKeymaps = "telescope"
+    print "Fuzzy search keymaps switched to telescope"
+  elseif vim.g.FuzzySearchKeymaps == "telescope" then
+    require("plugins.fzf-lua.keymaps").setup()
+    vim.g.FuzzySearchKeymaps = "fzf-lua"
+    print "Fuzzy search keymaps switched to fzf-lua"
+  else
+    print("Invalid value for vim.g.FuzzySearchKeymaps: " .. vim.g.FuzzySearchKeymaps)
+  end
+end
+vim.keymap.set("n", "<leader>fT", function()
+  ToggleFuzzySearchKeymaps()
+end, { desc = "Toggle between Toggle fzf-lua/telescope keymaps." })
+-- }}} end of Toggle fzf-lua/telescope keymaps
+
 -- {{{ Word wrap
 vim.opt.textwidth = 99
 vim.opt.wrapmargin = 0

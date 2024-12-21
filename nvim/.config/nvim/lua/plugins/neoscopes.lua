@@ -1,6 +1,6 @@
 return {
   "smartpde/neoscopes",
-  enabled = true,
+  enabled = false,
   event = "VeryLazy",
   opts = {
     scopes = {
@@ -53,6 +53,7 @@ return {
     vim.keymap.set("n", "<leader>ff", function()
       require("telescope.builtin").find_files {
         search_dirs = get_search_dirs(),
+        temp__scrolling_limit = 999,
       }
     end, { desc = "Find files" })
     vim.keymap.set("v", "<leader>ff", function()
