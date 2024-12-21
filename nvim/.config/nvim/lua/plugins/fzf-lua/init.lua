@@ -7,6 +7,35 @@ return {
     { "junegunn/fzf", build = "./install --bin" },
   },
   config = function()
+    local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
+
+    local query_history_dir = vim.fn.stdpath "data" .. sep .. "fzf-lua_history"
+
+    local function ensure_dir_exists(dir_path)
+      local uv = vim.loop
+
+      -- Check if the path exists
+      local stat = uv.fs_stat(dir_path)
+
+      if not stat then
+        -- Path does not exist, create the directory
+        local success, err = uv.fs_mkdir(dir_path, 511) -- 511 is the decimal value of octal 0777
+        if not success then
+          vim.api.nvim_err_writeln("Failed to create directory: " .. err)
+        else
+          vim.api.nvim_out_write("Directory created: " .. dir_path .. "\n")
+        end
+      elseif stat.type ~= "directory" then
+        -- Path exists but is not a directory
+        vim.api.nvim_err_writeln("Path exists and is not a directory: " .. dir_path)
+      else
+        -- Directory already exists
+        -- vim.api.nvim_out_write("Directory already exists: " .. dir_path .. "\n")
+      end
+    end
+
+    ensure_dir_exists(query_history_dir)
+
     local actions = require "fzf-lua.actions"
     require("fzf-lua").setup {
       -- fzf_bin         = 'sk',            -- use skim instead of fzf?
@@ -349,6 +378,7 @@ return {
           -- custom actions are available too
           --   ["ctrl-y"]    = function(selected) print(selected[1]) end,
         },
+        fzf_opts = { ["--history"] = query_history_dir .. sep .. "files" },
       },
       git = {
         files = {
@@ -494,6 +524,7 @@ return {
         -- otherwise auto-detect prioritizes `rg` over `grep`
         -- default options are controlled by 'rg|grep_opts'
         -- cmd            = "rg --vimgrep",
+        formatter = "path.filename_first",
         grep_opts = "--binary-files=without-match --line-number --recursive --color=auto --perl-regexp -e",
         rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 --hidden -g !.git -g !.venv -e",
         -- Uncomment to use the rg config file `$RIPGREP_CONFIG_PATH`
@@ -537,6 +568,7 @@ return {
         },
         no_header = false, -- hide grep|cwd header?
         no_header_i = false, -- hide interactive header?
+        fzf_opts = { ["--history"] = query_history_dir .. sep .. "grep" },
       },
       args = {
         prompt = "Args❯ ",
@@ -557,6 +589,7 @@ return {
         prompt = "Buffers❯ ",
         file_icons = true, -- show file icons (true|"devicons"|"mini")?
         color_icons = true, -- colorize file|git icons
+        formatter = "path.filename_first",
         sort_lastused = true, -- sort buffers() by last used
         show_unloaded = true, -- show unloaded buffers
         cwd_only = false, -- buffers for the cwd only
