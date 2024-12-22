@@ -30,7 +30,7 @@ function M.setup()
     require("telescope.builtin").live_grep { search_dirs = get_search_dirs() }
   end, { desc = "Live grep" })
 
-  vim.keymap.set("n", "<leader>f?", function()
+  vim.keymap.set("n", "<leader>faa", function()
     require("telescope").extensions.live_grep_args.live_grep_args {
       search_dirs = get_search_dirs(),
       shorten_path = true,
@@ -40,7 +40,7 @@ function M.setup()
     }
   end, { desc = "Live grep (custom args)" })
 
-  vim.keymap.set("n", "<leader>fg", function()
+  vim.keymap.set("n", "<leader>f?", function()
     require("telescope.builtin").grep_string {
       search_dirs = get_search_dirs(),
       shorten_path = true,
@@ -59,7 +59,7 @@ function M.setup()
     require("telescope.builtin").grep_string()
   end, { desc = "Find word under cursor" })
 
-  vim.keymap.set("n", "<leader>ft", function()
+  vim.keymap.set({ "n", "x" }, "<leader>ft", function()
     require("telescope.builtin").builtin()
   end, { desc = "Telescope" })
 
@@ -67,10 +67,10 @@ function M.setup()
     require("telescope.builtin").current_buffer_fuzzy_find()
   end, { desc = "Fuzzy grep in current buffer" })
 
-  vim.keymap.set("n", "<leader>fG", function()
-    local ok = pcall(require("telescope").extensions.menufacture.git_files, {})
+  vim.keymap.set("n", "<leader>fg", function()
+    local ok = pcall(require("telescope.builtin").git_files, {})
     if not ok then
-      require("telescope").extensions.menufacture.find_files()
+      require("telescope.builtin").find_files()
     end
   end, { desc = "Find Git managed files" })
 
@@ -135,6 +135,10 @@ function M.setup()
     }
   end, { desc = "Commits" })
 
+  vim.keymap.set("x", "<leader>glf", function()
+    require("telescope.builtin").git_bcommits_range()
+  end, { desc = "Commits of current file in selected lines range" })
+
   vim.keymap.set("n", "<leader>glf", function()
     -- require("telescope.builtin").git_bcommits()
     Delta_git_bcommits {
@@ -161,9 +165,12 @@ function M.setup()
   end, { desc = "Changed files names only (telescope)" })
 
   -- {{{ advanced-git-search
-  vim.keymap.set("x", "<leader>gcl", function()
-    require("telescope").extensions.advanced_git_search.diff_branch_file()
-  end, { desc = "selected lines Git history" })
+  vim.keymap.set(
+    "x",
+    "<leader>gcl",
+    [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
+    { desc = "selected lines Git history" }
+  )
 
   vim.keymap.set("n", "<leader>gcb", function()
     require("telescope").extensions.advanced_git_search.diff_branch_file()
