@@ -311,6 +311,8 @@ export GIT_WORKSPACE="$HOME/Github/workspace"
 
 [[ -d "$HOME/go/bin" && ":$PATH:" != *":$HOME/go/bin:"* ]] && export PATH="$HOME/go/bin:$PATH"
 
+[[ -f "$HOME/.zig/zig" && ":$PATH:" != *":$HOME/.zig:"* ]] && export PATH="$HOME/.zig:$PATH"
+
 if [[ -d "$HOME/.fzf/bin" && ":$PATH:" != *":/$HOME/.fzf/bin:"* ]]; then
     export PATH="$HOME/.fzf/bin:$PATH"
 elif [[ -d "$HOME/.vim/plugged/fzf/bin" && ":$PATH:" != *":$HOME/.vim/plugged/fzf/bin:"* ]]; then
