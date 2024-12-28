@@ -1,0 +1,4 @@
+font-family = JetBrainsMono NF Light
+font-size = 13
+theme = catppuccin-mocha
+keybind = ctrl+/=text:\x1f
