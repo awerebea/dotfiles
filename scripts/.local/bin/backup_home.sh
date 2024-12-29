@@ -34,7 +34,7 @@ SNAPSHOTS_LIST=()
 LAST_SNAPSHOT=
 
 # Clean up environment and exit
-function clean_and_exit() {
+clean_and_exit() {
     unset SOURCE_PATH SNAPSHOT_PATH SNAPSHOT_TIMEOUT DATA_DIR_NAME \
         LOG_FILENAME SUCCESS_FILE RED GRN YEL END SNAPSHOT_NAME \
         SNAPSHOT_NAME_PATTERN FORCE SNAPSHOTS_TO_KEEP AUTO_CONFIRM \
@@ -79,7 +79,9 @@ delete_snapshots() {
         for dir in "${non_writable_dirs[@]}"; do
             sudo chmod u+w "$dir"
         done
-        rm -rf "${SNAPSHOT_PATH:?}/$i"
+        rm -rf "${SNAPSHOT_PATH:?}/$i" || (
+            echo -e "Deletion of snapshot $i failed" >&2 && clean_and_exit 1
+        )
     done
 }
 
@@ -90,7 +92,7 @@ remove_old_snapshots() {
     if [ "$SNAPSHOTS_TO_KEEP" != "" ]; then
         mapfile -t SNAPSHOTS_TO_DELETE_LIST < \
             <(printf '%s\n' "${SNAPSHOTS_LIST[@]}" |
-                tail -n +"$SNAPSHOTS_TO_KEEP" | nl | sort -nr | cut -f 2-)
+                tail -n +"$(("$SNAPSHOTS_TO_KEEP" + 1))" | nl | sort -nr | cut -f 2-)
         if [ "${#SNAPSHOTS_TO_DELETE_LIST[@]}" -gt 0 ]; then
             # List snapshots will be deleted
             echo "This snapshot(s) will be deleted:"
@@ -166,12 +168,19 @@ create_snapshot() {
 	vm
 	EOF
 
+    echo "Create differential snapshot: $SNAPSHOT_NAME"
     # Create differential snapshot
-    rsync -aii --recursive --verbose --delete --force --stats --sparse \
+    rsync \
+        --archive \
+        --recursive \
+        --delete \
+        --force \
+        --sparse \
         --log-file="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${LOG_FILENAME}" \
         --exclude-from="$TMP_FILE" \
         --include="/*/.*" \
         --include="/.*" \
+        --info=stats2 \
         "${SOURCE_PATH}/" "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/${DATA_DIR_NAME}/" ||
         exit_err
     rm "$TMP_FILE"
@@ -195,7 +204,7 @@ __EOM__
 link_prev_snapshot() {
     echo "Create links from previous snapshot: ${LAST_SNAPSHOT}"
     echo "Please wait..."
-    mkdir -p "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}/"
+    mkdir -p "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
     rsync -a --exclude="/${LOG_FILENAME}" --exclude="/${SUCCESS_FILE}" \
         --link-dest="${SNAPSHOT_PATH}/${LAST_SNAPSHOT}" \
         "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}/" \
@@ -219,7 +228,7 @@ OPTIONS:
     -y, --yes
                         Confirm all warnings automatically
 
-    -t, --timeout=NUM
+    -t MIN, --timeout=MIN
                         Minimal timeout in minutes from last SNAPSHOT allowed
                         (unsigned integer value, default 360)
 
@@ -234,58 +243,67 @@ __EOM__
     return
 }
 
-check_if_var_is_num() {
-    local num='^[0-9]+$'
-    if ! [[ "$1" =~ $num ]]; then
-        usage >&2
-        clean_and_exit 1
-    fi
-}
+process_cmd_options() {
+    # Process and validate input command line arguments
 
-# Process command line options
-while [[ -n "$1" ]]; do
-    case "$1" in
-    -f | --force)
-        FORCE="1"
-        ;;
-    -t | --timeout=*)
-        if [ "$1" = "-t" ]; then
-            shift
-            SNAPSHOT_TIMEOUT="$1"
-            check_if_var_is_num "$SNAPSHOT_TIMEOUT"
-            SNAPSHOT_TIMEOUT=$(("$SNAPSHOT_TIMEOUT" * 60))
-        else
-            SNAPSHOT_TIMEOUT=$(echo "$1" | cut -d '=' -f 2-)
-            check_if_var_is_num "$SNAPSHOT_TIMEOUT"
-            SNAPSHOT_TIMEOUT=$(("$SNAPSHOT_TIMEOUT" * 60))
-        fi
-        ;;
-    -k | --keep=*)
-        if [ "$1" = "-k" ]; then
-            shift
-            SNAPSHOTS_TO_KEEP="$1"
-            check_if_var_is_num "$SNAPSHOTS_TO_KEEP"
-            SNAPSHOTS_TO_KEEP=$(("$SNAPSHOTS_TO_KEEP" + 1))
-        else
-            SNAPSHOTS_TO_KEEP=$(echo "$1" | cut -d '=' -f 2-)
-            check_if_var_is_num "$SNAPSHOTS_TO_KEEP"
-            SNAPSHOTS_TO_KEEP=$(("$SNAPSHOTS_TO_KEEP" + 1))
-        fi
-        ;;
-    -y | --yes)
-        AUTO_CONFIRM="1"
-        ;;
-    -h | --help)
-        usage
-        clean_and_exit 0
-        ;;
-    *)
-        usage >&2
+    local num
+
+    __undefined_value() {
+        echo -e "${RED}ERR:${END} Undefined value for argument ${1}." >&2
         clean_and_exit 1
-        ;;
-    esac
-    shift
-done
+    }
+
+    __is_positive_num() {
+        [ "${1}" -gt 0 ] 2>/dev/null || return 1
+    }
+
+    __check_if_var_is_num() {
+        if ! __is_positive_num "$1"; then
+            usage >&2
+            clean_and_exit 1
+        fi
+    }
+
+    while [[ -n "$1" ]]; do
+        case "$1" in
+        -f | --force)
+            FORCE="1"
+            ;;
+        -t | --timeout)
+            [ $# -lt 2 ] && __undefined_value "${1}"
+            shift && SNAPSHOT_TIMEOUT="${1}"
+            ;;
+        --timeout=*)
+            [[ -z "${1#*=}" ]] && __undefined_value "${1}"
+            SNAPSHOT_TIMEOUT="${1#*=}"
+            ;;
+        -k | --keep)
+            [ $# -lt 2 ] && __undefined_value "${1}"
+            shift && SNAPSHOTS_TO_KEEP="${1}"
+            ;;
+        --keep=*)
+            [[ -z "${1#*=}" ]] && __undefined_value "${1}"
+            SNAPSHOTS_TO_KEEP="${1#*=}"
+            ;;
+        -y | --yes)
+            AUTO_CONFIRM="1"
+            ;;
+        -h | --help)
+            usage
+            clean_and_exit 0
+            ;;
+        *)
+            usage >&2
+            clean_and_exit 1
+            ;;
+        esac
+        shift
+    done
+
+    for num in "$SNAPSHOT_TIMEOUT" "$SNAPSHOTS_TO_KEEP"; do
+        __check_if_var_is_num "$num"
+    done
+}
 
 # Get the list of directories with a name matches the snapshot name pattern
 generate_snapshot_list() {
@@ -316,43 +334,48 @@ get_newest_dir() {
     return
 }
 
-# Get the latest directory (by name) from an array of directories
-get_latest_dir_by_name() {
-    printf '%s\n' "${SNAPSHOTS_LIST[@]}" | sort -rn | head -n 1
-    return
-}
-
-#-Main script body--------------------------------------------------------------
-
-remove_interrupded_snapshots
-
-# Get an array of valid snapshots
-mapfile -t SNAPSHOTS_LIST < <(generate_snapshot_list)
-
-# Get the last valid snapshot
-LAST_SNAPSHOT="$(get_latest_dir_by_name)"
-
-if [ "$LAST_SNAPSHOT" = "" ]; then
-    # Create first snapshot
-    mkdir -p "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
-    create_snapshot
-else
-    if [[ -z ${FORCE} ]]; then
-        # Get time of last snapshot and current time for comparison
-        SNAPSHOT_TIME=$(stat --format='%Y' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
-        CURRENT_TIME=$(date +%s)
-        if ((SNAPSHOT_TIME < (CURRENT_TIME - SNAPSHOT_TIMEOUT))); then
+process_snapshot() {
+    if [ "$LAST_SNAPSHOT" = "" ]; then
+        # Create first snapshot
+        mkdir -p "${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
+        create_snapshot
+    else
+        if [[ -z ${FORCE} ]]; then
+            # Get time of last snapshot and current time for comparison
+            SNAPSHOT_TIME=$(stat --format='%Y' "${SNAPSHOT_PATH}/${LAST_SNAPSHOT}")
+            CURRENT_TIME=$(date +%s)
+            if ((SNAPSHOT_TIME < (CURRENT_TIME - SNAPSHOT_TIMEOUT))); then
+                link_prev_snapshot
+                create_snapshot
+            else
+                echo -e "Snapshot creation ${YEL}skipped${END} by timeout"
+                remove_old_snapshots
+                clean_and_exit 0
+            fi
+        else
             link_prev_snapshot
             create_snapshot
-        else
-            echo -e "Snapshot creation ${YEL}skipped${END} by timeout"
-            remove_old_snapshots
-            clean_and_exit 0
         fi
-    else
-        link_prev_snapshot
-        create_snapshot
     fi
-fi
-remove_old_snapshots
-echo -e "Snapshot completed ${GRN}successfully${END}"
+}
+
+main() {
+    # Start program here
+
+    process_cmd_options "$@"
+
+    remove_interrupded_snapshots
+
+    # Get an array of valid snapshots
+    mapfile -t SNAPSHOTS_LIST < <(generate_snapshot_list)
+
+    # Get the last valid snapshot
+    LAST_SNAPSHOT="$(printf '%s\n' "${SNAPSHOTS_LIST[@]}" | sort -rn | head -n 1)"
+
+    process_snapshot
+
+    remove_old_snapshots
+    echo -e "Snapshot completed ${GRN}successfully${END}"
+}
+
+main "$@"
