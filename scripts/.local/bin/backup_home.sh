@@ -48,6 +48,26 @@ exit_err() {
     clean_and_exit 1
 }
 
+confirmation_dialog() {
+    # Confirmation dialog with a single 'y' character to accept
+
+    local user_prompt="${1:-Are you sure?}"
+    echo -en "$user_prompt (y|N): "
+
+    local ANS
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        read -rk 1 ANS
+    else
+        read -rn 1 ANS
+    fi
+    echo # Move to the next line for a cleaner output
+
+    case "$ANS" in
+    [yY]) return 0 ;;
+    *) return 1 ;;
+    esac
+}
+
 delete_snapshots() {
     local -a non_writable_dirs
     local dir
@@ -78,22 +98,15 @@ remove_old_snapshots() {
             # Delete listed snapshots
             if [ "$AUTO_CONFIRM" = "" ]; then
                 while true; do
-                    read -rp "Are you sure (y/n)?" yn
-                    case $yn in
-                    [Yy]*)
+                    if confirmation_dialog ""; then
                         echo "Please wait..."
                         delete_snapshots "${SNAPSHOTS_TO_DELETE_LIST[@]}"
                         echo "Snapshot(s) deletion is complete."
                         break
-                        ;;
-                    [Nn]*)
+                    else
                         echo "Snapshot(s) deletion canceled."
                         break
-                        ;;
-                    *)
-                        echo "Please answer (y)es or (n)o."
-                        ;;
-                    esac
+                    fi
                 done
             else
                 delete_snapshots "${SNAPSHOTS_TO_DELETE_LIST[@]}"
