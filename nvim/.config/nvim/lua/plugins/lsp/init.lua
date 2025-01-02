@@ -14,8 +14,9 @@ return {
       { "smjonas/inc-rename.nvim", config = true },
       "williamboman/mason.nvim",
       "williamboman/mason-lspconfig.nvim",
-      "hrsh7th/cmp-nvim-lsp",
-      "hrsh7th/cmp-nvim-lsp-signature-help",
+      -- "hrsh7th/cmp-nvim-lsp",
+      -- "hrsh7th/cmp-nvim-lsp-signature-help",
+      "saghen/blink.cmp",
       {
         "ray-x/lsp_signature.nvim",
         opts = {
