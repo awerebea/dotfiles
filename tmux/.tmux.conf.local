@@ -484,6 +484,11 @@ tmux_conf_uninstall_plugins_on_reload=false
 #   sleep 60
 # }
 #
+# tmux_server_cpu() {
+#     echo "tmux-server CPU usage: $(ps -p "$(pgrep "tmux: server")" -o %cpu | tail -n 1 | xargs)%"
+#     sleep 10
+# }
+#
 # wan_ip_v6() {
 #   curl -f -s -m 2 -6 ifconfig.me
 #   sleep 300                                         # sleep for 5 minutes, throttle network requests whatever the value of status-interval
@@ -899,7 +904,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S |#[fg=colour255,bg=colour237] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default]'
-tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #[fg=colour249]#(sensors | grep -A 0 'temp1:' | cut -c16-18 | tr -d .)°C #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]%a %F %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
+tmux_conf_theme_status_right='#[fg=yellow,bold]#([ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE')#[fg=default]#{prefix}#(cut -c3- ~/.tmux.conf.local | sh -s tmux_server_cpu) #{mouse}#{pairing}#{synchronized}#{?battery_status,#{battery_status},}#{?battery_bar, #{battery_bar},}#{?battery_percentage, #{battery_percentage},} #[fg=colour249]#(sensors | grep -A 0 'temp1:' | cut -c16-18 | tr -d .)°C #[fg=colour215]#(cut -d" " -f -3 /proc/loadavg) #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]%a %F %T ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,} #[fg=#{?@is_online,green,red}]#(cut -c3- ~/.tmux.conf.local | sh -s online_status)#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
