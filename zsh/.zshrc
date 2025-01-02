@@ -1195,7 +1195,6 @@ zvm_vi_yank() {
     zvm_exit_visual_mode
 }
 
-# Git. Fetch all origin remote branches
 # Git aliases
 alias dots-status='git --git-dir "$GIT_DOTFILES/.git" status -s -b'
 alias -g GR='$(git rev-parse --show-toplevel)'
