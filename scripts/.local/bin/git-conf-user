@@ -8,15 +8,18 @@ SIGNING_KEY_0="9BCC286D7490EA90CB0B36D40D29164EF13B24BD"
 USER_1="Andrei Bulgakov"
 EMAIL_1="a.bulgakov.86@gmail.com"
 SIGNING_KEY_1="3A9C9CF435A23DBB070281DE98DEAF83552D8DFA"
-USER_2="Andrey Bulgakov"
+USER_2="Andrei Bulgakov"
 EMAIL_2="andrey.bulgakov@clearscale.com"
-SIGNING_KEY_2="9DD1905E14C478090420E5B99A0ED9EFED1FAFE2"
+SIGNING_KEY_2="56F7DB4B01BCD8FE876542306011F4444AB7DCCC"
 USER_3="Andrei Bulgakov"
 EMAIL_3="a.bulgakov.work@gmail.com"
 SIGNING_KEY_3="9BCC286D7490EA90CB0B36D40D29164EF13B24BD"
 USER_4="Andrei Bulgakov"
 EMAIL_4="andrei.bulgakov@opsfleet.com"
 SIGNING_KEY_4="15B29A629D550FAB8E319DE2AF4333636A5E4E90"
+USER_5="Andrei Bulgakov"
+EMAIL_5="andrei.bulgakov@netdocuments.com"
+SIGNING_KEY_5="2B7125948BAA0D938CF485710A978700E5D86811"
 
 GLOBAL=
 
@@ -42,6 +45,8 @@ USERNAME:
   3, a.bulgakov.work    User data: ${USER_3} <${EMAIL_3}>
 
   4, opsfleet           User data: ${USER_4} <${EMAIL_4}>
+
+  5, netdocuments       User data: ${USER_5} <${EMAIL_5}>
 
 OPTIONS:
   -c, --sign-commits    Sign all commits automattically
@@ -104,6 +109,11 @@ while [[ -n "$1" ]]; do
         USERNAME="$USER_4"
         USEREMAIL="$EMAIL_4"
         SIGNING_KEY="$SIGNING_KEY_4"
+        ;;
+    5 | netdocuments)
+        USERNAME="$USER_5"
+        USEREMAIL="$EMAIL_5"
+        SIGNING_KEY="$SIGNING_KEY_5"
         ;;
     -h | --help)
         usage
