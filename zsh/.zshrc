@@ -320,11 +320,13 @@ elif [[ -d "$HOME/.vim/plugged/fzf/bin" && ":$PATH:" != *":$HOME/.vim/plugged/fz
 fi
 
 # https://github.com/tfutils/tfenv - Terraform version manager
-[[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
+[[ -d "$HOME/.tfenv" && ":$PATH:" != *":$HOME/.tfenv/bin:"* ]] && export PATH="$HOME/.tfenv/bin:$PATH"
+# https://github.com/tofuutils/tofuenv - OpenTofu version manager
+[[ -d "$HOME/.tofuenv" && ":$PATH:" != *":$HOME/.tofuenv/bin:"* ]] && export PATH="$HOME/.tofuenv/bin:$PATH"
 # https://github.com/tgenv/tgenv - Terragrunt version manager
-[[ -d "$HOME/.tgenv" && ":$PATH:" != *":$HOME/.tgenv:"* ]] && export PATH="$HOME/.tgenv/bin:$PATH"
+[[ -d "$HOME/.tgenv" && ":$PATH:" != *":$HOME/.tgenv/bin:"* ]] && export PATH="$HOME/.tgenv/bin:$PATH"
 # https://github.com/iamhsa/pkenv - Packer version manager
-[[ -d "$HOME/.pkenv" && ":$PATH:" != *":$HOME/.pkenv:"* ]] && export PATH="$HOME/.pkenv/bin:$PATH"
+[[ -d "$HOME/.pkenv" && ":$PATH:" != *":$HOME/.pkenv/bin:"* ]] && export PATH="$HOME/.pkenv/bin:$PATH"
 
 # Detect and setup current environment
 if [[ "$(uname)" == "Linux" ]]; then
