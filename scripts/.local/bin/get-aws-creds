@@ -2,8 +2,7 @@
 
 VALID_ENVS=(
     "all"
-    torana-{test,stage,prod,audit,shared}
-    hnb-cp-{prdev,dev,qa,stage,prod}
+    example-{dev,test,prod}
 )
 
 _check_inputs() {
@@ -19,21 +18,26 @@ _check_inputs() {
 }
 
 _get_envs() {
-    local envs_raw arg seen_elements envs element env
-    envs_raw=()
+    local -a envs_raw=()
+    local arg
     for arg in "$@"; do
-        read -ra splitted_arg <<<"$(echo "$arg" | tr ";,/" " ")"
-        envs_raw+=("${splitted_arg[@]}")
+        while IFS= read -r line; do
+            envs_raw+=("$line")
+        done < <(echo "$arg" | tr ";,/" "\n")
     done
+
     # Remove duplicates
-    declare -A seen_elements
-    envs=()
+    local -A seen
+    local -a envs=()
+    local element
     for element in "${envs_raw[@]}"; do
-        if [ "${seen_elements[$element]}" = "" ]; then
+        if [[ -z "${seen[$element]}" ]]; then
             envs+=("$element")
-            seen_elements["$element"]=1
+            seen["$element"]=1
         fi
     done
+
+    local env
     for env in "${envs[@]}"; do
         # shellcheck disable=SC2076
         if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
@@ -42,18 +46,26 @@ _get_envs() {
         fi
         if [ "$env" = "all" ]; then
             envs=("${VALID_ENVS[@]}")
-            unset 'envs[0]'
+            unset 'envs[0]' # remove "all" from an array of envs
             break
         fi
     done
-    echo "${envs[@]}"
+
+    for env in "${envs[@]}"; do
+        echo "$env"
+    done
 }
 
 _main() {
-    local envs creds creds_temp creds_addon creds_temp_dir env
     _check_inputs "$@"
-    read -ra envs <<<"$(_get_envs "$@")"
 
+    local -a envs=()
+    local line
+    while IFS= read -r line; do
+        envs+=("$line")
+    done < <(_get_envs "$@")
+
+    local creds creds_temp creds_addon creds_temp_dir
     creds="$HOME/.aws/credentials"
     creds_temp="$HOME/.aws/tmp-creds/tmp.credentials"
     creds_addon="$HOME/.aws/credentials_addon"
@@ -61,6 +73,7 @@ _main() {
 
     mkdir -p "$creds_temp_dir" 2>/dev/null || exit 1
     : >"$creds_temp" # Clear the file
+    local env
     for env in "${envs[@]}"; do
         aws-vault exec "$env" --json >"$creds_temp_dir/$env.json"
         {
