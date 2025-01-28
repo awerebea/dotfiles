@@ -114,6 +114,23 @@ trustExitCode = true
 	root = "rev-parse --show-toplevel"
 	find-merge = "!sh -c 'commit=$0 && branch=${1:-HEAD} && (git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list $commit..$branch --first-parent | cat -n) | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2'"
 	show-merge = "!sh -c 'merge=$(git find-merge $0 $1) && [ -n \"$merge\" ] && git show $merge'"
+	add-fetch = "!f() { \
+		REMOTE=\"${1:-origin}\"; \
+		git config --add \"remote.${REMOTE}.fetch\" \"+refs/heads/*:refs/remotes/${REMOTE}/*\"; \
+		echo \"Added fetch configuration for remote '${REMOTE}'\"; \
+		git config --get-all \"remote.${REMOTE}.fetch\"; \
+	}; f"
+	set-upstream = "!f() { \
+		REMOTE=\"${1:-origin}\"; \
+		CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD); \
+		git branch --set-upstream-to=${REMOTE}/${CURRENT_BRANCH} ${CURRENT_BRANCH}; \
+		echo \"Upstream set to '${REMOTE}/${CURRENT_BRANCH}' for branch '${CURRENT_BRANCH}'\"; \
+	}; f"
+	set-sshkey = "!f() { \
+		SSH_KEY=\"${1:-~/.ssh/id_rsa}\"; \
+		git config core.sshCommand \"ssh -i ${SSH_KEY}\"; \
+		echo \"SSH command set to use key: ${SSH_KEY}\"; \
+	}; f"
 [rerere]
 	enabled = true
 [fetch]
