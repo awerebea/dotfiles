@@ -321,3 +321,5 @@ fi
 
 # shellcheck disable=1091
 source "$HOME/.shared.sh"
+
+[ -f ~/.config/.openai_api_key ] && export OPENAI_API_KEY=$(cat ~/.config/.openai_api_key)
