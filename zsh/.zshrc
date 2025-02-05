@@ -1412,3 +1412,5 @@ compdef __aws_sso_profile_complete aws-sso-profile
 complete -C /home/andrei/.local/bin/aws-sso aws-sso
 
 # END_AWS_SSO_CLI
+
+[ -f ~/.config/.openai_api_key ] && export OPENAI_API_KEY=$(cat ~/.config/.openai_api_key)
