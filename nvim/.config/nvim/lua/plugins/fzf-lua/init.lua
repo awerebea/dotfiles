@@ -2,10 +2,7 @@ return {
   "ibhagwan/fzf-lua",
   enabled = true,
   event = "VeryLazy",
-  dependencies = {
-    { "nvim-tree/nvim-web-devicons" },
-    { "junegunn/fzf", build = "./install --bin" },
-  },
+  dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
