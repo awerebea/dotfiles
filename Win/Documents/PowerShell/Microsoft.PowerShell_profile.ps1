@@ -142,4 +142,10 @@ Set-PSReadLineKeyHandler -Chord "Alt+k" -Function ForwardWord
 
 Set-PSReadLineKeyHandler -Chord "Alt+l" -Function ClearScreen
 
+$apiKeyFile = "$env:USERPROFILE\.config\.openai_api_key"
+if (Test-Path $apiKeyFile)
+{
+    $env:OPENAI_API_KEY = Get-Content $apiKeyFile | ForEach-Object { $_.Trim() }
+}
+
 . "$HOME\.shared.ps1"
