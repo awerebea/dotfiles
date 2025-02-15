@@ -650,20 +650,6 @@ if [ "${commands[eza]}" ]; then
     --group-directories-first --color-scale --tree"
 fi
 
-# docker aliases
-[[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo docker"
-# shellcheck disable=2139
-alias dksa="${DOCKER_CMD:-docker} stop \$(${DOCKER_CMD:-docker} ps -q)"
-# shellcheck disable=2139
-alias dkrc="${DOCKER_CMD:-docker} rm \$(${DOCKER_CMD:-docker} container ls -qa)"
-# shellcheck disable=2139
-alias dkri="${DOCKER_CMD:-docker} rmi \$(${DOCKER_CMD:-docker} image ls -qa)"
-# shellcheck disable=2139
-alias dkreset="dksa && dkrc && dkri"
-# shellcheck disable=2139
-alias dk="${DOCKER_CMD:-docker}"
-alias dkc=docker-compose
-
 # kubectl (k8s) aliases
 alias kg="kubectl get"
 alias kgy="kubectl get -o yaml"

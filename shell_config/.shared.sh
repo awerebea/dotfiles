@@ -392,3 +392,27 @@ if command -v "tmux" &>/dev/null && [ ! -d "$HOME/.tmux" ]; then
     git clone https://github.com/gpakosz/.tmux.git "$HOME/.tmux"
     ln -s "$HOME/.tmux/.tmux.conf" "$HOME/.tmux.conf"
 fi
+
+# docker aliases
+if command -v "podman" &>/dev/null; then
+    DOCKER_CMD="podman"
+    alias docker="$DOCKER_CMD"
+elif command -v "docker" &>/dev/null; then
+    DOCKER_CMD="docker"
+    [[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo $DOCKER_CMD"
+fi
+
+if [ "$DOCKER_CMD" != "" ]; then
+    # shellcheck disable=2139
+    alias dksa="$DOCKER_CMD stop \$($DOCKER_CMD ps -q)"
+    # shellcheck disable=2139
+    alias dkrc="$DOCKER_CMD rm \$($DOCKER_CMD container ls -qa)"
+    # shellcheck disable=2139
+    alias dkri="$DOCKER_CMD rmi \$($DOCKER_CMD image ls -qa)"
+    # shellcheck disable=2139
+    alias dkreset="dksa && dkrc && dkri"
+    # shellcheck disable=2139
+    alias dk="$DOCKER_CMD"
+    # shellcheck disable=2139
+    alias dkc="$DOCKER_CMD"-compose
+fi
