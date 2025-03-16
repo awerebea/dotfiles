@@ -1318,6 +1318,9 @@ if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
     else
         eval "$(ssh-agent -s)" >/dev/null
     fi
+    # Fix long Ranger startup in Tmux
+    # shellcheck disable=2016,2155
+    export PATH="$(echo $PATH | tr ":" "\n" | grep -v "^/mnt/c/" | xargs | tr " " ":")"
 fi
 
 # catppuccin fast-syntax-highlighting theme
