@@ -32,23 +32,34 @@ SwitchToApp(appTitle, appPath)
 ; Hotkeys:
 ; Windows Terminal
 <#x::SwitchToApp("WindowsTerminal.exe", "wt")
+>#x::SwitchToApp("WindowsTerminal.exe", "wt")
 ; KeePass
 <#k::SwitchToApp("KeePass.exe", "D:\Distrib\_Personal Software\KeePass\KeePass.exe")
+>#k::SwitchToApp("KeePass.exe", "D:\Distrib\_Personal Software\KeePass\KeePass.exe")
 ; Chrome
 <#c::SwitchToApp("chrome.exe", "C:\Program Files\Google\Chrome\Application\chrome.exe")
+>#c::SwitchToApp("chrome.exe", "C:\Program Files\Google\Chrome\Application\chrome.exe")
 ; Slack
 <#s::SwitchToApp("slack.exe", "C:\Users\Andrei\AppData\Local\slack\slack.exe")
+>#s::SwitchToApp("slack.exe", "C:\Users\Andrei\AppData\Local\slack\slack.exe")
 ; Notepad++
 <#n::SwitchToApp("notepad++.exe", "C:\Program Files\Notepad++\notepad++.exe")
+>#n::SwitchToApp("notepad++.exe", "C:\Program Files\Notepad++\notepad++.exe")
 ; Telegram
 <#g::SwitchToApp("Telegram.exe", "D:\Distrib\_Personal Software\Telegram\Telegram.exe")
+>#g::SwitchToApp("Telegram.exe", "D:\Distrib\_Personal Software\Telegram\Telegram.exe")
 ; Firefox
 <#f::SwitchToApp("firefox.exe", "C:\Program Files\Mozilla Firefox\firefox.exe")
+>#f::SwitchToApp("firefox.exe", "C:\Program Files\Mozilla Firefox\firefox.exe")
 ; Qalculate
 <#q::SwitchToApp("qalculate-gtk.exe", "D:\Distrib\_Personal Software\qalculate\qalculate-gtk.exe")
+>#q::SwitchToApp("qalculate-gtk.exe", "D:\Distrib\_Personal Software\qalculate\qalculate-gtk.exe")
 ; Total Commander
 <#t::SwitchToApp("TOTALCMD64.EXE", "D:\Distrib\_Personal Software\Total Commander\TOTALCMD64.EXE")
+>#t::SwitchToApp("TOTALCMD64.EXE", "D:\Distrib\_Personal Software\Total Commander\TOTALCMD64.EXE")
 ; Foobar2000
 <#b::SwitchToApp("foobar2000.exe", "D:\Distrib\_Personal Software\Foobar2000\foobar2000.exe")
+>#b::SwitchToApp("foobar2000.exe", "D:\Distrib\_Personal Software\Foobar2000\foobar2000.exe")
 ; Obsidian
 <#o::SwitchToApp("Obsidian.exe", "C:\Users\Andrei\AppData\Local\Programs\Obsidian\Obsidian.exe")
+>#o::SwitchToApp("Obsidian.exe", "C:\Users\Andrei\AppData\Local\Programs\Obsidian\Obsidian.exe")
