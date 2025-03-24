@@ -1,37 +1,23 @@
 // vim: ft=jsonc
 {
-    "terminal.integrated.fontFamily": "MesloLGS NF",
-    "terminal.integrated.fontSize": 12,
+    "vim.searchMatchColor": "#ff0000",
+    "terminal.integrated.fontFamily": "JetBrainsMono NF",
+    "terminal.integrated.fontSize": 16,
+    "terminal.integrated.fontWeight": "200",
     "terminal.integrated.lineHeight": 1,
-    "editor.fontFamily": "MesloLGS NF",
-    "editor.fontSize": 13,
+    "editor.fontFamily": "JetBrainsMono NF",
+    "editor.fontSize": 18,
+    "editor.fontWeight": "300",
     "editor.renderControlCharacters": true,
     // Disable current word highlight
-    "editor.occurrencesHighlight": false,
+    "editor.occurrencesHighlight": "off",
     // Disable current line highlight
     "editor.renderLineHighlight": "gutter",
     // Set terminal cursor style
     "terminal.integrated.cursorStyle": "block",
     "terminal.integrated.cursorBlinking": true,
     // Colorscheme
-    "workbench.colorTheme": "Cobalt2",
-    // Colors
-    // Commented to use with Cobalt2 theme
-    // "workbench.colorCustomizations": {
-    //   // Terminal colors
-    //   "terminal.foreground" : "#f8f8f0",
-    //   "terminal.background" : "#2d2a2e",
-    //   // Line numbers color
-    //   "editorLineNumber.foreground": "#999999",
-    //   // Active line number color
-    //   "editorLineNumber.activeForeground": "#666666",
-    //   // Background of Gutter column
-    //   "editorGutter.background" : "#232024",
-    //   // StatusBar font color
-    //   "statusBar.foreground" : "#a8a8a0"
-    // },
-    // Icons settings
-    "workbench.iconTheme": "vscode-icons",
+    "workbench.colorTheme": "Catppuccin Mocha",
     "editor.rulers": [100, 120],
     "editor.wordWrap": "wordWrapColumn",
     "editor.wrappingIndent": "same",
@@ -52,10 +38,8 @@
         "*.ctmpl": "hcl",
         "*.tf": "terraform",
         "*.tfvars": "terraform",
-        "[Jj]enkinsfile*": "jenkinsfile"
-    },
-    "workbench.editorAssociations": {
-        "*.ipynb": "jupyter.notebook.ipynb"
+        "[Jj]enkinsfile*": "jenkinsfile",
+        "*.json.tpl*": "json"
     },
     // Open in Vim fullscreen
     "multiCommand.commands": [
@@ -67,18 +51,257 @@
             ]
         }
     ],
-    // Plugins and extensions settings
-    "editor.lineNumbers": "on", // on or relative
-    // Kubernetes plugin settings
-    "vs-kubernetes": {
-        "vscode-kubernetes.minikube-path.linux": "/home/andrei/.vs-kubernetes/tools/minikube/linux-amd64/minikube",
-        "vscode-kubernetes.helm-path.linux": "/home/andrei/.vs-kubernetes/tools/helm/linux-amd64/helm"
+    // Plugins and extentions settings
+    // Vim plugin settings
+    "vim.highlightedyank.enable": true,
+    "vim.smartRelativeLine": false,
+    "editor.lineNumbers": "on",
+    "vim.easymotion": true,
+    "vim.incsearch": true,
+    "vim.useSystemClipboard": true,
+    "vim.useCtrlKeys": true,
+    "vim.hlsearch": true,
+    "vim.surround": true,
+    // Disable VSCodeVim extension
+    "vim.disableExtension": false,
+    // In visual mode, start a search with * or # using the current selection
+    "vim.visualstar": true,
+    // Do not open folds when moving with j/k
+    // Switched off, because slows down {count}j/{count}k movements.
+    "vim.foldfix": false,
+    // Keybinds in Insert mode
+    "vim.insertModeKeyBindings": [],
+    // Keybinds in Normal mode
+    "vim.normalModeKeyBindings": [],
+    "vim.normalModeKeyBindingsNonRecursive": [
+        {
+            "before": ["<leader>", "m"],
+            "commands": ["bookmarks.toggle"]
+        },
+        {
+            "before": ["<leader>", "b"],
+            "commands": ["bookmarks.list"]
+        },
+        {
+            "before": ["<leader>", "r", "n"],
+            "commands": ["editor.action.rename"],
+            "when": [
+                "editorHasRenameProvider",
+                "editorTextFocus",
+                "!editorReadonly"
+            ]
+        },
+        // Save file
+        {
+            "before": ["<leader>", "w"],
+            "commands": ["workbench.action.files.save"]
+        },
+        // Go to changes
+        {
+            "before": ["]", "c"],
+            "commands": [
+                "workbench.action.editor.nextChange",
+                "workbench.action.compareEditor.nextChange"
+            ]
+        },
+        {
+            "before": ["[", "c"],
+            "commands": [
+                "workbench.action.editor.previousChange",
+                "workbench.action.compareEditor.previousChange"
+            ]
+        },
+        // Go to definition
+        {
+            "before": ["g", "d"],
+            "commands": ["editor.action.revealDefinition"]
+        },
+        // Go to reference
+        {
+            "before": ["g", "r"],
+            "commands": ["editor.action.goToReferences"]
+        },
+        // Preview change
+        {
+            "before": ["g", "h", "p"],
+            "commands": ["editor.action.dirtydiff.next"]
+        },
+        {
+            "before": ["g", "h", "P"],
+            "commands": ["editor.action.dirtydiff.previous"]
+        },
+        // Revert change
+        {
+            "before": ["g", "h", "r"],
+            "commands": ["git.revertSelectedRanges"]
+        },
+        // Stage change
+        {
+            "before": ["g", "h", "s"],
+            "commands": ["git.stageSelectedRanges"]
+        },
+        // Unstage change
+        {
+            "before": ["g", "h", "u"],
+            "commands": ["git.unstageSelectedRanges"]
+        },
+        // Turn off search highlighting
+        {
+            "before": ["<C-n>"],
+            "commands": [":nohl"]
+        },
+        {
+            "before": ["<Leader>", "/"],
+            "commands": [":nohl"]
+        },
+        {
+            "before": ["<Esc>", "<Esc>"],
+            "commands": [":nohl"]
+        },
+        // Show commands panel
+        {
+            "before": ["<Leader>", "p"],
+            "commands": ["workbench.action.showCommands"]
+        },
+        // Show symbols in file
+        {
+            "before": ["<Leader>", "t"],
+            "commands": ["workbench.action.gotoSymbol"]
+        },
+        // Show symbols in workspace
+        {
+            "before": ["<Leader>", "a", "t"],
+            "commands": ["workbench.action.showAllSymbols"]
+        },
+        // Easier Tab Handling
+        {
+            "before": ["<Leader>", "t", "t"],
+            "commands": [":tabedit"]
+        },
+        {
+            "before": ["<Leader>", "t", "h"],
+            "commands": [":tabfirst"]
+        },
+        {
+            "before": ["<Leader>", "t", "n"],
+            "commands": [":tabnext"]
+        },
+        {
+            "before": ["<Leader>", "t", "p"],
+            "commands": [":tabprev"]
+        },
+        {
+            "before": ["<Leader>", "t", "l"],
+            "commands": [":tablast"]
+        },
+        {
+            "before": ["<Leader>", "t", "d"],
+            "commands": [":tabclose"]
+        },
+        {
+            "before": ["<Leader>", "t", "o"],
+            "commands": [":tabonly"]
+        },
+        // Show project files list filter
+        {
+            "before": ["<Leader>", "f"],
+            "commands": ["workbench.action.quickOpen"]
+        },
+        // Show all editors by most recently used
+        {
+            "before": ["<Leader>", "<enter>"],
+            "commands": ["workbench.action.showAllEditorsByMostRecentlyUsed"]
+        },
+        // Show all editors by appearance
+        {
+            "before": ["<Leader>", "<Leader>", "<enter>"],
+            "commands": ["workbench.action.showAllEditors"]
+        },
+        // Find[and Replace] text in all files of project
+        {
+            "before": ["<Leader>", "r", "g"],
+            "commands": ["workbench.action.findInFiles"]
+        },
+        // Open file in Vim (fullscreen)
+        {
+            "before": ["<Leader>", "v", "v"],
+            "commands": ["multiCommand.openInVimFullscreen"]
+        },
+        // Toggle auto hard-wrap long lines
+        {
+            "before": ["<Leader>", "a", "w"],
+            "commands": ["rewrap.toggleAutoWrap"]
+        },
+        // Spell checking
+        // Toggle for current workspace
+        {
+            "before": ["<Leader>", "s", "c", "e"],
+            "commands": ["cSpell.toggleEnableSpellChecker"]
+        },
+        // Open quickfix list as top menu
+        {
+            "before": ["z", "="],
+            "commands": ["keyboard-quickfix.openQuickFix"]
+        },
+        // Open file explorer
+        {
+            "before": ["<Leader>", "e"],
+            "commands": ["workbench.view.explorer"]
+        },
+        // Easymotion
+        {
+            "before": ["<Leader>", "<Leader>", "d"],
+            "after": ["<Leader>", "<Leader>", "2", "s"]
+        },
+        // Find and replace in files
+        {
+            "before": ["<Leader>", "f", "f"],
+            "commands": ["workbench.action.findInFiles"]
+        },
+        {
+            "before": ["<Leader>", "f", "r"],
+            "commands": ["workbench.action.replaceInFiles"]
+        },
+        {
+            "before": ["]", "d"],
+            "commands": ["editor.action.marker.next"],
+            "silent": true
+        },
+        {
+            "before": ["[", "d"],
+            "commands": ["editor.action.marker.prev"],
+            "silent": true
+        }
+    ],
+    // Keybinds in Visual mode
+    "vim.visualModeKeyBindingsNonRecursive": [
+        // Paste without overriding the current register
+        {
+            "before": ["p"],
+            "after": ["p", "g", "v", "y"]
+        },
+        // Easymotion
+        {
+            "before": ["<Leader>", "<Leader>", "d"],
+            "after": ["<Leader>", "<Leader>", "2", "s"]
+        }
+    ],
+    // Leader key is '\' (back slash) by default
+    "vim.leader": "<space>",
+    "vim.handleKeys": {
+        "<C-a>": true,
+        "<C-f>": true,
+        "<C-i>": false,
+        "<C-o>": false
     },
-    "C_Cpp.updateChannel": "Insiders",
+    // Set a limit on the length of a string
+    "vim.textwidth": 99,
     "terminal.external.linuxExec": "/usr/bin/konsole",
     // Python module settings
     "python.formatting.autopep8Args": ["--max-line-length=99"],
     "python.formatting.provider": "yapf", // yapf or autopep8 or black
+    "python.formatting.autoImportSorting": false,
+    "python.formatting.formatOnSave": false,
     "python.formatting.yapfArgs": [
         "--style={based_on_style: google, column_limit: 99, indent_width: 4}"
     ],
@@ -89,20 +312,11 @@
     "python.linting.pycodestyleEnabled": true,
     "python.linting.pydocstyleEnabled": true,
     "python.linting.pylintEnabled": true,
-    "python.linting.pylintPath": "pylint",
+    "python.linting.pylintUseMinimalCheckers": false,
     "python.analysis.typeCheckingMode": "basic", // basic or strict
     "python.analysis.diagnosticSeverityOverrides": {
         "reportGeneralTypeIssues": "none"
     },
-    // MSSQL db connections
-    "mssql.connections": [
-        {
-            "server": "{{put-server-name-here}}",
-            "database": "{{put-database-name-here}}",
-            "user": "{{put-username-here}}",
-            "password": ""
-        }
-    ],
     // Spell and dictionary settings
     // Spell check only comments for specified languages
     "cSpell.languageSettings": [
@@ -158,11 +372,16 @@
     },
     // Terraform settings
     "[terraform]": {
-        // Format on file saving
+        "editor.formatOnSave": true
+    },
+    "[hcl]": {
+        "editor.formatOnSave": true
+    },
+    "[json]": {
         "editor.formatOnSave": true
     },
     // Characters that will be used as word separators when doing word related navigations or operations
-    "editor.wordSeparators": "_`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
+    "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
     "commentAnchors.tags.anchors": {
         "DEBUG": {
             "scope": "file",
@@ -174,21 +393,16 @@
     "editor.formatOnSave": true,
     "editor.formatOnSaveMode": "file",
     "editor.codeActionsOnSave": {
-        "source.organizeImports": true
+        "source.organizeImports": "explicit"
     },
     "redhat.telemetry.enabled": false,
-    // VSCode neovim
-    "extensions.experimental.affinity": {
-        "asvetliakov.vscode-neovim": 1
-    },
-    "vscode-neovim.neovimExecutablePaths.linux": "/home/andrei/.local/share/neovim/bin/nvim",
-    "vscode-neovim.neovimInitVimPaths.linux": "/home/andrei/.config/Code/User/vscode-neovim.vim",
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "prettier.tabWidth": 4,
     // Disable default json formatter
     "json.format.enable": false,
+    "vim.timeout": 500,
     // Native bracket pair colorization
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
@@ -214,15 +428,9 @@
     ],
     // Enable/disable default YAML formatter (requires restart)
     "yaml.format.enable": true,
-    "terminal.integrated.defaultProfile.linux": "my tmux",
-    "terminal.integrated.profiles.linux": {
-        "my tmux": {
-            "path": "/home/andrei/.local/bin/vscode_terminal.sh"
-        }
-    },
     "explorer.confirmDragAndDrop": false,
     "groovyLint.enable": false,
-    "window.zoomLevel": 1,
+    "files.eol": "\n",
     "editor.minimap.enabled": false,
     "code-runner.enableAppInsights": false,
     "code-runner.ignoreSelection": false, // Incompatible with code-runner.runInTerminal: true
@@ -275,5 +483,59 @@
         "-workbench.files.action.compareWithClipboard",
         "-workbench.files.action.compareWithSaved"
     ],
-    "cSpell.enableFiletypes": ["shellscript"]
+    "cSpell.enableFiletypes": ["shellscript"],
+    "[python]": {
+        "editor.formatOnType": true
+    },
+    "workbench.editor.enablePreview": false,
+    "workbench.editor.enablePreviewFromQuickOpen": false,
+    "workbench.list.openMode": "doubleClick",
+    "remote.SSH.remotePlatform": {
+        "10.191.22.11": "linux",
+        "54.162.97.157": "linux",
+        "terraform-runner-hnb-ab": "linux",
+        "terraform-runner-hnb-new-ab": "linux",
+        "terraform-runner-ab": "linux",
+        "terraform-runner-old-ab": "linux"
+    },
+    "editor.inlineSuggest.enabled": true,
+    "win-ca.inject": "append",
+    "cSpell.customDictionaries": {
+        "custom-dictionary-user": {
+            "name": "custom-dictionary-user",
+            "path": "~/.cspell/custom-dictionary-user.txt",
+            "addWords": true,
+            "scope": "user"
+        }
+    },
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/*/**": true,
+        "**/.git/**": true,
+        "**/.venv/**": true,
+        "**/.terragrunt-cache/**": true
+    },
+    "terminal.integrated.allowChords": false,
+    "terminal.integrated.drawBoldTextInBrightColors": false,
+    "terminal.integrated.experimentalLinkProvider": false,
+    "terminal.integrated.rendererType": "auto",
+    "terminal.integrated.shellIntegration.enabled": false,
+    "window.title": "${rootName}${separator}${profileName}${separator}VSCode",
+    "toggleboolean.mapping": {
+        "True": "False",
+        "False": "True",
+        "true": false,
+        "false": true,
+        "yes": "no",
+        "no": "yes",
+        "on": "off",
+        "off": "on"
+    },
+    "workbench.sideBar.location": "right",
+    "auto-comment-blocks.hashStyleBlocks": ["hcl"],
+    "vsicons.dontShowNewVersionMessage": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "editor.codeLensFontFamily": "JetBrainsMono NF",
+    "editor.inlayHints.fontFamily": "JetBrainsMono NF"
 }
