@@ -1,0 +1,598 @@
+" Minimal .vimrc for production servers
+" Only built-in settings and keymaps, no plugins or dependencies
+
+" Basic settings
+set nocompatible              " be iMproved
+set hidden                    " allow switching buffers without saving
+set encoding=utf-8            " default file encoding
+set fileencodings=utf8,cp1251
+set autoread                  " reread modified files automatically
+set backspace=indent,eol,start
+set noerrorbells              " turn off sound bell
+set visualbell
+set t_vb=
+set scrolloff=5               " always show minimum n lines after current line
+set laststatus=2              " always show status line
+set noshowmode                " don't show mode in command line (shown in statusline)
+set mouse=a                   " enable mouse in all modes
+set mousehide                 " hide mouse when typing
+set showcmd                   " show partial commands in the last line of the screen
+set number relativenumber     " show line numbers and relative numbers
+set updatetime=100            " interface update timeout
+set autowrite                 " automatically save before commands :next and :make
+
+" Set <space> as leader key
+let g:mapleader = "\<Space>"
+
+" Always use 10-base numbers
+set nrformats=
+
+" Wildmenu completion
+set wildmenu
+set wildmode=full
+
+set wildignore+=.hg,.git,.svn                    " Version control
+set wildignore+=*.aux,*.out,*.toc                " LaTeX intermediate files
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg   " binary images
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest " compiled object files
+set wildignore+=*.spl                            " compiled spelling word list
+set wildignore+=*.sw?                            " Vim swap files
+set wildignore+=*.DS_Store                       " OSX bullshit
+set wildignore+=*.luac                           " Lua byte code
+set wildignore+=migrations                       " Django migrations
+set wildignore+=go/pkg                           " Go static files
+set wildignore+=go/bin                           " Go bin files
+set wildignore+=go/bin-vagrant                   " Go bin-vagrant files
+set wildignore+=*.pyc                            " Python byte code
+set wildignore+=*.orig                           " Merge resolution files
+
+" Tabs settings
+function! TabsNoExpandByFourSpaces()
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal noexpandtab
+endfunction
+command! TabsC call TabsNoExpandByFourSpaces()
+
+function! TabsExpandByFourSpaces()
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal expandtab
+endfunction
+command! TabsPython call TabsExpandByFourSpaces()
+command! TabsBash call TabsExpandByFourSpaces()
+
+function! TabsExpandByTwoSpaces()
+  setlocal tabstop=2
+  setlocal shiftwidth=2
+  setlocal softtabstop=2
+  setlocal expandtab
+endfunction
+command! TabsTwoSpaces call TabsExpandByTwoSpaces()
+
+set noexpandtab
+if has("autocmd")
+  augroup filetypeRelatedSettings
+    autocmd!
+    autocmd BufRead,BufNewFile Chart.yaml set ft=helm
+    autocmd BufRead,BufNewFile .yamllint set ft=yaml
+    autocmd FileType bash,sh,json*,dockerfile,python,cmake
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+    autocmd FileType javascript,c,make,cpp,**/cpp.snippets,gitignore,gitconfig
+      \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
+    autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm
+      \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
+  augroup END
+endif
+
+" Mouse settings
+if !has('nvim')
+  set ttymouse=xterm2
+endif
+
+" Line numbers
+augroup SmartRelativenumbers
+  autocmd!
+  autocmd InsertEnter * :set norelativenumber
+  autocmd InsertLeave * :set relativenumber
+  autocmd BufLeave * :set norelativenumber
+  autocmd BufEnter * :set relativenumber
+augroup END
+
+function! ToggleSmartRelativenumbers()
+  if !exists('#SmartRelativenumbers#InsertEnter')
+    set relativenumber
+    augroup SmartRelativenumbers
+      autocmd!
+      autocmd InsertEnter * :set norelativenumber
+      autocmd InsertLeave * :set relativenumber
+      autocmd BufLeave * :set norelativenumber
+      autocmd BufEnter * :set relativenumber
+    augroup END
+else
+    set relativenumber!
+    augroup SmartRelativenumbers
+      autocmd!
+    augroup END
+  endif
+endfunction
+
+nnoremap <leader><leader>rn :call ToggleSmartRelativenumbers()<CR>
+
+" Word wrap
+set wrapmargin=0
+set colorcolumn=+1
+set wrap linebreak
+" Toggle word wrap for current buffer
+nmap <leader>ww :setlocal wrap!<CR>
+" Toggle wrap at 80 column
+nmap <leader>aw :call AutoWrapToggle()<CR>
+function! AutoWrapToggle()
+  if &formatoptions =~ 't'
+    setlocal textwidth=0
+    setlocal fo-=t
+    setlocal colorcolumn=
+  else
+    if (&filetype=='python')
+      setlocal textwidth=79
+    else
+      setlocal textwidth=80
+    endif
+    setlocal fo+=t
+    setlocal colorcolumn=+1
+  endif
+endfunction
+
+" Split settings
+set splitbelow
+set splitright
+
+" Easy navigation between splits
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
+" Always move by screen lines instead of virtual lines with 'j' and 'k'
+nnoremap j gj
+nnoremap k gk
+
+" Increase the buffer size
+set viminfo='1000,<1000,s200,h
+
+" Clipboard settings
+let uname = substitute(system('uname'), '\n', '', '')
+if uname == 'Linux'
+  set clipboard=unnamedplus
+elseif uname == 'Darwin'
+  set clipboard=unnamed
+else " windows
+  set clipboard=unnamed
+endif
+
+" Copy to clipboard registry
+vmap <C-c> "+y
+
+" Move cursor to the next line when move with keystrokes
+set whichwrap=b,<,>,[,],l,h
+set pastetoggle=<F4>
+
+" Switch syntax highlighting on, when the terminal has colors
+" Also switch on highlighting the last used search pattern.
+if &t_Co > 2 || has("gui_running")
+  " Revert with ":syntax off".
+  syntax on
+
+  " I like highlighting strings inside C comments.
+  " Revert with ":unlet c_comment_strings".
+  let c_comment_strings=1
+  set hlsearch
+endif
+
+" Show non-visible white spaces
+set listchars=eol:¬,tab:▸—,trail:~,extends:»,precedes:«
+if v:version >= 705 || has('nvim')
+  set listchars+=space:·
+endif
+set list
+" Toggle show non-visible white spaces
+nmap <leader>ll :set list!<CR>
+
+" Keystrokes timeout
+set ttimeoutlen=10
+
+" More natural split opening
+set splitbelow
+set splitright
+
+" Folding settings
+set nofoldenable            " turn off folding
+set foldmethod=manual       " manual folding
+set foldcolumn=0            " show fold column left on the screen
+set foldlevel=2             " fold levels opened at file opens
+set foldlevelstart=99
+set foldnestmax=5           " max level of fold
+
+" Search settings
+set ignorecase
+set smartcase
+set hlsearch
+set incsearch
+
+" Search visually selected text
+vnoremap <silent>* <ESC>:call VisualSearch()<CR>/<C-R>/<CR>
+vnoremap <silent># <ESC>:call VisualSearch()<CR>?<C-R>/<CR>
+
+function! VisualSearch()
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g')
+  let @s = temp
+endfunction
+
+" Turn off search highlight by pressing space
+nnoremap <silent> <leader>/ :<C-u>nohlsearch<CR><C-l>
+nnoremap <Esc><Esc> :<C-u>nohlsearch<CR><C-l>
+
+" Past current buffer path instead %% in Ex editor line
+cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+
+" Autopairing
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
+" Tabs navigation
+nnoremap <leader>o :tab sball<CR>
+set switchbuf=usetab,newtab
+" Switch to last tab
+if !exists('g:lasttab')
+  let g:lasttab = 1
+endif
+nmap <leader>tt :exe "tabn ".g:lasttab<CR>
+au TabLeave * let g:lasttab = tabpagenr()
+" Switch tab
+nmap <leader><Left> :tabprevious<cr>
+nmap <leader><Right> :tabnext<cr>
+nnoremap <leader>th :tabfirst<CR>
+nnoremap <leader>tn :tabnext<CR>
+nnoremap <leader>tp :tabprev<CR>
+nnoremap <leader>tl :tablast<CR>
+nnoremap <leader>tt :tabedit<Space>
+nnoremap <leader>tn :tabnext<Space>
+nnoremap <leader>tm :tabmove<Space>
+nnoremap <leader>td :tabclose<CR>
+nnoremap <leader>to :tabonly<CR>
+
+" Smart buffers/tabs switch
+let s:tab_switcher_mode="buffers"
+nnoremap <Tab> :bnext<CR>
+nnoremap <S-Tab> :bprevious<CR>
+function! ToggleTabSwitcherMode()
+  if s:tab_switcher_mode == "buffers"
+    nnoremap <Tab> :tabnext<CR>
+    nnoremap <S-Tab> :tabprevious<CR>
+    let s:tab_switcher_mode="tabs"
+    echo "Switch tabs"
+  else
+    nnoremap <Tab> :bnext<CR>
+    nnoremap <S-Tab> :bprevious<CR>
+    let s:tab_switcher_mode="buffers"
+    echo "Switch buffers"
+  endif
+endfunction
+nnoremap <silent> <leader><Tab> :call ToggleTabSwitcherMode()<CR>
+
+" Search for the Current Selection
+xnoremap * :<C-u>call <SID>VSetSearch('/')<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call <SID>VSetSearch('?')<CR>?<C-R>=@/<CR><CR>
+function! s:VSetSearch(cmdtype)
+  let temp = @s
+  norm! gv"sy
+  let @/ = '\V' . substitute(escape(@s, a:cmdtype.'\'), '\n', '\\n', 'g')
+  let @s = temp
+endfunction
+
+" Repeat the last substitution with preserved flags
+nnoremap & :&&<CR>
+xnoremap & :&&<CR>
+
+" Send changed text segment to blackhole
+nnoremap c "_c
+
+" Save file as sudo on files that require root permission
+cnoremap w!! execute 'silent! write !sudo tee % >/dev/null' <bar> edit!
+
+" Convenient command to see the difference between the current buffer and
+" the file it was loaded from, thus the changes you made.
+if !exists(":DiffOrig")
+  command DiffOrig vert new | set bt=nofile | r # | 0d_ | diffthis
+        \ | wincmd p | diffthis
+endif
+
+" Replace the current buffer with the given new file
+com! -nargs=1 -complete=file Breplace edit <args>| bdelete #
+
+function! DeleteInactiveBufs()
+  "From tabpagebuflist() help, get a list of all buffers in all tabs
+  let tablist = []
+  for i in range(tabpagenr('$'))
+    call extend(tablist, tabpagebuflist(i + 1))
+  endfor
+
+  "Below originally inspired by Hara Krishna Dara and Keith Roberts
+  "http://tech.groups.yahoo.com/group/vim/message/56425
+  let nWipeouts = 0
+  for i in range(1, bufnr('$'))
+    if bufexists(i) && !getbufvar(i,"&mod") && index(tablist, i) == -1
+      " bufno exists AND isn't modified AND isn't in the list of buffers open
+      " in windows and tabs
+      silent exec 'bwipeout' i
+      let nWipeouts = nWipeouts + 1
+    endif
+  endfor
+  echomsg nWipeouts . ' buffer(s) wiped out'
+endfunction
+
+command! Ball :call DeleteInactiveBufs()
+
+" Avoid unintentional switches to Ex mode.
+nmap Q q
+
+" Backup and Swap files settings
+" Save your backup files to a less annoying place than the current directory.
+" If you have .vim-backup in the current directory, it'll use that.
+" Otherwise it saves it to ~/.vim/backup or .
+set backup
+set backupdir-=.
+set backupdir+=.
+set backupdir-=~/
+if isdirectory($HOME . '/.vim/backup') == 0
+  :silent !mkdir -p ~/.vim/backup >/dev/null 2>&1
+endif
+set backupdir^=~/.vim/backup//
+set writebackup
+
+" Save your swap files to a less annoying place than the current directory.
+" If you have .vim-swap in the current directory, it'll use that.
+" Otherwise it saves it to ~/.vim/swap, ~/tmp or .
+set swapfile
+set updatecount=100
+if isdirectory($HOME . '/.vim/swap') == 0
+  :silent !mkdir -p ~/.vim/swap >/dev/null 2>&1
+endif
+set directory^=~/.vim/swap//
+
+" Viminfo stores the the state of your previous editing session
+if has('nvim')
+  set viminfo+=n~/.vim/nviminfo
+else
+  set viminfo+=n~/.vim/viminfo
+endif
+
+if exists("+undofile")
+  " Undofile - This allows you to use undos after exiting and restarting
+  " This, like swap and backup files, uses .vim-undo first, then ~/.vim/undo
+  " :help undo-persistence
+  " This is only present in 7.3+
+  set undofile
+  if has('nvim')
+    if isdirectory($HOME . '/.vim/undo-nvim') == 0
+      :silent !mkdir -p ~/.vim/undo-nvim > /dev/null 2>&1
+    endif
+    set undodir^=~/.vim/undo-nvim//
+  else
+    if isdirectory($HOME . '/.vim/undo-vim') == 0
+      :silent !mkdir -p ~/.vim/undo-vim > /dev/null 2>&1
+    endif
+    set undodir^=~/.vim/undo-vim//
+  endif
+endif
+
+" Viewdir
+if isdirectory($HOME . '/.vim/view') == 0
+  :silent !mkdir -p ~/.vim/view >/dev/null 2>&1
+endif
+set viewdir=~/.vim/view
+
+" Highlight TODO, FIXME, NOTE, etc.
+if has("autocmd")
+  augroup vimHighlight
+    autocmd!
+    autocmd Syntax * call matchadd('Todo', '\v\W\zs<(TODO|FIXME|CHANGED|BUG|HACK|NOTE|INFO|IDEA)>')
+  augroup END
+endif
+
+" Dictionary and completion settings
+set complete=.,k,w,b,u,t,i,kspell
+set shortmess+=c
+set shortmess-=S
+set completeopt=menuone,longest,preview
+
+" Navigate the complete menu items like CTRL+n / CTRL+p would.
+inoremap <expr> <Down> pumvisible() ? "<C-n>" :"<Down>"
+inoremap <expr> <Up> pumvisible() ? "<C-p>" : "<Up>"
+inoremap <expr> <C-j> pumvisible() ? "<C-N>" : "<C-j>"
+inoremap <expr> <C-k> pumvisible() ? "<C-p>" : "<C-k>"
+" Select the complete menu item like CTRL+y would.
+inoremap <expr> <Right> pumvisible() ? "<C-y>" : "<Right>"
+inoremap <expr> <CR> pumvisible() ? "<C-y>" :"<CR>"
+" Cancel the complete menu item like CTRL+e would.
+inoremap <expr> <Left> pumvisible() ? "<C-e>" : "<Left>"
+
+" Toggle spell checking
+map <leader>ssa :setlocal spell! spelllang=en_us,ru_yo<cr>
+map <leader>sse :setlocal spell! spelllang=en_us<cr>
+map <leader>ssr :setlocal spell! spelllang=ru_yo<cr>
+
+" Use default spell check highlighting
+
+" Diff mode toggle (with SmartRelativenumbers support)
+function! ToggleDiff ()
+  if (&diff)
+    if get(g:, 'SmartRelativenumbersBckp', 0)
+      call ToggleSmartRelativenumbers()
+      let g:SmartRelativenumbersBckp = 0
+    endif
+    set nodiff noscrollbind
+    if get(g:, 'WrapBckp', 0)
+      set wrap
+    endif
+    if get(g:, 'RltvNumberBckp', 0)
+      set relativenumber
+    endif
+    wincmd w
+    if get(g:, 'WrapBckp', 0)
+      set wrap
+    endif
+    if get(g:, 'RltvNumberBckp', 0)
+      set relativenumber
+    endif
+    wincmd w
+  else
+    " Enable diff options in both windows; balance the sizes, too
+    if exists('#SmartRelativenumbers#InsertEnter')
+      let g:SmartRelativenumbersBckp = 1
+      call ToggleSmartRelativenumbers()
+    endif
+    let g:WrapBckp = (&wrap)
+    let g:RltvNumberBckp = (&relativenumber)
+    wincmd =
+    set diff scrollbind number norelativenumber nowrap
+    wincmd w
+    set diff scrollbind number norelativenumber nowrap
+    wincmd w
+  endif
+endfunction
+nnoremap <silent> <leader><F9> :call ToggleDiff()<CR>
+
+" Set the file type for files that are in use on the system but do not yet
+" have a type.
+augroup filetypedetect
+  au BufRead,BufNewFile .tmux.conf*       setlocal ft=tmux
+  au BufRead,BufNewFile conkyrc*          setlocal ft=conf
+  au BufRead,BufNewFile webserv.conf*     setlocal ft=nginx
+augroup END
+
+" Delete a buffer without closing the window, create a scratch buffer if
+" no buffers left
+function s:Kwbd(kwbdStage)
+  if(a:kwbdStage == 1)
+    if(&modified)
+      let answer = confirm("This buffer has been modified.
+  \ Are you sure you want to delete it?", "&Yes\n&No", 2)
+      if(answer != 1)
+        return
+      endif
+    endif
+    if(!buflisted(winbufnr(0)))
+      bd!
+      return
+    endif
+    let s:kwbdBufNum = bufnr("%")
+    let s:kwbdWinNum = winnr()
+    windo call s:Kwbd(2)
+    execute s:kwbdWinNum . 'wincmd w'
+    let s:buflistedLeft = 0
+    let s:bufFinalJump = 0
+    let l:nBufs = bufnr("$")
+    let l:i = 1
+    while(l:i <= l:nBufs)
+      if(l:i != s:kwbdBufNum)
+        if(buflisted(l:i))
+          let s:buflistedLeft = s:buflistedLeft + 1
+        else
+          if(bufexists(l:i) && !strlen(bufname(l:i)) && !s:bufFinalJump)
+            let s:bufFinalJump = l:i
+          endif
+        endif
+      endif
+      let l:i = l:i + 1
+    endwhile
+    if(!s:buflistedLeft)
+      if(s:bufFinalJump)
+        windo if(buflisted(winbufnr(0))) | execute "b! " . s:bufFinalJump
+  \ | endif
+      else
+        enew
+        let l:newBuf = bufnr("%")
+        windo if(buflisted(winbufnr(0))) | execute "b! " . l:newBuf | endif
+      endif
+      execute s:kwbdWinNum . 'wincmd w'
+    endif
+    if(buflisted(s:kwbdBufNum) || s:kwbdBufNum == bufnr("%"))
+      execute "bd! " . s:kwbdBufNum
+    endif
+    if(!s:buflistedLeft)
+      set buflisted
+      set bufhidden=delete
+      set buftype=
+      setlocal noswapfile
+    endif
+  else
+    if(bufnr("%") == s:kwbdBufNum)
+      let prevbufvar = bufnr("#")
+      if(prevbufvar > 0 && buflisted(prevbufvar)
+  \ && prevbufvar != s:kwbdBufNum)
+        b #
+      else
+        bn
+      endif
+    endif
+  endif
+endfunction
+
+command! Kwbd call s:Kwbd(1)
+nnoremap <silent> <Plug>Kwbd :<C-u>Kwbd<CR>
+nmap gz <Plug>Kwbd
+
+" Search and replace selected text
+vnoremap <leader><leader>re "hy:%s/<C-r>h//gc<left><left><left>
+
+" Like gJ, but always remove spaces
+fun! s:join_spaceless()
+    execute 'normal! gJ'
+    " Remove character under the cursor if it's whitespace.
+    if matchstr(getline('.'), '\%' . col('.') . 'c.') =~ '\s'
+        execute 'normal! dw'
+    endif
+endfun
+" Map it to a key
+nnoremap <Leader>J :call <SID>join_spaceless()<CR>
+
+" Quickly edit/reload this configuration file
+nnoremap <leader>ve :edit $MYVIMRC<CR>
+nnoremap <leader>vs :source $MYVIMRC<CR>
+
+" Autoclose preview window after autocompletion is done
+autocmd CompleteDone * pclose
+
+" Autoclose location list before window change
+map <c-h> :lclose<CR><C-w>h
+map <c-j> :lclose<CR><C-w>j
+map <c-k> :lclose<CR><C-w>k
+map <c-l> :lclose<CR><C-w>l
+
+" Close quickfix window
+noremap <leader>zc :cclose<CR><C-l>
+" Close location window
+noremap <leader>zl :lclose<CR><C-l>
+" Close preview window
+noremap <leader>zp :pclose<CR><C-l>
+
+" Terminal in vim buffer settings
+" make terminal window in vim buffer inactive
+if has('nvim')
+  nnoremap <leader>t :split term://zsh<CR>
+  tnoremap <C-x> <C-\><C-n>:q!<CR>
+elseif v:version >= 705
+  nnoremap <leader>t :term<CR>
+  tnoremap <C-x> <C-w>N:bdelete!<CR>
+endif
+
+" Enable matchit plugin which ships with vim
+runtime macros/matchit.vim
+
+" Use habamax colorscheme
+colorscheme habamax
