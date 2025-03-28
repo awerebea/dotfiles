@@ -1305,8 +1305,17 @@ bindkey '^I' fzf-tab-complete-wrapper
 
 # WSL specific settings
 if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
-    DISPLAY="$(ip route show default | sed -n 's/.*via \([^ ]\+\).*$/\1/p'):0"
-    export DISPLAY
+    # Resolve issue with X11 forwarding with Cisco AnyConnect VPN enabled
+    # by using X410 server instead of VcXsrv
+    # https://x410.dev/cookbook/wsl/using-x410-with-wsl2/#vsock
+    if [[ "${commands[socat]}" ]]; then
+        socat -b65536 UNIX-LISTEN:/tmp/.X11-unix/X0,fork,mode=777 VSOCK-CONNECT:2:6000 &
+        export DISPLAY=:0.0
+    else
+        DISPLAY="$(ip route list default | awk '{print $3}'):0"
+        export DISPLAY
+        export LIBGL_ALWAYS_INDIRECT=1
+    fi
     if [[ -n $(pgrep ssh-agent) ]]; then
         if [[ -z $SSH_AGENT_PID ]]; then
             SSH_AGENT_PID="$(pgrep ssh-agent | head -n1)"; export SSH_AGENT_PID
