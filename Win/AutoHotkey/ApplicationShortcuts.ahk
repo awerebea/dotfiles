@@ -63,3 +63,6 @@ SwitchToApp(appTitle, appPath)
 ; Obsidian
 <#o::SwitchToApp("Obsidian.exe", "C:\Users\Andrei\AppData\Local\Programs\Obsidian\Obsidian.exe")
 >#o::SwitchToApp("Obsidian.exe", "C:\Users\Andrei\AppData\Local\Programs\Obsidian\Obsidian.exe")
+; VSCode
+<#v::SwitchToApp("Code.exe", "C:\Users\Andrei\AppData\Local\Programs\Microsoft VS Code\Code.exe")
+>#v::SwitchToApp("Code.exe", "C:\Users\Andrei\AppData\Local\Programs\Microsoft VS Code\Code.exe")
