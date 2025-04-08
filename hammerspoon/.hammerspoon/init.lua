@@ -1,3 +1,10 @@
+hs.hotkey.bind({"ctrl", "alt", "cmd"}, "Right", function()
+  local win = hs.window.focusedWindow()
+  if not win then return end
+  local nextScreen = win:screen():next()
+  win:moveToScreen(nextScreen)
+end)
+
 local appHotkeys = {
   { mods = { "ctrl", "alt" }, key = "x", app = "kitty" },
   { mods = { "ctrl", "alt" }, key = "c", app = "Google Chrome" },
