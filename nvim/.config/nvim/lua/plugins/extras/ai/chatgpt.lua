@@ -1,6 +1,6 @@
 return {
   "jackMort/ChatGPT.nvim",
-  enabled = true,
+  enabled = false,
   event = "VeryLazy",
   opts = {
     popup_input = {
