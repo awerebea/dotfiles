@@ -18,13 +18,9 @@ require("lazy").setup {
   spec = {
     { import = "plugins_vscode", cond = function() return vim.g.vscode end },
     { import = "plugins_always", cond = true },
-    { import = "plugins", cond = function() return not vim.g.vscode end },
-    { import = "plugins.extras.lang", cond = function() return not vim.g.vscode end  },
-    { import = "plugins.extras.ui", cond = function() return not vim.g.vscode end  },
-    { import = "plugins.extras.ai", cond = function() return not vim.g.vscode end  },
   },
   defaults = { lazy = true, version = nil },
-  install = { missing = true, colorscheme = { "catppuccin" } },
+  install = { missing = true },
   checker = {
     enabled = true,
     notify = false,
@@ -49,4 +45,3 @@ require("lazy").setup {
     },
   },
 }
-vim.keymap.set("n", "<leader><leader>z", "<cmd>:Lazy<cr>", { desc = "Plugin Manager" })

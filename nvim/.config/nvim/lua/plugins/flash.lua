@@ -1,6 +1,6 @@
 return {
   "folke/flash.nvim",
-  enabled = true,
+  enabled = false,
   event = "VeryLazy",
   opts = {
     modes = {
@@ -51,6 +51,6 @@ return {
   config = function(_, opts)
     require("flash").setup(opts)
     -- Use tha same highlight color as LeapLabelPrimary
-    vim.api.nvim_set_hl(0, "FlashLabel", { fg = "Black", bg = "#ccff88" })
+    -- vim.api.nvim_set_hl(0, "FlashLabel", { fg = "Black", bg = "#ccff88" })
   end,
 }
