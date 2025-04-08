@@ -17,7 +17,7 @@
     "terminal.integrated.cursorStyle": "block",
     "terminal.integrated.cursorBlinking": true,
     // Colorscheme
-    "workbench.colorTheme": "Catppuccin Mocha",
+    "workbench.colorTheme": "Catppuccin Macchiato",
     "editor.rulers": [100, 120],
     "editor.wordWrap": "wordWrapColumn",
     "editor.wrappingIndent": "same",
@@ -271,6 +271,26 @@
             "before": ["[", "d"],
             "commands": ["editor.action.marker.prev"],
             "silent": true
+        },
+        {
+            "before": ["u"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "undo",
+                    "args": []
+                }
+            ]
+        },
+        {
+            "before": ["<C-r>"],
+            "after": [],
+            "commands": [
+                {
+                    "command": "redo",
+                    "args": []
+                }
+            ]
         }
     ],
     // Keybinds in Visual mode
@@ -537,5 +557,31 @@
     "vsicons.dontShowNewVersionMessage": true,
     "security.workspace.trust.untrustedFiles": "open",
     "editor.codeLensFontFamily": "JetBrainsMono NF",
-    "editor.inlayHints.fontFamily": "JetBrainsMono NF"
+    "editor.inlayHints.fontFamily": "JetBrainsMono NF",
+    "terminal.integrated.profiles.windows": {
+        "PowerShell": {
+            "source": "PowerShell",
+            "icon": "terminal-powershell"
+        },
+        "Command Prompt": {
+            "path": [
+                "${env:windir}\\Sysnative\\cmd.exe",
+                "${env:windir}\\System32\\cmd.exe"
+            ],
+            "args": [],
+            "icon": "terminal-cmd"
+        },
+        "Git Bash": {
+            "source": "Git Bash"
+        },
+        "Ubuntu-24.04 (WSL)": {
+            "path": "C:\\WINDOWS\\System32\\wsl.exe",
+            "args": ["-d", "Ubuntu-24.04"]
+        }
+    },
+    "terminal.integrated.defaultProfile.windows": "Ubuntu-24.04 (WSL)",
+    "[shellscript]": {
+        "editor.defaultFormatter": "mads-hartmann.bash-ide-vscode"
+    },
+    "files.trimTrailingWhitespace": true
 }
