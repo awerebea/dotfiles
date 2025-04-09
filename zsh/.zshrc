@@ -339,25 +339,6 @@ if [[ "$(uname)" == "Linux" ]]; then
     bindkey "${terminfo[kcud1]}" history-substring-search-down
 fi
 
-if [[ "$(uname -n)" == "pc-home" && "$(uname)" == "Darwin" ]]; then
-    # Home macOS
-    alias o='a -e open' # quick opening files with open
-    alias sudo='sudo '
-    alias sudoedit='sudo $EDITOR'
-    [[ -d "$HOME/Library/Python/3.7/bin" && ":$PATH:" != *":$HOME/Library/Python/3.7/bin:"* ]] && \
-        export PATH="$HOME/Library/Python/3.7/bin:$PATH"
-    # Use manually installed vim
-    if [ -x "$HOME/.local/bin/vim" ]; then
-        # shellcheck disable=2139
-        alias vim="$HOME/.local/bin/vim"
-        export EDITOR="$HOME/.local/bin/vim"
-    fi
-    # Bundle aliases
-    alias fast="bundle exec fastlane"
-    alias be="bundle exec"
-
-fi
-
 # "Forget" last N commands from history
 # Added a space in 'my_remove_last_history_entry'
 # so that zsh forgets the 'forget' command :).
@@ -1258,14 +1239,6 @@ jqc() {
 # Color output of yaml file using yq and less
 yqc() {
     yq --colors "$1" | less -NR -r
-}
-
-# rclone aliases
-rclone-bisync-google-drive_cobblestone.tlt() {
-    rclone bisync /media/andrei/Data/Clouds/Google\ Drive \
-        google-drive_cobblestone.tlt: \
-        --filters-file /home/andrei/.config/rclone/filter_google-drive_cobblestone.tlt \
-        --log-file /home/andrei/.config/rclone/logs/bisync_google-drive_cobblestone.tlt.log
 }
 
 if [[ "${commands[aws-vault]}" ]]; then
