@@ -484,10 +484,10 @@ tmux_conf_uninstall_plugins_on_reload=false
 #   sleep 60
 # }
 #
-# tmux_server_cpu() {
-#     echo "tmux-server CPU usage: $(ps -p "$(pgrep "tmux: server")" -o %cpu | tail -n 1 | xargs)%"
-#     sleep 10
-# }
+# # tmux_server_cpu() {
+# #     echo "tmux-server CPU usage: $(ps -p "$(pgrep "tmux")" -o %cpu | tail -n 1 | xargs)%"
+# #     sleep 10
+# # }
 #
 # wan_ip_v6() {
 #   curl -f -s -m 2 -6 ifconfig.me
