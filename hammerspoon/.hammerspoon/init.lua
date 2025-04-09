@@ -27,6 +27,7 @@ local appHotkeys = {
   { mods = { "ctrl", "alt" }, key = "k", app = "KeePassXC", path = "/Applications/KeePassXC.app", bundleID = "org.keepassx.keepassxc" },
   { mods = { "ctrl", "alt" }, key = "u", app = "Microsoft Outlook", path = "/Applications/Microsoft Outlook.app", bundleID = "com.microsoft.Outlook" },
   { mods = { "ctrl", "alt" }, key = "e", app = "TextEdit", path = "/System/Applications/TextEdit.app", bundleID = "com.apple.TextEdit" },
+  { mods = { "ctrl", "alt" }, key = "z", app = "zoom.us", path = "/Applications/zoom.us.app" },
 }
 
 for _, item in ipairs(appHotkeys) do
