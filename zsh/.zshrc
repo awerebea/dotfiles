@@ -1277,7 +1277,7 @@ bindkey '^I' fzf-tab-complete-wrapper
 # }}}
 
 # WSL specific settings
-if [[ "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
+if [[ "$(uname)" != "Darwin" && "$(< /proc/sys/kernel/osrelease)" == *microsoft* ]]; then
     # Resolve issue with X11 forwarding with Cisco AnyConnect VPN enabled
     # by using X410 server instead of VcXsrv
     # https://x410.dev/cookbook/wsl/using-x410-with-wsl2/#vsock
