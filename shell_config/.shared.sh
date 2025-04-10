@@ -384,7 +384,7 @@ if command -v "zoxide" &>/dev/null; then
     --select-1 \
     --cycle \
     "
-    alias cd="z"
+    # alias cd="z"
 fi
 
 # oh-my-tmux https://github.com/gpakosz/.tmux.git
