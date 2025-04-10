@@ -521,7 +521,6 @@ alias 19='cd -19'
 alias myip='curl http://ipecho.net/plain; echo'
 alias h='helm'
 alias vv='$EDITOR "$(fzf)"'
-alias vvv='f -e $EDITOR'
 alias v='$EDITOR'
 alias c='eval ${VSCODE_GIT_ASKPASS_NODE%/node}/bin/remote-cli/code'
 alias vf='fd --type f --hidden --exclude .git | fzf --reverse | xargs -o $EDITOR'
@@ -1391,3 +1390,38 @@ fi
 if [ -f ~/.config/.openai_api_key ]; then
     export OPENAI_API_KEY=$(cat ~/.config/.openai_api_key)
 fi
+
+# CD with fzf
+cdf() {
+  local args=()
+  local search_root="."
+  local seen_delim=0
+
+  for arg in "$@"; do
+    if [[ $arg == "--" ]]; then
+      seen_delim=1
+    elif [[ $seen_delim -eq 1 ]]; then
+      search_root="$arg"
+      break
+    else
+      args+=("$arg")
+    fi
+  done
+
+  local query="${args[*]}"
+  local dir
+
+  if command -v fd >/dev/null 2>&1; then
+    dir=$(fd --type d --hidden --exclude .git . "$search_root" 2>/dev/null \
+      | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
+      | fzf --query="$query")
+  else
+    dir=$(find "$search_root" -type d ! -path "$search_root" -not -path "*/.git*" 2>/dev/null \
+      | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
+      | fzf --query="$query")
+  fi
+
+  if [[ -n "$dir" ]]; then
+    cd "$search_root/$dir" || echo "Failed to cd into $search_root/$dir"
+  fi
+}
