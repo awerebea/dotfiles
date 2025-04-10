@@ -40,7 +40,7 @@ return {
       current_line_blame_opts = {
         virt_text_pos = "right_align", -- 'eol' | 'overlay' | 'right_align'
       },
-      sign_priority = 0,
+      sign_priority = 100,
       max_file_length = 40000, -- Disable if file is longer than this (in lines)
       -- update_debounce = 100,
       on_attach = function(bufnr)
