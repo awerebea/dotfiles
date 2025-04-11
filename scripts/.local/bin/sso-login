@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+VALID_ENVS=(
+    "all"
+    bright_sso_{admin,devops}
+)
+
+_check_inputs() {
+    if ! command -v aws &>/dev/null; then
+        echo "AWS CLI is not installed." >&2
+        exit 1
+    fi
+
+    if [ "$#" -lt 1 ]; then
+        printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
+        exit 1
+    fi
+}
+
+_get_envs() {
+    local -a envs_raw=()
+    local arg
+    for arg in "$@"; do
+        while IFS= read -r line; do
+            envs_raw+=("$line")
+        done < <(echo "$arg" | tr ";,/" "\n")
+    done
+
+    # Remove duplicates
+    local -A seen
+    local -a envs=()
+    local element
+    for element in "${envs_raw[@]}"; do
+        if [[ -z "${seen[$element]}" ]]; then
+            envs+=("$element")
+            seen["$element"]=1
+        fi
+    done
+
+    local env
+    for env in "${envs[@]}"; do
+        # shellcheck disable=SC2076
+        if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
+            echo "Invalid environment passed." >&2
+            exit 1
+        fi
+        if [ "$env" = "all" ]; then
+            envs=("${VALID_ENVS[@]}")
+            unset 'envs[0]' # remove "all" from an array of envs
+            break
+        fi
+    done
+
+    for env in "${envs[@]}"; do
+        echo "$env"
+    done
+}
+
+_main() {
+    _check_inputs "$@"
+
+    local -a envs=()
+    local line
+    while IFS= read -r line; do
+        envs+=("$line")
+    done < <(_get_envs "$@")
+
+    # Clear existing credentials to refresh SSO tokens NOTE: not sure if we actually need it
+    # rm -rf ~/.aws/{cli,sso}
+
+    local env
+    for env in "${envs[@]}"; do
+        aws sso login --profile="$env" 2>/dev/null |
+            stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
+            stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
+        echo
+    done
+}
+
+# Start program here
+_main "$@"
