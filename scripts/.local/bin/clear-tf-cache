@@ -1,11 +1,14 @@
 #! /usr/bin/env bash
 
-if command -v fd &> /dev/null; then
+if command -v fd &>/dev/null; then
     fd -IH -td ".terragrunt-cache"
+    fd -IH -td ".terraform"
     fd -IH -tf ".terraform.lock.hcl"
     fd -IH -td ".terragrunt-cache" -x rm -rf
+    fd -IH -td ".terraform" -x rm -rf
     fd -IH -tf ".terraform.lock.hcl" -x rm
 else
     find . \( -type d -name '.terragrunt-cache' -print -exec rm -r {} + \) \
+        -o \( -type d -name '.terraform' -print -exec rm -r {} + \) \
         -o \( -type f -name '.terraform-lock.hcl' -print -exec rm {} + \)
 fi
