@@ -99,7 +99,7 @@ function M.setup()
   end, { desc = "Recent files" })
 
   vim.keymap.set("n", "<leader>fr", function()
-    require("fzf-lua").resume()
+    require("telescope.builtin").resume()
   end, { desc = "Resume" })
 
   vim.keymap.set("n", "<leader>far", function()
