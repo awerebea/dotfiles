@@ -1123,12 +1123,14 @@ timezsh() {
 
 # Alt+rightarrow to move to the next word
 bindkey '^[[1;3C' emacs-forward-word
+bindkey '^[f' emacs-forward-word # for VSCode
 # Ctrl+rightarrow to move to the next word
 bindkey '^[[1;5C' emacs-forward-word
 # Ctrl+Alt+l to move to the next word
 bindkey '^[^L' emacs-forward-word
 # Alt+leftarrow to move to the next word
 bindkey '^[[1;3D' emacs-backward-word
+bindkey '^[b' emacs-backward-word  # for VSCode
 # Ctrl+leftarrow to move to the previous word
 bindkey '^[[1;5D' emacs-backward-word
 # Ctrl+Alt+h to move to the previous word
