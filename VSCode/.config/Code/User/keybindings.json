@@ -29,17 +29,23 @@
         "command": "-editor.action.blockComment",
         "when": "editorTextFocus && !editorReadonly"
     },
+    // Open QuickFix menu using Keyboard QuickFix plugin
+    {
+        "key": "cmd+.",
+        "command": "keyboard-quickfix.openQuickFix"
+    },
+    // Accept
     // Accept inline suggestion
     {
-        "key": "ctrl+space",
+        "key": "ctrl+alt+l",
         "command": "acceptSelectedSuggestion",
-        "when": "suggestWidgetHasFocusedSuggestion && suggestWidgetVisible && textInputFocus"
+        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
     },
-    // Accept GitHub Copilot suggestion
+    // Accept GitHub Copilot suggestion with ctrl+alt+l
     {
-        "key": "ctrl+space",
+        "key": "ctrl+alt+l",
         "command": "github.copilot.acceptCursorPanelSolution",
-        "when": "github.copilot.activated && github.copilot.panelVisible"
+        "when": "github.copilot.activated"
     },
     // CD to the current file directory
     {
@@ -176,37 +182,26 @@
         "command": "list.collapse",
         "when": "vim.active && listFocus && !inputFocus"
     },
-    // Code suggestion selection
-    {
-        "key": "ctrl+j",
-        "command": "selectNextSuggestion",
-        "when": "vim.active && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-    },
-    {
-        "key": "ctrl+k",
-        "command": "selectPrevSuggestion",
-        "when": "vim.active && suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-    },
     // Top panel for file search and commands
     {
         "key": "ctrl+j",
         "command": "workbench.action.quickOpenSelectNext",
-        "when": "vim.active && inQuickOpen"
+        "when": "inQuickOpen"
     },
     {
         "key": "ctrl+k",
         "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "vim.active && inQuickOpen"
+        "when": "inQuickOpen"
     },
-    // {
-    //     "key": "ctrl+n",
-    //     "command": "workbench.action.quickOpenSelectNext",
-    //     "when": "vim.active && inQuickOpen"
-    // },
+    {
+        "key": "ctrl+n",
+        "command": "workbench.action.quickOpenSelectNext",
+        "when": "inQuickOpen"
+    },
     {
         "key": "ctrl+p",
         "command": "workbench.action.quickOpenSelectPrevious",
-        "when": "vim.active && inQuickOpen"
+        "when": "inQuickOpen"
     },
     // Move between editors
     {
@@ -391,11 +386,6 @@
         "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
     },
     {
-        "key": "ctrl+l",
-        "command": "acceptSelectedSuggestion",
-        "when": "suggestWidgetMultipleSuggestions && suggestWidgetVisible && textInputFocus"
-    },
-    {
         "key": "ctrl+j",
         "command": "showNextParameterHint",
         "when": "editorFocus && parameterHintsMultipleSignatures && parameterHintsVisible"
@@ -495,7 +485,7 @@
     {
         "key": "ctrl+p",
         "command": "workbench.action.quickOpen",
-        "when": "!terminalFocus && vim.mode != 'Insert'"
+        "when": "!terminalFocus && vim.mode != 'Insert' && !quickFixWidgetVisible && !inQuickOpen"
     },
     {
         "key": "ctrl+p",
