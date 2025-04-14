@@ -192,6 +192,12 @@ blocks:
       cache_duration: none
     style: plain
     template: "  {{ .Profile }}{{ if .Region }}@{{ .Region }}{{ end }}"
+  - type: terraform
+    style: plain
+    foreground: "#A067DA"
+    background: transparent
+    fetch_version: true
+    template: "  {{ .WorkspaceName }}"
   - type: executiontime
     foreground: p:bg-yellow-600
     background: transparent
