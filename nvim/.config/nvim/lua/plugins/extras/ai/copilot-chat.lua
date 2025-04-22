@@ -55,6 +55,12 @@ return {
         normal = "gs",
       },
     },
+    prompts = {
+      Commit = {
+        prompt = "Write commit message for the change with commitizen convention. Keep the title under 50 characters and wrap message at 72 characters. Describe all changes made using the imperative mood. Format as a gitcommit code block.",
+        context = "git:staged",
+      },
+    },
   },
   config = function(_, opts)
     require("CopilotChat").setup(opts)
