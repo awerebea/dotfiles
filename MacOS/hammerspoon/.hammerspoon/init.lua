@@ -4,7 +4,9 @@ local minimizeOnRepeat = false -- Set to true to enable minimize-on-repeat
 -- Move window to next screen
 hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "Right", function()
   local win = hs.window.focusedWindow()
-  if not win then return end
+  if not win then
+    return
+  end
   local nextScreen = win:screen():next()
   win:moveToScreen(nextScreen)
 end)
@@ -12,25 +14,28 @@ end)
 -- Move window to previous screen
 hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "Left", function()
   local win = hs.window.focusedWindow()
-  if not win then return end
+  if not win then
+    return
+  end
   local prevScreen = win:screen():previous()
   win:moveToScreen(prevScreen)
 end)
 
 -- App hotkeys
+-- stylua: ignore
 local appHotkeys = {
-  { mods = { "ctrl", "alt" }, key = "x", app = "kitty",             path = "/Applications/kitty.app",              bundleID = "net.kovidgoyal.kitty" },
-  { mods = { "ctrl", "alt" }, key = "c", app = "Google Chrome",     path = "/Applications/Google Chrome.app",      bundleID = "com.google.Chrome" },
-  { mods = { "ctrl", "alt" }, key = "f", app = "Firefox",           path = "/Applications/Firefox.app",            bundleID = "org.mozilla.firefox" },
-  { mods = { "ctrl", "alt" }, key = "v", app = "Code",              path = "/Applications/Visual Studio Code.app", bundleID = "com.microsoft.VSCode" },
-  { mods = { "ctrl", "alt" }, key = "q", app = "Calculator",        path = "/System/Applications/Calculator.app",  bundleID = "com.apple.calculator" },
-  { mods = { "ctrl", "alt" }, key = "s", app = "Slack",             path = "/Applications/Slack.app",              bundleID = "com.tinyspeck.slackmacgap" },
-  { mods = { "ctrl", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
-  { mods = { "ctrl", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
-  { mods = { "ctrl", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
-  { mods = { "ctrl", "alt" }, key = "u", app = "Microsoft Outlook", path = "/Applications/Microsoft Outlook.app",  bundleID = "com.microsoft.Outlook" },
-  { mods = { "ctrl", "alt" }, key = "e", app = "TextEdit",          path = "/System/Applications/TextEdit.app",    bundleID = "com.apple.TextEdit" },
-  { mods = { "ctrl", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
+  { mods = { "cmd", "alt" }, key = "x", app = "kitty",             path = "/Applications/kitty.app",              bundleID = "net.kovidgoyal.kitty" },
+  { mods = { "cmd", "alt" }, key = "c", app = "Google Chrome",     path = "/Applications/Google Chrome.app",      bundleID = "com.google.Chrome" },
+  { mods = { "cmd", "alt" }, key = "f", app = "Firefox",           path = "/Applications/Firefox.app",            bundleID = "org.mozilla.firefox" },
+  { mods = { "cmd", "alt" }, key = "v", app = "Code",              path = "/Applications/Visual Studio Code.app", bundleID = "com.microsoft.VSCode" },
+  { mods = { "cmd", "alt" }, key = "q", app = "Calculator",        path = "/System/Applications/Calculator.app",  bundleID = "com.apple.calculator" },
+  { mods = { "cmd", "alt" }, key = "s", app = "Slack",             path = "/Applications/Slack.app",              bundleID = "com.tinyspeck.slackmacgap" },
+  { mods = { "cmd", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
+  { mods = { "cmd", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
+  { mods = { "cmd", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
+  { mods = { "cmd", "alt" }, key = "u", app = "Microsoft Outlook", path = "/Applications/Microsoft Outlook.app",  bundleID = "com.microsoft.Outlook" },
+  { mods = { "cmd", "alt" }, key = "e", app = "TextEdit",          path = "/System/Applications/TextEdit.app",    bundleID = "com.apple.TextEdit" },
+  { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
 }
 
 for _, item in ipairs(appHotkeys) do
