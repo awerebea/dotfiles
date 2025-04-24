@@ -1,0 +1,24 @@
+{
+    "title": "Map Right Option key to Globe (fn)",
+    "rules": [
+        {
+            "description": "Change Right Option key to fn (Globe)",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "right_option",
+                        "modifiers": {
+                            "optional": ["any"]
+                        }
+                    },
+                    "to": [
+                        {
+                            "key_code": "fn"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
