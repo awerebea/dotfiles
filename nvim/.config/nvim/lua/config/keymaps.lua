@@ -136,8 +136,6 @@ vim.keymap.set(
   { desc = "Remove duplicate lines, keep last occurrence" }
 )
 
-vim.keymap.set("n", "<leader>e", "<Cmd>edit<CR>")
-
 -- Jump to closed folds
 vim.cmd [[
   function! NextClosedFold(dir)

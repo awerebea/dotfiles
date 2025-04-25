@@ -3,9 +3,9 @@ return {
   enabled = false,
   cmd = { "Neotree" },
   keys = {
-    { "<F2>", desc = "Toggle neo-tree" },
-    { "<leader><F2>", desc = "Toggle neo-tree at current file or working directory" },
-    { "<leader><leader><F2>", desc = "Toggle neo-tree with custom Git base" },
+    { "<leader>e", desc = "Toggle neo-tree" },
+    { "<leader><leader>e", desc = "Toggle neo-tree at current file or working directory" },
+    { "<F2>", desc = "Toggle neo-tree with custom Git base" },
   },
   branch = "v3.x",
   dependencies = {

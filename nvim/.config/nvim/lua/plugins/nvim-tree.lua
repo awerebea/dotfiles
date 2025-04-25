@@ -3,7 +3,7 @@ return {
     "nvim-tree/nvim-tree.lua",
     enabled = true,
     cmd = { "NvimTreeToggle", "NvimTreeFindFileToggle" },
-    keys = { { "<F2>", "<leader><F2>" } },
+    keys = { { "<leader>e", "<leader><leader>e" } },
     opts = {
       on_attach = function(bufnr)
         local api = require "nvim-tree.api"
@@ -138,14 +138,14 @@ return {
       -- change color for arrows in tree to light blue
       vim.api.nvim_command "highlight NvimTreeIndentMarker guifg=#3FC5FF"
       require("nvim-tree").setup(opts)
-      vim.keymap.set("n", "<F2>", function()
+      vim.keymap.set("n", "<leader>e", function()
         if vim.bo.filetype == "NvimTree" then
           require("nvim-tree.api").tree.close()
         else
           require("nvim-tree.api").tree.open()
         end
       end, { desc = "Toggle NvimTree" })
-      vim.keymap.set("n", "<leader><F2>", function()
+      vim.keymap.set("n", "<leader><leader>e", function()
         require("nvim-tree.api").tree.find_file { open = true, focus = true }
       end, { desc = "Find file in NvimTree" })
     end,
