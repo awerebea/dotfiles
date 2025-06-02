@@ -34,12 +34,12 @@ return {
         hint_offset = 1,
       }
     end)
-    vim.keymap.set("", "<leader><leader>e", function()
-      hop.hint_words {
-        hint_position = position.END,
-        direction = directions.AFTER_CURSOR,
-      }
-    end)
+    -- vim.keymap.set("", "<leader><leader>e", function()
+    --   hop.hint_words {
+    --     hint_position = position.END,
+    --     direction = directions.AFTER_CURSOR,
+    --   }
+    -- end)
     vim.keymap.set("", "<leader><leader>ge", function()
       hop.hint_words {
         hint_position = position.END,
