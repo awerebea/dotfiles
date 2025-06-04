@@ -181,6 +181,17 @@ blocks:
       cache_duration: none
     style: plain
     template: " {{ if .Error }}{{ .Error }}{{ else }}{{ .Full }}{{ end }}"
+  - type: kubectl
+    powerline_symbol: 
+    foreground: p:bg-blue-500
+    background: transparent
+    style: plain
+    template: "  {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}}"
+    properties:
+      context_aliases:
+        arn:aws:eks:us-east-1:714767054201:cluster/aue1d1z1ekslms: dev
+        arn:aws:eks:us-east-1:607145767122:cluster/aue1t1z1ekslms: test
+        arn:aws:eks:us-east-1:717545809501:cluster/aue1p1z1ekslms: prod
   - type: aws
     foreground: white
     background: transparent
