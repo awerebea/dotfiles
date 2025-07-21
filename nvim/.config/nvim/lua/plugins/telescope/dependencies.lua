@@ -17,7 +17,6 @@ return {
   },
   {
     "LennyPhoenix/project.nvim", -- Temporary switch to fork
-    branch = "fix-get_clients",
     -- Telescope mappings
     -- Normal mode  Insert mode Action
     -- f            <c-f>       find_project_files
