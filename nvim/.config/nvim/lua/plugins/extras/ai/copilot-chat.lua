@@ -65,15 +65,9 @@ return {
   config = function(_, opts)
     require("CopilotChat").setup(opts)
 
-    -- Show help actions with telescope
-    vim.keymap.set("n", "<leader>cch", function()
-      local actions = require "CopilotChat.actions"
-      require("CopilotChat.integrations.telescope").pick(actions.help_actions())
-    end, { desc = "Help actions" })
-    -- Show prompts actions with telescope
     vim.keymap.set("n", "<leader>ccp", function()
-      local actions = require "CopilotChat.actions"
-      require("CopilotChat.integrations.telescope").pick(actions.prompt_actions())
+      local chat = require "CopilotChat"
+      require("CopilotChat").select_prompt()
     end, { desc = "Prompt actions" })
   end,
 }
