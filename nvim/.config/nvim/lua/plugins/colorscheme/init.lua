@@ -60,6 +60,7 @@ return {
     "catppuccin/nvim",
     lazy = false,
     name = "catppuccin",
+    version = "1.11.0", -- pin to this version as in later releases colors were changed
     config = function()
       local catppuccin = require "catppuccin"
       catppuccin.setup {
