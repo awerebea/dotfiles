@@ -400,55 +400,85 @@ githooksctags() {
 ## bash and zsh only!
 # functions to cd to the next or previous sibling directory, in glob order {{{
 prev() {
-    # default to current directory if no previous
-    local prevdir cwd x
-    prevdir="./"
-    cwd="${PWD##*/}"
-    if [[ -z "$cwd" ]]; then
-        # $PWD must be /
-        echo 'No previous directory.' >&2
+    local count=${1:-1}
+    local i
+
+    # Validate input is a positive integer
+    if [[ ! $count =~ ^[0-9]+$ ]] || [[ $count -eq 0 ]]; then
+        echo 'Usage: prev [number]' >&2
+        echo 'Number must be a positive integer.' >&2
         return 1
     fi
-    for x in ../*/; do
-        if [[ "${x#../}" == "$cwd/" ]]; then
-            # found cwd
-            if [[ "$prevdir" == ./ ]]; then
-                echo 'No previous directory.' >&2
-                return 1
-            fi
-            cd "$prevdir" || return 1
-            return
+
+    # Execute prev operation count times
+    for ((i = 1; i <= count; i++)); do
+        local prevdir="./" cwd="" x=""
+        cwd="${PWD##*/}"
+        if [[ -z "$cwd" ]]; then
+            # $PWD must be /
+            echo 'No previous directory.' >&2
+            return 1
         fi
-        if [[ -d "$x" ]]; then
-            prevdir="$x"
+        for x in ../*/; do
+            if [[ "${x#../}" == "$cwd/" ]]; then
+                # found cwd
+                if [[ "$prevdir" == "./" ]]; then
+                    echo 'No previous directory.' >&2
+                    return 1
+                fi
+                cd "$prevdir" || return 1
+                break
+            fi
+            if [[ -d "$x" ]]; then
+                prevdir="$x"
+            fi
+        done
+        # Check if we successfully changed directory
+        if [[ "$prevdir" == "./" ]]; then
+            # Should never get here.
+            echo 'Directory not changed.' >&2
+            return 1
         fi
     done
-    # Should never get here.
-    echo 'Directory not changed.' >&2
-    return 1
 }
 
 next() {
-    local foundcwd cwd x
-    foundcwd=
-    cwd="${PWD##*/}"
-    if [[ -z "$cwd" ]]; then
-        # $PWD must be /
-        echo 'No next directory.' >&2
+    local count=${1:-1}
+    local i
+
+    # Validate input is a positive integer
+    if [[ ! $count =~ ^[0-9]+$ ]] || [[ $count -eq 0 ]]; then
+        echo 'Usage: next [number]' >&2
+        echo 'Number must be a positive integer.' >&2
         return 1
     fi
-    for x in ../*/; do
-        if [[ -n "$foundcwd" ]]; then
-            if [[ -d "$x" ]]; then
-                cd "$x" || return 1
-                return
+
+    # Execute next operation count times
+    for ((i = 1; i <= count; i++)); do
+        local foundcwd="" cwd="" x=""
+        cwd="${PWD##*/}"
+        if [[ -z "$cwd" ]]; then
+            # $PWD must be /
+            echo 'No next directory.' >&2
+            return 1
+        fi
+        local found_next=false
+        for x in ../*/; do
+            if [[ -n "$foundcwd" ]]; then
+                if [[ -d "$x" ]]; then
+                    cd "$x" || return 1
+                    found_next=true
+                    break
+                fi
+            elif [[ "${x#../}" == "$cwd/" ]]; then
+                foundcwd="1"
             fi
-        elif [[ "${x#../}" == "$cwd/" ]]; then
-            foundcwd=1
+        done
+        if [[ "$found_next" == false ]]; then
+            echo 'No next directory.' >&2
+            return 1
         fi
     done
-    echo 'No next directory.' >&2
-    return 1
 }
 # }}}
 
