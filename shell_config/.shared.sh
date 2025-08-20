@@ -416,3 +416,8 @@ if [ "$DOCKER_CMD" != "" ]; then
     # shellcheck disable=2139
     alias dkc="$DOCKER_CMD"-compose
 fi
+
+# Enable Helm zsh completion
+if command -v helm >/dev/null; then
+    source <(helm completion zsh)
+fi
