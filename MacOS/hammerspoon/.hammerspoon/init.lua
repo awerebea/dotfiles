@@ -34,7 +34,7 @@ local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
   { mods = { "cmd", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
   { mods = { "cmd", "alt" }, key = "u", app = "Microsoft Outlook", path = "/Applications/Microsoft Outlook.app",  bundleID = "com.microsoft.Outlook" },
-  { mods = { "cmd", "alt" }, key = "e", app = "TextEdit",          path = "/System/Applications/TextEdit.app",    bundleID = "com.apple.TextEdit" },
+  { mods = { "cmd", "alt" }, key = "e", app = "Microsoft Excel",   path = "/Applications/Microsoft Excel.app",    bundleID = "com.microsoft.Excel" },
   { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
 }
 
