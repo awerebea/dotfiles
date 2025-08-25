@@ -396,6 +396,7 @@ fi
 # docker aliases
 if command -v "podman" &>/dev/null; then
     DOCKER_CMD="podman"
+    # shellcheck disable=2139
     alias docker="$DOCKER_CMD"
 elif command -v "docker" &>/dev/null; then
     DOCKER_CMD="docker"
@@ -419,5 +420,6 @@ fi
 
 # Enable Helm zsh completion
 if command -v helm >/dev/null; then
+    # shellcheck disable=1090
     source <(helm completion zsh)
 fi
