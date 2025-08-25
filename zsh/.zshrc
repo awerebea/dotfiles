@@ -649,15 +649,18 @@ alias cpmakefile="cp $GIT_DOTFILES/templates/Makefile ."
 # Define eza aliases conditionally
 if [ "${commands[eza]}" ]; then
     alias l="eza --long --all --header --links --git --icons --color=always \
-    --group-directories-first --color-scale"
-    alias lle="eza --long --all --header --links --git --icons --color=always \
-    --group-directories-first --color-scale | less -NR"
+    --group-directories-first --color-scale=all"
     alias lT="eza --long --all --header --links --git --icons --color=always \
-    --group-directories-first --color-scale --tree"
+    --group-directories-first --color-scale=all --tree"
     alias ll="eza --long --header --links --git --icons --color=always \
-    --group-directories-first --color-scale"
+    --group-directories-first --color-scale=all"
     alias llT="eza --long --header --links --git --icons --color=always \
-    --group-directories-first --color-scale --tree"
+    --group-directories-first --color-scale=all --tree"
+    lle() {
+        # shellcheck disable=2068
+        eza --long --all --header --links --git --icons --color=always \
+            --group-directories-first --color-scale=all $@ | less -NR
+    }
 fi
 
 # kubectl (k8s) aliases
