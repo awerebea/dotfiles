@@ -423,3 +423,9 @@ if command -v helm >/dev/null; then
     # shellcheck disable=1090
     source <(helm completion zsh)
 fi
+
+if [[ "$(uname)" == "Darwin" ]]; then
+    # Fix GPG password input in terminal (TTY)
+    # shellcheck disable=2155
+    export GPG_TTY=$(tty)
+fi
