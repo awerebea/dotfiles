@@ -323,3 +323,8 @@ fi
 source "$HOME/.shared.sh"
 
 [ -f ~/.config/.openai_api_key ] && export OPENAI_API_KEY=$(cat ~/.config/.openai_api_key)
+
+# VSCode shell integratjion
+# https://code.visualstudio.com/docs/terminal/shell-integration
+# shellcheck disable=SC1090
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path bash)"
