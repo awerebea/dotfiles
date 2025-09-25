@@ -27,6 +27,16 @@ return {
             cyclic = true,  -- "or" is incremented into "and".
           },
           augend.constant.new{
+            elements = {"read", "write"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
+            elements = {"plan", "apply"},
+            word = true,
+            cyclic = true,
+          },
+          augend.constant.new{
             elements = {"&&", "||"},
             word = false,
             cyclic = true,
