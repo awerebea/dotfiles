@@ -585,6 +585,7 @@ if [[ "${commands[terraform]}" ]]; then
     export TF_PLUGIN_CACHE_DIR="$tf_cache_path"
     export TF_PLUGIN_CACHE_MAY_BREAK_DEPENDENCY_LOCK_FILE=true
     unset tf_cache_path
+    alias tfws="terraform workspace select"
 fi
 
 if [[ "${commands[terragrunt]}" ]]; then
