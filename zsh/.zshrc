@@ -1424,6 +1424,7 @@ fi
 # END_AWS_SSO_CLI
 
 if [ -f ~/.config/.openai_api_key ]; then
+    # shellcheck disable=SC2155
     export OPENAI_API_KEY=$(cat ~/.config/.openai_api_key)
 fi
 
