@@ -7,6 +7,7 @@ return {
   },
   {
     "mfussenegger/nvim-dap",
+    enabled = false,
     dependencies = { "mfussenegger/nvim-dap-python" },
     opts = {
       setup = {

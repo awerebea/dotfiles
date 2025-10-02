@@ -372,7 +372,7 @@ return {
       telescope.setup(opts)
       telescope.load_extension "fzf"
       telescope.load_extension "project"
-      telescope.load_extension "dap"
+      -- telescope.load_extension "dap"
       telescope.load_extension "hop"
       telescope.load_extension "live_grep_args"
       telescope.load_extension "lazygit"
