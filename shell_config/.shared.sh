@@ -419,9 +419,16 @@ if [ "$DOCKER_CMD" != "" ]; then
 fi
 
 # Enable Helm zsh completion
-if command -v helm >/dev/null; then
-    # shellcheck disable=1090
-    source <(helm completion zsh)
+# shellcheck disable=1090
+if command -v helm >/dev/null 2>&1; then
+    if [ "${ZSH_VERSION-}" != "" ]; then
+        shell="zsh"
+    elif [ "${BASH_VERSION-}" != "" ]; then
+        shell="bash"
+    else
+        shell="bash" # fallback
+    fi
+    source <(helm completion "$shell")
 fi
 
 if [[ "$(uname)" == "Darwin" ]]; then
