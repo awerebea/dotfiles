@@ -5,8 +5,7 @@
     [
         {
             "command": "find",
-            "id": "User.find",
-            "keys": "ctrl+shift+f"
+            "id": "User.find"
         },
         {
             "command": 
@@ -15,32 +14,11 @@
                 "split": "auto",
                 "splitMode": "duplicate"
             },
-            "id": "User.splitPane.A6751878",
-            "keys": "alt+shift+d"
+            "id": "User.splitPane.A6751878"
         },
         {
             "command": "paste",
             "id": "User.paste"
-        },
-        {
-            "command": "unbound",
-            "keys": "ctrl+v"
-        },
-        {
-            "command": "unbound",
-            "keys": "ctrl+c"
-        },
-        {
-            "command": "unbound",
-            "keys": "alt+enter"
-        },
-        {
-            "command": "unbound",
-            "keys": "alt+shift+minus"
-        },
-        {
-            "command": "unbound",
-            "keys": "alt+shift+plus"
         },
         {
             "command": 
@@ -57,6 +35,37 @@
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
     "initialCols": 120,
     "initialRows": 30,
+    "keybindings": 
+    [
+        {
+            "id": "User.find",
+            "keys": "ctrl+shift+f"
+        },
+        {
+            "id": null,
+            "keys": "ctrl+v"
+        },
+        {
+            "id": "User.splitPane.A6751878",
+            "keys": "alt+shift+d"
+        },
+        {
+            "id": null,
+            "keys": "ctrl+c"
+        },
+        {
+            "id": null,
+            "keys": "alt+shift+minus"
+        },
+        {
+            "id": null,
+            "keys": "alt+enter"
+        },
+        {
+            "id": null,
+            "keys": "alt+shift+plus"
+        }
+    ],
     "launchMode": "default",
     "newTabMenu": 
     [
@@ -133,6 +142,24 @@
                 "hidden": false,
                 "name": "Azure Cloud Shell",
                 "source": "Windows.Terminal.Azure"
+            },
+            {
+                "guid": "{963ff2f7-6aed-5ce3-9d91-90d99571f53a}",
+                "hidden": true,
+                "name": "Ubuntu-24.04",
+                "source": "Windows.Terminal.Wsl"
+            },
+            {
+                "guid": "{4ff56d04-d9cf-57ea-bae2-ad396374e7e3}",
+                "hidden": false,
+                "name": "Ubuntu 22.04.5 LTS",
+                "source": "CanonicalGroupLimited.Ubuntu22.04LTS_79rhkp1fndgsc"
+            },
+            {
+                "guid": "{d8e96812-b789-5068-a5ae-10b2fb53e95f}",
+                "hidden": false,
+                "name": "Ubuntu 24.04.1 LTS",
+                "source": "CanonicalGroupLimited.Ubuntu24.04LTS_79rhkp1fndgsc"
             }
         ]
     },
