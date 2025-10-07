@@ -2,7 +2,7 @@
 Insert::End
 LShift & RShift::Capslock
 
-; Capslock::Esc
+Capslock::Esc
 
 ; Use Capslock as Ctrl/Ecs
 InstallKeybdHook
