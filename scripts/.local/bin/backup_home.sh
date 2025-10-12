@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euo pipefail  # Exit on error, undefined vars, pipe failures
+set -euo pipefail # Exit on error, undefined vars, pipe failures
 
 trap cleanup INT TERM EXIT
 
@@ -291,7 +291,7 @@ usage() {
 	"$SNAPSHOT_PATH" directory using rsync with hard links.
 
 	By default, creates a snapshot only if the last snapshot is older than
-	the configured timeout ($(( g_snapshot_timeout / 3600 )) hours).
+	the configured timeout ($((g_snapshot_timeout / 3600)) hours).
 
 	OPTIONS:
 	    -f, --force              Ignore timeout and create snapshot anyway
@@ -299,7 +299,7 @@ usage() {
 	    -y, --yes                Auto-confirm all prompts (non-interactive mode)
 
 	    -t MIN, --timeout=MIN    Minimum time in minutes between snapshots
-	                             (default: $(( g_snapshot_timeout / 60 )) minutes)
+	                             (default: $((g_snapshot_timeout / 60)) minutes)
 
 	    -k NUM, --keep=NUM       Number of snapshots to retain
 	                             (default: keep all snapshots)
@@ -322,8 +322,10 @@ usage() {
 process_cmd_options() {
     # Process and validate input command line arguments
 
-    __undefined_value() {
-        exit_err "Undefined value for argument $1" 9
+    __show_error_and_usage() {
+        log_error "$1"
+        echo "Run with -h or --help for usage instructions."
+        exit "${2:-1}"
     }
 
     __is_positive_integer() {
@@ -332,54 +334,69 @@ process_cmd_options() {
 
     __validate_positive_integer() {
         if ! __is_positive_integer "$1"; then
-            usage >&2
-            exit 10
+            __show_error_and_usage "Invalid value '$1': must be a positive integer" 10
         fi
+    }
+
+    __get_option_value() {
+        local option="$1"
+        local value="$2"
+
+        if [[ -z "$value" || "$value" =~ ^- ]]; then
+            __show_error_and_usage "Option $option requires a value" 9
+        fi
+        echo "$value"
     }
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-        -f | --force)
-            g_force="1"
-            ;;
-        -t | --timeout)
-            [[ $# -lt 2 ]] && __undefined_value "$1"
-            shift
-            g_snapshot_timeout="$1"
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
-            ;;
-        --timeout=*)
-            [[ -z "${1#*=}" ]] && __undefined_value "$1"
-            g_snapshot_timeout="${1#*=}"
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
-            ;;
-        -k | --keep)
-            [[ $# -lt 2 ]] && __undefined_value "$1"
-            shift
-            g_snapshots_to_keep="$1"
-            __validate_positive_integer "$g_snapshots_to_keep"
-            ;;
-        --keep=*)
-            [[ -z "${1#*=}" ]] && __undefined_value "$1"
-            g_snapshots_to_keep="${1#*=}"
-            __validate_positive_integer "$g_snapshots_to_keep"
-            ;;
-        -y | --yes)
-            auto_confirm="1"
-            ;;
         -h | --help)
             usage
             exit 0
             ;;
+        -f | --force)
+            g_force="1"
+            shift
+            ;;
+        -t | --timeout)
+            g_snapshot_timeout=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$g_snapshot_timeout"
+            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            shift 2
+            ;;
+        --timeout=*)
+            g_snapshot_timeout="${1#*=}"
+            if [[ -z "$g_snapshot_timeout" ]]; then
+                __show_error_and_usage "Option --timeout requires a value"
+            fi
+            __validate_positive_integer "$g_snapshot_timeout"
+            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            shift
+            ;;
+        -k | --keep)
+            g_snapshots_to_keep=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$g_snapshots_to_keep"
+            shift 2
+            ;;
+        --keep=*)
+            g_snapshots_to_keep="${1#*=}"
+            if [[ -z "$g_snapshots_to_keep" ]]; then
+                __show_error_and_usage "Option --keep requires a value"
+            fi
+            __validate_positive_integer "$g_snapshots_to_keep"
+            shift
+            ;;
+        -y | --yes)
+            auto_confirm="1"
+            shift
+            ;;
+        -*)
+            __show_error_and_usage "Unknown option: $1" 11
+            ;;
         *)
-            log_error "Unknown option: $1"
-            usage >&2
-            exit 11
+            __show_error_and_usage "Unexpected positional argument: $1. This script does not accept positional arguments." 12
             ;;
         esac
-        shift
     done
 }
 
@@ -441,11 +458,11 @@ process_snapshot() {
                 log_warn "Creating new snapshot anyway"
             else
                 current_time=$(date +%s)
-                time_diff_hours=$(( (current_time - snapshot_time) / 3600 ))
+                time_diff_hours=$(((current_time - snapshot_time) / 3600))
 
-                if (( current_time < (snapshot_time + g_snapshot_timeout) )); then
+                if ((current_time < (snapshot_time + g_snapshot_timeout))); then
                     log_warn "Snapshot creation skipped: last snapshot is only $time_diff_hours hours old"
-                    log_warn "Use --force to override timeout ($(( g_snapshot_timeout / 3600 )) hours)"
+                    log_warn "Use --force to override timeout ($((g_snapshot_timeout / 3600)) hours)"
                     return 0
                 fi
 
