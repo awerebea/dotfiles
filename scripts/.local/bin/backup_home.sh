@@ -4,12 +4,10 @@ set -euo pipefail # Exit on error, undefined vars, pipe failures
 
 trap cleanup INT TERM EXIT
 
-# Define global variables
-readonly SOURCE_PATH="/home/andrei"
-readonly SNAPSHOT_PATH="/media/andrei/bckp/home_backup"
-
-# Name of the subdirectory in the snapshot directory to save the data
-readonly DATA_DIR_NAME="home"
+# Global variables with defaults (can be overridden by CLI arguments)
+SOURCE_PATH="/home/andrei"
+DEST_PATH="/media/andrei/bckp/home_backup"
+PARENT_DIR_NAME="" # Will be set to basename of SOURCE_PATH if not specified
 
 # Names of generated files
 readonly LOG_FILENAME="rsync-log"
@@ -31,11 +29,11 @@ readonly COL_Y='\033[33m'
 # Snapshot name pattern
 # shellcheck disable=2155
 readonly SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
+# Pattern to match snapshot directory names (must match SNAPSHOT_NAME format)
 # Just a split of too long line)
-readonly SNAPSHOT_NAME_PATTERN="^${SNAPSHOT_PATH}/\
-20([0-9]{2})-(0[1-9]|1[0-2])-\
+readonly SNAPSHOT_NAME_PATTERN="20([0-9]{2})-(0[1-9]|1[0-2])-\
 (0[1-9]|[1-2][0-9]|3[0-1])_(0[0-9]|1[0-9]|2[0-3])-\
-([0-5][0-9])-([0-5][0-9])$"
+([0-5][0-9])-([0-5][0-9])"
 
 # Default values that can be overridden by command line argument
 g_force=             # -f, --force
@@ -89,13 +87,21 @@ usage() {
     cat <<-EOF
 	USAGE: $(basename "$0") [OPTIONS]
 
-	Create differential backup of "$SOURCE_PATH" directory into
-	"$SNAPSHOT_PATH" directory using rsync with hard links.
+	Create differential backup using rsync with hard links.
 
 	By default, creates a snapshot only if the last snapshot is older than
 	the configured timeout ($((g_snapshot_timeout / 3600)) hours).
 
 	OPTIONS:
+	    -s, --source=PATH        Source directory to backup
+	                             (default: $SOURCE_PATH)
+
+	    -d, --dest=PATH          Destination directory for snapshots
+	                             (default: $DEST_PATH)
+
+	    -p, --parent-name=NAME   Name for the parent directory in snapshots
+	                             (default: basename of source path)
+
 	    -f, --force              Ignore timeout and create snapshot anyway
 
 	    -y, --yes                Auto-confirm all prompts (non-interactive mode)
@@ -109,10 +115,11 @@ usage() {
 	    -h, --help               Show this help message and exit
 
 	EXAMPLES:
-	    $(basename "$0")                    # Create backup if timeout has passed
-	    $(basename "$0") --force            # Force backup creation
-	    $(basename "$0") -k 7 -t 1440       # Keep 7 snapshots, 24h timeout
-	    $(basename "$0") -y -k 5            # Non-interactive, keep 5 snapshots
+	    $(basename "$0")                              # Use default paths
+	    $(basename "$0") -s /home/user -d /backup     # Custom paths
+	    $(basename "$0") --force                      # Force backup creation
+	    $(basename "$0") -k 7 -t 1440                 # Keep 7 snapshots, 24h timeout
+	    $(basename "$0") -s /data -p mydata           # Custom source and parent name
 
 	NOTES:
 	    - Snapshots use hard links for space efficiency
@@ -155,6 +162,39 @@ process_cmd_options() {
             usage
             exit 0
             ;;
+        -s | --source)
+            SOURCE_PATH=$(__get_option_value "$1" "$2")
+            shift 2
+            ;;
+        --source=*)
+            SOURCE_PATH="${1#*=}"
+            if [[ -z "$SOURCE_PATH" ]]; then
+                __show_error_and_usage "Option --source requires a value" 9
+            fi
+            shift
+            ;;
+        -d | --dest)
+            DEST_PATH=$(__get_option_value "$1" "$2")
+            shift 2
+            ;;
+        --dest=*)
+            DEST_PATH="${1#*=}"
+            if [[ -z "$DEST_PATH" ]]; then
+                __show_error_and_usage "Option --dest requires a value" 9
+            fi
+            shift
+            ;;
+        -p | --parent-name)
+            PARENT_DIR_NAME=$(__get_option_value "$1" "$2")
+            shift 2
+            ;;
+        --parent-name=*)
+            PARENT_DIR_NAME="${1#*=}"
+            if [[ -z "$PARENT_DIR_NAME" ]]; then
+                __show_error_and_usage "Option --parent-name requires a value" 9
+            fi
+            shift
+            ;;
         -f | --force)
             g_force="1"
             shift
@@ -168,7 +208,7 @@ process_cmd_options() {
         --timeout=*)
             g_snapshot_timeout="${1#*=}"
             if [[ -z "$g_snapshot_timeout" ]]; then
-                __show_error_and_usage "Option --timeout requires a value"
+                __show_error_and_usage "Option --timeout requires a value" 9
             fi
             __validate_positive_integer "$g_snapshot_timeout"
             g_snapshot_timeout="$((g_snapshot_timeout * 60))"
@@ -182,7 +222,7 @@ process_cmd_options() {
         --keep=*)
             g_snapshots_to_keep="${1#*=}"
             if [[ -z "$g_snapshots_to_keep" ]]; then
-                __show_error_and_usage "Option --keep requires a value"
+                __show_error_and_usage "Option --keep requires a value" 9
             fi
             __validate_positive_integer "$g_snapshots_to_keep"
             shift
@@ -199,6 +239,12 @@ process_cmd_options() {
             ;;
         esac
     done
+
+    # Set default parent directory name if not specified
+    [[ -z "$PARENT_DIR_NAME" ]] && PARENT_DIR_NAME="$(basename "$SOURCE_PATH")"
+
+    # Make variables readonly after initialization
+    readonly SOURCE_PATH DEST_PATH PARENT_DIR_NAME
 }
 
 # ============================================================================
@@ -225,20 +271,40 @@ log_error() {
 
 # Validate that required directories exist
 validate_paths() {
+    # Validate source path
     if [[ ! -d "$SOURCE_PATH" ]]; then
         exit_err "Source directory does not exist: $SOURCE_PATH" 2
     fi
 
-    if [[ ! -d "$SNAPSHOT_PATH" ]]; then
-        log_info "Creating snapshot directory: $SNAPSHOT_PATH"
-        mkdir -p "$SNAPSHOT_PATH" || exit_err "Failed to create snapshot directory" 3
+    if [[ ! -r "$SOURCE_PATH" ]]; then
+        exit_err "Source directory is not readable: $SOURCE_PATH" 2
     fi
+
+    # Validate destination path
+    if [[ ! -d "$DEST_PATH" ]]; then
+        log_info "Creating destination directory: $DEST_PATH"
+        mkdir -p "$DEST_PATH" || exit_err "Failed to create destination directory" 3
+    fi
+
+    if [[ ! -w "$DEST_PATH" ]]; then
+        exit_err "Destination directory is not writable: $DEST_PATH" 3
+    fi
+
+    # Validate parent directory name
+    if [[ "$PARENT_DIR_NAME" =~ [/\\] ]]; then
+        exit_err "Parent directory name cannot contain path separators: $PARENT_DIR_NAME" 4
+    fi
+
+    log_info "Paths validated successfully:"
+    log_info "  Source: $SOURCE_PATH"
+    log_info "  Destination: $DEST_PATH"
+    log_info "  Parent name: $PARENT_DIR_NAME"
 }
 
 # Get the list of directories with a name matches the snapshot name pattern
 generate_snapshot_list() {
-    find "$SNAPSHOT_PATH" -maxdepth 1 -type d | sort -rn |
-        grep -P "$SNAPSHOT_NAME_PATTERN" | sed -e "s|^${SNAPSHOT_PATH}/||"
+    find "$DEST_PATH" -maxdepth 1 -type d | sort -rn |
+        grep -P "^${DEST_PATH}/${SNAPSHOT_NAME_PATTERN}$" | sed -e "s|^${DEST_PATH}/||"
 }
 
 confirmation_dialog() {
@@ -268,7 +334,7 @@ delete_snapshots() {
     local dir snapshot_path
 
     for snapshot in "$@"; do
-        snapshot_path="${SNAPSHOT_PATH}/${snapshot}"
+        snapshot_path="${DEST_PATH}/${snapshot}"
         if [[ ! -d "$snapshot_path" ]]; then
             log_warn "Snapshot directory does not exist, skipping: $snapshot"
             continue
@@ -321,7 +387,7 @@ remove_interrupted_snapshots() {
     local snapshot
 
     while IFS= read -r snapshot; do
-        if [[ ! -f "${SNAPSHOT_PATH}/${snapshot}/${SUCCESS_FILE}" ]]; then
+        if [[ ! -f "${DEST_PATH}/${snapshot}/${SUCCESS_FILE}" ]]; then
             snapshots_to_delete_list+=("$snapshot")
         fi
     done < <(generate_snapshot_list)
@@ -335,7 +401,7 @@ remove_interrupted_snapshots() {
 create_snapshot() {
     local tmp_exclude_file snapshot_dir start_time end_time
     tmp_exclude_file=$(mktemp) || exit_err "Failed to create temporary file" 4
-    snapshot_dir="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
+    snapshot_dir="${DEST_PATH}/${SNAPSHOT_NAME}"
 
     # Ensure cleanup of temp file
     trap 'rm -f "$tmp_exclude_file"' RETURN
@@ -361,7 +427,7 @@ create_snapshot() {
         --include="/*/.*" \
         --include="/.*" \
         --stats \
-        "${SOURCE_PATH}/" "${snapshot_dir}/${DATA_DIR_NAME}/"; then
+        "${SOURCE_PATH}/" "${snapshot_dir}/${PARENT_DIR_NAME}/"; then
         exit_err "Rsync failed during snapshot creation" 6
     fi
 
@@ -386,8 +452,8 @@ create_snapshot() {
 
 link_prev_snapshot() {
     local last_snapshot="$1"
-    local snapshot_dir="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
-    local prev_snapshot_dir="${SNAPSHOT_PATH}/${last_snapshot}"
+    local snapshot_dir="${DEST_PATH}/${SNAPSHOT_NAME}"
+    local prev_snapshot_dir="${DEST_PATH}/${last_snapshot}"
 
     if [[ ! -d "$prev_snapshot_dir" ]]; then
         log_warn "Previous snapshot directory not found: $last_snapshot"
@@ -422,11 +488,11 @@ get_newest_dir() {
     # Use portable stat command (works on both Linux and macOS)
     if command -v stat >/dev/null 2>&1; then
         # Linux/GNU stat
-        if stat -c %Y "${SNAPSHOT_PATH}/${snapshots_list[$i]}" >/dev/null 2>&1; then
-            last_modify_time=$(stat -c %Y "${SNAPSHOT_PATH}/${snapshots_list[$i]}")
+        if stat -c %Y "${DEST_PATH}/${snapshots_list[$i]}" >/dev/null 2>&1; then
+            last_modify_time=$(stat -c %Y "${DEST_PATH}/${snapshots_list[$i]}")
         # macOS/BSD stat
         else
-            last_modify_time=$(stat -f %m "${SNAPSHOT_PATH}/${snapshots_list[$i]}")
+            last_modify_time=$(stat -f %m "${DEST_PATH}/${snapshots_list[$i]}")
         fi
     else
         exit_err "stat command not available" 12
@@ -439,10 +505,10 @@ get_newest_dir() {
         snapshot="${snapshots_list[$i]}"
 
         # Use the same stat variant as detected above
-        if stat -c %Y "${SNAPSHOT_PATH}/$snapshot" >/dev/null 2>&1; then
-            modify_time=$(stat -c %Y "${SNAPSHOT_PATH}/$snapshot")
+        if stat -c %Y "${DEST_PATH}/$snapshot" >/dev/null 2>&1; then
+            modify_time=$(stat -c %Y "${DEST_PATH}/$snapshot")
         else
-            modify_time=$(stat -f %m "${SNAPSHOT_PATH}/$snapshot")
+            modify_time=$(stat -f %m "${DEST_PATH}/$snapshot")
         fi
 
         if [[ $modify_time -gt $last_modify_time ]]; then
@@ -495,7 +561,7 @@ cleanup() {
     # Only cleanup if we're exiting due to an error or interruption
     if [[ $exit_code -ne 0 ]] && [[ -n "${SNAPSHOT_NAME:-}" ]]; then
         log_warn "Snapshot creation interrupted. Cleaning up incomplete snapshot."
-        local incomplete_snapshot="${SNAPSHOT_PATH}/${SNAPSHOT_NAME}"
+        local incomplete_snapshot="${DEST_PATH}/${SNAPSHOT_NAME}"
         if [[ -d "$incomplete_snapshot" ]]; then
             rm -rf "$incomplete_snapshot" 2>/dev/null || {
                 log_error "Failed to clean up incomplete snapshot: $incomplete_snapshot"
