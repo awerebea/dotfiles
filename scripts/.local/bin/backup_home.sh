@@ -44,6 +44,167 @@ auto_confirm=        # -y, --yes
 # Minimal timeout in minutes (6 hours)
 g_snapshot_timeout=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 
+# ============================================================================
+# CONFIGURATION FUNCTIONS
+# ============================================================================
+
+# Create exclude file with patterns for files/directories to skip during backup
+create_exclude_file() {
+    local exclude_file="$1"
+    cat <<-'EOF' >"$exclude_file"
+	*/.terraform.lock.hcl
+	*/.terraform/
+	.cache/
+	.cargo/
+	.config/Code/
+	.config/Slack/
+	.config/coc/
+	.config/google-chrome/
+	.config/joplin-desktop/
+	.config/skypeforlinux/
+	.joplin/
+	.local/share/nvim/
+	.mozilla/
+	.npm/
+	.nvm/
+	.rustup/
+	.tfenv/
+	.tgenv/
+	.thunderbird/
+	.vim/
+	.vscode/
+	Documents/
+	Downloads/
+	Timeshift_exclude/
+	build/
+	go/
+	migration/
+	pCloudDrive/
+	vm/
+	EOF
+}
+
+# Usage message
+usage() {
+    cat <<-EOF
+	USAGE: $(basename "$0") [OPTIONS]
+
+	Create differential backup of "$SOURCE_PATH" directory into
+	"$SNAPSHOT_PATH" directory using rsync with hard links.
+
+	By default, creates a snapshot only if the last snapshot is older than
+	the configured timeout ($((g_snapshot_timeout / 3600)) hours).
+
+	OPTIONS:
+	    -f, --force              Ignore timeout and create snapshot anyway
+
+	    -y, --yes                Auto-confirm all prompts (non-interactive mode)
+
+	    -t MIN, --timeout=MIN    Minimum time in minutes between snapshots
+	                             (default: $((g_snapshot_timeout / 60)) minutes)
+
+	    -k NUM, --keep=NUM       Number of snapshots to retain
+	                             (default: keep all snapshots)
+
+	    -h, --help               Show this help message and exit
+
+	EXAMPLES:
+	    $(basename "$0")                    # Create backup if timeout has passed
+	    $(basename "$0") --force            # Force backup creation
+	    $(basename "$0") -k 7 -t 1440       # Keep 7 snapshots, 24h timeout
+	    $(basename "$0") -y -k 5            # Non-interactive, keep 5 snapshots
+
+	NOTES:
+	    - Snapshots use hard links for space efficiency
+	    - Interrupted snapshots are automatically cleaned up
+	    - Each snapshot contains a success marker file for integrity checking
+	EOF
+}
+
+# Process and validate command line arguments
+process_cmd_options() {
+    __show_error_and_usage() {
+        log_error "$1"
+        echo "Run with -h or --help for usage instructions."
+        exit "${2:-1}"
+    }
+
+    __is_positive_integer() {
+        [[ "$1" =~ ^[1-9][0-9]*$ ]] 2>/dev/null
+    }
+
+    __validate_positive_integer() {
+        if ! __is_positive_integer "$1"; then
+            __show_error_and_usage "Invalid value '$1': must be a positive integer" 10
+        fi
+    }
+
+    __get_option_value() {
+        local option="$1"
+        local value="$2"
+
+        if [[ -z "$value" || "$value" =~ ^- ]]; then
+            __show_error_and_usage "Option $option requires a value" 9
+        fi
+        echo "$value"
+    }
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -f | --force)
+            g_force="1"
+            shift
+            ;;
+        -t | --timeout)
+            g_snapshot_timeout=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$g_snapshot_timeout"
+            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            shift 2
+            ;;
+        --timeout=*)
+            g_snapshot_timeout="${1#*=}"
+            if [[ -z "$g_snapshot_timeout" ]]; then
+                __show_error_and_usage "Option --timeout requires a value"
+            fi
+            __validate_positive_integer "$g_snapshot_timeout"
+            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            shift
+            ;;
+        -k | --keep)
+            g_snapshots_to_keep=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$g_snapshots_to_keep"
+            shift 2
+            ;;
+        --keep=*)
+            g_snapshots_to_keep="${1#*=}"
+            if [[ -z "$g_snapshots_to_keep" ]]; then
+                __show_error_and_usage "Option --keep requires a value"
+            fi
+            __validate_positive_integer "$g_snapshots_to_keep"
+            shift
+            ;;
+        -y | --yes)
+            auto_confirm="1"
+            shift
+            ;;
+        -*)
+            __show_error_and_usage "Unknown option: $1" 11
+            ;;
+        *)
+            __show_error_and_usage "Unexpected positional argument: $1. This script does not accept positional arguments." 12
+            ;;
+        esac
+    done
+}
+
+# ============================================================================
+# UTILITY FUNCTIONS
+# ============================================================================
+
 # Define functions
 exit_err() {
     echo -e "${COL_R}ERR:${COL_RESET} $1" >&2
@@ -171,41 +332,6 @@ remove_interrupted_snapshots() {
     fi
 }
 
-create_exclude_file() {
-    local exclude_file="$1"
-    cat <<-'EOF' >"$exclude_file"
-	*/.terraform.lock.hcl
-	*/.terraform/
-	.cache/
-	.cargo/
-	.config/Code/
-	.config/Slack/
-	.config/coc/
-	.config/google-chrome/
-	.config/joplin-desktop/
-	.config/skypeforlinux/
-	.joplin/
-	.local/share/nvim/
-	.mozilla/
-	.npm/
-	.nvm/
-	.rustup/
-	.tfenv/
-	.tgenv/
-	.thunderbird/
-	.vim/
-	.vscode/
-	Documents/
-	Downloads/
-	Timeshift_exclude/
-	build/
-	go/
-	migration/
-	pCloudDrive/
-	vm/
-	EOF
-}
-
 create_snapshot() {
     local tmp_exclude_file snapshot_dir start_time end_time
     tmp_exclude_file=$(mktemp) || exit_err "Failed to create temporary file" 4
@@ -280,124 +406,6 @@ link_prev_snapshot() {
         "$snapshot_dir/"; then
         exit_err "Failed to create hard links from previous snapshot" 8
     fi
-}
-
-# Usage message
-usage() {
-    cat <<-EOF
-	USAGE: $(basename "$0") [OPTIONS]
-
-	Create differential backup of "$SOURCE_PATH" directory into
-	"$SNAPSHOT_PATH" directory using rsync with hard links.
-
-	By default, creates a snapshot only if the last snapshot is older than
-	the configured timeout ($((g_snapshot_timeout / 3600)) hours).
-
-	OPTIONS:
-	    -f, --force              Ignore timeout and create snapshot anyway
-
-	    -y, --yes                Auto-confirm all prompts (non-interactive mode)
-
-	    -t MIN, --timeout=MIN    Minimum time in minutes between snapshots
-	                             (default: $((g_snapshot_timeout / 60)) minutes)
-
-	    -k NUM, --keep=NUM       Number of snapshots to retain
-	                             (default: keep all snapshots)
-
-	    -h, --help               Show this help message and exit
-
-	EXAMPLES:
-	    $(basename "$0")                    # Create backup if timeout has passed
-	    $(basename "$0") --force            # Force backup creation
-	    $(basename "$0") -k 7 -t 1440       # Keep 7 snapshots, 24h timeout
-	    $(basename "$0") -y -k 5            # Non-interactive, keep 5 snapshots
-
-	NOTES:
-	    - Snapshots use hard links for space efficiency
-	    - Interrupted snapshots are automatically cleaned up
-	    - Each snapshot contains a success marker file for integrity checking
-	EOF
-}
-
-process_cmd_options() {
-    # Process and validate input command line arguments
-
-    __show_error_and_usage() {
-        log_error "$1"
-        echo "Run with -h or --help for usage instructions."
-        exit "${2:-1}"
-    }
-
-    __is_positive_integer() {
-        [[ "$1" =~ ^[1-9][0-9]*$ ]] 2>/dev/null
-    }
-
-    __validate_positive_integer() {
-        if ! __is_positive_integer "$1"; then
-            __show_error_and_usage "Invalid value '$1': must be a positive integer" 10
-        fi
-    }
-
-    __get_option_value() {
-        local option="$1"
-        local value="$2"
-
-        if [[ -z "$value" || "$value" =~ ^- ]]; then
-            __show_error_and_usage "Option $option requires a value" 9
-        fi
-        echo "$value"
-    }
-
-    while [[ $# -gt 0 ]]; do
-        case "$1" in
-        -h | --help)
-            usage
-            exit 0
-            ;;
-        -f | --force)
-            g_force="1"
-            shift
-            ;;
-        -t | --timeout)
-            g_snapshot_timeout=$(__get_option_value "$1" "$2")
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
-            shift 2
-            ;;
-        --timeout=*)
-            g_snapshot_timeout="${1#*=}"
-            if [[ -z "$g_snapshot_timeout" ]]; then
-                __show_error_and_usage "Option --timeout requires a value"
-            fi
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
-            shift
-            ;;
-        -k | --keep)
-            g_snapshots_to_keep=$(__get_option_value "$1" "$2")
-            __validate_positive_integer "$g_snapshots_to_keep"
-            shift 2
-            ;;
-        --keep=*)
-            g_snapshots_to_keep="${1#*=}"
-            if [[ -z "$g_snapshots_to_keep" ]]; then
-                __show_error_and_usage "Option --keep requires a value"
-            fi
-            __validate_positive_integer "$g_snapshots_to_keep"
-            shift
-            ;;
-        -y | --yes)
-            auto_confirm="1"
-            shift
-            ;;
-        -*)
-            __show_error_and_usage "Unknown option: $1" 11
-            ;;
-        *)
-            __show_error_and_usage "Unexpected positional argument: $1. This script does not accept positional arguments." 12
-            ;;
-        esac
-    done
 }
 
 # Get the newest directory (by the last modified time) from snapshots
