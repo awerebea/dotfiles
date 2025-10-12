@@ -36,11 +36,11 @@ readonly SNAPSHOT_NAME_PATTERN="20([0-9]{2})-(0[1-9]|1[0-2])-\
 ([0-5][0-9])-([0-5][0-9])"
 
 # Default values that can be overridden by command line argument
-g_force=             # -f, --force
-g_snapshots_to_keep= # -k NUM, --keep=NUM
-auto_confirm=        # -y, --yes
+IS_FORCE=false     # -f, --force
+SNAPSHOTS_TO_KEEP= # -k NUM, --keep=NUM
+AUTO_CONFIRM=false # -y, --yes
 # Minimal timeout in minutes (6 hours)
-g_snapshot_timeout=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
+SNAPSHOT_TIMEOUT=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 
 # ============================================================================
 # CONFIGURATION FUNCTIONS
@@ -90,7 +90,7 @@ usage() {
 	Create differential backup using rsync with hard links.
 
 	By default, creates a snapshot only if the last snapshot is older than
-	the configured timeout ($((g_snapshot_timeout / 3600)) hours).
+	the configured timeout ($((SNAPSHOT_TIMEOUT / 3600)) hours).
 
 	OPTIONS:
 	    -s, --source=PATH        Source directory to backup
@@ -107,7 +107,7 @@ usage() {
 	    -y, --yes                Auto-confirm all prompts (non-interactive mode)
 
 	    -t MIN, --timeout=MIN    Minimum time in minutes between snapshots
-	                             (default: $((g_snapshot_timeout / 60)) minutes)
+	                             (default: $((SNAPSHOT_TIMEOUT / 60)) minutes)
 
 	    -k NUM, --keep=NUM       Number of snapshots to retain
 	                             (default: keep all snapshots)
@@ -196,39 +196,39 @@ process_cmd_options() {
             shift
             ;;
         -f | --force)
-            g_force="1"
+            IS_FORCE=true
             shift
             ;;
         -t | --timeout)
-            g_snapshot_timeout=$(__get_option_value "$1" "$2")
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            SNAPSHOT_TIMEOUT=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$SNAPSHOT_TIMEOUT"
+            SNAPSHOT_TIMEOUT="$((SNAPSHOT_TIMEOUT * 60))"
             shift 2
             ;;
         --timeout=*)
-            g_snapshot_timeout="${1#*=}"
-            if [[ -z "$g_snapshot_timeout" ]]; then
+            SNAPSHOT_TIMEOUT="${1#*=}"
+            if [[ -z "$SNAPSHOT_TIMEOUT" ]]; then
                 __show_error_and_usage "Option --timeout requires a value" 9
             fi
-            __validate_positive_integer "$g_snapshot_timeout"
-            g_snapshot_timeout="$((g_snapshot_timeout * 60))"
+            __validate_positive_integer "$SNAPSHOT_TIMEOUT"
+            SNAPSHOT_TIMEOUT="$((SNAPSHOT_TIMEOUT * 60))"
             shift
             ;;
         -k | --keep)
-            g_snapshots_to_keep=$(__get_option_value "$1" "$2")
-            __validate_positive_integer "$g_snapshots_to_keep"
+            SNAPSHOTS_TO_KEEP=$(__get_option_value "$1" "$2")
+            __validate_positive_integer "$SNAPSHOTS_TO_KEEP"
             shift 2
             ;;
         --keep=*)
-            g_snapshots_to_keep="${1#*=}"
-            if [[ -z "$g_snapshots_to_keep" ]]; then
+            SNAPSHOTS_TO_KEEP="${1#*=}"
+            if [[ -z "$SNAPSHOTS_TO_KEEP" ]]; then
                 __show_error_and_usage "Option --keep requires a value" 9
             fi
-            __validate_positive_integer "$g_snapshots_to_keep"
+            __validate_positive_integer "$SNAPSHOTS_TO_KEEP"
             shift
             ;;
         -y | --yes)
-            auto_confirm="1"
+            AUTO_CONFIRM=true
             shift
             ;;
         -*)
@@ -357,11 +357,11 @@ delete_snapshots() {
 }
 
 remove_old_snapshots() {
-    [[ -z "$g_snapshots_to_keep" ]] && return 0
+    [[ -z "$SNAPSHOTS_TO_KEEP" ]] && return 0
 
     local -a snapshots_to_delete_list
     mapfile -t snapshots_to_delete_list < <(
-        generate_snapshot_list | tail -n +"$((g_snapshots_to_keep + 1))"
+        generate_snapshot_list | tail -n +"$((SNAPSHOTS_TO_KEEP + 1))"
     )
 
     [[ ${#snapshots_to_delete_list[@]} -eq 0 ]] && return 0
@@ -371,7 +371,7 @@ remove_old_snapshots() {
     printf '  %s\n' "${snapshots_to_delete_list[@]}"
 
     # Delete listed snapshots
-    if [[ -z "$auto_confirm" ]] && ! confirmation_dialog "Proceed with deletion?"; then
+    if ! "$AUTO_CONFIRM" && ! confirmation_dialog "Proceed with deletion?"; then
         log_info "Snapshot deletion canceled."
         return 0
     fi
@@ -525,7 +525,7 @@ process_snapshot() {
     last_snapshot="$(generate_snapshot_list | head -n 1)"
 
     if [[ -n "$last_snapshot" ]]; then
-        if [[ -z "$g_force" ]]; then
+        if ! "$IS_FORCE"; then
             # Parse snapshot timestamp from directory name
             if ! snapshot_time=$(date -d "$(sed 's/_/ /;s/-/:/3;s/-/:/3' <<<"$last_snapshot")" +%s 2>/dev/null); then
                 log_warn "Could not parse timestamp from snapshot name: $last_snapshot"
@@ -534,9 +534,9 @@ process_snapshot() {
                 current_time=$(date +%s)
                 time_diff_hours=$(((current_time - snapshot_time) / 3600))
 
-                if ((current_time < (snapshot_time + g_snapshot_timeout))); then
+                if ((current_time < (snapshot_time + SNAPSHOT_TIMEOUT))); then
                     log_warn "Snapshot creation skipped: last snapshot is only $time_diff_hours hours old"
-                    log_warn "Use --force to override timeout ($((g_snapshot_timeout / 3600)) hours)"
+                    log_warn "Use --force to override timeout ($((SNAPSHOT_TIMEOUT / 3600)) hours)"
                     return 0
                 fi
 
