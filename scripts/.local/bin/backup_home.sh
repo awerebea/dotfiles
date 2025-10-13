@@ -2,7 +2,7 @@
 
 set -euo pipefail # Exit on error, undefined vars, pipe failures
 
-trap cleanup INT TERM EXIT
+trap cleanup INT TERM
 
 # Global variables with defaults (can be overridden by CLI arguments)
 SOURCE_PATH="/home/andrei"
@@ -26,11 +26,9 @@ readonly COL_Y='\033[33m'
 # readonly COL_Y_BOLD='\033[1;33m'
 # readonly COL_B_BOLD='\033[1;34m'
 
-# Snapshot name pattern
-# shellcheck disable=2155
-readonly SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
+# Snapshot name will be generated when needed to avoid timestamp race conditions
+SNAPSHOT_NAME=""
 # Pattern to match snapshot directory names (must match SNAPSHOT_NAME format)
-# Just a split of too long line)
 readonly SNAPSHOT_NAME_PATTERN="20([0-9]{2})-(0[1-9]|1[0-2])-\
 (0[1-9]|[1-2][0-9]|3[0-1])_(0[0-9]|1[0-9]|2[0-3])-\
 ([0-5][0-9])-([0-5][0-9])"
@@ -303,8 +301,23 @@ validate_paths() {
 
 # Get the list of directories with a name matches the snapshot name pattern
 generate_snapshot_list() {
-    find "$DEST_PATH" -maxdepth 1 -type d | sort -rn |
-        grep -P "^${DEST_PATH}/${SNAPSHOT_NAME_PATTERN}$" | sed -e "s|^${DEST_PATH}/||"
+    # Check if destination directory exists before listing
+    if [[ ! -d "$DEST_PATH" ]]; then
+        return 0 # No snapshots if destination doesn't exist
+    fi
+
+    # Use PIPESTATUS to check if find operation succeeded
+    local snapshots
+    snapshots=$(find "$DEST_PATH" -maxdepth 1 -type d 2>/dev/null | sort -rn |
+        grep -P "^${DEST_PATH}/${SNAPSHOT_NAME_PATTERN}$" | sed -e "s|^${DEST_PATH}/||")
+
+    # Check if find command succeeded
+    if [[ ${PIPESTATUS[0]} -ne 0 ]]; then
+        log_warn "Failed to list directory contents: $DEST_PATH"
+        return 1
+    fi
+
+    echo "$snapshots"
 }
 
 confirmation_dialog() {
@@ -414,6 +427,7 @@ create_snapshot() {
     start_time=$(date +%s)
 
     # Create snapshot with rsync
+    # Note: includes must come before excludes to work properly
     if ! rsync \
         --archive \
         --recursive \
@@ -423,9 +437,9 @@ create_snapshot() {
         --human-readable \
         --progress \
         --log-file="${snapshot_dir}/${LOG_FILENAME}" \
-        --exclude-from="$tmp_exclude_file" \
         --include="/*/.*" \
         --include="/.*" \
+        --exclude-from="$tmp_exclude_file" \
         --stats \
         "${SOURCE_PATH}/" "${snapshot_dir}/${PARENT_DIR_NAME}/"; then
         exit_err "Rsync failed during snapshot creation" 6
@@ -520,9 +534,16 @@ get_newest_dir() {
 }
 
 process_snapshot() {
+    # Generate snapshot name right before use to avoid timestamp race conditions
+    SNAPSHOT_NAME=$(date +%Y-%m-%d_%H-%M-%S)
+    readonly SNAPSHOT_NAME
+
     # Get the last valid snapshot
     local last_snapshot snapshot_time current_time time_diff_hours
-    last_snapshot="$(generate_snapshot_list | head -n 1)"
+    if ! last_snapshot="$(generate_snapshot_list | head -n 1)"; then
+        log_warn "Failed to list existing snapshots, proceeding with backup"
+        last_snapshot=""
+    fi
 
     if [[ -n "$last_snapshot" ]]; then
         if ! "$IS_FORCE"; then
@@ -559,7 +580,8 @@ cleanup() {
     local exit_code=$?
 
     # Only cleanup if we're exiting due to an error or interruption
-    if [[ $exit_code -ne 0 ]] && [[ -n "${SNAPSHOT_NAME:-}" ]]; then
+    # and SNAPSHOT_NAME has been generated (meaning we started snapshot creation)
+    if [[ $exit_code -ne 0 && -n "${SNAPSHOT_NAME:-}" ]]; then
         log_warn "Snapshot creation interrupted. Cleaning up incomplete snapshot."
         local incomplete_snapshot="${DEST_PATH}/${SNAPSHOT_NAME}"
         if [[ -d "$incomplete_snapshot" ]]; then
