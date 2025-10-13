@@ -40,14 +40,17 @@ AUTO_CONFIRM=false # -y, --yes
 # Minimal timeout in minutes (6 hours)
 SNAPSHOT_TIMEOUT=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 
+# Exclude patterns and files (arrays to handle multiple values)
+EXCLUDE_PATTERNS=()    # -e/--exclude patterns
+EXCLUDE_FROM_FILES=()  # --exclude-from files
+
 # ============================================================================
 # CONFIGURATION FUNCTIONS
 # ============================================================================
 
-# Create exclude file with patterns for files/directories to skip during backup
-create_exclude_file() {
-    local exclude_file="$1"
-    cat <<-'EOF' >"$exclude_file"
+# Default exclude patterns (used when no custom excludes are specified)
+get_default_exclude_patterns() {
+    cat <<-'EOF'
 	*/.terraform.lock.hcl
 	*/.terraform/
 	.cache/
@@ -80,6 +83,62 @@ create_exclude_file() {
 	EOF
 }
 
+# Create exclude file combining all exclusion sources
+create_exclude_file() {
+    local exclude_file="$1"
+    local pattern exclude_from_file
+
+    # Clear the exclude file
+    true > "$exclude_file"
+
+    # If no custom excludes specified, use defaults
+    if [[ ${#EXCLUDE_PATTERNS[@]} -eq 0 && ${#EXCLUDE_FROM_FILES[@]} -eq 0 ]]; then
+        get_default_exclude_patterns > "$exclude_file"
+        log_info "Using default exclude patterns"
+        return 0
+    fi
+
+    # Add custom exclude patterns
+    if [[ ${#EXCLUDE_PATTERNS[@]} -gt 0 ]]; then
+        log_info "Adding ${#EXCLUDE_PATTERNS[@]} custom exclude patterns"
+        for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+            echo "$pattern" >> "$exclude_file"
+        done
+    fi
+
+    # Add patterns from exclude files
+    if [[ ${#EXCLUDE_FROM_FILES[@]} -gt 0 ]]; then
+        log_info "Adding patterns from ${#EXCLUDE_FROM_FILES[@]} exclude files"
+        for exclude_from_file in "${EXCLUDE_FROM_FILES[@]}"; do
+            log_info "  Including patterns from: $exclude_from_file"
+            # Add patterns from file, skipping empty lines and comments
+            grep -v '^#' "$exclude_from_file" | grep -v '^[[:space:]]*$' >> "$exclude_file" || {
+                log_warn "No valid patterns found in: $exclude_from_file"
+            }
+        done
+    fi
+
+    # Log the final number of exclude patterns
+    local pattern_count
+    pattern_count=$(grep -c -v '^[[:space:]]*$' "$exclude_file" 2>/dev/null || echo 0)
+    log_info "Total exclude patterns: $pattern_count"
+}
+
+# Show exclude configuration for transparency
+show_exclude_info() {
+    if [[ ${#EXCLUDE_PATTERNS[@]} -eq 0 && ${#EXCLUDE_FROM_FILES[@]} -eq 0 ]]; then
+        log_info "Exclude configuration: Using default patterns"
+    else
+        log_info "Exclude configuration: Using custom patterns"
+        if [[ ${#EXCLUDE_PATTERNS[@]} -gt 0 ]]; then
+            log_info "  Command-line patterns: ${#EXCLUDE_PATTERNS[@]}"
+        fi
+        if [[ ${#EXCLUDE_FROM_FILES[@]} -gt 0 ]]; then
+            log_info "  Exclude files: ${EXCLUDE_FROM_FILES[*]}"
+        fi
+    fi
+}
+
 # Usage message
 usage() {
     cat <<-EOF
@@ -88,7 +147,7 @@ usage() {
 	Create differential backup using rsync with hard links.
 
 	By default, creates a snapshot only if the last snapshot is older than
-	the configured timeout ($((SNAPSHOT_TIMEOUT / 3600)) hours).
+	the configured timeout ($((SNAPSHOT_TIMEOUT / 3600)) hour(s)).
 
 	OPTIONS:
 	    -s, --source=PATH        Source directory to backup
@@ -110,6 +169,12 @@ usage() {
 	    -k NUM, --keep=NUM       Number of snapshots to retain
 	                             (default: keep all snapshots)
 
+	    -e, --exclude=PATTERN    Exclude files/directories matching PATTERN
+	                             (can be used multiple times)
+
+	    --exclude-from=FILE      Read exclude patterns from FILE
+	                             (can be used multiple times)
+
 	    -h, --help               Show this help message and exit
 
 	EXAMPLES:
@@ -118,11 +183,19 @@ usage() {
 	    $(basename "$0") --force                      # Force backup creation
 	    $(basename "$0") -k 7 -t 1440                 # Keep 7 snapshots, 24h timeout
 	    $(basename "$0") -s /data -p mydata           # Custom source and parent name
+	    $(basename "$0") -e "*.tmp" -e "cache/"       # Exclude patterns
+	    $(basename "$0") -e "-*" -e ".*backup*"       # Exclude patterns starting with - or containing backup
+	    $(basename "$0") --exclude-from=.gitignore    # Use exclude file
+	    $(basename "$0") -e "*.log" --exclude-from=/etc/backup.exclude  # Combine methods
 
 	NOTES:
 	    - Snapshots use hard links for space efficiency
 	    - Interrupted snapshots are automatically cleaned up
 	    - Each snapshot contains a success marker file for integrity checking
+	    - If no exclude options are specified, default exclude patterns are used
+	    - Custom excludes completely override defaults (use --exclude-from with defaults if needed)
+	    - Multiple -e/--exclude and --exclude-from options can be combined
+	    - Exclude files support comments (#) and blank lines are ignored
 	EOF
 }
 
@@ -227,6 +300,51 @@ process_cmd_options() {
             ;;
         -y | --yes)
             AUTO_CONFIRM=true
+            shift
+            ;;
+        -e | --exclude)
+            # Handle exclude patterns specially - they can start with '-'
+            if [[ $# -lt 2 ]]; then
+                __show_error_and_usage "Option $1 requires a value" 9
+            fi
+            if [[ -z "$2" ]]; then
+                __show_error_and_usage "Option $1 requires a non-empty value" 9
+            fi
+            EXCLUDE_PATTERNS+=("$2")
+            shift 2
+            ;;
+        --exclude=*)
+            local pattern="${1#*=}"
+            if [[ -z "$pattern" ]]; then
+                __show_error_and_usage "Option --exclude requires a value" 9
+            fi
+            EXCLUDE_PATTERNS+=("$pattern")
+            shift
+            ;;
+        --exclude-from)
+            local exclude_file
+            exclude_file="$(__get_option_value "$1" "$2")"
+            if [[ ! -f "$exclude_file" ]]; then
+                __show_error_and_usage "Exclude file does not exist: $exclude_file" 13
+            fi
+            if [[ ! -r "$exclude_file" ]]; then
+                __show_error_and_usage "Exclude file is not readable: $exclude_file" 14
+            fi
+            EXCLUDE_FROM_FILES+=("$exclude_file")
+            shift 2
+            ;;
+        --exclude-from=*)
+            local exclude_file="${1#*=}"
+            if [[ -z "$exclude_file" ]]; then
+                __show_error_and_usage "Option --exclude-from requires a value" 9
+            fi
+            if [[ ! -f "$exclude_file" ]]; then
+                __show_error_and_usage "Exclude file does not exist: $exclude_file" 13
+            fi
+            if [[ ! -r "$exclude_file" ]]; then
+                __show_error_and_usage "Exclude file is not readable: $exclude_file" 14
+            fi
+            EXCLUDE_FROM_FILES+=("$exclude_file")
             shift
             ;;
         -*)
@@ -419,6 +537,8 @@ create_snapshot() {
     # Ensure cleanup of temp file
     trap 'rm -f "$tmp_exclude_file"' RETURN
 
+    # Show exclude configuration and create exclude file
+    show_exclude_info
     create_exclude_file "$tmp_exclude_file"
 
     log_info "Creating snapshot: $SNAPSHOT_NAME"
