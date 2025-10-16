@@ -281,6 +281,9 @@ alias gsw='git switch'
 alias gswc='git switch --create'
 alias gupv='git pull --rebase --verbose'
 
+# kubectl aliases
+alias kconf='kubectl config'
+
 git_track_all_remote_branches() {
     local remote_name="${1:-origin}" remote
     while IFS= read -r remote; do
