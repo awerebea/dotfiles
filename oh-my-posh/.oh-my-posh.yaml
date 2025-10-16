@@ -189,9 +189,12 @@ blocks:
     template: "  {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}}"
     properties:
       context_aliases:
-        arn:aws:eks:us-east-1:714767054201:cluster/aue1d1z1ekslms: dev
-        arn:aws:eks:us-east-1:607145767122:cluster/aue1t1z1ekslms: test
-        arn:aws:eks:us-east-1:717545809501:cluster/aue1p1z1ekslms: prod
+        arn:aws:eks:us-east-1:714767054201:cluster/aue1d1z1ekslms: aue1_d1
+        arn:aws:eks:us-west-2:714767054201:cluster/auw2d1z1ekslms: auw2_d1
+        arn:aws:eks:us-east-1:607145767122:cluster/aue1t1z1ekslms: aue1_t1
+        arn:aws:eks:us-west-2:607145767122:cluster/auw2t1z1ekslms: auw2_t1
+        arn:aws:eks:us-east-1:717545809501:cluster/aue1p1z1ekslms: aue1_p1
+        arn:aws:eks:us-west-2:717545809501:cluster/auw2p1z1ekslms: auw2_p1
   - type: aws
     foreground: white
     background: transparent
