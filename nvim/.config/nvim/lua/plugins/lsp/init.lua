@@ -68,7 +68,7 @@ return {
             },
           },
         },
-        ["terraformls@0.28.1"] = {},
+        terraformls = {},
         bashls = { filetypes = { "sh", "zsh" } },
         rust_analyzer = {},
         gopls = {},
