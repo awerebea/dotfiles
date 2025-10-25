@@ -439,3 +439,7 @@ if [[ "$(uname)" == "Darwin" ]]; then
     # shellcheck disable=2155
     export GPG_TTY=$(tty)
 fi
+
+if [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
