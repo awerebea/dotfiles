@@ -591,17 +591,6 @@ set -g @plugin "tmux-plugins/tmux-open"
 set -g @open-S 'https://www.google.com/search?q='
 
 
-set -g @plugin "tmux-plugins/tmux-sidebar"
-# Toggle sidebar-tree and do not move focus to tree pane
-set -g @sidebar-tree ''
-# Toggle sidebar-tree and move focus to tree pane
-set -g @sidebar-tree-focus 'F2'
-# Colorize the tree directory listing in the sidebar
-set -g @sidebar-tree-command 'tree -C --dirsfirst -I .git -a'
-# The default sidebar width
-set -g @sidebar-tree-width '60'
-
-
 set -g @plugin "samoshkin/tmux-plugin-sysstat"
 set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
 set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
@@ -616,43 +605,6 @@ set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
 set -g @sysstat_mem_color_low "#9ece6a default default"
 set -g @sysstat_mem_color_medium "#d7af5f default default"
 set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
-
-
-set -g @plugin "CrispyConductor/tmux-copy-toolkit"
-set -g @copytk-no-default-binds on
-set -g @copytk-copy-command 'tmux load-buffer - && tmux save-buffer - | \
-  xclip -selection clipboard && \
-  tmux display-message "Copied to the system clipboard!"'
-# copytk prefix: easymotion action bindings
-# bind-key -T prefix s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1" # map is used by easyjump.tmux
-bind-key -T prefix S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T prefix d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copytk S run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copytk k run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction backward"
-bind-key -T copytk j run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines --search-direction forward"
-bind-key -T copytk n run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-lines"
-# copy mode: easymotion action bindings
-bind-key -T copy-mode-vi s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copy-mode s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 1"
-bind-key -T copy-mode-vi d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-bind-key -T copy-mode d run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easymotion-search --search-nkeys 2"
-# copytk prefix: easycopy action bindings
-bind-key -T copytk y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1"
-bind-key -T copytk Y run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 2"
-# tmux prefix: easycopy action bindings
-# bind-key -T prefix C-M-s run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py easycopy --search-nkeys 1" # conflicts with omerxx/tmux-floax
-# tmux prefix: quickcopy action bindings
-bind-key -T prefix Q run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickcopy"
-# tmux prefix: quickopen action bindings
-bind-key -T prefix C-p run-shell -b "python3 ~/.tmux/plugins/tmux-copy-toolkit/copytk.py quickopen"
-# bindings to enter copytk prefix
-bind-key -T copy-mode-vi a switch-client -T copytk
-bind-key -T copy-mode a switch-client -T copytk
-set -g @copytk-quickopen-open-command xdg-open
-set -g @copytk-quickopen-match-0-2 paths
-set -g @copytk-quickopen-match-0-3 filenames
 
 
 set -g @plugin "laktak/extrakto"
@@ -779,12 +731,6 @@ set -g @plugin "tmux-plugins/tmux-logging"
 set -g @logging-path "$HOME/.tmux/logs"
 set -g @screen-capture-path "$HOME/.tmux/logs"
 set -g @save-complete-history-path "$HOME/.tmux/logs"
-
-
-set -g @plugin "kiyoon/treemux"
-set -g @treemux-tree-nvim-init-file '~/.tmux/treemux_init.lua'
-# set -g @treemux-tree 'Bspace'
-set -g @treemux-tree-focus 'Tab'
 
 
 set -g @plugin "aserowy/tmux.nvim"
