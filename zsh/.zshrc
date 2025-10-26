@@ -736,13 +736,12 @@ fi
 # Lazy loading nvm if exists
 if [ -d "$HOME/.nvm" ]; then
     lazy_nvm() {
-        unset -f nvm npm node vim nvim ranger cdk github-copilot-cli # unset -f == unfunction
+        unset -f nvm npm node vim nvim ranger cdk # unset -f == unfunction
         [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
         # shellcheck disable=1091
         [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
         # shellcheck disable=1091
         [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
-        eval "$(github-copilot-cli alias -- "$0")"
     }
     nvm() {
         lazy_nvm; $0 "$@"
@@ -763,9 +762,6 @@ if [ -d "$HOME/.nvm" ]; then
         lazy_nvm; $0 "$@"
     }
     cdk() {
-        lazy_nvm; $0 "$@"
-    }
-    github-copilot-cli() {
         lazy_nvm; $0 "$@"
     }
 fi
@@ -831,11 +827,6 @@ export_all_ruby_versions_bin_dirs() {
     fi
 }
 export_all_ruby_versions_bin_dirs
-
-# Lazy loading github-copilot if exists
-if [[ "${commands[github-copilot-cli]}" ]]; then
-    eval "$(github-copilot-cli alias -- "$0")"
-fi
 
 # Load Homebrew for linux if installed
 if [[ -f "/home/linuxbrew/.linuxbrew/bin/brew" ]]; then
