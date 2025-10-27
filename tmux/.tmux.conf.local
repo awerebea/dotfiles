@@ -692,7 +692,7 @@ if-shell '[ $(uname -s) = Linux ]' {
 # -------------------------
 # 1. Local relative or absolute file paths with extension and optional :line:col
 # Matches: ./foo.txt, ../src/main.py:12:34, ~/project/lib/utils.js
-set -g @thumbs-regexp-1 '(?:\.{1,2}/|~?/)?[\w.~@$-]+(?:/[\w.~@$-]+)*/[\w.~@$-]+\.[\w]+(?::\d+:\\d+)?'
+set -g @thumbs-regexp-1 '(?:\.{1,2}/|~?/)?[\w.~@$-]+(?:/[\w.~@$-]+)*/(?:[\w.~@$-]+\.[\w]+(?::\d+:\d+)?|(?:\s|$))'
 # -------------------------
 # 2. Simple filenames in current directory with extension and optional :line:col
 # Matches: foo.txt, config.yaml, script.sh:100:5
