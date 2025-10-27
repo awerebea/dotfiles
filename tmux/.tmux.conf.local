@@ -524,6 +524,11 @@ tmux_conf_uninstall_plugins_on_reload=false
 #   sleep 300                                         # sleep for 5 minutes, throttle network requests whatever the value of status-interval
 # }
 #
+# kube_tmux() {
+#   $(/usr/bin/env bash) $TMUX_PLUGIN_MANAGER_PATH/kube-tmux/kube.tmux 250 red cyan
+#   sleep 10
+# }
+#
 # "$@"
 # # /!\ do not remove the previous line
 # #     do not write below this line
@@ -817,6 +822,9 @@ set -g @plugin "trevarj/tmux-open-nvim"
 set -g @ton-open-strategy ":e"
 
 set -g @plugin 'kristopolous/tmux-gentrify'
+
+
+set -g @plugin 'jonmosco/kube-tmux'
 # }}} --------------- end of plugins settings -----------------------------------------------------
 
 # Show pane details.
@@ -917,7 +925,8 @@ tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
 tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S |\
-#[fg=colour255,bg=colour237] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default]'
+#[fg=colour255,bg=colour237] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default]\
+ #{kube_tmux}'
 
 tmux_conf_theme_status_right='#[fg=yellow,bold]#(\
   [ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE'\
