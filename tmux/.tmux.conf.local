@@ -477,9 +477,9 @@ tmux_conf_uninstall_plugins_on_reload=false
 # }
 #
 # # usage: #{online}
-# # online() {
-# #   ping -c 1 1.1.1.1 >/dev/null 2>&1 && printf '✔' || printf '✘'
-# # }
+# online() {
+#   ping -c 1 1.1.1.1 >/dev/null 2>&1 && printf '✔' || printf '✘'
+# }
 #
 # # usage: #{wan_ip_v4}
 # wan_ip_v4() {
@@ -499,10 +499,10 @@ tmux_conf_uninstall_plugins_on_reload=false
 #   sleep 60
 # }
 #
-# # tmux_server_cpu() {
-# #     echo "tmux-server CPU usage: $(ps -p "$(pgrep "tmux")" -o %cpu | tail -n 1 | xargs)%"
-# #     sleep 10
-# # }
+# tmux_server_cpu() {
+#   echo "tmux-server CPU usage: $(ps -p "$(pgrep 'tmux: server')" -o %cpu | tail -n 1 | xargs)%"
+#   sleep 10
+# }
 #
 # # usage: #{wan_ip_v6}
 # wan_ip_v6() {
