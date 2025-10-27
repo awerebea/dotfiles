@@ -500,7 +500,11 @@ tmux_conf_uninstall_plugins_on_reload=false
 # }
 #
 # tmux_server_cpu() {
-#   echo "tmux-server CPU usage: $(ps -p "$(pgrep 'tmux: server')" -o %cpu | tail -n 1 | xargs)%"
+#   server_cpu_load="$(ps -p "$(pgrep 'tmux: server')" -o %cpu= | xargs)"
+#   # Compare as float using awk (portable way)
+#   if echo "$server_cpu_load" | awk '{exit !($1 > 5)}'; then
+#     echo "tmux-server CPU usage: ${server_cpu_load}% "
+#   fi
 #   sleep 10
 # }
 #
