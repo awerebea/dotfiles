@@ -801,6 +801,7 @@ set -g @named-snapshot-restore 'M:manual P:* D:dev'
 set -g @plugin "trevarj/tmux-open-nvim"
 set -g @ton-open-strategy ":e"
 
+set -g @plugin 'kristopolous/tmux-gentrify'
 # }}} --------------- end of plugins settings -----------------------------------------------------
 
 # Show pane details.
