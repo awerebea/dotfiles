@@ -932,7 +932,6 @@ tmux_conf_theme_status_right='#[fg=yellow,bold]#(\
   [ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE'\
 )#[fg=default]\
 #{prefix}\
-#{tmux_server_cpu}\
 #{mouse}\
 #{pairing}\
 #{synchronized}\
