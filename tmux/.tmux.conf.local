@@ -566,7 +566,7 @@ bind S-Right swap-window -t +1 \; next-window
 
 # {{{ --------------- List of installed plugins with their settings -------------------------------
 set -g @plugin "tmux-plugins/tmux-sensible"
-set -g @plugin "jaclu/tmux-power-zoom"
+set -g @plugin "jaclu/tmux-power-zoom" # Prefix + Z
 
 
 set -g @plugin "tmux-plugins/tmux-resurrect"
@@ -585,6 +585,17 @@ set -g @continuum-save-interval '15'
 
 set -g @plugin "tmux-plugins/tmux-copycat"
 set -g @copycat_search ?
+# Predefined searches (start "copycat mode" and jump to first match):
+#   Prefix + Ctrl-f   → simple file search
+#   Prefix + Ctrl-g   → jump over git status files (best used after `git status`)
+#   Prefix + Alt-h    → jump over SHA-1/SHA-256 hashes (best used after `git log`)
+#   Prefix + Ctrl-u   → URL search (http, ftp, git URLs)
+#   Prefix + Ctrl-d   → number search (mnemonic: d for digit)
+#   Prefix + Alt-i    → IP address search
+#
+# "Copycat mode" keybindings (enabled after starting a search):
+#   n                 → jump to next match
+#   N                 → jump to previous match
 
 
 set -g @plugin "tmux-plugins/tmux-open"
