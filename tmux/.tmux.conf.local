@@ -574,11 +574,11 @@ bind S-Left swap-window -t -1 \; previous-window
 bind S-Right swap-window -t +1 \; next-window
 
 # {{{ --------------- List of installed plugins with their settings -------------------------------
-set -g @plugin "tmux-plugins/tmux-sensible"
-set -g @plugin "jaclu/tmux-power-zoom" # Prefix + Z
+set -g @plugin 'tmux-plugins/tmux-sensible'
+set -g @plugin 'jaclu/tmux-power-zoom' # Prefix + Z
 
 
-set -g @plugin "tmux-plugins/tmux-resurrect"
+set -g @plugin 'tmux-plugins/tmux-resurrect'
 # save and restore window geometry for most terminals in X11
 set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
 set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.local/share/tmux/resurrect/geometry)'
@@ -587,12 +587,12 @@ set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
 
 
-set -g @plugin "tmux-plugins/tmux-continuum"
+set -g @plugin 'tmux-plugins/tmux-continuum'
 set -g @continuum-restore 'on'
 set -g @continuum-save-interval '15'
 
 
-set -g @plugin "tmux-plugins/tmux-copycat"
+set -g @plugin 'tmux-plugins/tmux-copycat'
 set -g @copycat_search ?
 # Predefined searches (start "copycat mode" and jump to first match):
 #   Prefix + Ctrl-f   → simple file search
@@ -607,11 +607,11 @@ set -g @copycat_search ?
 #   N                 → jump to previous match
 
 
-set -g @plugin "tmux-plugins/tmux-open"
+set -g @plugin 'tmux-plugins/tmux-open'
 set -g @open-S 'https://www.google.com/search?q='
 
 
-set -g @plugin "samoshkin/tmux-plugin-sysstat"
+set -g @plugin 'samoshkin/tmux-plugin-sysstat'
 set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
 set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
 set -g @sysstat_cpu_medium_threshold "30"
@@ -627,20 +627,20 @@ set -g @sysstat_mem_color_medium "#d7af5f default default"
 set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
 
 
-set -g @plugin "laktak/extrakto"
+set -g @plugin 'laktak/extrakto'
 set -g @extrakto_key "Bspace"
 set -g @extrakto_filter_order "all word line url path hash"
 set -g @extrakto_grab_area "recent"
 set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
 
 
-set -g @plugin "tmux-plugins/tmux-yank"
+set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_selection 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_with_mouse on
 
 
-set -g @plugin "MunifTanjim/tmux-mode-indicator"
+set -g @plugin 'MunifTanjim/tmux-mode-indicator'
 # prompt to display when tmux prefix key is pressed
 set -g @mode_indicator_prefix_prompt ' WAIT '
 # prompt to display when tmux is in copy mode
@@ -659,11 +659,11 @@ set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
 set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
 
 
-set -g @plugin "MunifTanjim/tmux-suspend"
+set -g @plugin 'MunifTanjim/tmux-suspend'
 set -g @suspend_key 'F12'
 
 
-set -g @plugin "charlietag/tmux-split-statusbar"
+set -g @plugin 'charlietag/tmux-split-statusbar'
 set -g @split-statusbar-mode 'on'                 # [ on | off]
 set -g @split-statusbar-swap-lines 'on'
 set -g @split-statusbar-bindkey '-n C-F12'        # [ M-s | -n F11 | ... ]
@@ -674,7 +674,7 @@ set -g @split-status-hide-bindkey '-n S-F12'        # [ M-d | -n F12 | ... ]
 # define yourself just like bind-key, default: M-d
 
 
-set -g @plugin "fcsonline/tmux-thumbs"
+set -g @plugin 'fcsonline/tmux-thumbs'
 set -g @thumbs-key F
 set -g @thumbs-unique enabled
 set -g @thumbs-reverse enabled
@@ -712,17 +712,17 @@ set -g @thumbs-upcase-command 'tmux run-shell "cd #{pane_current_path} && \
   $TMUX_PLUGIN_MANAGER_PATH/tmux-open-nvim/scripts/ton {}"'
 
 
-set -g @plugin "sainnhe/tmux-fzf"
+set -g @plugin 'sainnhe/tmux-fzf'
 bind-key "M-f" command-prompt { find-window -Z "%%" }
 TMUX_FZF_LAUNCH_KEY="f" # prefix Alt-f
 
 
-set -g @plugin "wfxr/tmux-fzf-url"
+set -g @plugin 'wfxr/tmux-fzf-url'
 set -g @fzf-url-bind 'u'
 set -g @fzf-url-history-limit '2000'
 
 
-set -g @plugin "awerebea/tmux-translator"
+set -g @plugin 'awerebea/tmux-translator'
 # the key to trigger translation
 set -g @tmux-translator "M-t"
 # the width of popup window
@@ -737,13 +737,13 @@ set -g @tmux-translator-to "ru"
 set -g @tmux-translator-engine "google"
 
 
-set -g @plugin "addisonlynch/tmux-sidebar-plus"
+set -g @plugin 'addisonlynch/tmux-sidebar-plus'
 set -g @sidebar-plus-sidebar-key 'b'
 set -g @sidebar-plus-layout-key 'g'
 set -g @sidebar-plus-position 'left'
 
 
-set -g @plugin "IngoMeyer441/tmux-easy-motion"
+set -g @plugin 'IngoMeyer441/tmux-easy-motion'
 # change default keybind for change panes layout to use "Space" as prefix
 bind-key n next-layout
 # bind-key -T copy-mode-vi v send-keys -X begin-selection
@@ -754,18 +754,18 @@ set -g @easy-motion-binding-bd-w "Space"
 # set -g @easy-motion-default-motion "bd-w"
 
 
-set -g @plugin "jaclu/tmux-menus"
+set -g @plugin 'jaclu/tmux-menus'
 set -g @menus_trigger '@'
 
 
-set -g @plugin "roosta/tmux-fuzzback"
+set -g @plugin 'roosta/tmux-fuzzback'
 set -g @fuzzback-bind /
 if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
   set -g @fuzzback-popup 1; \
   set -g @fuzzback-popup-size '90%'"
 
 
-set -g @plugin "tmux-plugins/tmux-logging"
+set -g @plugin 'tmux-plugins/tmux-logging'
 # Logging: prefix + shift + p
 # "Screen Capture": prefix + alt + p
 # Save complete history: prefix + alt + shift + p
@@ -774,18 +774,18 @@ set -g @screen-capture-path "$HOME/.tmux/logs"
 set -g @save-complete-history-path "$HOME/.tmux/logs"
 
 
-set -g @plugin "aserowy/tmux.nvim"
+set -g @plugin 'aserowy/tmux.nvim'
 set -g @tmux-nvim-navigation false
 set -g @tmux-nvim-resize false
 
 
-set -g @plugin "roy2220/easyjump.tmux"
+set -g @plugin 'roy2220/easyjump.tmux'
 set-option -g @easyjump-key-binding "s"
 set-option -g @easyjump-auto-begin-selection "off"
 set-option -g @easyjump-smart-case "on"
 
 
-set -g @plugin "omerxx/tmux-sessionx"
+set -g @plugin 'omerxx/tmux-sessionx'
 bind-key O select-pane -t :.+
 set -g @sessionx-bind "o"
 set -g @sessionx-x-path ""
@@ -796,7 +796,7 @@ set -g @sessionx-window-mode "off"
 set -g @sessionx-zoxide-mode "off"
 
 
-set -g @plugin "omerxx/tmux-floax"
+set -g @plugin 'omerxx/tmux-floax'
 set -g @floax-bind "p"
 set -g @floax-bind-menu "C-P"
 set -g @floax-width "80%"
@@ -806,19 +806,19 @@ set -g @floax-text-color "blue"
 set -g @floax-change-path "true"
 
 
-set -g @plugin "graemedavidson/tmux-pane-focus"
+set -g @plugin 'graemedavidson/tmux-pane-focus'
 # Press <prefix> + T to override settings for the current window
 set -g @pane-focus-size '50'
 set -g @pane-focus-direction '-'
 
 
-set -g @plugin "spywhere/tmux-named-snapshot"
+set -g @plugin 'spywhere/tmux-named-snapshot'
 set -g @named-snapshot-switch-client 'N:tns'
 set -g @named-snapshot-save 'm:manual p:* d:dev'
 set -g @named-snapshot-restore 'M:manual P:* D:dev'
 
 
-set -g @plugin "trevarj/tmux-open-nvim"
+set -g @plugin 'trevarj/tmux-open-nvim'
 set -g @ton-open-strategy ":e"
 
 set -g @plugin 'kristopolous/tmux-gentrify'
