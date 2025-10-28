@@ -610,6 +610,8 @@ set -g @copycat_search ?
 
 set -g @plugin 'tmux-plugins/tmux-open'
 set -g @open-S 'https://www.google.com/search?q='
+set -g @open-editor-command "tmux run-shell cd #{pane_current_path} && \
+  $TMUX_PLUGIN_MANAGER_PATH/tmux-open-nvim/scripts/ton"
 
 
 set -g @plugin 'samoshkin/tmux-plugin-sysstat'
