@@ -781,9 +781,15 @@ set -g @tmux-nvim-resize false
 
 
 set -g @plugin 'roy2220/easyjump.tmux'
-set-option -g @easyjump-key-binding "s"
+set-option -g @easyjump-key-binding "S"
 set-option -g @easyjump-auto-begin-selection "off"
 set-option -g @easyjump-smart-case "on"
+
+
+set -g @plugin 'schasse/tmux-jump'
+set -g @jump-key 's'
+set -g @jump-bg-color '\e[0m\e[90m'
+set -g @jump-fg-color '\e[1m\e[32m'
 
 
 set -g @plugin 'omerxx/tmux-sessionx'
@@ -823,8 +829,6 @@ set -g @plugin 'trevarj/tmux-open-nvim'
 set -g @ton-open-strategy ":e"
 
 set -g @plugin 'kristopolous/tmux-gentrify'
-
-
 set -g @plugin 'jonmosco/kube-tmux'
 # }}} --------------- end of plugins settings -----------------------------------------------------
 
