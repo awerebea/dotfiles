@@ -17,6 +17,11 @@ if [ -d "$HOME/.local/share/nvim-release/bin" ] &&
     export PATH="$HOME/.local/share/nvim-release/bin:$PATH"
 fi
 
+if [ -d "$HOME/.cargo/bin" ] &&
+    [[ ":$PATH:" != *":$HOME/.cargo/bin"* ]]; then
+    export PATH="$HOME/.cargo/bin:$PATH"
+fi
+
 # Define default editor nvim, vim, vi or nano
 if command -v "nvim" &>/dev/null; then
     export EDITOR='nvim'
