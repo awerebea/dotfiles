@@ -631,7 +631,7 @@ set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
 
 
 set -g @plugin 'laktak/extrakto'
-set -g @extrakto_key "Bspace"
+set -g @extrakto_key "tab"
 set -g @extrakto_filter_order "all word line url path hash"
 set -g @extrakto_grab_area "recent"
 set -g @extrakto_fzf_tool "$HOME/.fzf/bin/fzf"
