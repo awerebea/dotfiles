@@ -698,22 +698,30 @@ if-shell '[ $(uname -s) = Linux ]' {
     tmux display-message "Copied multiple items!"'
 }
 # -------------------------
-# 1. Local relative or absolute file paths with extension and optional :line:col
-# Matches: ./foo.txt, ../src/main.py:12:34, ~/project/lib/utils.js
-set -g @thumbs-regexp-1 '(?:\.{1,2}/|~?/)?[\w.~@$-]+(?:/[\w.~@$-]+)*/(?:[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?::\d+:\d+)?|(?:\s|$))'
+# 1. Local relative or absolute file paths with extension and :line:col (`:#:#`) or line (` line #`)
+# Matches: ../src/main.py:12:34, ~/project/lib/utils.js:5:15, modules/redis/main.tf line 8
+set -g @thumbs-regexp-1 '(?:\.{1,2}/|~?/)?(?:[\w.~@$-]+(?:/[\w.~@$-]+)*/)?[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
 # -------------------------
-# 2. Simple filenames in current directory with extension and optional :line:col
-# Matches: foo.txt, config.yaml, script.sh:100:5
-set -g @thumbs-regexp-2 '[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?::\d+:\d+)?'
+# 2. Simple filenames in current directory with extension and :line:col (`:#:#`) or line (` line #`)
+# Matches: foo.txt:12:34, main.tf line 8
+set -g @thumbs-regexp-2 '[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
 # -------------------------
-# 3. URLs with optional file path and extension
+# 3. Simple filenames in current directory with extension
+# Matches: foo.txt:12:34, main.tf line 8
+set -g @thumbs-regexp-3 '[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+'
+# -------------------------
+# 4. Local relative or absolute file paths without extension and :line:col (`:#:#`) or line (` line #`)
+# Matches: ../src/Dockerfile:12:34
+set -g @thumbs-regexp-4 '(?:\.{1,2}/|~?/)?[\w.~@$-]+(?:/[\w.~@$-]+)*/[\w.~@$-]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
+# -------------------------
+# 5. URLs with optional file path and extension
 # Matches: https://example.com/file.js, http://host/path/to/file.txt
-set -g @thumbs-regexp-3 'https?://[\w./~@$-]+\.[\w]+'
+set -g @thumbs-regexp-5 'https?://[\w./~@$-]+\.[\w]+'
 # -------------------------
-# 4. Git log date/time formats (single segment)
+# 6. Git log date/time formats (single segment)
 # Matches ISO and human-readable git dates with optional TZ
 # Matches: 2025-10-26 14:47:22, Sun Oct 26 09:48:48 2025, Sun Oct 26 09:48:48 2025 -0400
-set -g @thumbs-regexp-4 '(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(?:[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{2}:\d{2}:\d{2} \d{4}(?: [+-]\d{4})?)'
+set -g @thumbs-regexp-6 '(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(?:[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{2}:\d{2}:\d{2} \d{4}(?: [+-]\d{4})?)'
 
 # Launches helper script on a upcase hint press
 set -g @thumbs-upcase-command 'tmux run-shell "cd #{pane_current_path} && \
