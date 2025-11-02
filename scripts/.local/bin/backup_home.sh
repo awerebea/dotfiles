@@ -41,8 +41,8 @@ AUTO_CONFIRM=false # -y, --yes
 SNAPSHOT_TIMEOUT=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 
 # Exclude patterns and files (arrays to handle multiple values)
-EXCLUDE_PATTERNS=()    # -e/--exclude patterns
-EXCLUDE_FROM_FILES=()  # --exclude-from files
+EXCLUDE_PATTERNS=()   # -e/--exclude patterns
+EXCLUDE_FROM_FILES=() # --exclude-from files
 
 # ============================================================================
 # CONFIGURATION FUNCTIONS
@@ -89,11 +89,11 @@ create_exclude_file() {
     local pattern exclude_from_file
 
     # Clear the exclude file
-    true > "$exclude_file"
+    true >"$exclude_file"
 
     # If no custom excludes specified, use defaults
     if [[ ${#EXCLUDE_PATTERNS[@]} -eq 0 && ${#EXCLUDE_FROM_FILES[@]} -eq 0 ]]; then
-        get_default_exclude_patterns > "$exclude_file"
+        get_default_exclude_patterns >"$exclude_file"
         log_info "Using default exclude patterns"
         return 0
     fi
@@ -102,7 +102,7 @@ create_exclude_file() {
     if [[ ${#EXCLUDE_PATTERNS[@]} -gt 0 ]]; then
         log_info "Adding ${#EXCLUDE_PATTERNS[@]} custom exclude patterns"
         for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-            echo "$pattern" >> "$exclude_file"
+            echo "$pattern" >>"$exclude_file"
         done
     fi
 
@@ -112,7 +112,7 @@ create_exclude_file() {
         for exclude_from_file in "${EXCLUDE_FROM_FILES[@]}"; do
             log_info "  Including patterns from: $exclude_from_file"
             # Add patterns from file, skipping empty lines and comments
-            grep -v '^#' "$exclude_from_file" | grep -v '^[[:space:]]*$' >> "$exclude_file" || {
+            grep -v '^#' "$exclude_from_file" | grep -v '^[[:space:]]*$' >>"$exclude_file" || {
                 log_warn "No valid patterns found in: $exclude_from_file"
             }
         done
