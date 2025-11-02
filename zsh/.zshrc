@@ -121,6 +121,11 @@ if [[ ! -f "$ZSH_PLUGINS/zsh-autopair/zsh-autopair.plugin.zsh" ]]; then
     git clone https://github.com/hlissner/zsh-autopair "$ZSH_PLUGINS/zsh-autopair"
 fi
 
+if [[ ! -f "$ZSH_PLUGINS/zsh-bd/zsh-bd.plugin.zsh" ]]; then
+    git clone https://github.com/Tarrasch/zsh-bd "$ZSH_PLUGINS/zsh-bd"
+    ln -s  bd.zsh "$ZSH_PLUGINS"/zsh-bd/zsh-bd.plugin.zsh
+fi
+
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
@@ -289,6 +294,7 @@ plugins=(
     zsh-edit
     zsh-bash-completions-fallback
     zsh-autopair
+    zsh-bd
 )
 
 # Load the plugin only if it will work
