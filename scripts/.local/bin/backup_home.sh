@@ -557,9 +557,9 @@ create_snapshot() {
         --human-readable \
         --progress \
         --log-file="${snapshot_dir}/${LOG_FILENAME}" \
+        --exclude-from="$tmp_exclude_file" \
         --include="/*/.*" \
         --include="/.*" \
-        --exclude-from="$tmp_exclude_file" \
         --stats \
         "${SOURCE_PATH}/" "${snapshot_dir}/${PARENT_DIR_NAME}/"; then
         exit_err "Rsync failed during snapshot creation" 6
