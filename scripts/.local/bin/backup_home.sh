@@ -563,6 +563,7 @@ create_snapshot() {
         --include="/*/.*" \
         --include="/.*" \
         --stats \
+        --quiet \
         "${SOURCE_PATH}/" "${snapshot_dir}/${PARENT_DIR_NAME}/"; then
         exit_err "Rsync failed during snapshot creation" 6
     fi
