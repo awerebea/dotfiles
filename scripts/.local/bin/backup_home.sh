@@ -55,6 +55,7 @@ get_default_exclude_patterns() {
     cat <<-'EOF'
 	*/.terraform.lock.hcl
 	*/.terraform/
+	*/.venv/
 	.cache/
 	.cargo/
 	.config/Code/
@@ -63,8 +64,13 @@ get_default_exclude_patterns() {
 	.config/google-chrome/
 	.config/joplin-desktop/
 	.config/skypeforlinux/
+	.config/pcloud/Cache/
 	.joplin/
 	.local/share/nvim/
+	.local/apps/jellyfin/cache/
+	.local/share/flatpak/
+	.local/share/bob/
+	.local/share/TelegramDesktop/tdata/user_data/
 	.mozilla/
 	.npm/
 	.nvm/
