@@ -117,6 +117,10 @@ if [[ ! -f "$ZSH_PLUGINS/git-flow-completion/git-flow-completion.plugin.zsh" ]];
     git clone https://github.com/bobthecow/git-flow-completion "$ZSH_PLUGINS/git-flow-completion"
 fi
 
+if [[ ! -f "$ZSH_PLUGINS/zsh-autopair/zsh-autopair.plugin.zsh" ]]; then
+    git clone https://github.com/hlissner/zsh-autopair "$ZSH_PLUGINS/zsh-autopair"
+fi
+
 if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
@@ -284,6 +288,7 @@ plugins=(
     fast-syntax-highlighting
     zsh-edit
     zsh-bash-completions-fallback
+    zsh-autopair
 )
 
 # Load the plugin only if it will work
@@ -1116,6 +1121,9 @@ if [[ -f "$ZSH_PLUGINS/tipz/tipz.zsh" ]]; then
     source "$ZSH_PLUGINS/tipz/tipz.zsh"
     export TIPZ_TEXT='  \033[1;33m↳\033[0m'
 fi
+
+# autopair-init should be executed before globalias-wrapper
+[[ -f "$ZSH_PLUGINS/zsh-autopair/zsh-autopair.plugin.zsh" ]] && autopair-init
 
 # Swap space keybind behavior for globalias plugin
 function globalias-wrapper() {
