@@ -44,6 +44,8 @@ SNAPSHOT_TIMEOUT=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 EXCLUDE_PATTERNS=()   # -e/--exclude patterns
 EXCLUDE_FROM_FILES=() # --exclude-from files
 
+tmp_exclude_file=""
+
 # ============================================================================
 # CONFIGURATION FUNCTIONS
 # ============================================================================
@@ -535,7 +537,7 @@ create_snapshot() {
     snapshot_dir="${DEST_PATH}/${SNAPSHOT_NAME}"
 
     # Ensure cleanup of temp file
-    trap 'rm -f "$tmp_exclude_file"' RETURN
+    trap '[[ -n "${tmp_exclude_file:-}" ]] && rm -f "$tmp_exclude_file"' RETURN
 
     # Show exclude configuration and create exclude file
     show_exclude_info
