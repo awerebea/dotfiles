@@ -514,7 +514,7 @@ remove_old_snapshots() {
 
 # Delete interrupted or incomplete snapshots
 remove_interrupted_snapshots() {
-    local -a snapshots_to_delete_list
+    local snapshots_to_delete_list=()
     local snapshot
 
     while IFS= read -r snapshot; do
