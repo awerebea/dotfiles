@@ -1301,16 +1301,6 @@ rep() {
     eval "printf '$str%0.s' {$start..$end}"
 }
 
-# Go to the given number of levels up
-up(){
-    local num=${1:-1}
-    if [[ ! $num =~ ^[0-9]+$ ]]; then
-        echo "Invalid input of the number of levels to go up."
-        return
-    fi
-    eval "$(echo -n 'cd '; rep "$num" '../')"
-}
-
 # {{{ Fix fzf-tab plugin halt on ../<tab> in git repo
 # https://stackoverflow.com/a/41420448/14110650
 function fzf-tab-complete-wrapper() {
@@ -1375,6 +1365,8 @@ zhistclean() {
 # Aliases
 # shellcheck disable=1091
 source "$HOME/.shared.sh"
+
+alias up="bd"
 
 # BEGIN_AWS_SSO_CLI
 
