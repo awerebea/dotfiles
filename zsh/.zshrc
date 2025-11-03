@@ -122,7 +122,7 @@ if [[ ! -f "$ZSH_PLUGINS/zsh-autopair/zsh-autopair.plugin.zsh" ]]; then
 fi
 
 if [[ ! -f "$ZSH_PLUGINS/zsh-bd/zsh-bd.plugin.zsh" ]]; then
-    git clone https://github.com/Tarrasch/zsh-bd "$ZSH_PLUGINS/zsh-bd"
+    git clone https://github.com/awerebea/zsh-bd "$ZSH_PLUGINS/zsh-bd"
     ln -s  bd.zsh "$ZSH_PLUGINS"/zsh-bd/zsh-bd.plugin.zsh
 fi
 
