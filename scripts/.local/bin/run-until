@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+usage() {
+    local script_name
+    script_name=$(basename "$0")
+
+    cat >&2 <<EOF
+Usage: $script_name <mode> [options] -c <command> [args...]
+
+Modes:
+  s, success   Continue executing the command until the first success
+  f, fail      Continue executing the command until the first failure
+
+Options:
+  -t, --timeout SECONDS           Total timeout in seconds (positive float)
+                                  [default: no timeout]
+  -p, --pause SECONDS             Pause between iterations (non-negative float)
+                                  [default: 5 seconds]
+  -i, --pause-increment SECONDS   Increment to pause on each iteration (float, can be negative)
+                                  [default: 0]
+  -m, --pause-multiplier FLOAT    Multiply pause on each iteration (positive float)
+                                  [default: 1]
+  -M, --pause-max SECONDS         Maximum pause value (positive float)
+                                  [default: no limit]
+  -c, --command COMMAND           Command to execute (required)
+EOF
+    exit 1
+}
+
+# Defaults
+timeout=""
+pause=5
+pause_increment=0
+pause_multiplier=1
+pause_max=""
+cmd=()
+
+# Validate first positional argument
+if [[ $# -lt 2 ]]; then
+    usage
+fi
+
+mode=$1
+shift
+
+case "$mode" in
+s | success) mode="success" ;;
+f | fail) mode="fail" ;;
+*)
+    echo "Error: first argument must be 'success' or 'fail'" >&2
+    usage
+    ;;
+esac
+
+# Argument parsing
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    -t | --timeout)
+        shift
+        timeout="$1"
+        ;;
+    --timeout=*) timeout="${1#*=}" ;;
+    -p | --pause)
+        shift
+        pause="$1"
+        ;;
+    --pause=*) pause="${1#*=}" ;;
+    -i | --pause-increment)
+        shift
+        pause_increment="$1"
+        ;;
+    --pause-increment=*) pause_increment="${1#*=}" ;;
+    -m | --pause-multiplier)
+        shift
+        pause_multiplier="$1"
+        ;;
+    --pause-multiplier=*) pause_multiplier="${1#*=}" ;;
+    -M | --pause-max)
+        shift
+        pause_max="$1"
+        ;;
+    --pause-max=*) pause_max="${1#*=}" ;;
+    -c | --command)
+        shift
+        cmd=("$@")
+        break
+        ;;
+    *)
+        echo "Unknown argument: $1" >&2
+        usage
+        ;;
+    esac
+    shift
+done
+
+if [[ ${#cmd[@]} -eq 0 ]]; then
+    echo "Error: command must be specified with -c or --command" >&2
+    usage
+fi
+
+# Function to validate non-negative floats
+validate_non_negative() {
+    local val=$1 name=$2
+    awk "BEGIN {if($val < 0) exit 1}" || {
+        echo "Error: $name must be non-negative" >&2
+        exit 1
+    }
+}
+# Function to validate positive floats
+validate_positive() {
+    local val=$1 name=$2
+    awk "BEGIN {if($val <= 0) exit 1}" || {
+        echo "Error: $name must be positive" >&2
+        exit 1
+    }
+}
+
+# Function to validate any float
+validate_float() {
+    local val=$1 name=$2
+    printf "%f" "$val" >/dev/null 2>&1 || {
+        echo "Error: $name must be a number" >&2
+        exit 1
+    }
+}
+
+# Validate numeric inputs
+[[ -n "$timeout" ]] && {
+    validate_float "$timeout" "timeout"
+    validate_positive "$timeout" "timeout"
+}
+[[ -n "$pause" ]] && {
+    validate_float "$pause" "pause"
+    validate_non_negative "$pause" "pause"
+}
+validate_float "$pause_increment" "pause-increment" # can be negative
+validate_float "$pause_multiplier" "pause-multiplier"
+validate_positive "$pause_multiplier" "pause-multiplier"
+[[ -n "$pause_max" ]] && {
+    validate_float "$pause_max" "pause-max"
+    validate_positive "$pause_max" "pause-max"
+}
+
+# Timing
+start_time=$(date +%s.%N)
+current_pause="$pause"
+
+while :; do
+    echo "Executing command: ${cmd[*]}"
+    "${cmd[@]}"
+    status=$?
+
+    # Exit condition
+    if [[ "$mode" == "success" && $status -eq 0 ]] || [[ "$mode" == "fail" && $status -ne 0 ]]; then
+        break
+    fi
+
+    # Timeout check
+    if [[ -n "$timeout" ]]; then
+        now=$(date +%s.%N)
+        elapsed=$(awk "BEGIN {print $now - $start_time}")
+        if (($(awk "BEGIN {print ($elapsed >= $timeout)}"))); then
+            echo "Timeout reached ($timeout s)" >&2
+            exit 1
+        fi
+    fi
+
+    # Pause between iterations
+    if [[ -n "$current_pause" && $(awk "BEGIN {print ($current_pause>0)}") -eq 1 ]]; then
+        if [[ -n "$timeout" ]]; then
+            now=$(date +%s.%N)
+            elapsed=$(awk "BEGIN {print $now - $start_time}")
+            remaining=$(awk "BEGIN {print $timeout - $elapsed}")
+            if (($(awk "BEGIN {print ($current_pause >= $remaining)}"))); then
+                echo "Next pause ($current_pause s) would exceed timeout. Exiting loop." >&2
+                break
+            fi
+        fi
+        sleep "$current_pause"
+    fi
+
+    # Update pause: multiply then increment
+    if [[ -n "$current_pause" ]]; then
+        current_pause=$(awk "BEGIN {v=$current_pause * $pause_multiplier + $pause_increment; if(v<0) v=0; print v}")
+        if [[ -n "$pause_max" ]]; then
+            current_pause=$(awk "BEGIN {v=$current_pause; if(v>$pause_max) v=$pause_max; print v}")
+        fi
+    fi
+done
+
+exit "$status"
