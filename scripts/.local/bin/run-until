@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -uo pipefail
 
+# Usage function
 usage() {
     local script_name
     script_name=$(basename "$0")
@@ -99,24 +100,7 @@ if [[ ${#cmd[@]} -eq 0 ]]; then
     usage
 fi
 
-# Function to validate non-negative floats
-validate_non_negative() {
-    local val=$1 name=$2
-    awk "BEGIN {if($val < 0) exit 1}" || {
-        echo "Error: $name must be non-negative" >&2
-        exit 1
-    }
-}
-# Function to validate positive floats
-validate_positive() {
-    local val=$1 name=$2
-    awk "BEGIN {if($val <= 0) exit 1}" || {
-        echo "Error: $name must be positive" >&2
-        exit 1
-    }
-}
-
-# Function to validate any float
+# Validation functions
 validate_float() {
     local val=$1 name=$2
     printf "%f" "$val" >/dev/null 2>&1 || {
@@ -125,22 +109,35 @@ validate_float() {
     }
 }
 
-# Validate numeric inputs
-[[ -n "$timeout" ]] && {
-    validate_float "$timeout" "timeout"
-    validate_positive "$timeout" "timeout"
+validate_positive() {
+    local val=$1 name=$2
+    validate_float "$val" "$name"
+    awk "BEGIN {if($val <= 0) exit 1}" || {
+        echo "Error: $name must be positive" >&2
+        exit 1
+    }
 }
-[[ -n "$pause" ]] && {
-    validate_float "$pause" "pause"
-    validate_non_negative "$pause" "pause"
+
+validate_non_negative() {
+    local val=$1 name=$2
+    validate_float "$val" "$name"
+    awk "BEGIN {if($val < 0) exit 1}" || {
+        echo "Error: $name must be non-negative" >&2
+        exit 1
+    }
 }
-validate_float "$pause_increment" "pause-increment" # can be negative
-validate_float "$pause_multiplier" "pause-multiplier"
+
+# Validate inputs
+[[ -n "$timeout" ]] && validate_positive "$timeout" "timeout"
+[[ -n "$pause" ]] && validate_non_negative "$pause" "pause"
+validate_float "$pause_increment" "pause-increment"
 validate_positive "$pause_multiplier" "pause-multiplier"
-[[ -n "$pause_max" ]] && {
-    validate_float "$pause_max" "pause-max"
-    validate_positive "$pause_max" "pause-max"
-}
+[[ -n "$pause_max" ]] && validate_non_negative "$pause_max" "pause-max"
+
+# Clamp initial pause to pause-max if needed
+if [[ -n "$pause_max" && $(awk "BEGIN {print ($pause > $pause_max)}") -eq 1 ]]; then
+    pause="$pause_max"
+fi
 
 # Timing
 start_time=$(date +%s.%N)
@@ -160,22 +157,18 @@ while :; do
     if [[ -n "$timeout" ]]; then
         now=$(date +%s.%N)
         elapsed=$(awk "BEGIN {print $now - $start_time}")
-        if (($(awk "BEGIN {print ($elapsed >= $timeout)}"))); then
+        remaining=$(awk "BEGIN {print $timeout - $elapsed}")
+        if (($(awk "BEGIN {print ($remaining <= 0)}"))); then
             echo "Timeout reached ($timeout s)" >&2
             exit 1
         fi
     fi
 
-    # Pause between iterations
+    # Pause before next iteration (timeout-aware)
     if [[ -n "$current_pause" && $(awk "BEGIN {print ($current_pause>0)}") -eq 1 ]]; then
-        if [[ -n "$timeout" ]]; then
-            now=$(date +%s.%N)
-            elapsed=$(awk "BEGIN {print $now - $start_time}")
-            remaining=$(awk "BEGIN {print $timeout - $elapsed}")
-            if (($(awk "BEGIN {print ($current_pause >= $remaining)}"))); then
-                echo "Next pause ($current_pause s) would exceed timeout. Exiting loop." >&2
-                break
-            fi
+        if [[ -n "$timeout" && $(awk "BEGIN {print ($current_pause >= $remaining)}") -eq 1 ]]; then
+            echo "Next pause ($current_pause s) would exceed timeout. Exiting loop." >&2
+            break
         fi
         sleep "$current_pause"
     fi
@@ -183,8 +176,9 @@ while :; do
     # Update pause: multiply then increment
     if [[ -n "$current_pause" ]]; then
         current_pause=$(awk "BEGIN {v=$current_pause * $pause_multiplier + $pause_increment; if(v<0) v=0; print v}")
-        if [[ -n "$pause_max" ]]; then
-            current_pause=$(awk "BEGIN {v=$current_pause; if(v>$pause_max) v=$pause_max; print v}")
+        # Clamp to pause-max
+        if [[ -n "$pause_max" && $(awk "BEGIN {print ($current_pause > $pause_max)}") -eq 1 ]]; then
+            current_pause="$pause_max"
         fi
     fi
 done
