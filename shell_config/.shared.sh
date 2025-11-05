@@ -448,3 +448,10 @@ fi
 if [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
+
+if command -v tfws-profile.sh >/dev/null 2>&1; then
+    tfws-profile() {
+        eval "$(tfws-profile.sh)"
+    }
+    alias tfwsp='tfws-profile'
+fi
