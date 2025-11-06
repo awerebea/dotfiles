@@ -455,3 +455,11 @@ if command -v tfws-profile.sh >/dev/null 2>&1; then
     }
     alias tfwsp='tfws-profile'
 fi
+
+if command -v aws-sso-creds >/dev/null 2>&1; then
+    aws-profile-select() {
+        # shellcheck disable=2155
+        eval "export AWS_PROFILE='$(eval aws-sso-creds select)'"
+    }
+    alias aps='aws-profile-select'
+fi
