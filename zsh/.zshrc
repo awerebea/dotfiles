@@ -1324,15 +1324,26 @@ if [[ "$(uname)" != "Darwin" && "$(< /proc/sys/kernel/osrelease)" == *microsoft*
         export LIBGL_ALWAYS_INDIRECT=1
     fi
     if [[ -n $(pgrep ssh-agent) ]]; then
+        # Set SSH_AGENT_PID if not defined
         if [[ -z $SSH_AGENT_PID ]]; then
-            SSH_AGENT_PID="$(pgrep ssh-agent | head -n1)"; export SSH_AGENT_PID
-            SSH_AUTH_SOCK="$(
-                find /tmp -type s -name "agent.$((SSH_AGENT_PID-1))" 2>/dev/null
-            )"
-            export SSH_AUTH_SOCK
+            SSH_AGENT_PID="$(pgrep ssh-agent | head -n1)"
+            export SSH_AGENT_PID
         fi
     else
         eval "$(ssh-agent -s)" >/dev/null
+    fi
+    # Try to locate SSH_AUTH_SOCK automatically
+    if [[ -z $SSH_AUTH_SOCK ]]; then
+        for ((pid=SSH_AGENT_PID; pid>SSH_AGENT_PID-20 && pid>0; pid--)) ; do
+            sock=$(find /tmp -maxdepth 2 -user "$USER" -type s -path "/tmp/ssh-*/agent.${pid}" 2>/dev/null | head -n1)
+            if [[ -n $sock ]]; then
+                # Verify the socket actually works
+                if SSH_AUTH_SOCK="$sock" ssh-add -l >/dev/null 2>&1 || [[ $? -eq 1 ]]; then
+                    export SSH_AUTH_SOCK="$sock"
+                    break
+                fi
+            fi
+        done
     fi
 fi
 
