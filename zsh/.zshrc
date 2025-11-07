@@ -87,6 +87,10 @@ if [[ ! -f "$ZSH_PLUGINS/tmux-vim-integration/tmux-vim-integration.plugin.zsh" ]
         "$ZSH_PLUGINS/tmux-vim-integration"
 fi
 
+if [[ ! -f "$ZSH_PLUGINS/git-it-on/git-it-on.plugin.zsh" ]]; then
+    git clone https://github.com/peterhurford/git-it-on.zsh "$ZSH_PLUGINS/git-it-on"
+fi
+
 # # Lazy loading nvm  # use custom lazy loading function instead
 # if [[ ! -f "$ZSH_PLUGINS/zsh-nvm/zsh-nvm.plugin.zsh" ]]; then
 #     git clone https://github.com/lukechilds/zsh-nvm "$ZSH_PLUGINS/zsh-nvm"
@@ -295,6 +299,7 @@ plugins=(
     zsh-bash-completions-fallback
     zsh-autopair
     zsh-bd
+    git-it-on
 )
 
 # Load the plugin only if it will work
