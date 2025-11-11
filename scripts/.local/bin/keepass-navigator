@@ -27,6 +27,18 @@ GROUP_PATH=""
 TEMP_FILES=()
 CACHED_PASSWORD=""
 
+# Color variables (inspired by fzf-git-branches)
+readonly col_reset='\033[0m'
+readonly col_r='\033[31m'      # red
+readonly col_y='\033[33m'      # yellow
+readonly col_g='\033[32m'      # green
+readonly col_b='\033[34m'      # blue
+readonly col_bold='\033[1m'
+readonly col_r_bold='\033[1;31m'  # red bold
+readonly col_y_bold='\033[1;33m'  # yellow bold
+readonly col_g_bold='\033[1;32m'  # green bold
+readonly col_b_bold='\033[1;34m'  # blue bold
+
 # FZF configuration (inspired by fzf-git-branches)
 get_fzf_cmd() {
     local fzf_version
@@ -289,7 +301,8 @@ execute_keepass_cmd() {
     local output
     local exit_code
 
-    echo "🔧 DEBUG: Executing: ${cmd_array[*]}" >&2
+    # Debug output disabled for cleaner interface
+    # echo "🔧 DEBUG: Executing: ${cmd_array[*]}" >&2
 
     if [[ -n "$CACHED_PASSWORD" ]]; then
         # Use printf pipe to pass password and only capture stdout
@@ -324,7 +337,7 @@ list_entries() {
     local cmd_args
 
     if [[ -n "$GROUP_PATH" ]]; then
-        cmd_args="ls -q -f '$DATABASE' '$GROUP_PATH'"
+        cmd_args="ls -q -R -f '$DATABASE' '$GROUP_PATH'"
     elif [[ -n "$SEARCH_QUERY" ]]; then
         cmd_args="search -q '$DATABASE' '$SEARCH_QUERY'"
     else
@@ -334,13 +347,112 @@ list_entries() {
     execute_keepass_cmd "$cmd_args"
 }
 
-# Get entry details
-get_entry_details() {
+# Get entry details (raw format)
+get_entry_details_raw() {
     local entry_path="$1"
     execute_keepass_cmd "show --all '$DATABASE' '$entry_path'"
 }
 
+# Format entry details as colored table (inspired by fzf-git-branches)
+format_entry_details() {
+    local entry_path="$1"
 
+    # Get raw details
+    local raw_details
+    raw_details=$(get_entry_details_raw "$entry_path")
+
+    # Parse raw details into key-value pairs (no header in selectable data)
+    local -a attributes=()
+    local -a values=()
+    local max_attr_width=0
+
+    # Process each line of raw output
+    while IFS= read -r line; do
+        # Skip empty lines
+        [[ -z "$line" ]] && continue
+
+        # Extract attribute and value (split on first colon)
+        if [[ "$line" =~ ^([^:]+):[[:space:]]*(.*) ]]; then
+            local attr="${BASH_REMATCH[1]}"
+            local val="${BASH_REMATCH[2]}"
+
+            # Skip if no value or if it's just whitespace
+            [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
+
+            attributes+=("$attr")
+            values+=("$val")
+
+            # Track maximum attribute width
+            local attr_width=${#attr}
+            [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
+        fi
+    done <<< "$raw_details"
+
+    # Calculate spacer (inspired by fzf-git-branches spacer calculation)
+    local terminal_width
+    terminal_width=$(tput cols 2>/dev/null || echo "80")
+    local total_width=$((max_attr_width + 20))  # Add some padding
+    local spacer_width=4
+    [[ $total_width -gt $terminal_width ]] && spacer_width=2
+    [[ $spacer_width -le 0 ]] && spacer_width=1
+
+    local spacer
+    spacer=$(printf "%${spacer_width}s" "")
+
+    # Output formatted table (data rows only, header will be in FZF header)
+    local i=0
+    for attr in "${attributes[@]}"; do
+        local val="${values[$i]}"
+
+        # All rows are data rows with colors: yellow bold for attribute, green for value
+        printf "${col_y_bold}%-${max_attr_width}s${col_reset}${spacer}${col_g}%s${col_reset}\n" "$attr" "$val"
+
+        ((i++))
+    done
+}
+
+# Create FZF header with keybindings and table header (inspired by fzf-git-branches)
+create_field_selection_header() {
+    local entry_path="$1"
+
+    # Calculate column widths based on entry data for proper alignment
+    local raw_details
+    raw_details=$(get_entry_details_raw "$entry_path")
+
+    local max_attr_width=0
+    while IFS= read -r line; do
+        [[ -z "$line" ]] && continue
+        if [[ "$line" =~ ^([^:]+):[[:space:]]*(.*) ]]; then
+            local attr="${BASH_REMATCH[1]}"
+            local val="${BASH_REMATCH[2]}"
+            [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
+            local attr_width=${#attr}
+            [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
+        fi
+    done <<< "$raw_details"
+
+    # Calculate spacer
+    local terminal_width
+    terminal_width=$(tput cols 2>/dev/null || echo "80")
+    local spacer_width=4
+    [[ $((max_attr_width + 20)) -gt $terminal_width ]] && spacer_width=2
+    [[ $spacer_width -le 0 ]] && spacer_width=1
+
+    local spacer
+    spacer=$(printf "%${spacer_width}s" "")
+
+    # Build header with keybindings and table header (no separator line)
+    # Note: FZF handles ANSI codes in headers, so we can use colors directly
+    local header="Field Selection: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
+    header+=$'\n'
+    # Simple table header without ANSI codes to avoid display issues
+    # Use one less space in header to match data row alignment
+    local header_spacer
+    header_spacer=$(printf "%$((spacer_width - 1))s" "")
+    header+="$(printf "%-${max_attr_width}s" "Attribute")${header_spacer}Value"
+
+    echo "$header"
+}
 
 # Copy field to clipboard
 copy_field_to_clipboard() {
@@ -413,18 +525,21 @@ select_field() {
     while true; do
         echo
         echo "📄 Entry: '$entry_path'"
-        echo "🔽 Select field to copy (Ctrl+Q to go back):"
         echo
 
-        # Get entry details (raw show --all output)
+        # Get formatted entry details with colors and proper table alignment
         local entry_details
-        entry_details=$(get_entry_details "$entry_path")
+        entry_details=$(format_entry_details "$entry_path")
 
-        # Use fzf with --expect to capture key presses (includes ctrl-q for going back)
+        # Create header with keybindings and table headers (inspired by fzf-git-branches)
+        local header
+        header=$(create_field_selection_header "$entry_path")
+
+        # Use fzf with header containing keybindings and table headers
         local fzf_cmd
         fzf_cmd=$(get_fzf_cmd)
         local lines
-        lines=$(echo "$entry_details" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --prompt='Select field (Ctrl+Q=back): '")
+        lines=$(echo "$entry_details" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --header='$header' --prompt='❯ '")
 
         # Handle empty output (cancelled)
         [[ -z "$lines" ]] && return 0
@@ -448,9 +563,9 @@ select_field() {
         esac
 
         if [[ -n "$selected_line" ]]; then
-            # Extract field name from selected line (everything before the first colon)
+            # Extract field name from formatted line (remove ANSI colors and get first column)
             local field_name
-            field_name=$(echo "$selected_line" | cut -d':' -f1)
+            field_name=$(echo "$selected_line" | sed 's/\x1b\[[0-9;]*m//g' | awk '{print $1}')
 
             if [[ -n "$field_name" ]]; then
                 copy_field_to_clipboard "$entry_path" "$field_name"
