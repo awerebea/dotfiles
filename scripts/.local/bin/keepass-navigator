@@ -1,0 +1,467 @@
+#!/usr/bin/env bash
+
+# keepass-navigator - Interactive KeePassXC database navigator with FZF
+# Features:
+#   - Browse KeePass database entries with FZF
+#   - Copy selected fields to clipboard
+#   - Support for TOTP codes
+#   - Search and group navigation
+#   - Cross-platform secret retrieval
+
+set -euo pipefail
+
+# Default values
+DEFAULT_TIMEOUT=10
+TIMEOUT=$DEFAULT_TIMEOUT
+
+# Global variables
+DATABASE=""
+KEYFILE=""
+SECRET_NAME=""
+NO_PASSWORD=false
+YUBIKEY=false
+SEARCH_QUERY=""
+GROUP_PATH=""
+TEMP_FILES=()
+CACHED_PASSWORD=""
+
+# Cleanup function
+cleanup() {
+    # Clear cached password from memory
+    if [[ -n "$CACHED_PASSWORD" ]]; then
+        unset CACHED_PASSWORD
+    fi
+
+    # Clean up temporary files
+    for file in "${TEMP_FILES[@]}"; do
+        [[ -f "$file" ]] && rm -f "$file"
+    done
+}
+trap cleanup EXIT
+
+usage() {
+    cat <<EOF
+Usage: $0 [OPTIONS] [search_terms...]
+       $0 [OPTIONS] -- group/path
+
+Interactive KeePassXC database navigator with FZF selection.
+
+OPTIONS:
+    -d, --database PATH      KeePass database file (.kdbx)
+    -k, --key-file PATH      Key file for database encryption
+    -s, --secret-name NAME   Retrieve password from keychain secret
+    --no-password           Database has no password (mutually exclusive with -s)
+    -y, --yubikey           Use YubiKey for authentication (can combine with others)
+    -t, --timeout SECONDS   Clipboard timeout (default: 10)
+    -h, --help              Show this help
+
+AUTHENTICATION:
+    - Password: Prompted by default (unless --no-password or -s specified)
+    - Keyfile: Optional, can be combined with any password method
+    - YubiKey: Optional, can be combined with password/keyfile
+    - Secret: Alternative to password prompt
+    - No-password: For keyfile-only databases (conflicts with -s)
+
+EXAMPLES:
+    $0 -d vault.kdbx -s keepass-secret
+    $0 -d vault.kdbx -k keyfile.key --no-password aws sso
+    $0 -d vault.kdbx --yubikey -- work/Bright MLS
+    $0 -d vault.kdbx -k keyfile.key --yubikey  # YubiKey + keyfile + password
+    $0 -d vault.kdbx  # Will prompt for password
+
+NAVIGATION:
+    - Use FZF to select entries and fields
+    - Ctrl+C: Exit completely
+    - Ctrl+Q: Return to database listing
+    - ESC: Go back to previous selection
+
+EOF
+    exit "${1:-0}"
+}
+
+error_exit() {
+    echo "❌ Error: $1" >&2
+    exit 1
+}
+
+# Cross-platform secret retrieval (simplified from keychain-secret)
+fetch_secret() {
+    local service="$1"
+    local account="${2:-$USER}"
+
+    if command -v security >/dev/null 2>&1 && [[ "$OSTYPE" == "darwin"* ]]; then
+        security find-generic-password -a "$account" -s "$service" -w 2>/dev/null
+    elif command -v secret-tool >/dev/null 2>&1; then
+        secret-tool lookup service "$service" account "$account" 2>/dev/null
+    elif command -v pass >/dev/null 2>&1; then
+        pass show "$service/$account" 2>/dev/null
+    else
+        error_exit "No supported secret backend found (security/secret-tool/pass)"
+    fi
+}
+
+# Cross-platform clipboard helper
+copy_to_clipboard() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        pbcopy
+    elif command -v xclip >/dev/null 2>&1; then
+        xclip -selection clipboard
+    elif command -v xsel >/dev/null 2>&1; then
+        xsel --clipboard --input
+    else
+        error_exit "Clipboard tool not found (install xclip or xsel)"
+    fi
+}
+
+
+
+# Parse command line arguments
+parse_args() {
+    local parsing_group=false
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+        -h | --help)
+            usage 0
+            ;;
+        -d | --database)
+            [[ -n "${2:-}" ]] || error_exit "Database path required"
+            DATABASE="$2"
+            shift 2
+            ;;
+        --database=*)
+            DATABASE="${1#*=}"
+            [[ -n "$DATABASE" ]] || error_exit "Database path required"
+            shift
+            ;;
+        -k | --key-file)
+            [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
+            KEYFILE="$2"
+            shift 2
+            ;;
+        --key-file=*)
+            KEYFILE="${1#*=}"
+            [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
+            shift
+            ;;
+        -s | --secret-name)
+            [[ -n "${2:-}" ]] || error_exit "Secret name required"
+            SECRET_NAME="$2"
+            shift 2
+            ;;
+        --secret-name=*)
+            SECRET_NAME="${1#*=}"
+            [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
+            shift
+            ;;
+        --no-password)
+            NO_PASSWORD=true
+            shift
+            ;;
+        -y | --yubikey)
+            YUBIKEY=true
+            shift
+            ;;
+        -t | --timeout)
+            [[ -n "${2:-}" ]] || error_exit "Timeout value required"
+            TIMEOUT="$2"
+            shift 2
+            ;;
+        --timeout=*)
+            TIMEOUT="${1#*=}"
+            [[ -n "$TIMEOUT" ]] || error_exit "Timeout value required"
+            shift
+            ;;
+        --)
+            parsing_group=true
+            shift
+            break
+            ;;
+        -*)
+            error_exit "Unknown option: $1"
+            ;;
+        *)
+            break
+            ;;
+        esac
+    done
+
+    # Handle remaining arguments
+    if [[ "$parsing_group" == true ]]; then
+        GROUP_PATH="$*"
+    else
+        SEARCH_QUERY="$*"
+    fi
+}
+
+# Validate that a value is a valid integer
+validate_integer() {
+    local val=$1 name=$2
+    if ! [[ "$val" =~ ^[+-]?[0-9]+$ ]]; then
+        echo "Error: $name must be a valid integer" >&2
+        exit 1
+    fi
+}
+
+# Validate that a value is a positive integer
+validate_positive_integer() {
+    local val=$1 name=$2
+    validate_integer "$val" "$name"
+    if ((val <= 0)); then
+        echo "Error: $name must be a positive integer" >&2
+        exit 1
+    fi
+}
+
+# Validate arguments
+validate_args() {
+    [[ -n "$DATABASE" ]] || error_exit "Database path required (-d/--database)"
+    [[ -f "$DATABASE" ]] || error_exit "Database file not found: $DATABASE"
+
+    # Check authentication options
+    # --secret-name and --no-password are mutually exclusive (both define password source)
+    if [[ -n "$SECRET_NAME" ]] && [[ "$NO_PASSWORD" == true ]]; then
+        error_exit "Cannot use both --secret-name and --no-password"
+    fi
+
+    # Check if we have at least one authentication method
+    local has_auth=false
+    [[ -n "$KEYFILE" ]] && has_auth=true
+    [[ -n "$SECRET_NAME" ]] && has_auth=true
+    [[ "$NO_PASSWORD" == true ]] && has_auth=true
+    [[ "$YUBIKEY" == true ]] && has_auth=true
+
+    # If no explicit auth method specified, we need password prompt or error
+    if [[ "$has_auth" == false ]]; then
+        # Will prompt for password - this is valid
+        :
+    fi
+
+    [[ -n "$KEYFILE" && ! -f "$KEYFILE" ]] && error_exit "Keyfile not found: $KEYFILE"
+
+    # Validate timeout value
+    validate_positive_integer "$TIMEOUT" "timeout"
+
+    command -v keepassxc-cli >/dev/null 2>&1 || error_exit "keepassxc-cli not found"
+    command -v fzf >/dev/null 2>&1 || error_exit "fzf not found"
+}
+
+# Initialize password cache once
+init_password() {
+    echo "🔍 DEBUG: init_password called" >&2
+    echo "🔍 DEBUG: CACHED_PASSWORD length: ${#CACHED_PASSWORD}" >&2
+    echo "🔍 DEBUG: SECRET_NAME: '$SECRET_NAME'" >&2
+    echo "🔍 DEBUG: NO_PASSWORD: '$NO_PASSWORD'" >&2
+
+    if [[ -z "$CACHED_PASSWORD" ]] && [[ -n "$SECRET_NAME" ]]; then
+        echo "🔍 DEBUG: Getting password from secret store" >&2
+        CACHED_PASSWORD=$(fetch_secret "$SECRET_NAME") || error_exit "Failed to retrieve secret: $SECRET_NAME"
+        echo "🔐 Retrieved password from secret store" >&2
+    elif [[ -z "$CACHED_PASSWORD" ]] && [[ "$NO_PASSWORD" != true ]]; then
+        echo "🔍 DEBUG: Prompting for password" >&2
+        echo -n "Enter database password: " >&2
+        read -s CACHED_PASSWORD
+        echo >&2  # New line after hidden input
+        echo "🔐 Password cached for session (length: ${#CACHED_PASSWORD})" >&2
+    elif [[ -n "$CACHED_PASSWORD" ]]; then
+        echo "🔐 Using cached password (length: ${#CACHED_PASSWORD})" >&2
+    else
+        echo "🔍 DEBUG: No password needed (NO_PASSWORD=true)" >&2
+    fi
+}
+
+
+
+# Execute keepassxc-cli command with error handling
+execute_keepass_cmd() {
+    local cmd_args="$1"
+
+    # Build command arguments array
+    local cmd_array=("keepassxc-cli")
+
+    # Add keyfile if specified
+    if [[ -n "$KEYFILE" ]]; then
+        cmd_array+=(--key-file "$KEYFILE")
+    fi
+
+    # Add no-password flag if specified
+    if [[ "$NO_PASSWORD" == true ]]; then
+        cmd_array+=(--no-password)
+    fi
+
+    # Add yubikey flag if specified
+    if [[ "$YUBIKEY" == true ]]; then
+        cmd_array+=(--yubikey)
+    fi
+
+    # Add the actual command arguments
+    eval "cmd_array+=($cmd_args)"
+
+    local output
+    local exit_code
+
+    echo "🔧 DEBUG: Executing: ${cmd_array[*]}" >&2
+
+    if [[ -n "$CACHED_PASSWORD" ]]; then
+        # Use printf pipe to pass password and only capture stdout
+        # Redirect stderr to /dev/null to avoid password prompts in output
+        if ! output=$(printf '%s\n' "$CACHED_PASSWORD" | "${cmd_array[@]}" 2>/dev/null); then
+            exit_code=$?
+            case $exit_code in
+            1) error_exit "Invalid credentials or database locked" ;;
+            2) error_exit "Database file corrupted or invalid format" ;;
+            11) error_exit "Invalid command or arguments" ;;
+            *) error_exit "KeePassXC command failed with exit code $exit_code" ;;
+            esac
+        fi
+    else
+        # No password needed (--no-password case)
+        if ! output=$("${cmd_array[@]}" 2>/dev/null); then
+            exit_code=$?
+            case $exit_code in
+            1) error_exit "Invalid credentials or database locked" ;;
+            2) error_exit "Database file corrupted or invalid format" ;;
+            11) error_exit "Invalid command or arguments" ;;
+            *) error_exit "KeePassXC command failed with exit code $exit_code" ;;
+            esac
+        fi
+    fi
+
+    echo "$output"
+}
+
+# List database entries
+list_entries() {
+    local cmd_args
+
+    if [[ -n "$GROUP_PATH" ]]; then
+        cmd_args="ls -q -f '$DATABASE' '$GROUP_PATH'"
+    elif [[ -n "$SEARCH_QUERY" ]]; then
+        cmd_args="search -q '$DATABASE' '$SEARCH_QUERY'"
+    else
+        cmd_args="ls -q -R -f '$DATABASE'"
+    fi
+
+    execute_keepass_cmd "$cmd_args"
+}
+
+# Get entry details
+get_entry_details() {
+    local entry_path="$1"
+    execute_keepass_cmd "show --all '$DATABASE' '$entry_path'"
+}
+
+# Display entry for field selection (using native KeePassXC output)
+display_entry_fields() {
+    local entry_path="$1"
+    local entry_details
+
+    entry_details=$(get_entry_details "$entry_path")
+
+    echo "📄 Entry: $entry_path"
+    echo "🔽 Select field to copy:"
+    echo
+
+    # Show the entry details as-is from KeePassXC (with PROTECTED values hidden)
+    echo "$entry_details"
+}
+
+# Copy field to clipboard
+copy_field_to_clipboard() {
+    local entry_path="$1"
+    local field_name="$2"
+
+    if [[ "$field_name" == "otp" ]]; then
+        # Handle TOTP - use --totp flag to get the current TOTP code
+        execute_keepass_cmd "clip --totp '$DATABASE' '$entry_path' $TIMEOUT" >/dev/null
+        echo "🔐 TOTP code copied to clipboard (expires in $TIMEOUT seconds)"
+    else
+        # Handle regular fields - use --attribute flag
+        execute_keepass_cmd "clip --attribute '$field_name' '$DATABASE' '$entry_path' $TIMEOUT" >/dev/null
+        echo "📋 '$field_name' copied to clipboard (expires in $TIMEOUT seconds)"
+    fi
+}
+
+# Main entry selection loop
+select_entry() {
+    while true; do
+        echo "🔍 KeePass Database: $(basename "$DATABASE")"
+        [[ -n "$GROUP_PATH" ]] && echo "📁 Group: $GROUP_PATH"
+        [[ -n "$SEARCH_QUERY" ]] && echo "🔍 Search: $SEARCH_QUERY"
+        echo "📋 Select entry (Ctrl+C to exit, Ctrl+Q to restart):"
+        echo
+
+        local entries
+        entries=$(list_entries)
+
+        [[ -z "$entries" ]] && {
+            echo "❌ No entries found"
+            return 1
+        }
+
+        local selected_entry
+        selected_entry=$(echo "$entries" | fzf --prompt="Select entry: " --height=50% --border) || {
+            case $? in
+            130)
+                echo "👋 Goodbye!"
+                exit 0
+                ;; # Ctrl+C
+            *) return 1 ;;
+            esac
+        }
+
+        [[ -n "$selected_entry" ]] && select_field "$selected_entry"
+    done
+}
+
+# Field selection loop
+select_field() {
+    local entry_path="$1"
+
+    while true; do
+        echo
+        display_entry_fields "$entry_path"
+
+        # Get entry details and extract field names for fzf
+        local entry_details
+        entry_details=$(get_entry_details "$entry_path")
+
+        local field_names
+        field_names=$(echo "$entry_details" | grep -E "^[^:]+:" | cut -d':' -f1)
+
+        local selected_field
+        selected_field=$(echo "$field_names" | fzf --prompt="Select field: " --height=40% --border) || {
+            case $? in
+            130)
+                echo "👋 Goodbye!"
+                exit 0
+                ;;          # Ctrl+C
+            17) return 0 ;; # Ctrl+Q - back to entries
+            *) return 0 ;;  # ESC or other - back to entries
+            esac
+        }
+
+        if [[ -n "$selected_field" ]]; then
+            copy_field_to_clipboard "$entry_path" "$selected_field"
+            echo
+            echo "🔄 Select another field or press ESC to go back"
+        fi
+    done
+}
+
+# Main function
+main() {
+    parse_args "$@"
+    validate_args
+
+    # Initialize password once at the main level (before any subshells)
+    init_password
+
+    echo "🔐 KeePass Navigator"
+    echo "==================="
+
+    select_entry
+}
+
+# Run main function
+main "$@"
