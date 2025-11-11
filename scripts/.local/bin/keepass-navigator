@@ -456,7 +456,7 @@ create_field_selection_header() {
 
     # Build header with keybindings and table header (no separator line)
     # Note: FZF handles ANSI codes in headers, so we can use colors directly
-    local header="Field Selection: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
+    local header="KeePass Database Navigator: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
     header+=$'\n'
     # Simple table header without ANSI codes to avoid display issues
     # Use one less space in header to match data row alignment
@@ -500,11 +500,14 @@ select_entry() {
             return 1
         }
 
-        # Use fzf with --expect to capture key presses
+        # Create header with keybindings for entry selection
+        local header="KeePass Database Navigator: Ctrl+C/Ctrl+Q:exit, Enter:select entry"
+
+        # Use fzf with --expect to capture key presses and header
         local fzf_cmd
         fzf_cmd=$(get_fzf_cmd)
         local lines
-        lines=$(echo "$entries" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --prompt='Select entry: '")
+        lines=$(echo "$entries" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --header='$header' --prompt='Select Entry ❯ '")
 
         # Check if we got any output
         [[ -z "$lines" ]] && {
@@ -560,7 +563,7 @@ select_field() {
         local fzf_cmd
         fzf_cmd=$(get_fzf_cmd)
         local lines
-        lines=$(echo "$entry_details" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --header='$header' --prompt='❯ '")
+        lines=$(echo "$entry_details" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --header='$header' --prompt='Select Attribute ❯ '")
 
         # Handle empty output (cancelled)
         [[ -z "$lines" ]] && return 0
