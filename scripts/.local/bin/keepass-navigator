@@ -26,6 +26,13 @@ SEARCH_QUERY=""
 GROUP_PATH=""
 CACHED_PASSWORD=""
 DEBUG=false
+SHOW_ALL_ATTRIBUTES=false
+
+# Hidden attributes (shown only when --show-all-attributes is used)
+HIDDEN_ATTRIBUTES=(
+    "Uuid"
+    "PEDCalc.interval"
+)
 
 # Color variables (inspired by fzf-git-branches)
 readonly col_reset='\033[0m'
@@ -88,6 +95,7 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
+    --show-all-attributes   Show all entry attributes (including uuid and other hidden fields)
     --debug                 Show debug output and status messages
     -h, --help              Show this help
 
@@ -207,6 +215,10 @@ parse_args() {
             ;;
         --debug)
             DEBUG=true
+            shift
+            ;;
+        --show-all-attributes)
+            SHOW_ALL_ATTRIBUTES=true
             shift
             ;;
         --)
@@ -410,6 +422,19 @@ format_entry_details() {
             # Skip if no value or if it's just whitespace
             [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
 
+            # Skip hidden attributes unless --show-all-attributes is used
+            if [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
+                local is_hidden=false
+                local hidden_attr
+                for hidden_attr in "${HIDDEN_ATTRIBUTES[@]}"; do
+                    if [[ "$attr" == "$hidden_attr" ]]; then
+                        is_hidden=true
+                        break
+                    fi
+                done
+                [[ "$is_hidden" == true ]] && continue
+            fi
+
             attributes+=("$attr")
             values+=("$val")
 
@@ -457,6 +482,20 @@ create_field_selection_header() {
             local attr="${BASH_REMATCH[1]}"
             local val="${BASH_REMATCH[2]}"
             [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
+
+            # Skip hidden attributes unless --show-all-attributes is used
+            if [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
+                local is_hidden=false
+                local hidden_attr
+                for hidden_attr in "${HIDDEN_ATTRIBUTES[@]}"; do
+                    if [[ "$attr" == "$hidden_attr" ]]; then
+                        is_hidden=true
+                        break
+                    fi
+                done
+                [[ "$is_hidden" == true ]] && continue
+            fi
+
             local attr_width=${#attr}
             [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
         fi
