@@ -201,10 +201,6 @@ HISTFILESIZE=200000
 # update the values of LINES and COLUMNS.
 shopt -s checkwinsize
 
-if command -v "direnv" &>/dev/null; then
-    eval "$(direnv hook bash)"
-fi
-
 # shellcheck disable=1091
 [ -f ~/fzf-marks/fzf-marks.plugin.bash ] && source "$HOME"/fzf-marks/fzf-marks.plugin.bash
 
