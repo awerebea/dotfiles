@@ -396,18 +396,31 @@ get_entry_details_raw() {
     echo "$output"
 }
 
-# Format entry details as colored table (inspired by fzf-git-branches)
-format_entry_details() {
+# Parse entry attributes and return structured data (no nameref complications)
+parse_entry_attributes() {
     local entry_path="$1"
 
     # Get raw details
     local raw_details
     raw_details=$(get_entry_details_raw "$entry_path")
 
-    # Parse raw details into key-value pairs (no header in selectable data)
+    # Debug: Show raw details retrieval (to stderr to avoid contaminating parsing)
+    if [[ "$DEBUG" == true ]]; then
+        debug_echo "🔍 Getting raw details for: '$entry_path'" >&2
+        if [[ -z "$raw_details" ]]; then
+            debug_echo "❌ No raw details returned!" >&2
+            return 1
+        else
+            debug_echo "✅ Raw details received (${#raw_details} chars)" >&2
+            debug_echo "Raw details preview:" >&2
+            echo "$raw_details" | head -5 | sed 's/^/    /' >&2
+        fi
+    fi
+
+    # Initialize local arrays and width
     local -a attributes=()
     local -a values=()
-    local max_attr_width=0
+    local max_width=0
 
     # Process each line of raw output
     while IFS= read -r line; do
@@ -440,13 +453,62 @@ format_entry_details() {
 
             # Track maximum attribute width
             local attr_width=${#attr}
-            [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
+            [[ $attr_width -gt $max_width ]] && max_width=$attr_width
         fi
     done <<<"$raw_details"
+
+    # Debug: Show parsing results (to stderr to avoid contaminating output)
+    if [[ "$DEBUG" == true ]]; then
+        debug_echo "📊 Parsing complete: ${#attributes[@]} attributes, max_width=$max_width" >&2
+        if [[ ${#attributes[@]} -eq 0 ]]; then
+            debug_echo "⚠️  No attributes parsed - this might indicate a problem!" >&2
+        fi
+    fi
+
+    # Output structured data: max_width|attr1|val1|attr2|val2|...
+    local output="$max_width"
+    local i
+    for i in "${!attributes[@]}"; do
+        output+="|${attributes[$i]}|${values[$i]}"
+    done
+    echo "$output"
+}
+
+# Format entry details from structured data string
+format_entry_details_from_parsed_data() {
+    local parsed_data="$1"
+
+    # Parse structured data: max_width|attr1|val1|attr2|val2|...
+    IFS='|' read -ra parts <<<"$parsed_data"
+    local max_attr_width="${parts[0]}"
+
+    # Extract attributes and values from parts array
+    local -a attributes=()
+    local -a values=()
+    local i
+    for ((i = 1; i < ${#parts[@]}; i += 2)); do
+        attributes+=("${parts[$i]}")
+        values+=("${parts[$((i + 1))]}")
+    done
+
+    # Validate inputs
+    [[ ${#attributes[@]} -eq 0 ]] && {
+        echo "Error: No attributes to format" >&2
+        return 1
+    }
+    [[ ${#attributes[@]} -ne ${#values[@]} ]] && {
+        echo "Error: Attributes and values array length mismatch" >&2
+        return 1
+    }
+    [[ $max_attr_width -le 0 ]] && max_attr_width=10
 
     # Calculate spacer (inspired by fzf-git-branches spacer calculation)
     local terminal_width
     terminal_width=$(tput cols 2>/dev/null || echo "80")
+    # Ensure terminal_width is a valid number
+    [[ ! "$terminal_width" =~ ^[0-9]+$ ]] && terminal_width=80
+    [[ $terminal_width -lt 20 ]] && terminal_width=80
+
     local total_width=$((max_attr_width + 20)) # Add some padding
     local spacer_width=4
     [[ $total_width -gt $terminal_width ]] && spacer_width=2
@@ -456,54 +518,33 @@ format_entry_details() {
     spacer=$(printf "%${spacer_width}s" "")
 
     # Output formatted table (data rows only, header will be in FZF header)
-    local i=0
-    for attr in "${attributes[@]}"; do
+    for i in "${!attributes[@]}"; do
+        local attr="${attributes[$i]}"
         local val="${values[$i]}"
 
         # All rows are data rows with colors: yellow bold for attribute, green for value
         printf "${col_y_bold}%-${max_attr_width}s${col_reset}${spacer}${col_g}%s${col_reset}\n" "$attr" "$val"
-
-        ((i++))
     done
 }
 
-# Create FZF header with keybindings and table header (inspired by fzf-git-branches)
-create_field_selection_header() {
-    local entry_path="$1"
+# Create FZF header from parsed data string
+create_field_selection_header_from_parsed_data() {
+    local parsed_data="$1"
 
-    # Calculate column widths based on entry data for proper alignment
-    local raw_details
-    raw_details=$(get_entry_details_raw "$entry_path")
+    # Extract max_width from structured data
+    IFS='|' read -ra parts <<<"$parsed_data"
+    local max_attr_width="${parts[0]}"
 
-    local max_attr_width=0
-    while IFS= read -r line; do
-        [[ -z "$line" ]] && continue
-        if [[ "$line" =~ ^([^:]+):[[:space:]]*(.*) ]]; then
-            local attr="${BASH_REMATCH[1]}"
-            local val="${BASH_REMATCH[2]}"
-            [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
-
-            # Skip hidden attributes unless --show-all-attributes is used
-            if [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
-                local is_hidden=false
-                local hidden_attr
-                for hidden_attr in "${HIDDEN_ATTRIBUTES[@]}"; do
-                    if [[ "$attr" == "$hidden_attr" ]]; then
-                        is_hidden=true
-                        break
-                    fi
-                done
-                [[ "$is_hidden" == true ]] && continue
-            fi
-
-            local attr_width=${#attr}
-            [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
-        fi
-    done <<<"$raw_details"
+    # Validate input
+    [[ $max_attr_width -le 0 ]] && max_attr_width=10
 
     # Calculate spacer
     local terminal_width
     terminal_width=$(tput cols 2>/dev/null || echo "80")
+    # Ensure terminal_width is a valid number
+    [[ ! "$terminal_width" =~ ^[0-9]+$ ]] && terminal_width=80
+    [[ $terminal_width -lt 20 ]] && terminal_width=80
+
     local spacer_width=4
     [[ $((max_attr_width + 20)) -gt $terminal_width ]] && spacer_width=2
     [[ $spacer_width -le 0 ]] && spacer_width=1
@@ -603,18 +644,43 @@ select_entry() {
 select_field() {
     local entry_path="$1"
 
+    # 🚀 OPTIMIZATION: Parse entry attributes ONCE outside the loop and cache the result
+    debug_echo "� Parsing entry data (once): '$entry_path'"
+    local parsed_data
+    parsed_data=$(parse_entry_attributes "$entry_path")
+
+    # Extract max_width and arrays from parsed data for debug display (once)
+    if [[ "$DEBUG" == true ]]; then
+        IFS='|' read -ra parts <<<"$parsed_data"
+        local max_attr_width="${parts[0]}"
+        local -a attributes=()
+        local -a values=()
+        local i
+        for ((i = 1; i < ${#parts[@]}; i += 2)); do
+            attributes+=("${parts[$i]}")
+            values+=("${parts[$((i + 1))]}")
+        done
+        debug_echo "🔍 Parsed ${#attributes[@]} attributes, max_width=$max_attr_width"
+        for i in "${!attributes[@]}"; do
+            debug_echo "  [$i] '${attributes[$i]}' = '${values[$i]}'"
+        done
+        echo
+    fi
+
     while true; do
         if [[ "$DEBUG" == true ]]; then echo; fi
         debug_echo "📄 Entry: '$entry_path'"
         if [[ "$DEBUG" == true ]]; then echo; fi
 
-        # Get formatted entry details with colors and proper table alignment
-        local entry_details
-        entry_details=$(format_entry_details "$entry_path")
+        # 🚀 REUSE cached parsed_data instead of re-parsing
 
-        # Create header with keybindings and table headers (inspired by fzf-git-branches)
+        # Get formatted entry details using parsed data
+        local entry_details
+        entry_details=$(format_entry_details_from_parsed_data "$parsed_data")
+
+        # Create header using parsed data
         local header
-        header=$(create_field_selection_header "$entry_path")
+        header=$(create_field_selection_header_from_parsed_data "$parsed_data")
 
         # Use fzf with header containing keybindings and table headers
         local fzf_cmd
