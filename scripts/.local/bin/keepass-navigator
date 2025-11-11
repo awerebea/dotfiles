@@ -24,7 +24,6 @@ NO_PASSWORD=false
 YUBIKEY=false
 SEARCH_QUERY=""
 GROUP_PATH=""
-TEMP_FILES=()
 CACHED_PASSWORD=""
 
 # Color variables (inspired by fzf-git-branches)
@@ -72,11 +71,6 @@ cleanup() {
     if [[ -n "$CACHED_PASSWORD" ]]; then
         unset CACHED_PASSWORD
     fi
-
-    # Clean up temporary files
-    for file in "${TEMP_FILES[@]}"; do
-        [[ -f "$file" ]] && rm -f "$file"
-    done
 }
 trap cleanup EXIT
 
