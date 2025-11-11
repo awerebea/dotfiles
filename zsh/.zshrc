@@ -1294,10 +1294,6 @@ if [[ "${commands[aws-vault]}" ]]; then
     export AWS_VAULT_BACKEND=file
 fi
 
-if [[ "${commands[direnv]}" ]]; then
-    eval "$(direnv hook zsh)"
-fi
-
 # Repeat given char N times using shell function
 rep() {
     local start=1

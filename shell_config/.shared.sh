@@ -373,6 +373,15 @@ if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
     }
 fi
 
+# enable direnv
+if command -v "direnv" &>/dev/null; then
+    if [[ -n "${ZSH_VERSION-}" ]]; then
+        eval "$(direnv hook zsh)"
+    else
+        eval "$(direnv hook bash)"
+    fi
+fi
+
 # enable zoxide
 if command -v "zoxide" &>/dev/null; then
     export _ZO_ECHO=1
