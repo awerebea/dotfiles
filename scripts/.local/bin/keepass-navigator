@@ -531,9 +531,19 @@ format_entry_details_from_parsed_data() {
 create_field_selection_header_from_parsed_data() {
     local parsed_data="$1"
 
-    # Extract max_width from structured data
+    # Extract max_width and find Title attribute from structured data
     IFS='|' read -ra parts <<<"$parsed_data"
     local max_attr_width="${parts[0]}"
+
+    # Find the Title attribute value
+    local title_value="Entry" # Default fallback
+    local i
+    for ((i = 1; i < ${#parts[@]}; i += 2)); do
+        if [[ "${parts[$i]}" == "Title" ]]; then
+            title_value="${parts[$((i + 1))]}"
+            break
+        fi
+    done
 
     # Validate input
     [[ $max_attr_width -le 0 ]] && max_attr_width=10
@@ -554,7 +564,7 @@ create_field_selection_header_from_parsed_data() {
 
     # Build header with keybindings and table header (no separator line)
     # Note: FZF handles ANSI codes in headers, so we can use colors directly
-    local header="KeePass Database Navigator: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
+    local header="$title_value: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
     header+=$'\n'
     # Simple table header without ANSI codes to avoid display issues
     # Use one less space in header to match data row alignment
