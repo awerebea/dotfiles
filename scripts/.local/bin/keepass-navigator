@@ -29,15 +29,15 @@ DEBUG=false
 
 # Color variables (inspired by fzf-git-branches)
 readonly col_reset='\033[0m'
-readonly col_r='\033[31m'      # red
-readonly col_y='\033[33m'      # yellow
-readonly col_g='\033[32m'      # green
-readonly col_b='\033[34m'      # blue
-readonly col_bold='\033[1m'
-readonly col_r_bold='\033[1;31m'  # red bold
-readonly col_y_bold='\033[1;33m'  # yellow bold
-readonly col_g_bold='\033[1;32m'  # green bold
-readonly col_b_bold='\033[1;34m'  # blue bold
+# readonly col_r='\033[31m' # red
+# readonly col_y='\033[33m' # yellow
+readonly col_g='\033[32m' # green
+readonly col_b='\033[34m' # blue
+# readonly col_bold='\033[1m'
+# readonly col_r_bold='\033[1;31m' # red bold
+readonly col_y_bold='\033[1;33m' # yellow bold
+# readonly col_g_bold='\033[1;32m' # green bold
+# readonly col_b_bold='\033[1;34m' # blue bold
 
 # FZF configuration (inspired by fzf-git-branches)
 get_fzf_cmd() {
@@ -158,8 +158,6 @@ copy_to_clipboard() {
     fi
 }
 
-
-
 # Parse command line arguments
 parse_args() {
     local parsing_group=false
@@ -233,8 +231,6 @@ parse_args() {
     fi
 }
 
-
-
 # Validate arguments
 validate_args() {
     [[ -n "$DATABASE" ]] || error_exit "Database path required (-d/--database)"
@@ -273,12 +269,10 @@ init_password() {
     elif [[ -z "$CACHED_PASSWORD" ]] && [[ "$NO_PASSWORD" != true ]]; then
         echo -n "Enter database password: " >&2
         read -s CACHED_PASSWORD
-        echo >&2  # New line after hidden input
+        echo >&2 # New line after hidden input
         if [[ "$DEBUG" == true ]]; then echo "🔐 Password cached for session" >&2; fi
     fi
 }
-
-
 
 # Execute keepassxc-cli command with error handling
 execute_keepass_cmd() {
@@ -307,9 +301,6 @@ execute_keepass_cmd() {
 
     local output
     local exit_code
-
-    # Debug output disabled for cleaner interface
-    # echo "🔧 DEBUG: Executing: ${cmd_array[*]}" >&2
 
     if [[ -n "$CACHED_PASSWORD" ]]; then
         # Use printf pipe to pass password and only capture stdout
@@ -412,12 +403,12 @@ format_entry_details() {
             local attr_width=${#attr}
             [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
         fi
-    done <<< "$raw_details"
+    done <<<"$raw_details"
 
     # Calculate spacer (inspired by fzf-git-branches spacer calculation)
     local terminal_width
     terminal_width=$(tput cols 2>/dev/null || echo "80")
-    local total_width=$((max_attr_width + 20))  # Add some padding
+    local total_width=$((max_attr_width + 20)) # Add some padding
     local spacer_width=4
     [[ $total_width -gt $terminal_width ]] && spacer_width=2
     [[ $spacer_width -le 0 ]] && spacer_width=1
@@ -455,7 +446,7 @@ create_field_selection_header() {
             local attr_width=${#attr}
             [[ $attr_width -gt $max_attr_width ]] && max_attr_width=$attr_width
         fi
-    done <<< "$raw_details"
+    done <<<"$raw_details"
 
     # Calculate spacer
     local terminal_width
@@ -529,18 +520,18 @@ select_entry() {
         }
 
         local key
-        key=$(head -1 <<< "$lines")
+        key=$(head -1 <<<"$lines")
         local selected_entry
-        selected_entry=$(tail -1 <<< "$lines")
+        selected_entry=$(tail -1 <<<"$lines")
 
         case "$key" in
-            ctrl-c|ctrl-q)
-                debug_echo "👋 Goodbye!"
-                exit 0
-                ;;
-            *)
-                # Regular selection or empty key (Enter pressed)
-                ;;
+        ctrl-c | ctrl-q)
+            debug_echo "👋 Goodbye!"
+            exit 0
+            ;;
+        *)
+            # Regular selection or empty key (Enter pressed)
+            ;;
         esac
 
         if [[ -n "$selected_entry" ]]; then
@@ -582,21 +573,21 @@ select_field() {
         [[ -z "$lines" ]] && return 0
 
         local key
-        key=$(head -1 <<< "$lines")
+        key=$(head -1 <<<"$lines")
         local selected_line
-        selected_line=$(tail -1 <<< "$lines")
+        selected_line=$(tail -1 <<<"$lines")
 
         case "$key" in
-            ctrl-c)
-                debug_echo "👋 Goodbye!"
-                exit 0
-                ;;
-            ctrl-q)
-                return 0  # Go back to entry selection
-                ;;
-            *)
-                # Regular selection or empty key (Enter pressed)
-                ;;
+        ctrl-c)
+            debug_echo "👋 Goodbye!"
+            exit 0
+            ;;
+        ctrl-q)
+            return 0 # Go back to entry selection
+            ;;
+        *)
+            # Regular selection or empty key (Enter pressed)
+            ;;
         esac
 
         if [[ -n "$selected_line" ]]; then
