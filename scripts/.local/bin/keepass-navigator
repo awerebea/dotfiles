@@ -7,6 +7,12 @@
 #   - Support for TOTP codes
 #   - Search and group navigation
 #   - Cross-platform secret retrieval
+#   - Intelligent FZF configuration with version detection
+#   - Proper key handling (Ctrl+Q to go back, Ctrl+C to exit)
+#
+# Customization:
+#   - Set KEEPASS_FZF_OPTS to override default FZF options
+#   - FZF version detection ensures compatibility
 
 set -euo pipefail
 
@@ -20,6 +26,33 @@ SEARCH_QUERY=""
 GROUP_PATH=""
 TEMP_FILES=()
 CACHED_PASSWORD=""
+
+# FZF configuration (inspired by fzf-git-branches)
+get_fzf_cmd() {
+    local fzf_version
+    fzf_version="$(fzf --version | awk -F. '{ print $1 * 1e6 + $2 * 1e3 + $3 }')"
+    local fzf_min_version=16001
+
+    # Default FZF arguments
+    local FZF_ARGS="\
+        --ansi \
+        --bind=ctrl-c:abort,ctrl-q:abort \
+        --cycle \
+        --pointer='' \
+    "
+
+    # Override with user preferences if set
+    FZF_ARGS="${KEEPASS_FZF_OPTS:-"$FZF_ARGS"}"
+
+    # Return FZF command based on version
+    if [[ $fzf_version -gt $fzf_min_version ]]; then
+        echo "fzf --height 80% --reverse $FZF_ARGS"
+    elif [[ ${FZF_TMUX:-1} -eq 1 ]]; then
+        echo "fzf-tmux -d${FZF_TMUX_HEIGHT:-40%} $FZF_ARGS"
+    else
+        echo "fzf $FZF_ARGS"
+    fi
+}
 
 # Cleanup function
 cleanup() {
@@ -51,11 +84,11 @@ OPTIONS:
     -h, --help              Show this help
 
 AUTHENTICATION:
-    - Password: Prompted by default (unless --no-password or -s specified)
+    - Password: Prompted by default (unless --no-password or -s/--secret-name specified)
     - Keyfile: Optional, can be combined with any password method
     - YubiKey: Optional, can be combined with password/keyfile
     - Secret: Alternative to password prompt
-    - No-password: For keyfile-only databases (conflicts with -s)
+    - No-password: For keyfile-only databases (conflicts with -s/--secret-name)
 
 EXAMPLES:
     $0 -d vault.kdbx -s keepass-secret
@@ -65,10 +98,12 @@ EXAMPLES:
     $0 -d vault.kdbx  # Will prompt for password
 
 NAVIGATION:
-    - Use FZF to select entries and fields
-    - Ctrl+C: Exit completely
-    - Ctrl+Q: Return to database listing
-    - ESC: Go back to previous selection
+    - Entry Selection: Ctrl+C/Ctrl+Q to exit
+    - Field Selection: Ctrl+Q to go back to entries, Ctrl+C to exit
+    - After copying a field: continues field selection loop
+
+FZF CUSTOMIZATION:
+    Set KEEPASS_FZF_OPTS environment variable to override default FZF options
 
 EOF
     exit "${1:-0}"
@@ -213,25 +248,14 @@ validate_args() {
 
 # Initialize password cache once
 init_password() {
-    echo "🔍 DEBUG: init_password called" >&2
-    echo "🔍 DEBUG: CACHED_PASSWORD length: ${#CACHED_PASSWORD}" >&2
-    echo "🔍 DEBUG: SECRET_NAME: '$SECRET_NAME'" >&2
-    echo "🔍 DEBUG: NO_PASSWORD: '$NO_PASSWORD'" >&2
-
     if [[ -z "$CACHED_PASSWORD" ]] && [[ -n "$SECRET_NAME" ]]; then
-        echo "🔍 DEBUG: Getting password from secret store" >&2
         CACHED_PASSWORD=$(fetch_secret "$SECRET_NAME") || error_exit "Failed to retrieve secret: $SECRET_NAME"
         echo "🔐 Retrieved password from secret store" >&2
     elif [[ -z "$CACHED_PASSWORD" ]] && [[ "$NO_PASSWORD" != true ]]; then
-        echo "🔍 DEBUG: Prompting for password" >&2
         echo -n "Enter database password: " >&2
         read -s CACHED_PASSWORD
         echo >&2  # New line after hidden input
-        echo "🔐 Password cached for session (length: ${#CACHED_PASSWORD})" >&2
-    elif [[ -n "$CACHED_PASSWORD" ]]; then
-        echo "🔐 Using cached password (length: ${#CACHED_PASSWORD})" >&2
-    else
-        echo "🔍 DEBUG: No password needed (NO_PASSWORD=true)" >&2
+        echo "🔐 Password cached for session" >&2
     fi
 }
 
@@ -340,7 +364,7 @@ select_entry() {
         echo "🔍 KeePass Database: $(basename "$DATABASE")"
         [[ -n "$GROUP_PATH" ]] && echo "📁 Group: $GROUP_PATH"
         [[ -n "$SEARCH_QUERY" ]] && echo "🔍 Search: $SEARCH_QUERY"
-        echo "📋 Select entry (Ctrl+C to exit, Ctrl+Q to restart):"
+        echo "📋 Select entry (Ctrl+C/Ctrl+Q to exit):"
         echo
 
         local entries
@@ -351,16 +375,32 @@ select_entry() {
             return 1
         }
 
+        # Use fzf with --expect to capture key presses
+        local fzf_cmd
+        fzf_cmd=$(get_fzf_cmd)
+        local lines
+        lines=$(echo "$entries" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --prompt='Select entry: '")
+
+        # Check if we got any output
+        [[ -z "$lines" ]] && {
+            echo "👋 Goodbye!"
+            exit 0
+        }
+
+        local key
+        key=$(head -1 <<< "$lines")
         local selected_entry
-        selected_entry=$(echo "$entries" | fzf --prompt="Select entry: " --height=50% --border) || {
-            case $? in
-            130)
+        selected_entry=$(tail -1 <<< "$lines")
+
+        case "$key" in
+            ctrl-c|ctrl-q)
                 echo "👋 Goodbye!"
                 exit 0
-                ;; # Ctrl+C
-            *) return 1 ;;
-            esac
-        }
+                ;;
+            *)
+                # Regular selection or empty key (Enter pressed)
+                ;;
+        esac
 
         [[ -n "$selected_entry" ]] && select_field "$selected_entry"
     done
@@ -372,26 +412,40 @@ select_field() {
 
     while true; do
         echo
-        echo "📄 Entry: $entry_path"
-        echo "🔽 Select field to copy:"
+        echo "📄 Entry: '$entry_path'"
+        echo "🔽 Select field to copy (Ctrl+Q to go back):"
         echo
 
         # Get entry details (raw show --all output)
         local entry_details
         entry_details=$(get_entry_details "$entry_path")
 
-        # Show raw keepassxc-cli output directly in fzf
+        # Use fzf with --expect to capture key presses (includes ctrl-q for going back)
+        local fzf_cmd
+        fzf_cmd=$(get_fzf_cmd)
+        local lines
+        lines=$(echo "$entry_details" | eval "$fzf_cmd --expect='ctrl-c,ctrl-q' --prompt='Select field (Ctrl+Q=back): '")
+
+        # Handle empty output (cancelled)
+        [[ -z "$lines" ]] && return 0
+
+        local key
+        key=$(head -1 <<< "$lines")
         local selected_line
-        selected_line=$(echo "$entry_details" | fzf --prompt="Select field: " --height=40% --border) || {
-            case $? in
-            130)
+        selected_line=$(tail -1 <<< "$lines")
+
+        case "$key" in
+            ctrl-c)
                 echo "👋 Goodbye!"
                 exit 0
-                ;;          # Ctrl+C
-            17) return 0 ;; # Ctrl+Q - back to entries
-            *) return 0 ;;  # ESC or other - back to entries
-            esac
-        }
+                ;;
+            ctrl-q)
+                return 0  # Go back to entry selection
+                ;;
+            *)
+                # Regular selection or empty key (Enter pressed)
+                ;;
+        esac
 
         if [[ -n "$selected_line" ]]; then
             # Extract field name from selected line (everything before the first colon)
@@ -401,7 +455,7 @@ select_field() {
             if [[ -n "$field_name" ]]; then
                 copy_field_to_clipboard "$entry_path" "$field_name"
                 echo
-                echo "🔄 Select another field or press ESC to go back"
+                echo "🔄 Select another field or press Ctrl+Q to go back"
             fi
         fi
     done
@@ -411,6 +465,8 @@ select_field() {
 main() {
     parse_args "$@"
     validate_args
+
+    # FZF configuration will be set up on-demand via get_fzf_cmd
 
     # Initialize password once at the main level (before any subshells)
     init_password
