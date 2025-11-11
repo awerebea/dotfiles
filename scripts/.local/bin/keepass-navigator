@@ -10,10 +10,6 @@
 
 set -euo pipefail
 
-# Default values
-DEFAULT_TIMEOUT=10
-TIMEOUT=$DEFAULT_TIMEOUT
-
 # Global variables
 DATABASE=""
 KEYFILE=""
@@ -52,7 +48,6 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
-    -t, --timeout SECONDS   Clipboard timeout (default: 10)
     -h, --help              Show this help
 
 AUTHENTICATION:
@@ -158,18 +153,8 @@ parse_args() {
             NO_PASSWORD=true
             shift
             ;;
-        -y | --yubikey)
+        --yubikey)
             YUBIKEY=true
-            shift
-            ;;
-        -t | --timeout)
-            [[ -n "${2:-}" ]] || error_exit "Timeout value required"
-            TIMEOUT="$2"
-            shift 2
-            ;;
-        --timeout=*)
-            TIMEOUT="${1#*=}"
-            [[ -n "$TIMEOUT" ]] || error_exit "Timeout value required"
             shift
             ;;
         --)
@@ -194,24 +179,7 @@ parse_args() {
     fi
 }
 
-# Validate that a value is a valid integer
-validate_integer() {
-    local val=$1 name=$2
-    if ! [[ "$val" =~ ^[+-]?[0-9]+$ ]]; then
-        echo "Error: $name must be a valid integer" >&2
-        exit 1
-    fi
-}
 
-# Validate that a value is a positive integer
-validate_positive_integer() {
-    local val=$1 name=$2
-    validate_integer "$val" "$name"
-    if ((val <= 0)); then
-        echo "Error: $name must be a positive integer" >&2
-        exit 1
-    fi
-}
 
 # Validate arguments
 validate_args() {
@@ -238,9 +206,6 @@ validate_args() {
     fi
 
     [[ -n "$KEYFILE" && ! -f "$KEYFILE" ]] && error_exit "Keyfile not found: $KEYFILE"
-
-    # Validate timeout value
-    validate_positive_integer "$TIMEOUT" "timeout"
 
     command -v keepassxc-cli >/dev/null 2>&1 || error_exit "keepassxc-cli not found"
     command -v fzf >/dev/null 2>&1 || error_exit "fzf not found"
@@ -351,20 +316,7 @@ get_entry_details() {
     execute_keepass_cmd "show --all '$DATABASE' '$entry_path'"
 }
 
-# Display entry for field selection (using native KeePassXC output)
-display_entry_fields() {
-    local entry_path="$1"
-    local entry_details
 
-    entry_details=$(get_entry_details "$entry_path")
-
-    echo "📄 Entry: $entry_path"
-    echo "🔽 Select field to copy:"
-    echo
-
-    # Show the entry details as-is from KeePassXC (with PROTECTED values hidden)
-    echo "$entry_details"
-}
 
 # Copy field to clipboard
 copy_field_to_clipboard() {
@@ -373,12 +325,12 @@ copy_field_to_clipboard() {
 
     if [[ "$field_name" == "otp" ]]; then
         # Handle TOTP - use --totp flag to get the current TOTP code
-        execute_keepass_cmd "clip --totp '$DATABASE' '$entry_path' $TIMEOUT" >/dev/null
-        echo "🔐 TOTP code copied to clipboard (expires in $TIMEOUT seconds)"
+        execute_keepass_cmd "clip --totp '$DATABASE' '$entry_path' 0" >/dev/null
+        echo "🔐 TOTP code copied to clipboard"
     else
         # Handle regular fields - use --attribute flag
-        execute_keepass_cmd "clip --attribute '$field_name' '$DATABASE' '$entry_path' $TIMEOUT" >/dev/null
-        echo "📋 '$field_name' copied to clipboard (expires in $TIMEOUT seconds)"
+        execute_keepass_cmd "clip --attribute '$field_name' '$DATABASE' '$entry_path' 0" >/dev/null
+        echo "📋 '$field_name' copied to clipboard"
     fi
 }
 
@@ -420,17 +372,17 @@ select_field() {
 
     while true; do
         echo
-        display_entry_fields "$entry_path"
+        echo "📄 Entry: $entry_path"
+        echo "🔽 Select field to copy:"
+        echo
 
-        # Get entry details and extract field names for fzf
+        # Get entry details (raw show --all output)
         local entry_details
         entry_details=$(get_entry_details "$entry_path")
 
-        local field_names
-        field_names=$(echo "$entry_details" | grep -E "^[^:]+:" | cut -d':' -f1)
-
-        local selected_field
-        selected_field=$(echo "$field_names" | fzf --prompt="Select field: " --height=40% --border) || {
+        # Show raw keepassxc-cli output directly in fzf
+        local selected_line
+        selected_line=$(echo "$entry_details" | fzf --prompt="Select field: " --height=40% --border) || {
             case $? in
             130)
                 echo "👋 Goodbye!"
@@ -441,10 +393,16 @@ select_field() {
             esac
         }
 
-        if [[ -n "$selected_field" ]]; then
-            copy_field_to_clipboard "$entry_path" "$selected_field"
-            echo
-            echo "🔄 Select another field or press ESC to go back"
+        if [[ -n "$selected_line" ]]; then
+            # Extract field name from selected line (everything before the first colon)
+            local field_name
+            field_name=$(echo "$selected_line" | cut -d':' -f1)
+
+            if [[ -n "$field_name" ]]; then
+                copy_field_to_clipboard "$entry_path" "$field_name"
+                echo
+                echo "🔄 Select another field or press ESC to go back"
+            fi
         fi
     done
 }
