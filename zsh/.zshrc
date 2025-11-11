@@ -1462,11 +1462,11 @@ cdf() {
     local dir
 
     if command -v fd >/dev/null 2>&1; then
-        dir=$(fd --type d --hidden --exclude .git . "$search_root" 2>/dev/null \
+        dir=$(fd -L --type d --hidden --exclude .git . "$search_root" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
     else
-        dir=$(find "$search_root" -type d ! -path "$search_root" -not -path "*/.git*" 2>/dev/null \
+        dir=$(find -L "$search_root" -type d ! -path "$search_root" -not -path "*/.git*" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
     fi
