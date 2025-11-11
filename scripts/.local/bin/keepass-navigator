@@ -280,7 +280,7 @@ init_password() {
         if [[ "$DEBUG" == true ]]; then echo "🔐 Retrieved password from secret store" >&2; fi
     elif [[ -z "$CACHED_PASSWORD" ]] && [[ "$NO_PASSWORD" != true ]]; then
         echo -n "Enter database password: " >&2
-        read -s CACHED_PASSWORD
+        read -rs CACHED_PASSWORD
         echo >&2 # New line after hidden input
         if [[ "$DEBUG" == true ]]; then echo "🔐 Password cached for session" >&2; fi
     fi
