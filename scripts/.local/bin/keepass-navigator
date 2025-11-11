@@ -303,27 +303,26 @@ execute_keepass_cmd() {
     local exit_code
 
     if [[ -n "$CACHED_PASSWORD" ]]; then
-        # Use printf pipe to pass password and only capture stdout
-        # Redirect stderr to /dev/null to avoid password prompts in output
-        if ! output=$(printf '%s\n' "$CACHED_PASSWORD" | "${cmd_array[@]}" 2>/dev/null); then
+        # Use printf pipe to pass password and capture both stdout and stderr
+        {
+            output=$(printf '%s\n' "$CACHED_PASSWORD" | "${cmd_array[@]}" 2>&1)
             exit_code=$?
-            case $exit_code in
-            1) error_exit "Invalid credentials or database locked" ;;
-            2) error_exit "Database file corrupted or invalid format" ;;
-            11) error_exit "Invalid command or arguments" ;;
-            *) error_exit "KeePassXC command failed with exit code $exit_code" ;;
-            esac
+        } 2>/dev/null
+
+        if [[ $exit_code -ne 0 ]]; then
+            # Output error to stderr and return with exit code
+            echo "❌ Error: keepassxc-cli failed (exit code $exit_code): $output" >&2
+            return "$exit_code"
         fi
     else
         # No password needed (--no-password case)
-        if ! output=$("${cmd_array[@]}" 2>/dev/null); then
-            exit_code=$?
-            case $exit_code in
-            1) error_exit "Invalid credentials or database locked" ;;
-            2) error_exit "Database file corrupted or invalid format" ;;
-            11) error_exit "Invalid command or arguments" ;;
-            *) error_exit "KeePassXC command failed with exit code $exit_code" ;;
-            esac
+        output=$("${cmd_array[@]}" 2>&1)
+        exit_code=$?
+
+        if [[ $exit_code -ne 0 ]]; then
+            # Output error to stderr and return with exit code
+            echo "❌ Error: keepassxc-cli failed (exit code $exit_code): $output" >&2
+            return "$exit_code"
         fi
     fi
 
@@ -344,6 +343,12 @@ list_entries() {
 
     local raw_output
     raw_output=$(execute_keepass_cmd "$cmd_args")
+    local cmd_exit_code=$?
+
+    # If execute_keepass_cmd failed, exit immediately
+    if [[ $cmd_exit_code -ne 0 ]]; then
+        exit "$cmd_exit_code"
+    fi
 
     # Filter out directory paths and empty groups - keep only actual entry lines
     # Remove: empty directories (lines ending with '/[empty]'), and directory paths (lines ending with '/')
@@ -367,7 +372,16 @@ list_entries() {
 # Get entry details (raw format)
 get_entry_details_raw() {
     local entry_path="$1"
-    execute_keepass_cmd "show --all '$DATABASE' '$entry_path'"
+    local output
+    output=$(execute_keepass_cmd "show --all '$DATABASE' '$entry_path'")
+    local cmd_exit_code=$?
+
+    # If execute_keepass_cmd failed, exit immediately
+    if [[ $cmd_exit_code -ne 0 ]]; then
+        exit "$cmd_exit_code"
+    fi
+
+    echo "$output"
 }
 
 # Format entry details as colored table (inspired by fzf-git-branches)
