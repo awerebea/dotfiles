@@ -25,6 +25,7 @@ YUBIKEY=false
 SEARCH_QUERY=""
 GROUP_PATH=""
 CACHED_PASSWORD=""
+DEBUG=false
 
 # Color variables (inspired by fzf-git-branches)
 readonly col_reset='\033[0m'
@@ -87,6 +88,7 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
+    --debug                 Show debug output and status messages
     -h, --help              Show this help
 
 AUTHENTICATION:
@@ -118,6 +120,13 @@ EOF
 error_exit() {
     echo "❌ Error: $1" >&2
     exit 1
+}
+
+# Debug output function
+debug_echo() {
+    if [[ "$DEBUG" == true ]]; then
+        echo "$@"
+    fi
 }
 
 # Cross-platform secret retrieval (simplified from keychain-secret)
@@ -198,6 +207,10 @@ parse_args() {
             YUBIKEY=true
             shift
             ;;
+        --debug)
+            DEBUG=true
+            shift
+            ;;
         --)
             parsing_group=true
             shift
@@ -256,12 +269,12 @@ validate_args() {
 init_password() {
     if [[ -z "$CACHED_PASSWORD" ]] && [[ -n "$SECRET_NAME" ]]; then
         CACHED_PASSWORD=$(fetch_secret "$SECRET_NAME") || error_exit "Failed to retrieve secret: $SECRET_NAME"
-        echo "🔐 Retrieved password from secret store" >&2
+        if [[ "$DEBUG" == true ]]; then echo "🔐 Retrieved password from secret store" >&2; fi
     elif [[ -z "$CACHED_PASSWORD" ]] && [[ "$NO_PASSWORD" != true ]]; then
         echo -n "Enter database password: " >&2
         read -s CACHED_PASSWORD
         echo >&2  # New line after hidden input
-        echo "🔐 Password cached for session" >&2
+        if [[ "$DEBUG" == true ]]; then echo "🔐 Password cached for session" >&2; fi
     fi
 }
 
@@ -475,30 +488,30 @@ copy_field_to_clipboard() {
     if [[ "$field_name" == "otp" ]]; then
         # Handle TOTP - use --totp flag to get the current TOTP code
         execute_keepass_cmd "clip --totp '$DATABASE' '$entry_path' 0" >/dev/null
-        echo "🔐 TOTP code copied to clipboard"
+        debug_echo "🔐 TOTP code copied to clipboard"
     else
         # Handle regular fields - use --attribute flag
         execute_keepass_cmd "clip --attribute '$field_name' '$DATABASE' '$entry_path' 0" >/dev/null
-        echo "📋 '$field_name' copied to clipboard"
+        debug_echo "📋 '$field_name' copied to clipboard"
     fi
 }
 
 # Main entry selection loop
 select_entry() {
     while true; do
-        echo "🔍 KeePass Database: $(basename "$DATABASE")"
-        [[ -n "$GROUP_PATH" ]] && echo "📁 Group: $GROUP_PATH"
-        [[ -n "$SEARCH_QUERY" ]] && echo "🔍 Search: $SEARCH_QUERY"
-        echo "📋 Select entry (Ctrl+C/Ctrl+Q to exit):"
-        echo
+        debug_echo "🔍 KeePass Database: $(basename "$DATABASE")"
+        [[ -n "$GROUP_PATH" ]] && debug_echo "📁 Group: $GROUP_PATH"
+        [[ -n "$SEARCH_QUERY" ]] && debug_echo "🔍 Search: $SEARCH_QUERY"
+        debug_echo "📋 Select entry (Ctrl+C/Ctrl+Q to exit):"
+        if [[ "$DEBUG" == true ]]; then echo; fi
 
         local entries
         entries=$(list_entries)
 
-        [[ -z "$entries" ]] && {
-            echo "❌ No entries found"
+        if [[ -z "$entries" ]]; then
+            echo "❌ No entries found" >&2
             return 1
-        }
+        fi
 
         # Create header with keybindings for entry selection
         local header="KeePass Database Navigator: Ctrl+C/Ctrl+Q:exit, Enter:select entry"
@@ -511,7 +524,7 @@ select_entry() {
 
         # Check if we got any output
         [[ -z "$lines" ]] && {
-            echo "👋 Goodbye!"
+            debug_echo "👋 Goodbye!"
             exit 0
         }
 
@@ -522,7 +535,7 @@ select_entry() {
 
         case "$key" in
             ctrl-c|ctrl-q)
-                echo "👋 Goodbye!"
+                debug_echo "👋 Goodbye!"
                 exit 0
                 ;;
             *)
@@ -547,9 +560,9 @@ select_field() {
     local entry_path="$1"
 
     while true; do
-        echo
-        echo "📄 Entry: '$entry_path'"
-        echo
+        if [[ "$DEBUG" == true ]]; then echo; fi
+        debug_echo "📄 Entry: '$entry_path'"
+        if [[ "$DEBUG" == true ]]; then echo; fi
 
         # Get formatted entry details with colors and proper table alignment
         local entry_details
@@ -575,7 +588,7 @@ select_field() {
 
         case "$key" in
             ctrl-c)
-                echo "👋 Goodbye!"
+                debug_echo "👋 Goodbye!"
                 exit 0
                 ;;
             ctrl-q)
@@ -593,8 +606,8 @@ select_field() {
 
             if [[ -n "$field_name" ]]; then
                 copy_field_to_clipboard "$entry_path" "$field_name"
-                echo
-                echo "🔄 Select another field or press Ctrl+Q to go back"
+                if [[ "$DEBUG" == true ]]; then echo; fi
+                debug_echo "🔄 Select another field or press Ctrl+Q to go back"
             fi
         fi
     done
@@ -610,8 +623,8 @@ main() {
     # Initialize password once at the main level (before any subshells)
     init_password
 
-    echo "🔐 KeePass Navigator"
-    echo "==================="
+    debug_echo "🔐 KeePass Navigator"
+    debug_echo "==================="
 
     select_entry
 }
