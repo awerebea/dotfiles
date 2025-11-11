@@ -343,7 +343,21 @@ list_entries() {
 
     # Filter out directory paths and empty groups - keep only actual entry lines
     # Remove: empty directories (lines ending with '/[empty]'), and directory paths (lines ending with '/')
-    echo "$raw_output" | grep -v -E '/\[empty\]$|/$'
+    local filtered_output
+    filtered_output=$(echo "$raw_output" | grep -v -E '/\[empty\]$|/$')
+
+    # Add colored formatting: group path in blue, entry name in green, separator in white
+    echo "$filtered_output" | while IFS= read -r line; do
+        if [[ "$line" == */* ]]; then
+            # Entry with group path - split at the last '/'
+            local group_path="${line%/*}"
+            local entry_name="${line##*/}"
+            printf "${col_b}%s${col_reset}/${col_g}%s${col_reset}\n" "$group_path" "$entry_name"
+        else
+            # Entry without group path (root level) - just color in green
+            printf "${col_g}%s${col_reset}\n" "$line"
+        fi
+    done
 }
 
 # Get entry details (raw format)
