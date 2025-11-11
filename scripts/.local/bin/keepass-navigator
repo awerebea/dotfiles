@@ -338,7 +338,12 @@ list_entries() {
         cmd_args="ls -q -R -f '$DATABASE'"
     fi
 
-    execute_keepass_cmd "$cmd_args"
+    local raw_output
+    raw_output=$(execute_keepass_cmd "$cmd_args")
+
+    # Filter out directory paths and empty groups - keep only actual entry lines
+    # Remove: empty directories (lines ending with '/[empty]'), and directory paths (lines ending with '/')
+    echo "$raw_output" | grep -v -E '/\[empty\]$|/$'
 }
 
 # Get entry details (raw format)
