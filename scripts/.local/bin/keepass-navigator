@@ -514,7 +514,15 @@ select_entry() {
                 ;;
         esac
 
-        [[ -n "$selected_entry" ]] && select_field "$selected_entry"
+        if [[ -n "$selected_entry" ]]; then
+            # Construct full path if GROUP_PATH is specified
+            local full_entry_path="$selected_entry"
+            if [[ -n "$GROUP_PATH" ]]; then
+                # Combine GROUP_PATH with selected entry to get full path
+                full_entry_path="$GROUP_PATH/$selected_entry"
+            fi
+            select_field "$full_entry_path"
+        fi
     done
 }
 
