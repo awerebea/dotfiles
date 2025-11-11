@@ -375,6 +375,7 @@ fi
 
 # enable zoxide
 if command -v "zoxide" &>/dev/null; then
+    export _ZO_ECHO=1
     if [[ -n "${ZSH_VERSION-}" ]]; then
         eval "$(zoxide init zsh)"
     else
