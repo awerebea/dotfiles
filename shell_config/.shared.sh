@@ -375,6 +375,7 @@ fi
 
 # enable direnv
 if command -v "direnv" &>/dev/null; then
+    export DIRENV_LOG_FORMAT=
     if [[ -n "${ZSH_VERSION-}" ]]; then
         eval "$(direnv hook zsh)"
     else
