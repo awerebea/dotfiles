@@ -99,6 +99,7 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
+    -e, --exclude ATTR      Exclude specific attribute from display (can be used multiple times)
     --show-all-attributes   Show all entry attributes (including uuid and other hidden attributes)
     --debug                 Show debug output and status messages
     -h, --help              Show this help
@@ -115,6 +116,7 @@ EXAMPLES:
     $0 -d vault.kdbx -k keyfile.key --no-password aws sso
     $0 -d vault.kdbx --yubikey -- work/Bright MLS
     $0 -d vault.kdbx -k keyfile.key --yubikey  # YubiKey + keyfile + password
+    $0 -d vault.kdbx -e Notes -e URL  # Exclude Notes and URL attributes
     $0 -d vault.kdbx  # Will prompt for password
 
 NAVIGATION:
@@ -178,6 +180,17 @@ parse_args() {
         case $1 in
         -h | --help)
             usage 0
+            ;;
+        -e | --exclude)
+            [[ -n "${2:-}" ]] || error_exit "Attribute name required for --exclude"
+            HIDDEN_ATTRIBUTES+=("$2")
+            shift 2
+            ;;
+        --exclude=*)
+            local exclude_attr="${1#*=}"
+            [[ -n "$exclude_attr" ]] || error_exit "Attribute name required for --exclude"
+            HIDDEN_ATTRIBUTES+=("$exclude_attr")
+            shift
             ;;
         -d | --database)
             [[ -n "${2:-}" ]] || error_exit "Database path required"
