@@ -3,7 +3,7 @@
 # keepass-navigator - Interactive KeePassXC database navigator with FZF
 # Features:
 #   - Browse KeePass database entries with FZF
-#   - Copy selected fields to clipboard
+#   - Copy selected attribute to clipboard
 #   - Support for TOTP codes
 #   - Search and group navigation
 #   - Cross-platform secret retrieval
@@ -98,7 +98,7 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
-    --show-all-attributes   Show all entry attributes (including uuid and other hidden fields)
+    --show-all-attributes   Show all entry attributes (including uuid and other hidden attributes)
     --debug                 Show debug output and status messages
     -h, --help              Show this help
 
@@ -118,8 +118,8 @@ EXAMPLES:
 
 NAVIGATION:
     - Entry Selection: Ctrl+C/Ctrl+Q to exit
-    - Field Selection: Ctrl+Q to go back to entries, Ctrl+C to exit
-    - After copying a field: continues field selection loop
+    - Attribute Selection: Ctrl+Q to go back to entries, Ctrl+C to exit
+    - After copying an attribute: continues attribute selection loop
 
 FZF CUSTOMIZATION:
     Set KEEPASS_FZF_OPTS environment variable to override default FZF options
@@ -531,7 +531,7 @@ format_entry_details_from_parsed_data() {
 }
 
 # Create FZF header from parsed data string
-create_field_selection_header_from_parsed_data() {
+create_attribute_selection_header_from_parsed_data() {
     local parsed_data="$1"
 
     # Extract max_width and find Title attribute from structured data
@@ -567,7 +567,7 @@ create_field_selection_header_from_parsed_data() {
 
     # Build header with keybindings and table header (no separator line)
     # Note: FZF handles ANSI codes in headers, so we can use colors directly
-    local header="$title_value: ctrl-q:back, ctrl-c:exit, enter:copy field"
+    local header="$title_value: ctrl-q:back, ctrl-c:exit, enter:copy attribute"
     header+=$'\n'
     # Simple table header without ANSI codes to avoid display issues
     # Use one less space in header to match data row alignment
@@ -578,19 +578,19 @@ create_field_selection_header_from_parsed_data() {
     echo "$header"
 }
 
-# Copy field to clipboard
-copy_field_to_clipboard() {
+# Copy attribute to clipboard
+copy_attribute_to_clipboard() {
     local entry_path="$1"
-    local field_name="$2"
+    local attribute_name="$2"
 
-    if [[ "$field_name" == "otp" ]]; then
+    if [[ "$attribute_name" == "otp" ]]; then
         # Handle TOTP - use --totp flag to get the current TOTP code
         execute_keepass_cmd "clip --totp '$DATABASE' '$entry_path' 0" >/dev/null
         debug_echo "🔐 TOTP code copied to clipboard"
     else
-        # Handle regular fields - use --attribute flag
-        execute_keepass_cmd "clip --attribute '$field_name' '$DATABASE' '$entry_path' 0" >/dev/null
-        debug_echo "📋 '$field_name' copied to clipboard"
+        # Handle regular attributes - use --attribute flag
+        execute_keepass_cmd "clip --attribute '$attribute_name' '$DATABASE' '$entry_path' 0" >/dev/null
+        debug_echo "📋 '$attribute_name' copied to clipboard"
     fi
 }
 
@@ -648,13 +648,13 @@ select_entry() {
                 # Combine GROUP_PATH with selected entry to get full path
                 full_entry_path="$GROUP_PATH/$selected_entry"
             fi
-            select_field "$full_entry_path"
+            select_attribute "$full_entry_path"
         fi
     done
 }
 
-# Field selection loop
-select_field() {
+# Attribute selection loop
+select_attribute() {
     local entry_path="$1"
 
     # 🚀 OPTIMIZATION: Parse entry attributes ONCE outside the loop and cache the result
@@ -693,7 +693,7 @@ select_field() {
 
         # Create header using parsed data
         local header
-        header=$(create_field_selection_header_from_parsed_data "$parsed_data")
+        header=$(create_attribute_selection_header_from_parsed_data "$parsed_data")
 
         # Use fzf with header containing keybindings and table headers
         local fzf_cmd
@@ -723,14 +723,14 @@ select_field() {
         esac
 
         if [[ -n "$selected_line" ]]; then
-            # Extract field name from formatted line (remove ANSI colors and get first column)
-            local field_name
-            field_name=$(echo "$selected_line" | sed 's/\x1b\[[0-9;]*m//g' | awk '{print $1}')
+            # Extract attribute name from formatted line (remove ANSI colors and get first column)
+            local attribute_name
+            attribute_name=$(echo "$selected_line" | sed 's/\x1b\[[0-9;]*m//g' | awk '{print $1}')
 
-            if [[ -n "$field_name" ]]; then
-                copy_field_to_clipboard "$entry_path" "$field_name"
+            if [[ -n "$attribute_name" ]]; then
+                copy_attribute_to_clipboard "$entry_path" "$attribute_name"
                 if [[ "$DEBUG" == true ]]; then echo; fi
-                debug_echo "🔄 Select another field or press Ctrl+Q to go back"
+                debug_echo "🔄 Select another attribute or press Ctrl+Q to go back"
             fi
         fi
     done
