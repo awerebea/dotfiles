@@ -32,6 +32,7 @@ SHOW_ALL_ATTRIBUTES=false
 HIDDEN_ATTRIBUTES=(
     "Uuid"
     "PEDCalc.interval"
+    "Title"
 )
 
 # Color variables (inspired by fzf-git-branches)
@@ -424,6 +425,7 @@ parse_entry_attributes() {
     local -a attributes=()
     local -a values=()
     local max_width=0
+    local title_value="Entry" # Default fallback for header
 
     # Process each line of raw output
     while IFS= read -r line; do
@@ -437,6 +439,9 @@ parse_entry_attributes() {
 
             # Skip if no value or if it's just whitespace
             [[ -z "$val" || "$val" =~ ^[[:space:]]*$ ]] && continue
+
+            # Store title value for header (even if it will be hidden from list)
+            [[ "$attr" == "Title" ]] && title_value="$val"
 
             # Skip hidden attributes unless --show-all-attributes is used
             if [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
@@ -468,8 +473,8 @@ parse_entry_attributes() {
         fi
     fi
 
-    # Output structured data: max_width<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2|...
-    local output="$max_width"
+    # Output structured data: max_width<UNIT_SEP>title_value<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2...
+    local output="$max_width${split_char}$title_value"
     local i
     for i in "${!attributes[@]}"; do
         output+="${split_char}${attributes[$i]}${split_char}${values[$i]}"
@@ -481,15 +486,16 @@ parse_entry_attributes() {
 format_entry_details_from_parsed_data() {
     local parsed_data="$1"
 
-    # Parse structured data: max_width<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2...
+    # Parse structured data: max_width<UNIT_SEP>title_value<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2...
     IFS="$split_char" read -ra parts <<<"$parsed_data"
     local max_attr_width="${parts[0]}"
+    local title_value="${parts[1]}" # Extract title (not used in this function, but available)
 
-    # Extract attributes and values from parts array
+    # Extract attributes and values from parts array (starting from index 2)
     local -a attributes=()
     local -a values=()
     local i
-    for ((i = 1; i < ${#parts[@]}; i += 2)); do
+    for ((i = 2; i < ${#parts[@]}; i += 2)); do
         attributes+=("${parts[$i]}")
         values+=("${parts[$((i + 1))]}")
     done
@@ -534,19 +540,10 @@ format_entry_details_from_parsed_data() {
 create_attribute_selection_header_from_parsed_data() {
     local parsed_data="$1"
 
-    # Extract max_width and find Title attribute from structured data
+    # Extract max_width and title from structured data
     IFS="$split_char" read -ra parts <<<"$parsed_data"
     local max_attr_width="${parts[0]}"
-
-    # Find the Title attribute value
-    local title_value="Entry" # Default fallback
-    local i
-    for ((i = 1; i < ${#parts[@]}; i += 2)); do
-        if [[ "${parts[$i]}" == "Title" ]]; then
-            title_value="${parts[$((i + 1))]}"
-            break
-        fi
-    done
+    local title_value="${parts[1]}" # Title is now the second element
 
     # Validate input
     [[ $max_attr_width -le 0 ]] && max_attr_width=10
