@@ -699,30 +699,26 @@ if-shell '[ $(uname -s) = Linux ]' {
     tmux display-message "Copied multiple items!"'
 }
 # -------------------------
-# 1. Local relative or absolute file paths with extension and :line:col (`:#:#`) or line (` line #`)
-# Matches: ../src/main.py:12:34, ~/project/lib/utils.js:5:15, modules/redis/main.tf line 8
-set -g @thumbs-regexp-1 '(?:\.{1,2}/|~?/)?(?:[\w.~@$-]+(?:/[\w.~@$-]+)*/)?[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
+# 1. Absolute/home/relative paths with prefixes (with or without extension)
+# Matches: ~/.local/foobar/baz, ../src/main.py:12:34, ~/project/lib/utils.js:5:15
+set -g @thumbs-regexp-1 '(?:\.{1,2}|~)?/[\w.~@$-]+(?:/[\w.~@$-]+)*(?:\.[\w]+)?(?::\d+:\d+| line \d+)?'
 # -------------------------
-# 2. Simple filenames in current directory with extension and :line:col (`:#:#`) or line (` line #`)
-# Matches: foo.txt:12:34, main.tf line 8
-set -g @thumbs-regexp-2 '[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
+# 2. Relative paths without prefix (with or without extension)
+# Matches: foobar/baz:8:5, src/main.py:12:34, modules/redis/main.tf
+set -g @thumbs-regexp-2 '[\w.~@$-]+(?:/[\w.~@$-]+)+(?:\.[\w]+)?(?::\d+:\d+| line \d+)?'
 # -------------------------
-# 3. Simple filenames in current directory with extension
-# Matches: foo.txt:12:34, main.tf line 8
-set -g @thumbs-regexp-3 '[\w.~@$-]*[^\d\s\.][\w.~@$-]*\.[\w]+'
+# 3. Simple filenames with extension (with optional line numbers)
+# Matches: foo.txt, main.tf, foo.txt:12:34, main.tf line 8
+set -g @thumbs-regexp-3 '\b[\w.~@$-]*[a-zA-Z][\w.~@$-]*\.[\w]+(?::\d+:\d+| line \d+)?\b'
 # -------------------------
-# 4. Local relative or absolute file paths without extension and :line:col (`:#:#`) or line (` line #`)
-# Matches: ../src/Dockerfile:12:34
-set -g @thumbs-regexp-4 '(?:\.{1,2}/|~?/)?[\w.~@$-]+(?:/[\w.~@$-]+)*/[\w.~@$-]+(?:(?::\d+:\d+)|(?:\s+line\s+\d+))'
-# -------------------------
-# 5. URLs with optional file path and extension
+# 4. URLs with optional file path and extension
 # Matches: https://example.com/file.js, http://host/path/to/file.txt
-set -g @thumbs-regexp-5 'https?://[\w./~@$-]+\.[\w]+'
+set -g @thumbs-regexp-4 'https?://[\w./~@$-]+\.[\w]+'
 # -------------------------
-# 6. Git log date/time formats (single segment)
+# 5. Git log date/time formats (single segment)
 # Matches ISO and human-readable git dates with optional TZ
 # Matches: 2025-10-26 14:47:22, Sun Oct 26 09:48:48 2025, Sun Oct 26 09:48:48 2025 -0400
-set -g @thumbs-regexp-6 '(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(?:[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{2}:\d{2}:\d{2} \d{4}(?: [+-]\d{4})?)'
+set -g @thumbs-regexp-5 '(?:\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})|(?:[A-Z][a-z]{2} [A-Z][a-z]{2} \d{1,2} \d{2}:\d{2}:\d{2} \d{4}(?: [+-]\d{4})?)'
 
 # Launches helper script on a upcase hint press
 set -g @thumbs-upcase-command 'tmux run-shell "cd #{pane_current_path} && \
