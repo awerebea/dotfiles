@@ -8,7 +8,7 @@
 #   - Search and group navigation
 #   - Cross-platform secret retrieval
 #   - Intelligent FZF configuration with version detection
-#   - Proper key handling (Ctrl+Q to go back, Ctrl+C to exit)
+#   - Proper key handling (ctrl-q to go back, ctrl-c to exit)
 #
 # Customization:
 #   - Set KEEPASS_FZF_OPTS to override default FZF options
@@ -564,7 +564,7 @@ create_field_selection_header_from_parsed_data() {
 
     # Build header with keybindings and table header (no separator line)
     # Note: FZF handles ANSI codes in headers, so we can use colors directly
-    local header="$title_value: Ctrl+Q:back, Ctrl+C:exit, Enter:copy field"
+    local header="$title_value: ctrl-q:back, ctrl-c:exit, enter:copy field"
     header+=$'\n'
     # Simple table header without ANSI codes to avoid display issues
     # Use one less space in header to match data row alignment
@@ -609,7 +609,7 @@ select_entry() {
         fi
 
         # Create header with keybindings for entry selection
-        local header="KeePass Database Navigator: Ctrl+C/Ctrl+Q:exit, Enter:select entry"
+        local header="KeePass Database Navigator: ctrl-c/ctrl-q:exit, enter:select entry"
 
         # Use fzf with --expect to capture key presses and header
         local fzf_cmd
