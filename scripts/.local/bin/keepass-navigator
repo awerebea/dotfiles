@@ -46,6 +46,9 @@ readonly col_y_bold='\033[1;33m' # yellow bold
 # readonly col_g_bold='\033[1;32m' # green bold
 # readonly col_b_bold='\033[1;34m' # blue bold
 
+# Delimiter for structured data (inspired by fzf-git-branches)
+readonly split_char=$'\x1f' # ASCII 31, Unit Separator - safe for any text content
+
 # FZF configuration (inspired by fzf-git-branches)
 get_fzf_cmd() {
     local fzf_version
@@ -465,11 +468,11 @@ parse_entry_attributes() {
         fi
     fi
 
-    # Output structured data: max_width|attr1|val1|attr2|val2|...
+    # Output structured data: max_width<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2|...
     local output="$max_width"
     local i
     for i in "${!attributes[@]}"; do
-        output+="|${attributes[$i]}|${values[$i]}"
+        output+="${split_char}${attributes[$i]}${split_char}${values[$i]}"
     done
     echo "$output"
 }
@@ -478,8 +481,8 @@ parse_entry_attributes() {
 format_entry_details_from_parsed_data() {
     local parsed_data="$1"
 
-    # Parse structured data: max_width|attr1|val1|attr2|val2|...
-    IFS='|' read -ra parts <<<"$parsed_data"
+    # Parse structured data: max_width<UNIT_SEP>attr1<UNIT_SEP>val1<UNIT_SEP>attr2<UNIT_SEP>val2...
+    IFS="$split_char" read -ra parts <<<"$parsed_data"
     local max_attr_width="${parts[0]}"
 
     # Extract attributes and values from parts array
@@ -532,7 +535,7 @@ create_field_selection_header_from_parsed_data() {
     local parsed_data="$1"
 
     # Extract max_width and find Title attribute from structured data
-    IFS='|' read -ra parts <<<"$parsed_data"
+    IFS="$split_char" read -ra parts <<<"$parsed_data"
     local max_attr_width="${parts[0]}"
 
     # Find the Title attribute value
@@ -661,7 +664,7 @@ select_field() {
 
     # Extract max_width and arrays from parsed data for debug display (once)
     if [[ "$DEBUG" == true ]]; then
-        IFS='|' read -ra parts <<<"$parsed_data"
+        IFS="$split_char" read -ra parts <<<"$parsed_data"
         local max_attr_width="${parts[0]}"
         local -a attributes=()
         local -a values=()
