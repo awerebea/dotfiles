@@ -28,11 +28,13 @@ CACHED_PASSWORD=""
 DEBUG=false
 SHOW_ALL_ATTRIBUTES=false
 
+# Whitelist attributes (if not empty, only these attributes will be shown)
+ALLOWED_ATTRIBUTES=()
+
 # Hidden attributes (shown only when --show-all-attributes is used)
 HIDDEN_ATTRIBUTES=(
     "Uuid"
     "PEDCalc.interval"
-    "Title"
 )
 
 # Color variables (inspired by fzf-git-branches)
@@ -99,10 +101,13 @@ OPTIONS:
     -s, --secret-name NAME   Retrieve password from keychain secret
     --no-password           Database has no password (mutually exclusive with -s)
     -y, --yubikey           Use YubiKey for authentication (can combine with others)
-    -e, --exclude ATTR      Exclude specific attribute from display (can be used multiple times)
+    -a, --attribute ATTR    Show only specified attributes (whitelist, can be used multiple times)
+    -e, --exclude ATTR      Exclude specific attribute from display (blacklist, can be used multiple times)
     --show-all-attributes   Show all entry attributes (including uuid and other hidden attributes)
     --debug                 Show debug output and status messages
     -h, --help              Show this help
+
+NOTE: If -a/--attribute is used, only those attributes will be shown (whitelist takes precedence over blacklist)
 
 AUTHENTICATION:
     - Password: Prompted by default (unless --no-password or -s/--secret-name specified)
@@ -116,7 +121,8 @@ EXAMPLES:
     $0 -d vault.kdbx -k keyfile.key --no-password aws sso
     $0 -d vault.kdbx --yubikey -- work/Bright MLS
     $0 -d vault.kdbx -k keyfile.key --yubikey  # YubiKey + keyfile + password
-    $0 -d vault.kdbx -e Notes -e URL  # Exclude Notes and URL attributes
+    $0 -d vault.kdbx -a Username -a Password  # Show only Username and Password (whitelist)
+    $0 -d vault.kdbx -e Notes -e URL  # Exclude Notes and URL attributes (blacklist)
     $0 -d vault.kdbx  # Will prompt for password
 
 NAVIGATION:
@@ -190,6 +196,17 @@ parse_args() {
             local exclude_attr="${1#*=}"
             [[ -n "$exclude_attr" ]] || error_exit "Attribute name required for --exclude"
             HIDDEN_ATTRIBUTES+=("$exclude_attr")
+            shift
+            ;;
+        -a | --attribute)
+            [[ -n "${2:-}" ]] || error_exit "Attribute name required for --attribute"
+            ALLOWED_ATTRIBUTES+=("$2")
+            shift 2
+            ;;
+        --attribute=*)
+            local allow_attr="${1#*=}"
+            [[ -n "$allow_attr" ]] || error_exit "Attribute name required for --attribute"
+            ALLOWED_ATTRIBUTES+=("$allow_attr")
             shift
             ;;
         -d | --database)
@@ -456,8 +473,20 @@ parse_entry_attributes() {
             # Store title value for header (even if it will be hidden from list)
             [[ "$attr" == "Title" ]] && title_value="$val"
 
-            # Skip hidden attributes unless --show-all-attributes is used
-            if [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
+            # Apply filtering logic: whitelist takes precedence over blacklist
+            if [[ ${#ALLOWED_ATTRIBUTES[@]} -gt 0 ]]; then
+                # Whitelist mode: only show attributes in ALLOWED_ATTRIBUTES
+                local is_allowed=false
+                local allowed_attr
+                for allowed_attr in "${ALLOWED_ATTRIBUTES[@]}"; do
+                    if [[ "$attr" == "$allowed_attr" ]]; then
+                        is_allowed=true
+                        break
+                    fi
+                done
+                [[ "$is_allowed" == false ]] && continue
+            elif [[ "$SHOW_ALL_ATTRIBUTES" != true ]]; then
+                # Blacklist mode: hide attributes in HIDDEN_ATTRIBUTES
                 local is_hidden=false
                 local hidden_attr
                 for hidden_attr in "${HIDDEN_ATTRIBUTES[@]}"; do
