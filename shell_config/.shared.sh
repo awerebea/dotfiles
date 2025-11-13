@@ -474,3 +474,12 @@ if command -v aws-sso-creds >/dev/null 2>&1; then
     }
     alias aps='aws-profile-select'
 fi
+
+if command -v keepass-navigator >/dev/null 2>&1; then
+    kpn() {
+        keepass-navigator \
+            --secret-name keepass-bright \
+            --database "$HOME/Documents/KeePass/BrightMLS.kdbx" \
+            --exclude "Title"
+    }
+fi
