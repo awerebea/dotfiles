@@ -32,8 +32,8 @@ SwitchToApp(appTitle, appPath)
 ; Hotkeys:
 ; Windows Terminal
 <#!x::SwitchToApp("WindowsTerminal.exe", "wt")
-; KeePass
-<#!k::SwitchToApp("KeePass.exe", "D:\Distrib\_Personal Software\KeePass\KeePass.exe")
+; KeePassXC
+<#!k::SwitchToApp("KeePassXC.exe", "C:\Program Files\KeePassXC\KeePassXC.exe")
 ; Chrome
 <#!c::SwitchToApp("chrome.exe", "C:\Program Files\Google\Chrome\Application\chrome.exe")
 ; Slack
