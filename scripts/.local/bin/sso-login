@@ -2,7 +2,7 @@
 
 VALID_ENVS=(
     "all"
-    bright_sso_{admin,devops}
+    bright_sso_{admin,devops,buildsecurityprovisioning}
 )
 
 _check_inputs() {
