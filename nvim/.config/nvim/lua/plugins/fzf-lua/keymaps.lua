@@ -5,11 +5,11 @@ function M.setup()
     require("fzf-lua").files()
   end, { desc = "Find files" })
 
-  vim.keymap.set("x", "<leader>ff", function()
-    require("telescope.builtin").files {
-      search = require("utils").get_visual_selection_text()[1],
+  vim.keymap.set("v", "<leader>ff", function()
+    require("telescope.builtin").find_files {
+      default_text = require("utils").get_visual_selection_text()[1],
     }
-  end, { desc = "Find files" })
+  end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>f/", function()
     require("fzf-lua").live_grep()
