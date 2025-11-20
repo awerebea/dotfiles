@@ -39,20 +39,39 @@ function M.setup()
 
   vim.keymap.set("n", "<leader><CR>", require("fzf-lua").buffers, { desc = "FZF Buffers" })
 
-  -- vim.keymap.set("v", "<leader>8", require("fzf-lua").grep_visual, { desc = "FZF Selection" })
+  vim.keymap.set("v", "<leader>8", require("fzf-lua").grep_visual, { desc = "FZF Selection" })
 
   vim.keymap.set("n", "<leader>fw", require("fzf-lua").grep_cword, { desc = "FZF Word" })
 
   vim.keymap.set("n", "<leader>fh", require("fzf-lua").helptags, { desc = "Help Tags" })
 
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>gc",
-  --   require("fzf-lua").git_bcommits,
-  --   { desc = "Browse File Commits" }
-  -- )
+  vim.keymap.set(
+    "n",
+    "<leader>//",
+    require("fzf-lua").lgrep_curbuf,
+    { desc = "Fuzzy grep in current buffer" }
+  )
 
-  -- vim.keymap.set("n", "<leader>gs", require("fzf-lua").git_status, { desc = "Git Status" })
+  vim.keymap.set(
+    { "n", "x" },
+    "<leader>gcf",
+    require("fzf-lua").git_bcommits,
+    { desc = "current file Git history" }
+  )
+
+  vim.keymap.set(
+    "x",
+    "<leader>gcl",
+    require("fzf-lua").git_bcommits,
+    { desc = "selected lines Git history" }
+  )
+
+  vim.keymap.set(
+    "n",
+    "<leader>gst",
+    require("fzf-lua").git_status,
+    { desc = "Git status (fzf-lua)" }
+  )
 
   -- vim.keymap.set(
   --   "n",
