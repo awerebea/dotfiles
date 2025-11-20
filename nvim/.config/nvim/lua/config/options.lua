@@ -276,7 +276,7 @@ end
 -- }}} end of Smart relativenumbers
 
 -- {{{ Toggle fzf-lua/telescope keymaps
-vim.g.FuzzySearchKeymaps = "telescope" -- fzf-lua|telescope
+vim.g.FuzzySearchKeymaps = "fzf-lua" -- fzf-lua|telescope
 function _G.ToggleFuzzySearchKeymaps()
   if vim.g.FuzzySearchKeymaps == "fzf-lua" then
     require("plugins.telescope.keymaps").setup()
