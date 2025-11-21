@@ -527,9 +527,9 @@ tmux_conf_uninstall_plugins_on_reload=true
 #
 # kube_tmux() {
 #   result="$($(/usr/bin/env bash) $TMUX_PLUGIN_MANAGER_PATH/kube-tmux/kube.tmux 250 blue cyan |
-#     sed -r "s/^(\#\[fg=[^]]+\]⎈ \#\[fg=[^]]+\]\#\[fg=[^]]+\]).*\/([a-z]{3}[0-9])([dtp][0-9])z1ekslms(.*)$/\1\2_\3\4/")"
+#     sed -r "s/^(\#\[fg=[^]]+\]⎈ \#\[fg=[^]]+\]\#\[fg=[^]]+\]).*\/([a-z]{3}[0-9])([dtp][0-9a-z])z1ekslms(.*)$/\1\2_\3\4/")"
 #   case $result in
-#     *N/A#[fg=*:#[fg=*N/A | *]:#[fg=*) ;;
+#     *N/A#[fg=*:#[fg=*N/A | *]:#[fg=*]$) ;;
 #     *:#[fg=*N/A) echo "$result" | sed 's|N/A$|default|' ;;
 #     *) echo "$result" ;;
 #   esac
