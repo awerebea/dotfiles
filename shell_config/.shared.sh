@@ -483,3 +483,7 @@ if command -v keepass-navigator >/dev/null 2>&1; then
             --exclude "Title"
     }
 fi
+
+if [[ -f "$HOME/.local/bin/run-until" ]]; then
+    source "$HOME/.local/bin/run-until"
+fi
