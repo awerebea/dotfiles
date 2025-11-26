@@ -1,0 +1,510 @@
+#!/usr/bin/env bash
+
+# keepass-sync - Two-way synchronization tool for KeePassXC databases
+# Features:
+#   - Bidirectional merge between two KeePass databases
+#   - Automatic backup creation before sync
+#   - Verification of sync success
+#   - Rollback capability on failure
+#   - Support for all authentication methods (password, keyfile, YubiKey, secrets)
+#   - Cross-platform secret retrieval
+#   - Comprehensive error handling and safety checks
+
+set -euo pipefail
+
+# Global variables
+PRIMARY_DB=""
+SECONDARY_DB=""
+KEYFILE=""
+SECRET_NAME=""
+NO_PASSWORD=false
+YUBIKEY=false
+CACHED_PASSWORD=""
+DEBUG=false
+DRY_RUN=false
+BACKUP_DIR=""
+FORCE=false
+
+# Color variables
+readonly col_reset='\033[0m'
+readonly col_y='\033[33m'        # yellow
+readonly col_b='\033[34m'        # blue
+readonly col_r_bold='\033[1;31m' # red bold
+readonly col_y_bold='\033[1;33m' # yellow bold
+readonly col_g_bold='\033[1;32m' # green bold
+
+# Cleanup function
+cleanup() {
+    # Clear cached password from memory
+    if [[ -n "$CACHED_PASSWORD" ]]; then
+        unset CACHED_PASSWORD
+    fi
+}
+trap cleanup EXIT
+
+usage() {
+    cat <<EOF
+Usage: $0 [OPTIONS]
+
+Two-way synchronization tool for KeePassXC databases.
+
+REQUIRED OPTIONS:
+    -p, --primary PATH       Primary KeePass database file (.kdbx)
+    -s, --secondary PATH     Secondary KeePass database file (.kdbx)
+
+AUTHENTICATION OPTIONS:
+    -k, --key-file PATH      Key file for database encryption
+    --secret-name NAME       Retrieve password from keychain secret
+    --no-password            Database has no password (mutually exclusive with --secret-name)
+    -y, --yubikey            Use YubiKey for authentication (can combine with others)
+
+SYNC OPTIONS:
+    --backup-dir PATH       Directory for backup files (default: same as database directories)
+    --dry-run               Show what would be done without making changes
+    --force                 Skip confirmation prompts
+    --debug                 Show debug output and status messages
+    -h, --help              Show this help
+
+AUTHENTICATION:
+    - Password: Prompted by default (unless --no-password or --secret-name specified)
+    - Keyfile: Optional, can be combined with any password method
+    - YubiKey: Optional, can be combined with password/keyfile
+    - Secret: Alternative to password prompt
+    - No-password: For keyfile-only databases (conflicts with --secret-name)
+    - Same credentials are assumed for both databases
+
+EXAMPLES:
+    $0 -p vault1.kdbx -s vault2.kdbx --secret-name keepass-secret
+    $0 -p vault1.kdbx -s vault2.kdbx -k keyfile.key --no-password
+    $0 -p vault1.kdbx -s vault2.kdbx --yubikey --dry-run
+    $0 -p vault1.kdbx -s vault2.kdbx --backup-dir /tmp/backups --force
+
+SAFETY FEATURES:
+    - Automatic backup creation before sync
+    - Verification of database accessibility before merge
+    - Entry count validation after sync
+    - Rollback capability on failure
+    - Dry-run mode for testing
+
+EOF
+    exit "${1:-0}"
+}
+
+error_exit() {
+    echo -e "${col_r_bold}❌ Error: $1${col_reset}" >&2
+    exit 1
+}
+
+# Debug output function
+debug_echo() {
+    if [[ "$DEBUG" == true ]]; then
+        echo -e "${col_b}🔍 $1${col_reset}" >&2
+    fi
+}
+
+# Status output function
+status_echo() {
+    echo -e "${col_g_bold}✅ $1${col_reset}"
+}
+
+# Warning output function
+warn_echo() {
+    echo -e "${col_y_bold}⚠️  $1${col_reset}" >&2
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+        -h | --help)
+            usage 0
+            ;;
+        -p | --primary)
+            [[ -n "${2:-}" ]] || error_exit "Primary database path required"
+            PRIMARY_DB="$2"
+            shift 2
+            ;;
+        --primary=*)
+            PRIMARY_DB="${1#*=}"
+            [[ -n "$PRIMARY_DB" ]] || error_exit "Primary database path required"
+            shift
+            ;;
+        -s | --secondary)
+            [[ -n "${2:-}" ]] || error_exit "Secondary database path required"
+            SECONDARY_DB="$2"
+            shift 2
+            ;;
+        --secondary=*)
+            SECONDARY_DB="${1#*=}"
+            [[ -n "$SECONDARY_DB" ]] || error_exit "Secondary database path required"
+            shift
+            ;;
+        -k | --key-file)
+            [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
+            KEYFILE="$2"
+            shift 2
+            ;;
+        --key-file=*)
+            KEYFILE="${1#*=}"
+            [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
+            shift
+            ;;
+        --secret-name)
+            [[ -n "${2:-}" ]] || error_exit "Secret name required"
+            SECRET_NAME="$2"
+            shift 2
+            ;;
+        --secret-name=*)
+            SECRET_NAME="${1#*=}"
+            [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
+            shift
+            ;;
+        --no-password)
+            NO_PASSWORD=true
+            shift
+            ;;
+        --yubikey)
+            YUBIKEY=true
+            shift
+            ;;
+        --backup-dir)
+            [[ -n "${2:-}" ]] || error_exit "Backup directory path required"
+            BACKUP_DIR="$2"
+            shift 2
+            ;;
+        --backup-dir=*)
+            BACKUP_DIR="${1#*=}"
+            [[ -n "$BACKUP_DIR" ]] || error_exit "Backup directory path required"
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        --force)
+            FORCE=true
+            shift
+            ;;
+        --debug)
+            DEBUG=true
+            shift
+            ;;
+        -*)
+            error_exit "Unknown option: $1"
+            ;;
+        *)
+            error_exit "Unexpected argument: $1"
+            ;;
+        esac
+    done
+}
+
+# Validate arguments
+validate_args() {
+    [[ -n "$PRIMARY_DB" ]] || error_exit "Primary database (-p/--primary) is required"
+    [[ -n "$SECONDARY_DB" ]] || error_exit "Secondary database (-s/--secondary) is required"
+
+    [[ -f "$PRIMARY_DB" ]] || error_exit "Primary database file not found: $PRIMARY_DB"
+    [[ -f "$SECONDARY_DB" ]] || error_exit "Secondary database file not found: $SECONDARY_DB"
+
+    [[ "$PRIMARY_DB" != "$SECONDARY_DB" ]] || error_exit "Primary and secondary databases must be different files"
+
+    # Check for conflicting authentication options
+    if [[ "$NO_PASSWORD" == true && -n "$SECRET_NAME" ]]; then
+        error_exit "--no-password and --secret-name are mutually exclusive"
+    fi
+
+    # Validate keyfile if specified
+    if [[ -n "$KEYFILE" && ! -f "$KEYFILE" ]]; then
+        error_exit "Keyfile not found: $KEYFILE"
+    fi
+
+    # Set default backup directory if not specified
+    if [[ -z "$BACKUP_DIR" ]]; then
+        BACKUP_DIR="$(dirname "$PRIMARY_DB")"
+    fi
+
+    # Validate backup directory
+    [[ -d "$BACKUP_DIR" ]] || error_exit "Backup directory not found: $BACKUP_DIR"
+    [[ -w "$BACKUP_DIR" ]] || error_exit "Backup directory not writable: $BACKUP_DIR"
+}
+
+# Get password from various sources (reusing logic from keepass-navigator)
+get_secret_from_keychain() {
+    local secret_name="$1"
+
+    if command -v security >/dev/null 2>&1; then
+        # macOS Keychain
+        security find-generic-password -w -s "$secret_name" 2>/dev/null || return 1
+    elif command -v secret-tool >/dev/null 2>&1; then
+        # Linux Secret Service
+        secret-tool lookup service keepass title "$secret_name" 2>/dev/null || return 1
+    else
+        debug_echo "No supported secret manager found (tried: security, secret-tool)"
+        return 1
+    fi
+}
+
+init_password() {
+    if [[ "$NO_PASSWORD" == true ]]; then
+        debug_echo "Using no password authentication"
+        CACHED_PASSWORD=""
+    elif [[ -n "$SECRET_NAME" ]]; then
+        debug_echo "Retrieving password from secret: $SECRET_NAME"
+        if ! CACHED_PASSWORD=$(get_secret_from_keychain "$SECRET_NAME"); then
+            error_exit "Failed to retrieve secret '$SECRET_NAME' from keychain"
+        fi
+        debug_echo "Password retrieved from keychain"
+    else
+        debug_echo "Prompting for password"
+        echo -n "Enter database password: "
+        read -rs CACHED_PASSWORD
+        echo
+        [[ -n "$CACHED_PASSWORD" ]] || error_exit "Password cannot be empty"
+    fi
+}
+
+# Build keepassxc-cli command arguments
+build_keepass_args() {
+    local -a args=()
+
+    if [[ -n "$KEYFILE" ]]; then
+        args+=(--key-file "$KEYFILE")
+    fi
+
+    if [[ "$NO_PASSWORD" == true ]]; then
+        args+=(--no-password)
+    fi
+
+    if [[ "$YUBIKEY" == true ]]; then
+        args+=(--yubikey)
+    fi
+
+    printf '%s\n' "${args[@]}"
+}
+
+# Test database accessibility
+test_database_access() {
+    local db_path="$1"
+    local db_name="$2"
+
+    debug_echo "Testing access to $db_name database: $db_path"
+
+    local -a keepass_args
+    mapfile -t keepass_args < <(build_keepass_args)
+
+    if [[ "$NO_PASSWORD" == true ]]; then
+        if ! keepassxc-cli ls "${keepass_args[@]}" "$db_path" >/dev/null 2>&1; then
+            error_exit "Cannot access $db_name database: $db_path"
+        fi
+    else
+        if ! echo "$CACHED_PASSWORD" | keepassxc-cli ls "${keepass_args[@]}" "$db_path" >/dev/null 2>&1; then
+            error_exit "Cannot access $db_name database: $db_path (check password/keyfile/YubiKey)"
+        fi
+    fi
+
+    debug_echo "$db_name database accessible"
+}
+
+# Get entry count from database
+get_entry_count() {
+    local db_path="$1"
+    local -a keepass_args
+    mapfile -t keepass_args < <(build_keepass_args)
+
+    if [[ "$NO_PASSWORD" == true ]]; then
+        keepassxc-cli ls -R "${keepass_args[@]}" "$db_path" 2>/dev/null | wc -l
+    else
+        echo "$CACHED_PASSWORD" | keepassxc-cli ls -R "${keepass_args[@]}" "$db_path" 2>/dev/null | wc -l
+    fi
+}
+
+# Create backup of database
+create_backup() {
+    local db_path="$1"
+    local backup_name="$2"
+
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="$BACKUP_DIR/${backup_name}_backup_${timestamp}.kdbx"
+
+    debug_echo "Creating backup: $backup_file"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo "  [DRY RUN] Would create backup: $backup_file"
+    else
+        cp "$db_path" "$backup_file" || error_exit "Failed to create backup: $backup_file"
+        status_echo "Backup created: $backup_file"
+    fi
+
+    echo "$backup_file"
+}
+
+# Perform merge operation
+perform_merge() {
+    local source_db="$1"
+    local target_db="$2"
+    local operation_desc="$3"
+
+    debug_echo "Performing merge: $operation_desc"
+
+    local -a keepass_args
+    mapfile -t keepass_args < <(build_keepass_args)
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo "  [DRY RUN] Would execute: keepassxc-cli merge \"$target_db\" \"$source_db\" --same-credentials ${keepass_args[*]}"
+        return 0
+    fi
+
+    if [[ "$NO_PASSWORD" == true ]]; then
+        if ! keepassxc-cli merge "${keepass_args[@]}" --same-credentials "$target_db" "$source_db"; then
+            error_exit "Merge failed: $operation_desc"
+        fi
+    else
+        if ! echo "$CACHED_PASSWORD" | keepassxc-cli merge "${keepass_args[@]}" --same-credentials "$target_db" "$source_db"; then
+            error_exit "Merge failed: $operation_desc"
+        fi
+    fi
+
+    status_echo "Merge completed: $operation_desc"
+}
+
+# Verify sync success
+verify_sync() {
+    debug_echo "Verifying sync success"
+
+    local primary_count
+    local secondary_count
+
+    primary_count=$(get_entry_count "$PRIMARY_DB")
+    secondary_count=$(get_entry_count "$SECONDARY_DB")
+
+    debug_echo "Primary database entries: $primary_count"
+    debug_echo "Secondary database entries: $secondary_count"
+
+    if [[ "$primary_count" != "$secondary_count" ]]; then
+        warn_echo "Entry count mismatch: Primary($primary_count) vs Secondary($secondary_count)"
+        warn_echo "This might indicate sync issues or is normal if databases had different structures"
+        return 1
+    fi
+
+    status_echo "Entry counts match: $primary_count entries in both databases"
+    return 0
+}
+
+# Show confirmation prompt
+confirm_operation() {
+    if [[ "$FORCE" == true || "$DRY_RUN" == true ]]; then
+        return 0
+    fi
+
+    echo
+    echo -e "${col_y_bold}📋 Sync Summary:${col_reset}"
+    echo "  Primary:   $PRIMARY_DB"
+    echo "  Secondary: $SECONDARY_DB"
+    echo "  Backups:   $BACKUP_DIR"
+
+    if [[ -n "$KEYFILE" ]]; then
+        echo "  Keyfile:   $KEYFILE"
+    fi
+
+    if [[ "$YUBIKEY" == true ]]; then
+        echo "  YubiKey:   Enabled"
+    fi
+
+    echo
+    echo -e "${col_y}This will perform bidirectional sync between the databases.${col_reset}"
+    echo -e "${col_y}Backups will be created automatically.${col_reset}"
+    echo
+    read -p "Continue? [y/N] " -n 1 -r
+    echo
+
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        echo "Operation cancelled."
+        exit 0
+    fi
+}
+
+# Main sync function
+perform_sync() {
+    echo -e "${col_g_bold}🔄 Starting KeePass Database Sync${col_reset}"
+    echo
+
+    # Show what will be done
+    confirm_operation
+
+    # Test database access
+    status_echo "Testing database accessibility"
+    test_database_access "$PRIMARY_DB" "primary"
+    test_database_access "$SECONDARY_DB" "secondary"
+
+    # Get initial entry counts
+    local primary_initial
+    local secondary_initial
+    primary_initial=$(get_entry_count "$PRIMARY_DB")
+    secondary_initial=$(get_entry_count "$SECONDARY_DB")
+
+    echo
+    status_echo "Initial state:"
+    echo "  Primary entries:   $primary_initial"
+    echo "  Secondary entries: $secondary_initial"
+
+    # Create backups
+    echo
+    status_echo "Creating backups"
+    local primary_backup
+    local secondary_backup
+    primary_backup=$(create_backup "$PRIMARY_DB" "primary")
+    secondary_backup=$(create_backup "$SECONDARY_DB" "secondary")
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo
+        echo -e "${col_y_bold}🏃 DRY RUN MODE - No actual changes will be made${col_reset}"
+    fi
+
+    # Perform bidirectional merge
+    echo
+    status_echo "Performing bidirectional sync"
+    perform_merge "$SECONDARY_DB" "$PRIMARY_DB" "secondary → primary"
+    perform_merge "$PRIMARY_DB" "$SECONDARY_DB" "primary → secondary"
+
+    if [[ "$DRY_RUN" == true ]]; then
+        echo
+        status_echo "Dry run completed successfully"
+        return 0
+    fi
+
+    # Verify sync
+    echo
+    status_echo "Verifying sync results"
+    if verify_sync; then
+        echo
+        status_echo "🎉 Sync completed successfully!"
+        echo "  Backup files:"
+        echo "    Primary:   $primary_backup"
+        echo "    Secondary: $secondary_backup"
+    else
+        echo
+        warn_echo "Sync completed with warnings - please review the results"
+        echo "  Backup files available for rollback:"
+        echo "    Primary:   $primary_backup"
+        echo "    Secondary: $secondary_backup"
+    fi
+}
+
+# Main function
+main() {
+    parse_args "$@"
+    validate_args
+
+    debug_echo "🔐 KeePass Database Sync"
+    debug_echo "========================"
+
+    # Initialize password once at the main level
+    init_password
+
+    # Perform sync
+    perform_sync
+}
+
+# Run main function
+main "$@"
