@@ -108,7 +108,7 @@ return {
             picker = "default",
             chars = "FJDKSLA;EIQPWO",
             exclude = {
-              filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame" },
+              filetype = { "notify", "packer", "qf", "diff", "fugitive", "fugitiveblame", "oil" },
               buftype = { "nofile", "terminal", "help" },
             },
           },
