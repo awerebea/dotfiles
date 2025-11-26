@@ -31,6 +31,8 @@ return {
 
     require("oil").setup {
       default_file_explorer = false,
+      skip_confirm_for_simple_edits = true,
+      prompt_save_on_select_new_entry = false,
       view_options = {
         is_hidden_file = function(name, _)
           -- dotfiles are not considered hidden
@@ -45,6 +47,10 @@ return {
           -- Check if file is gitignored
           return vim.list_contains(git_ignored[dir], name)
         end,
+      },
+      -- Prevent buffer conflicts with NvimTree
+      buf_options = {
+        buflisted = false,
       },
     }
   end,
