@@ -84,6 +84,7 @@ return {
         -- tmp = false, -- or fun(): boolean
         tmp = function()
           local ignore_filetypes = {
+            "fyler",
             "git",
             "gitcommit",
             "gitconfig",
