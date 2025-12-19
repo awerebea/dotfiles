@@ -1439,30 +1439,59 @@ fi
 
 # CD with fzf
 cdf() {
-    local args=()
     local search_root="."
-    local seen_delim=0
+    local max_depth=""
+    local query_args=()
 
-    for arg in "$@"; do
-        if [[ $arg == "--" ]]; then
-            seen_delim=1
-        elif [[ $seen_delim -eq 1 ]]; then
-            search_root="$arg"
-            break
-        else
-            args+=("$arg")
-        fi
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -r|--root)
+                search_root="$2"
+                shift 2
+                ;;
+            --root=*)
+                search_root="${1#*=}"
+                shift
+                ;;
+            -d|--depth)
+                max_depth="$2"
+                shift 2
+                ;;
+            --depth=*)
+                max_depth="${1#*=}"
+                shift
+                ;;
+            *)
+                query_args+=("$1")
+                shift
+                ;;
+        esac
     done
 
-    local query="${args[*]}"
+    # Validate depth parameter
+    if [[ -n "$max_depth" && ! "$max_depth" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Error: depth must be a positive integer" >&2
+        return 1
+    fi
+
+    local query="${query_args[*]}"
     local dir
 
     if command -v fd >/dev/null 2>&1; then
-        dir=$(fd -L --type d --hidden --exclude .git . "$search_root" 2>/dev/null \
+        local fd_cmd="fd -L --type d --hidden --exclude .git"
+        if [[ -n "$max_depth" ]]; then
+            fd_cmd="$fd_cmd --max-depth $max_depth"
+        fi
+        dir=$(eval "$fd_cmd . \"$search_root\"" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
     else
-        dir=$(find -L "$search_root" -type d ! -path "$search_root" -not -path "*/.git*" 2>/dev/null \
+        local find_cmd="find -L \"$search_root\" -type d ! -path \"$search_root\" -not -path \"*/.git*\""
+        if [[ -n "$max_depth" ]]; then
+            find_cmd="$find_cmd -maxdepth $max_depth"
+        fi
+        dir=$(eval "$find_cmd" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
     fi
