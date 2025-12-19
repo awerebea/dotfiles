@@ -1442,6 +1442,19 @@ cdf() {
     local search_root="."
     local max_depth=""
     local query_args=()
+    local exclude_patterns=()
+
+    # Default excludes for git directories
+    local default_excludes=(
+        ".git"
+        "*.git/hooks"
+        "*.git/info"
+        "*.git/logs"
+        "*.git/objects"
+        "*.git/refs"
+        "*.git/rr-cache"
+        "*.git/worktrees"
+    )
 
     # Parse arguments
     while [[ $# -gt 0 ]]; do
@@ -1462,6 +1475,14 @@ cdf() {
                 max_depth="${1#*=}"
                 shift
                 ;;
+            -e|--exclude)
+                exclude_patterns+=("$2")
+                shift 2
+                ;;
+            --exclude=*)
+                exclude_patterns+=("${1#*=}")
+                shift
+                ;;
             *)
                 query_args+=("$1")
                 shift
@@ -1479,18 +1500,42 @@ cdf() {
     local dir
 
     if command -v fd >/dev/null 2>&1; then
-        local fd_cmd="fd -L --type d --hidden --exclude .git"
+        local fd_cmd="fd -L --type d --hidden"
+
+        # Add default excludes
+        for pattern in "${default_excludes[@]}"; do
+            fd_cmd="$fd_cmd --exclude \"$pattern\""
+        done
+
+        # Add user excludes
+        for pattern in "${exclude_patterns[@]}"; do
+            fd_cmd="$fd_cmd --exclude \"$pattern\""
+        done
+
         if [[ -n "$max_depth" ]]; then
             fd_cmd="$fd_cmd --max-depth $max_depth"
         fi
+
         dir=$(eval "$fd_cmd . \"$search_root\"" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
     else
-        local find_cmd="find -L \"$search_root\" -type d ! -path \"$search_root\" -not -path \"*/.git*\""
+        local find_cmd="find -L \"$search_root\" -type d ! -path \"$search_root\""
+
+        # Add default excludes for find
+        for pattern in "${default_excludes[@]}"; do
+            find_cmd="$find_cmd -not -path \"*/$pattern\""
+        done
+
+        # Add user excludes for find
+        for pattern in "${exclude_patterns[@]}"; do
+            find_cmd="$find_cmd -not -path \"*/$pattern\""
+        done
+
         if [[ -n "$max_depth" ]]; then
             find_cmd="$find_cmd -maxdepth $max_depth"
         fi
+
         dir=$(eval "$find_cmd" 2>/dev/null \
                 | sed -E "s|^${search_root%/}/||; s|^\./||; s|/$||" \
             | fzf --query="$query")
@@ -1500,3 +1545,5 @@ cdf() {
         cd "$search_root/$dir" || echo "Failed to cd into $search_root/$dir"
     fi
 }
+
+alias cdf="cdf --depth 5"
