@@ -162,6 +162,20 @@ git_current_branch() {
     git branch --show-current
 }
 
+git_repo_name() {
+    command git rev-parse --git-dir &>/dev/null || return
+    local git_common_dir
+    git_common_dir="$(git rev-parse --git-common-dir)"
+    
+    if [[ "$git_common_dir" = /* ]]; then
+        # Absolute path - we're in a bare repo
+        basename "$git_common_dir"
+    else
+        # Relative path - we're in a non-bare repo
+        basename "$(git rev-parse --show-toplevel)"
+    fi
+}
+
 git_develop_branch() {
     command git rev-parse --git-dir &>/dev/null || return
     local branch
@@ -200,6 +214,7 @@ alias gbd='git branch --delete'
 alias gbs='git bisect'
 alias gbsb='git bisect bad'
 alias gbsc='git_current_branch'
+alias grn='git_repo_name'
 alias gbsg='git bisect good'
 alias gbsr='git bisect reset'
 alias gbss='git bisect start'
