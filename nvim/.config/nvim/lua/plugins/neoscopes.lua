@@ -39,7 +39,7 @@ return {
 
     -- scopes.add_startup_scope()
 
-    vim.keymap.set("n", "<leader>ss", function()
+    vim.keymap.set("n", "<leader>Sc", function()
       require("neoscopes").select {}
     end, { desc = "Select scope" })
   end,
