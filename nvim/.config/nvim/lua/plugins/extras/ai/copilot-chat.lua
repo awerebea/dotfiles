@@ -20,6 +20,7 @@ return {
   },
   opts = {
     debug = false, -- Enable debug logging
+    model = "gpt-4.1",
     -- default mappings
     mappings = {
       complete = {
