@@ -58,7 +58,14 @@ return {
     },
     prompts = {
       Commit = {
-        prompt = "Write commit message for the change with commitizen convention. Keep the title under 50 characters and wrap message at 72 characters. Describe all changes made using the imperative mood. Format as a gitcommit code block.",
+        prompt = "Write a commit message for the change using the Commitizen convention.\n"
+          .. "Keep the title under 50 characters and wrap the message at 72 characters.\n"
+          .. "Describe all changes using the imperative mood.\n"
+          .. "Format the output as a gitcommit code block.\n\n"
+          .. "Extract a Jira ticket key from the current branch name using the "
+          .. "pattern AA-DDDD (two uppercase letters, a hyphen, and four digits).\n"
+          .. "If the branch name starts with a string matching this pattern, "
+          .. "start the commit title with <JIRA_KEY>: followed by a space.",
         context = "git:staged",
       },
     },
