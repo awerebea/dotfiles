@@ -595,8 +595,13 @@ function Invoke-SetLocationGitRevParseShowtoplevel
 {
     Set-Location "$(git rev-parse --show-toplevel)"
 }
-New-Alias -Name 'grt' -Value 'Invoke-SetLocationGitRevParseShowtoplevel' -Scope Global -Force
-New-Alias -Name 'cdgr' -Value 'Invoke-SetLocationGitRevParseShowtoplevel' -Scope Global -Force
+New-Alias -Name 'cdgrt' -Value 'Invoke-SetLocationGitRevParseShowtoplevel' -Scope Global -Force
+
+function Invoke-GitRevParseShowtoplevel
+{
+    git rev-parse --show-toplevel $args
+}
+New-Alias -Name 'grt' -Value 'Invoke-GitRevParseShowtoplevel' -Scope Global -Force
 
 function Invoke-GitBisect
 {
