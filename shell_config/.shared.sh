@@ -163,16 +163,51 @@ git_current_branch() {
 }
 
 git_repo_name() {
+    local show_help=0 show_full=0
+    local usage_msg="Usage: git_repo_name [-h|--help] [-f|--full]
+Get the name or full path of the current git repository.
+
+Options:
+  -h, --help    Show this help message
+  -f, --full    Show full path instead of repository name"
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+        -h | --help)
+            show_help=1
+            shift
+            ;;
+        -f | --full)
+            show_full=1
+            shift
+            ;;
+        *)
+            echo "git_repo_name: unknown option '$1'" >&2
+            echo "$usage_msg" >&2
+            return 1
+            ;;
+        esac
+    done
+
+    if [[ $show_help -eq 1 ]]; then
+        echo "$usage_msg" >&1
+        return 0
+    fi
+
     command git rev-parse --git-dir &>/dev/null || return
-    local git_common_dir
+    local git_common_dir full_path
     git_common_dir="$(git rev-parse --git-common-dir)"
-    
+
     if [[ "$git_common_dir" = /* ]]; then
-        # Absolute path - we're in a bare repo
-        basename "$git_common_dir"
+        full_path="$git_common_dir"
     else
-        # Relative path - we're in a non-bare repo
-        basename "$(git rev-parse --show-toplevel)"
+        full_path="$(git rev-parse --show-toplevel)"
+    fi
+
+    if [[ $show_full -eq 1 ]]; then
+        echo "$full_path"
+    else
+        basename "$full_path"
     fi
 }
 
@@ -201,7 +236,7 @@ git_main_branch() {
 }
 
 # Git aliases/functions
-alias cdgr='cd "$(git rev-parse --show-toplevel)"'
+alias cdgrt='cd "$(git rev-parse --show-toplevel)"'
 alias g='git'
 alias ga='git add'
 alias gaa='git add --all'
@@ -215,6 +250,7 @@ alias gbs='git bisect'
 alias gbsb='git bisect bad'
 alias gbsc='git_current_branch'
 alias grn='git_repo_name'
+alias grp='git_repo_name -f'
 alias gbsg='git bisect good'
 alias gbsr='git bisect reset'
 alias gbss='git bisect start'
@@ -285,7 +321,7 @@ alias grmv='git remote rename'
 alias grrm='git remote remove'
 alias grs='git restore'
 alias grset='git remote set-url'
-alias grt='cd "$(git rev-parse --show-toplevel)"'
+alias grt='git rev-parse --show-toplevel'
 alias grv='git remote --verbose'
 alias gss='git status --short'
 alias gst='git status'
