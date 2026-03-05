@@ -1428,7 +1428,7 @@ if [[ "${commands[aws-sso]}" ]]; then
     }
 
     compdef __aws_sso_profile_complete aws-sso-profile
-    complete -C $HOME/.local/bin/aws-sso aws-sso
+    complete -C "$HOME"/.local/bin/aws-sso aws-sso
 fi
 
 # END_AWS_SSO_CLI
