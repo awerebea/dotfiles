@@ -1459,6 +1459,27 @@ cdf() {
     # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
+            -h|--help)
+                cat <<'EOF'
+USAGE: cdf [OPTIONS] [QUERY]
+
+Change directory using fuzzy finder (fd/fzf or find/fzf).
+
+OPTIONS:
+  -r, --root PATH      Search root directory (default: current directory)
+  -d, --depth NUM      Maximum search depth (positive integer)
+  -e, --exclude PAT    Exclude pattern (can be used multiple times)
+  -h, --help           Show this help message
+
+EXAMPLES:
+  cdf                  # Search from current directory
+  cdf mydir            # Search with initial query "mydir"
+  cdf -d 3             # Limit search to 3 levels deep
+  cdf -r ~/projects    # Search from ~/projects
+  cdf -e node_modules  # Exclude node_modules directories
+EOF
+                return 0
+                ;;
             -r|--root)
                 search_root="$2"
                 shift 2
