@@ -1,3 +1,4 @@
+# shellcheck shell=zsh
 zmodload zsh/zprof
 zstyle ':omz:update' mode disabled
 
@@ -1443,6 +1444,7 @@ cdf() {
     local max_depth=""
     local query_args=()
     local exclude_patterns=()
+    local include_patterns=()
 
     # Default excludes for git directories
     local default_excludes=(
@@ -1454,6 +1456,8 @@ cdf() {
         "*.git/refs"
         "*.git/rr-cache"
         "*.git/worktrees"
+        ".terraform"
+        "node_modules"
     )
 
     # Parse arguments
@@ -1469,14 +1473,18 @@ OPTIONS:
   -r, --root PATH      Search root directory (default: current directory)
   -d, --depth NUM      Maximum search depth (positive integer)
   -e, --exclude PAT    Exclude pattern (can be used multiple times)
+  -i, --include PAT    Include pattern - removes matching exclusions (can be used multiple times)
   -h, --help           Show this help message
 
 EXAMPLES:
-  cdf                  # Search from current directory
-  cdf mydir            # Search with initial query "mydir"
-  cdf -d 3             # Limit search to 3 levels deep
-  cdf -r ~/projects    # Search from ~/projects
-  cdf -e node_modules  # Exclude node_modules directories
+  cdf                       # Search from current directory
+  cdf mydir                 # Search with initial query "mydir"
+  cdf -d 3                  # Limit search to 3 levels deep
+  cdf -r ~/projects         # Search from ~/projects
+  cdf -e node_modules       # Exclude node_modules directories
+  cdf -i "*.git/*"          # Include all .git subdirectories (override defaults)
+  cdf -i "*.git/l*"         # Include .git/logs but keep other .git exclusions
+  cdf -e build -i build/dev # Exclude build except build/dev
 EOF
                 return 0
                 ;;
@@ -1504,6 +1512,14 @@ EOF
                 exclude_patterns+=("${1#*=}")
                 shift
                 ;;
+            -i|--include)
+                include_patterns+=("$2")
+                shift 2
+                ;;
+            --include=*)
+                include_patterns+=("${1#*=}")
+                shift
+                ;;
             *)
                 query_args+=("$1")
                 shift
@@ -1517,19 +1533,32 @@ EOF
         return 1
     fi
 
+    # Merge default excludes with user excludes
+    local all_excludes=("${default_excludes[@]}" "${exclude_patterns[@]}")
+
+    # Filter excludes by include patterns
+    local final_excludes=()
+    for exclude in "${all_excludes[@]}"; do
+        local should_exclude=true
+        for include in "${include_patterns[@]}"; do
+            if [[ "$exclude" == ${~include} ]]; then
+                should_exclude=false
+                break
+            fi
+        done
+        if $should_exclude; then
+            final_excludes+=("$exclude")
+        fi
+    done
+
     local query="${query_args[*]}"
     local dir
 
     if command -v fd >/dev/null 2>&1; then
         local fd_cmd="fd -L --type d --hidden"
 
-        # Add default excludes
-        for pattern in "${default_excludes[@]}"; do
-            fd_cmd="$fd_cmd --exclude \"$pattern\""
-        done
-
-        # Add user excludes
-        for pattern in "${exclude_patterns[@]}"; do
+        # Add final excludes
+        for pattern in "${final_excludes[@]}"; do
             fd_cmd="$fd_cmd --exclude \"$pattern\""
         done
 
@@ -1543,13 +1572,8 @@ EOF
     else
         local find_cmd="find -L \"$search_root\" -type d ! -path \"$search_root\""
 
-        # Add default excludes for find
-        for pattern in "${default_excludes[@]}"; do
-            find_cmd="$find_cmd -not -path \"*/$pattern\""
-        done
-
-        # Add user excludes for find
-        for pattern in "${exclude_patterns[@]}"; do
+        # Add final excludes for find
+        for pattern in "${final_excludes[@]}"; do
             find_cmd="$find_cmd -not -path \"*/$pattern\""
         done
 
