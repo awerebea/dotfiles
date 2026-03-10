@@ -76,8 +76,7 @@ vim.opt.listchars:append "eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space
 -- Save your backup files to a less annoying place than the current directory.
 -- Default location of backup files is ~/.local/state/nvim/backup
 vim.opt.backup = true
-vim.opt.backupdir:remove "."
-vim.opt.backupdir:append "."
+vim.opt.backupdir = { vim.fn.expand "~/.local/state/nvim/backup", "." }
 -- Try to create a backup directory in the default location if it doesn't exist
 vim.cmd [[
   if !isdirectory($HOME."/.local/state/nvim/backup")
