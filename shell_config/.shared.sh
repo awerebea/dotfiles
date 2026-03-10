@@ -337,6 +337,11 @@ alias gsw='git switch'
 alias gswc='git switch --create'
 alias gupv='git pull --rebase --verbose'
 
+# Terraform aliases/functions
+alias tfst='terraform state'
+alias tfsl='terraform state list'
+alias tfss='terraform state show'
+
 # kubectl aliases
 alias kconf='kubectl config'
 
