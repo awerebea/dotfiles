@@ -135,11 +135,6 @@ if [[ ! -d "$HOME/IceCream-Bash" ]]; then
     git clone https://github.com/jtplaarj/IceCream-Bash.git "$HOME/IceCream-Bash"
 fi
 
-# terraform plugin with resource names detection
-if [[ ! -f "$ZSH_PLUGINS/terraform/terraform.plugin.zsh" ]]; then
-    git clone https://github.com/macunha1/zsh-terraform "$ZSH_PLUGINS/terraform"
-fi
-
 # kubectx
 if [[ ! "${commands[kubectx]}" && ! -f "$ZSH_PLUGINS/kubectx/kubectx.plugin.zsh" ]]; then
     git clone https://github.com/unixorn/kubectx-zshplugin \
