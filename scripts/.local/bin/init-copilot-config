@@ -1,0 +1,146 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# Create .github directory
+mkdir -p .github
+
+# Create copilot-instructions.md file
+cat > .github/copilot-instructions.md << 'EOF'
+You are operating in a multi-repository DevOps environment.
+
+Follow these rules strictly.
+
+---
+
+## TEMPORARY FILES
+
+Always store temporary files in the directory defined by:
+
+$COPILOT_TMP_DIR
+
+Use command this command to create this directory when needed:
+mkdir -p "$COPILOT_TMP_DIR"
+
+Rules:
+
+- Never create files directly in /tmp
+- Always place temporary files inside $COPILOT_TMP_DIR
+- If the directory does not exist, create it
+- Reuse the same directory for all temporary files in the session
+
+Example:
+
+$COPILOT_TMP_DIR/script.sh
+$COPILOT_TMP_DIR/output.json
+
+---
+
+## SAFE SHELL SCRIPTING
+
+When writing shell scripts always:
+
+1. Use:
+
+set -euo pipefail
+
+2. Quote variables:
+
+"$VAR"
+
+3. Avoid unsafe globbing
+
+4. Prefer explicit paths
+
+---
+
+## DESTRUCTIVE COMMANDS
+
+Never execute destructive commands without clear confirmation.
+
+Examples:
+
+rm -rf
+terraform destroy
+kubectl delete
+aws s3 rm --recursive
+
+If such operations appear necessary:
+
+1. Explain the impact
+2. Show the command
+3. Ask for confirmation
+
+---
+
+## IDEMPOTENCY
+
+Prefer commands that are safe to run multiple times.
+
+Examples:
+
+mkdir -p
+git fetch instead of reclone
+terraform plan before apply
+
+---
+
+## GIT SAFETY
+
+Never:
+
+force push
+rewrite shared history
+
+Avoid:
+
+git push --force
+
+Prefer:
+
+git push --force-with-lease
+
+---
+
+## TERRAFORM SAFETY
+
+Always run:
+
+terraform plan
+
+before suggesting:
+
+terraform apply
+
+---
+
+## OUTPUT FILES
+
+Generated files should go to:
+
+$COPILOT_TMP_DIR
+
+unless the user explicitly asks to place them elsewhere.
+
+---
+
+## GENERAL PRINCIPLES
+
+Prefer:
+
+safe
+deterministic
+repeatable
+
+operations.
+
+Avoid:
+
+destructive
+implicit
+global
+
+changes.
+EOF
+
+echo "✓ Created .github/copilot-instructions.md"
