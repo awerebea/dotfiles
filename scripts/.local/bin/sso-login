@@ -70,10 +70,11 @@ _main() {
 
     local env
     for env in "${envs[@]}"; do
-        aws sso login --profile="$env" 2>/dev/null |
-            stdbuf -o 0 grep -v "^Attempting\|^If\|^Then\|^$" |
-            stdbuf -o 0 sed '2 i ?user_code=' | stdbuf -o 0 tr --delete '\n'
-        echo
+        local output url code
+        output=$(aws sso login --profile="$env" 2>/dev/null)
+        url=$(printf '%s\n' "$output" | grep -E '^https://')
+        code=$(printf '%s\n' "$output" | grep -E '^[A-Z]{4}-[A-Z]{4}$')
+        echo "${url}?user_code=${code}"
     done
 }
 
