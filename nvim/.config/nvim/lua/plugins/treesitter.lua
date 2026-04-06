@@ -4,14 +4,14 @@ return {
     dependencies = {
       "JoosepAlviste/nvim-ts-context-commentstring",
       "RRethy/nvim-treesitter-endwise",
-      "nvim-treesitter/nvim-treesitter-textobjects",
+      { "nvim-treesitter/nvim-treesitter-textobjects", branch = "main" },
       { "HiPhish/rainbow-delimiters.nvim", submodules = false },
       "windwp/nvim-ts-autotag",
     },
     build = ":TSUpdate",
-    event = "BufReadPost",
+    -- nvim-treesitter v1.0 does not support lazy-loading
+    lazy = false,
     opts = {
-      sync_install = false,
       ensure_installed = {
         "bash",
         "css",
@@ -37,110 +37,61 @@ return {
         "vimdoc",
         "yaml",
       },
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = true,
-        disable = { "gitcommit" },
-      },
-      indent = { enable = true, disable = { "python", "yaml" } },
-      incremental_selection = {
-        enable = true,
-        keymaps = {
-          init_selection = "gnn",
-          node_incremental = "grn",
-          scope_incremental = "grc",
-          node_decremental = "grm",
-        },
-      },
-      textobjects = {
-        select = {
-          enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-          keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ["aa"] = "@parameter.outer",
-            ["ia"] = "@parameter.inner",
-            ["af"] = "@function.outer",
-            ["if"] = "@function.inner",
-            ["ac"] = "@class.outer",
-            ["ic"] = "@class.inner",
-            ["ii"] = "@conditional.inner",
-            ["ai"] = "@conditional.outer",
-            ["il"] = "@loop.inner",
-            ["al"] = "@loop.outer",
-            ["at"] = "@comment.outer",
-          },
-        },
-        move = {
-          enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-            ["]]"] = "@class.outer",
-          },
-          goto_next_end = {
-            ["]M"] = "@function.outer",
-            ["]["] = "@class.outer",
-          },
-          goto_previous_start = {
-            ["[m"] = "@function.outer",
-            ["[["] = "@class.outer",
-          },
-          goto_previous_end = {
-            ["[M"] = "@function.outer",
-            ["[]"] = "@class.outer",
-          },
-        },
-        swap = {
-          enable = true,
-          swap_next = {
-            ["<leader>cxp"] = "@parameter.inner",
-            ["<leader>cxf"] = "@function.outer",
-            ["<leader>cxc"] = "@class.outer",
-          },
-          swap_previous = {
-            ["<leader>cxP"] = "@parameter.inner",
-            ["<leader>cxF"] = "@function.outer",
-            ["<leader>cxC"] = "@class.outer",
-          },
-        },
-        -- TODO: check if I need it
-        lsp_interop = {
-          enable = true,
-          border = "none",
-          peek_definition_code = {
-            ["<leader>pf"] = "@function.outer",
-            ["<leader>pc"] = "@class.outer",
-          },
-        },
-      },
-      matchup = {
-        enable = true,
-      },
-      endwise = {
-        enable = true,
-      },
-      rainbow = {
-        enable = true,
-        extended_mode = true,
-        colors = {
-          "#ff0000",
-          "#ff8000",
-          "#ffff00",
-          "#80ff00",
-          "#00ffff",
-          "#0080ff",
-          "#8000ff",
-          "#ff00ff",
-          "#ff0080",
-        },
-      },
-      autotag = { enable = true },
     },
     config = function(_, opts)
       require("nvim-treesitter").setup(opts)
-      -- require("ts_context_commentstring").setup {}
-      -- vim.g.skip_ts_context_commentstring_module = true
+
+      -- In nvim-treesitter v1.0, highlighting is not automatic — enable it per filetype.
+      vim.api.nvim_create_autocmd("FileType", {
+        callback = function()
+          pcall(vim.treesitter.start)
+        end,
+      })
+
+      require("nvim-ts-autotag").setup()
+
+      -- nvim-treesitter-textobjects v1.0 (main branch) uses explicit keymaps instead of declarative config.
+      require("nvim-treesitter-textobjects").setup({
+        select = { lookahead = true },
+        move = { set_jumps = true },
+      })
+
+      local select = require("nvim-treesitter-textobjects.select")
+      for key, query in pairs({
+        ["aa"] = "@parameter.outer",
+        ["ia"] = "@parameter.inner",
+        ["af"] = "@function.outer",
+        ["if"] = "@function.inner",
+        ["ac"] = "@class.outer",
+        ["ic"] = "@class.inner",
+        ["ii"] = "@conditional.inner",
+        ["ai"] = "@conditional.outer",
+        ["il"] = "@loop.inner",
+        ["al"] = "@loop.outer",
+        ["at"] = "@comment.outer",
+      }) do
+        vim.keymap.set({ "x", "o" }, key, function()
+          select.select_textobject(query, "textobjects")
+        end)
+      end
+
+      local move = require("nvim-treesitter-textobjects.move")
+      vim.keymap.set({ "n", "x", "o" }, "]m",  function() move.goto_next_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]]",  function() move.goto_next_start("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]M",  function() move.goto_next_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "][",  function() move.goto_next_end("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[m",  function() move.goto_previous_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[[",  function() move.goto_previous_start("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[M",  function() move.goto_previous_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[]",  function() move.goto_previous_end("@class.outer", "textobjects") end)
+
+      local swap = require("nvim-treesitter-textobjects.swap")
+      vim.keymap.set("n", "<leader>cxp", function() swap.swap_next("@parameter.inner") end)
+      vim.keymap.set("n", "<leader>cxf", function() swap.swap_next("@function.outer") end)
+      vim.keymap.set("n", "<leader>cxc", function() swap.swap_next("@class.outer") end)
+      vim.keymap.set("n", "<leader>cxP", function() swap.swap_previous("@parameter.inner") end)
+      vim.keymap.set("n", "<leader>cxF", function() swap.swap_previous("@function.outer") end)
+      vim.keymap.set("n", "<leader>cxC", function() swap.swap_previous("@class.outer") end)
     end,
   },
   {
