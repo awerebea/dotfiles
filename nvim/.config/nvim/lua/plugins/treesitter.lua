@@ -8,9 +8,12 @@ return {
       { "HiPhish/rainbow-delimiters.nvim", submodules = false },
       "windwp/nvim-ts-autotag",
     },
-    build = ":TSUpdate",
     -- nvim-treesitter v1.0 does not support lazy-loading
     lazy = false,
+    -- opts.ensure_installed is not a real nvim-treesitter v1.0 option, but we keep it here
+    -- so that lang extras (lua/plugins/extras/lang/*.lua) can extend the list via
+    -- vim.list_extend(opts.ensure_installed, {...}). The config function passes the
+    -- merged list to require("nvim-treesitter").install().
     opts = {
       ensure_installed = {
         "bash",
@@ -39,7 +42,10 @@ return {
       },
     },
     config = function(_, opts)
-      require("nvim-treesitter").setup(opts)
+      require("nvim-treesitter").setup()
+
+      -- Install parsers from the merged list (no-op if already installed)
+      require("nvim-treesitter").install(opts.ensure_installed)
 
       -- In nvim-treesitter v1.0, highlighting is not automatic — enable it per filetype.
       vim.api.nvim_create_autocmd("FileType", {
