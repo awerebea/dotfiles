@@ -201,7 +201,11 @@ return {
           --   },
           -- },
           nls.builtins.formatting.yamlfmt,
-          nls.builtins.formatting.stylua.with { extra_args = { "--column-width", "99" } },
+          nls.builtins.formatting.stylua.with {
+            extra_args = {
+              -- "--column-width", "99"
+            },
+          },
           -- nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
           --   -- only enable eslint if root has .eslintrc.js
           --   condition = function(utils)
