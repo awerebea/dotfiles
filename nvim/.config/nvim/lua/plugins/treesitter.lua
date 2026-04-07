@@ -41,6 +41,7 @@ return {
         "yaml",
       },
     },
+    build = ":TSUpdate",
     config = function(_, opts)
       require("nvim-treesitter").setup()
 
@@ -82,22 +83,26 @@ return {
       end
 
       local move = require("nvim-treesitter-textobjects.move")
-      vim.keymap.set({ "n", "x", "o" }, "]m",  function() move.goto_next_start("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "]]",  function() move.goto_next_start("@class.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "]M",  function() move.goto_next_end("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "][",  function() move.goto_next_end("@class.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[m",  function() move.goto_previous_start("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[[",  function() move.goto_previous_start("@class.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[M",  function() move.goto_previous_end("@function.outer", "textobjects") end)
-      vim.keymap.set({ "n", "x", "o" }, "[]",  function() move.goto_previous_end("@class.outer", "textobjects") end)
+      -- stylua: ignore start
+      vim.keymap.set({ "n", "x", "o" }, "]m", function() move.goto_next_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]]", function() move.goto_next_start("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "]M", function() move.goto_next_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "][", function() move.goto_next_end("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[m", function() move.goto_previous_start("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[[", function() move.goto_previous_start("@class.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[M", function() move.goto_previous_end("@function.outer", "textobjects") end)
+      vim.keymap.set({ "n", "x", "o" }, "[]", function() move.goto_previous_end("@class.outer", "textobjects") end)
+      -- stylua: ignore end
 
       local swap = require("nvim-treesitter-textobjects.swap")
-      vim.keymap.set("n", "<leader>cxp", function() swap.swap_next("@parameter.inner") end)
-      vim.keymap.set("n", "<leader>cxf", function() swap.swap_next("@function.outer") end)
-      vim.keymap.set("n", "<leader>cxc", function() swap.swap_next("@class.outer") end)
-      vim.keymap.set("n", "<leader>cxP", function() swap.swap_previous("@parameter.inner") end)
-      vim.keymap.set("n", "<leader>cxF", function() swap.swap_previous("@function.outer") end)
-      vim.keymap.set("n", "<leader>cxC", function() swap.swap_previous("@class.outer") end)
+      -- stylua: ignore start
+      vim.keymap.set("n", "<leader>cxp", function() swap.swap_next "@parameter.inner" end)
+      vim.keymap.set("n", "<leader>cxf", function() swap.swap_next "@function.outer" end)
+      vim.keymap.set("n", "<leader>cxc", function() swap.swap_next "@class.outer" end)
+      vim.keymap.set("n", "<leader>cxP", function() swap.swap_previous "@parameter.inner" end)
+      vim.keymap.set("n", "<leader>cxF", function() swap.swap_previous "@function.outer" end)
+      vim.keymap.set("n", "<leader>cxC", function() swap.swap_previous "@class.outer" end)
+      -- stylua: ignore end
     end,
   },
   {
