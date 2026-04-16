@@ -100,6 +100,19 @@ for event, opt_tbls in pairs(aucmd_dict) do
   end
 end
 
+-- Preserve BOM when saving UTF-16 files (e.g. Windows Task Scheduler XML).
+-- ucs-bom detection sets fileencoding=utf-16le but does not always persist
+-- the bomb option; re-assert it after the buffer is loaded.
+vim.api.nvim_create_autocmd("BufReadPost", {
+  group = vim.api.nvim_create_augroup("utf16_bom", { clear = true }),
+  pattern = "*.xml",
+  callback = function()
+    if vim.bo.fileencoding:lower():find "utf%-16" then
+      vim.bo.bomb = true
+    end
+  end,
+})
+
 -- Auto Create Intermediary Directories
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = vim.api.nvim_create_augroup("auto_create_dir", { clear = true }),
