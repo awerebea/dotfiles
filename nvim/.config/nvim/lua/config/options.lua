@@ -56,6 +56,10 @@ vim.opt.termguicolors = true
 vim.opt.background = "dark" -- colorschemes that can be light or dark will be made dark
 vim.opt.signcolumn = "yes:2" -- Always show signcolumn, max width 2
 
+-- encoding detection: check BOM first so UTF-16 LE files (e.g. Windows Task
+-- Scheduler XML exports) are opened and saved back in their original encoding
+vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "latin1" }
+
 -- backspace
 vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
 
