@@ -93,6 +93,35 @@ return {
 
       local telescope = require "telescope"
       local icons = require "config.icons"
+
+      -- Capture before telescope.setup() overwrites config.values.
+      local default_buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker
+
+      -- Custom maker: convert UTF-16 LE/BE files to UTF-8 before loading into
+      -- the preview buffer. Without this, bufload sees null bytes and renders
+      -- the file as binary/garbage.
+      local utf16_aware_previewer_maker = function(filepath, bufnr, opts)
+        filepath = vim.fn.expand(filepath)
+        local ok, f = pcall(io.open, filepath, "rb")
+        if ok and f then
+          local bom = f:read(2)
+          f:close()
+          if bom == "\xFF\xFE" or bom == "\xFE\xFF" then
+            local enc = (bom == "\xFF\xFE") and "UTF-16LE" or "UTF-16BE"
+            local lines = vim.fn.systemlist { "iconv", "-f", enc, "-t", "UTF-8", filepath }
+            if vim.v.shell_error == 0 then
+              vim.schedule(function()
+                if vim.api.nvim_buf_is_valid(bufnr) then
+                  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+                  vim.bo[bufnr].filetype = vim.filetype.match { filename = filepath } or "xml"
+                end
+              end)
+              return
+            end
+          end
+        end
+        default_buffer_previewer_maker(filepath, bufnr, opts)
+      end
       local actions = require "telescope.actions"
       local actions_layout = require "telescope.actions.layout"
       local path_actions = require "telescope_insert_path"
@@ -168,6 +197,7 @@ return {
 
       local opts = {
         defaults = {
+          buffer_previewer_maker = utf16_aware_previewer_maker,
           layout_strategy = "horizontal",
           sorting_strategy = "ascending",
           path_display = { "filename_first" },
