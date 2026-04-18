@@ -300,6 +300,18 @@ return {
             -- if required, use `{file}` for argument positioning
             ["svg"] = { "chafa", "{file}" },
             ["jpg"] = { "ueberzug" },
+            -- UTF-16 LE/BE XML files (e.g. Windows Task Scheduler exports):
+            -- detect BOM and convert to UTF-8 before handing to bat.
+            -- The builtin previewer reads raw bytes and bypasses vim's
+            -- fileencodings, so we must handle conversion here instead.
+            ["xml"] = {
+              "bash", "-c",
+              'f="$1"; bom=$(head -c 2 "$f" | xxd -p 2>/dev/null | tr -d " \\n"); '
+                .. 'if [ "$bom" = "fffe" ] || [ "$bom" = "feff" ]; then '
+                .. '  iconv -f UTF-16 -t UTF-8 "$f" 2>/dev/null | bat --color=always --language=xml --style=numbers --paging=never; '
+                .. 'else bat --color=always --language=xml --style=numbers --paging=never "$f" 2>/dev/null || cat "$f"; fi',
+              "xml-preview", "{file}",
+            },
           },
           -- if using `ueberzug` in the above extensions map
           -- set the default image scaler, possible scalers:
