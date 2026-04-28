@@ -20,7 +20,7 @@ return {
   },
   opts = {
     debug = false, -- Enable debug logging
-    model = "gpt-4.1",
+    model = "claude-sonnet-4.6",
     -- default mappings
     mappings = {
       complete = {
@@ -74,7 +74,7 @@ return {
     require("CopilotChat").setup(opts)
 
     vim.keymap.set("n", "<leader>ccp", function()
-      local chat = require "CopilotChat"
+      local chat = require("CopilotChat")
       require("CopilotChat").select_prompt()
     end, { desc = "Prompt actions" })
   end,
