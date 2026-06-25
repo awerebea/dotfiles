@@ -32,14 +32,14 @@ blocks:
     background: transparent
     style: plain
     template: "{{ .Icon }} "
-    properties:
+    options:
       cache_duration: none
 
   - type: shell
     foreground: p:bg-gray-300
     background: transparent
     style: plain
-    properties:
+    options:
       mapped_shell_names:
         bash: ""
         cmd: ""
@@ -54,14 +54,14 @@ blocks:
     background: transparent
     style: plain
     template: " "
-    properties:
+    options:
       cache_duration: none
 
   - type: git
     foreground: p:bg-green-400
     background: transparent
     style: plain
-    properties:
+    options:
       branch_ahead_icon: "<p:bg-blue-300>⇡</>"
       branch_behind_icon: "<p:bg-blue-300>⇣</>"
       branch_icon: " "
@@ -131,7 +131,7 @@ blocks:
   - type: node
     foreground: p:bg-green-500
     background: transparent
-    properties:
+    options:
       fetch_version: true
       cache_duration: none
     style: plain
@@ -139,7 +139,7 @@ blocks:
   - type: go
     foreground: p:bg-cyan-500
     background: transparent
-    properties:
+    options:
       fetch_version: true
       cache_duration: none
     style: plain
@@ -147,7 +147,7 @@ blocks:
   - type: julia
     foreground: p:bg-blue-500
     background: transparent
-    properties:
+    options:
       fetch_version: true
       cache_duration: none
     style: plain
@@ -155,7 +155,7 @@ blocks:
   - type: python
     foreground: p:bg-teal-500
     background: transparent
-    properties:
+    options:
       home_enabled: true
       display_mode: files
       fetch_virtual_env: true
@@ -166,7 +166,7 @@ blocks:
   - type: ruby
     foreground: p:bg-red-700
     background: transparent
-    properties:
+    options:
       display_mode: files
       fetch_version: true
       cache_duration: none
@@ -175,7 +175,7 @@ blocks:
   - type: azfunc
     foreground: p:bg-amber-500
     background: transparent
-    properties:
+    options:
       display_mode: files
       fetch_version: false
       cache_duration: none
@@ -187,7 +187,7 @@ blocks:
   #   background: transparent
   #   style: plain
   #   template: "  {{.Context}}{{if .Namespace}} :: {{.Namespace}}{{end}}"
-  #   properties:
+  #   options:
   #     context_aliases:
   #       arn:aws:eks:us-east-1:714767054201:cluster/aue1d1z1ekslms: aue1_d1
   #       arn:aws:eks:us-west-2:714767054201:cluster/auw2d1z1ekslms: auw2_d1
@@ -201,7 +201,7 @@ blocks:
     background_templates:
     - '{{if contains "default" .Profile}}p:bg-amber-500{{end}}'
     - '{{if contains "jan" .Profile}}p:bg-red-700{{end}}'
-    properties:
+    options:
       display_default: false
       cache_duration: none
     style: plain
@@ -220,7 +220,7 @@ blocks:
   - type: status
     foreground: p:bg-red-600
     background: transparent
-    properties:
+    options:
       always_enabled: true
       cache_duration: none
     style: plain
@@ -230,7 +230,7 @@ blocks:
     background: transparent
     style: plain
     template: "  {{ .CurrentDate | date .Format }} "
-    properties:
+    options:
       cache_duration: none
 
 - type: prompt
@@ -240,7 +240,7 @@ blocks:
     foreground: p:bg-cyan-600
     background: transparent
     style: plain
-    properties:
+    options:
       style: powerlevel
       right_format: "<b>%s</>"
       max_width: "{{ .Env.POSH_PATH_MAX_WIDTH }}"
@@ -257,7 +257,7 @@ blocks:
     foreground_templates:
     - "{{ if gt .Code 0 }}p:bg-red-600{{ end }}"
     style: plain
-    properties:
+    options:
       always_enabled: true
       cache_duration: none
     template: "❯"
