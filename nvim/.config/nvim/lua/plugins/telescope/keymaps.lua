@@ -1,38 +1,22 @@
 local M = {}
 
 function M.setup()
-  local success, scopes = pcall(require, "neoscopes")
-
-  local function get_search_dirs()
-    if
-      not success
-      or not scopes.get_current_scope()
-      or scopes.get_current_scope() == "<disable>"
-    then
-      return nil
-    end
-    return scopes.get_current_paths()
-  end
-
-  -- {{{ Neoscopes related keymaps
   vim.keymap.set("n", "<leader>ff", function()
-    require("telescope.builtin").find_files({ search_dirs = get_search_dirs() })
+    require("telescope.builtin").find_files()
   end, { desc = "Find files" })
 
   vim.keymap.set("v", "<leader>ff", function()
     require("telescope.builtin").find_files({
-      search_dirs = get_search_dirs(),
       default_text = require("utils").get_visual_selection_text()[1],
     })
   end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>f/", function()
-    require("telescope.builtin").live_grep({ search_dirs = get_search_dirs() })
+    require("telescope.builtin").live_grep()
   end, { desc = "Live grep" })
 
   vim.keymap.set("n", "<leader>faa", function()
     require("telescope").extensions.live_grep_args.live_grep_args({
-      search_dirs = get_search_dirs(),
       shorten_path = true,
       word_match = "-w",
       only_sort_text = true,
@@ -42,7 +26,6 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>f?", function()
     require("telescope.builtin").grep_string({
-      search_dirs = get_search_dirs(),
       shorten_path = true,
       word_match = "-w",
       only_sort_text = true,
@@ -51,20 +34,14 @@ function M.setup()
   end, { desc = "Fuzzy Grep" })
 
   vim.keymap.set("n", "<leader>fw", function()
-    require("telescope.builtin").grep_string({ search_dirs = get_search_dirs() })
+    require("telescope.builtin").grep_string()
   end, { desc = "Find word under cursor" })
 
   vim.keymap.set("v", "<leader>fw", function()
     require("telescope.builtin").grep_string({
-      search_dirs = get_search_dirs(),
       search = require("utils").get_visual_selection_text()[1],
     })
   end, { desc = "Find selection" })
-  -- }}} Neoscopes related keymaps
-
-  vim.keymap.set("n", "<leader>fw", function()
-    require("telescope.builtin").grep_string()
-  end, { desc = "Find word under cursor" })
 
   vim.keymap.set({ "n", "x" }, "<leader>ft", function()
     require("telescope.builtin").builtin()
@@ -83,7 +60,6 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>fg", function()
     require("telescope.builtin").grep_string({
-      search_dirs = get_search_dirs(),
       search = "",
       only_sort_text = true,
     })
@@ -129,13 +105,11 @@ function M.setup()
     require("telescope.builtin").diagnostics()
   end, { desc = "Diagnostics" })
 
-  -- list notifications
   vim.keymap.set("n", "<leader>fn", function()
     require("telescope").extensions.notify.notify()
   end, { desc = "Notifications" })
 
   -- git commands
-  -- Defined later in this file using custom previewer with delta
   vim.keymap.set("n", "<leader>glg", function()
     -- require("telescope.builtin").git_commits()
     Delta_git_commits({
@@ -208,7 +182,6 @@ function M.setup()
   end, { desc = "show custom AdvancedGitSearch commands" })
   -- }}} advanced-git-search
 
-  -- Undo tree
   vim.keymap.set("n", "<leader>tu", function()
     require("telescope").extensions.undo.undo()
   end, { desc = "Undo tree" })

@@ -87,7 +87,7 @@ return {
           { "<leader>p", group = "Project" },
           { "<leader>q", group = "Session manager" },
           { "<leader>r", group = "Remove duplicates, Restart LSP, rename symbol" },
-          { "<leader>s", group = "Spellcheck, Neoscope" },
+          { "<leader>s", group = "Spellcheck" },
           { "<leader>t", group = "Tabs, Toggle LSP" },
           { "<leader>tN", group = "Neotest" },
           { "<leader>tg", group = "Toglle LSP" },
