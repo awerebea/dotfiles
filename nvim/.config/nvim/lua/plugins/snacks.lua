@@ -9,6 +9,15 @@ return {
     statuscolumn = { enabled = false },
     terminal = { enabled = true },
     picker = {
+      layouts = {
+        default = {
+          layout = {
+            width = 0.999,
+            height = 0.95,
+            row = -1,
+          },
+        },
+      },
       win = {
         input = {
           keys = {
