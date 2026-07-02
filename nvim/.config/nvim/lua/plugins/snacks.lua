@@ -8,6 +8,16 @@ return {
     quickfile = { enabled = true },
     statuscolumn = { enabled = false },
     terminal = { enabled = true },
+    picker = {
+      win = {
+        input = {
+          keys = {
+            ["<M-f>"] = { "preview_scroll_down", mode = { "i", "n" } },
+            ["<M-b>"] = { "preview_scroll_up", mode = { "i", "n" } },
+          },
+        },
+      },
+    },
   },
   config = function(_, opts)
     require("snacks").setup(opts)
