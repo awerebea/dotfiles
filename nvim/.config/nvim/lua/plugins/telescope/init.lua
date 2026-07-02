@@ -18,6 +18,9 @@ return {
       { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
     cmd = "Telescope",
+    init = function()
+      require("plugins.telescope.keymaps").setup_always()
+    end,
     config = function(_, _)
       -- Show line numbers in preview
       vim.cmd("autocmd User TelescopePreviewerLoaded setlocal number")

@@ -1,5 +1,32 @@
 local M = {}
 
+-- Keymaps for telescope-only features (no snacks/fzf-lua equivalent).
+-- Called unconditionally at startup via the plugin spec's init hook.
+function M.setup_always()
+  vim.keymap.set("n", "<leader>fca", function()
+    require("telescope").extensions.live_grep_args.live_grep_args({
+      shorten_path = true,
+      word_match = "-w",
+      only_sort_text = true,
+      search = "",
+    })
+  end, { desc = "Live grep (custom args)" })
+
+  vim.keymap.set("n", "<leader>fcr", function()
+    require("telescope").extensions.repo.list()
+  end, { desc = "Search Git repo" })
+
+  -- {{{ advanced-git-search (telescope extension, no equivalent in other pickers)
+  vim.keymap.set("n", "<leader>gcb", function()
+    require("telescope").extensions.advanced_git_search.diff_branch_file()
+  end, { desc = "current file diff against other branch" })
+
+  vim.keymap.set("n", "<leader>gcs", function()
+    require("telescope").extensions.advanced_git_search.show_custom_functions()
+  end, { desc = "show custom AdvancedGitSearch commands" })
+  -- }}} advanced-git-search
+end
+
 function M.setup()
   vim.keymap.set("n", "<leader>ff", function()
     require("telescope.builtin").find_files()
@@ -14,24 +41,6 @@ function M.setup()
   vim.keymap.set("n", "<leader>f/", function()
     require("telescope.builtin").live_grep()
   end, { desc = "Live grep" })
-
-  vim.keymap.set("n", "<leader>fca", function()
-    require("telescope").extensions.live_grep_args.live_grep_args({
-      shorten_path = true,
-      word_match = "-w",
-      only_sort_text = true,
-      search = "",
-    })
-  end, { desc = "Live grep (custom args)" })
-
-  vim.keymap.set("n", "<leader>f?", function()
-    require("telescope.builtin").grep_string({
-      shorten_path = true,
-      word_match = "-w",
-      only_sort_text = true,
-      search = "",
-    })
-  end, { desc = "Fuzzy Grep" })
 
   vim.keymap.set("n", "<leader>fw", function()
     require("telescope.builtin").grep_string()
@@ -100,10 +109,6 @@ function M.setup()
     require("telescope.builtin").resume()
   end, { desc = "Resume" })
 
-  vim.keymap.set("n", "<leader>fcr", function()
-    require("telescope").extensions.repo.list()
-  end, { desc = "Search Git repo" })
-
   vim.keymap.set("n", "<leader>fP", function()
     require("telescope").extensions.project.project({ display_type = "minimal" })
   end, { desc = "Project extension" })
@@ -160,34 +165,9 @@ function M.setup()
     require("utils").git_diff_picker()
   end, { desc = "Changed files names only (telescope)" })
 
-  -- {{{ advanced-git-search
-  vim.keymap.set(
-    "x",
-    "<leader>gcl",
-    [[:lua require("telescope").extensions.advanced_git_search.diff_commit_line()<CR>]],
-    { desc = "selected lines Git history" }
-  )
-
-  vim.keymap.set("n", "<leader>gcb", function()
-    require("telescope").extensions.advanced_git_search.diff_branch_file()
-  end, { desc = "current file diff against other branch" })
-
   vim.keymap.set("n", "<leader>gcf", function()
     require("telescope").extensions.advanced_git_search.diff_commit_file()
   end, { desc = "current file Git history" })
-
-  vim.keymap.set("n", "<leader>gclf", function()
-    require("telescope").extensions.advanced_git_search.search_log_content_file()
-  end, { desc = "search in file log content" })
-
-  vim.keymap.set("n", "<leader>gclr", function()
-    require("telescope").extensions.advanced_git_search.search_log_content()
-  end, { desc = "search in repo log content" })
-
-  vim.keymap.set("n", "<leader>gcs", function()
-    require("telescope").extensions.advanced_git_search.show_custom_functions()
-  end, { desc = "show custom AdvancedGitSearch commands" })
-  -- }}} advanced-git-search
 
   vim.keymap.set("n", "<leader>tu", function()
     require("telescope").extensions.undo.undo()
