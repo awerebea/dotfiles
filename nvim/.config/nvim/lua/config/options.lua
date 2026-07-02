@@ -13,12 +13,8 @@ vim.opt.scrolloff = 5
 -- 'nowrap' is set
 vim.opt.sidescrolloff = 8
 
--- hide "-- INSERT --" text in status
-vim.cmd("set noshowmode")
-
 -- {{{ Wildmenu completion
 vim.opt.wildmenu = true
--- vim.opt.wildmode = "full"
 vim.opt.wildmode = "longest:full,full"
 
 vim.opt.wildignore:append(".hg,.git,.svn") -- Version control
@@ -70,8 +66,6 @@ vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default regis
 vim.opt.splitright = true -- split vertical window to the right
 vim.opt.splitbelow = true -- split horizontal window to the bottom
 
--- vim.opt.iskeyword:append("-") -- consider string-string as whole word
-
 -- Show non-visible white spaces
 vim.opt.list = true
 vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·")
@@ -98,8 +92,6 @@ vim.opt.updatecount = 100
 -- Viminfo stores the state of your previous editing session
 vim.opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
 vim.opt.viminfo:append("n" .. vim.fn.stdpath("data") .. "/nviminfo")
--- vim.opt.sessionoptions:remove { "folds" } -- don't keep folds between sessions
--- vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 
 -- Save undo history of edited files.
 -- Default files location: ~/.local/state/nvim/undo
@@ -110,9 +102,6 @@ vim.opt.viewoptions:remove({ "folds" })
 -- }}} end of Backup, Undo and Swap files settings
 
 -- {{{ spell check
--- vim.opt.spelllang = "en_us"
--- vim.opt.spell = true
--- vim.opt.spellfile:append(os.getenv("HOME") .. "/.config/nvim/spell/nvim-config.en.utf-8.add")
 
 -- re-create spl files for additional vocabularies
 vim.cmd([[
@@ -203,13 +192,7 @@ function ToggleTabSwitcherMode()
     print("Switch buffers")
   end
 end
--- this keymap is defined in config/keymaps.lua
--- vim.keymap.set(
---   "n",
---   "<leader><Tab>",
---   "<Cmd>lua ToggleTabSwitcherMode()<CR>",
---   { desc = "Toggle Tab switcher mode." }
--- )
+-- the related keymap is defined in config/keymaps.lua
 -- }}} end of Tabs navigation
 
 -- {{{ Smart relativenumbers
@@ -272,10 +255,7 @@ function _G.ToggleSmartRelativenumbers()
     vim.g.SmartRelativenumbersEnabled = false
   end
 end
--- this keymap is defined in config/keymaps.lua
--- vim.keymap.set("n", "<leader><leader>rn", function()
---   ToggleSmartRelativenumbers()
--- end, { desc = "Toggle smart relative numbers." })
+-- the related keymap is defined in config/keymaps.lua
 -- }}} end of Smart relativenumbers
 
 -- {{{ Toggle snacks/fzf-lua/telescope keymaps
@@ -314,30 +294,13 @@ function! AutoWrapToggle()
     setlocal fo-=t
     setlocal colorcolumn=
   else
-    if (&filetype=='python')
-      setlocal textwidth=99
-    else
-      setlocal textwidth=99
-    endif
+    setlocal textwidth=99
     setlocal fo+=t
     setlocal colorcolumn=+1
   endif
 endfunction
 ]])
--- Toggle word wrap for current buffer
--- vim.keymap.set( -- this keymap is defined in config/keymaps.lua
---   "n",
---   "<leader>ww",
---   "<Cmd>setlocal wrap!<CR> <bar> <Cmd>echo 'wordwrap!'<CR>",
---   { desc = "Toggle visual wrapping of long lines." }
--- )
--- Toggle wrap at textwidth column
--- vim.keymap.set( -- this keymap is defined in config/keymaps.lua
---   "n",
---   "<leader>aw",
---   "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
---   { desc = "Toggle automatic wrapping of long lines." }
--- )
+-- the related keymaps are defined in config/keymaps.lua
 -- }}} end of Word wrap
 
 -- {{{ Auto save/load view
@@ -396,7 +359,6 @@ vim.opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
 vim.opt.foldcolumn = "1"
 vim.opt.foldlevel = 99 -- fold levels opened at file opens
 vim.opt.foldlevelstart = 4
--- vim.opt.foldopen = "all" -- autoopen fold when enter it
 vim.opt.foldnestmax = 4 -- max level of fold
 
 -- A way to delete 'mkview' for current file
