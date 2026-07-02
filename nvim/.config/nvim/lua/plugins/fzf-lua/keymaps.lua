@@ -53,12 +53,9 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>fh", require("fzf-lua").helptags, { desc = "Help Tags" })
 
-  vim.keymap.set(
-    "n",
-    "<leader>//",
-    require("fzf-lua").lgrep_curbuf,
-    { desc = "Fuzzy grep in current buffer" }
-  )
+  vim.keymap.set("n", "<leader>//", require("fzf-lua").blines, { desc = "Search in current buffer (fuzzy)" })
+
+  vim.keymap.set("n", "<leader>/?", require("fzf-lua").lgrep_curbuf, { desc = "Grep in current buffer (exact)" })
 
   vim.keymap.set(
     { "n", "x" },

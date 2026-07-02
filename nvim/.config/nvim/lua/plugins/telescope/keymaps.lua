@@ -49,7 +49,14 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>//", function()
     require("telescope.builtin").current_buffer_fuzzy_find()
-  end, { desc = "Fuzzy grep in current buffer" })
+  end, { desc = "Search in current buffer (fuzzy)" })
+
+  vim.keymap.set("n", "<leader>/?", function()
+    require("telescope.builtin").live_grep({
+      search_dirs = { vim.api.nvim_buf_get_name(0) },
+      prompt_title = "Grep in Buffer",
+    })
+  end, { desc = "Grep in current buffer (exact)" })
 
   vim.keymap.set("n", "<leader>fG", function()
     local ok = pcall(require("telescope.builtin").git_files, {})

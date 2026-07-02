@@ -56,7 +56,11 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>//", function()
     Snacks.picker.lines()
-  end, { desc = "Grep in current buffer" })
+  end, { desc = "Search in current buffer (fuzzy)" })
+
+  vim.keymap.set("n", "<leader>/?", function()
+    Snacks.picker.grep({ dirs = { vim.api.nvim_buf_get_name(0) } })
+  end, { desc = "Grep in current buffer (exact)" })
 
   vim.keymap.set("n", "<leader>fSd", function()
     Snacks.picker.lsp_symbols()
