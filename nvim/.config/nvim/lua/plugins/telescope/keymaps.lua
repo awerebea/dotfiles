@@ -15,7 +15,7 @@ function M.setup()
     require("telescope.builtin").live_grep()
   end, { desc = "Live grep" })
 
-  vim.keymap.set("n", "<leader>faa", function()
+  vim.keymap.set("n", "<leader>fca", function()
     require("telescope").extensions.live_grep_args.live_grep_args({
       shorten_path = true,
       word_match = "-w",
@@ -93,7 +93,7 @@ function M.setup()
     require("telescope.builtin").resume()
   end, { desc = "Resume" })
 
-  vim.keymap.set("n", "<leader>far", function()
+  vim.keymap.set("n", "<leader>fcr", function()
     require("telescope").extensions.repo.list()
   end, { desc = "Search Git repo" })
 
