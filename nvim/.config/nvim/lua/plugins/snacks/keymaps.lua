@@ -55,7 +55,7 @@ function M.setup()
   end, { desc = "Recent files" })
 
   vim.keymap.set("n", "<leader><CR>", function()
-    Snacks.picker.buffers()
+    Snacks.picker.buffers({ current = false })
   end, { desc = "Buffers" })
 
   vim.keymap.set("n", "<leader>fh", function()
