@@ -1,5 +1,5 @@
 return {
-  require "plugins.telescope.dependencies",
+  require("plugins.telescope.dependencies"),
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
@@ -20,7 +20,7 @@ return {
     cmd = "Telescope",
     config = function(_, _)
       -- Show line numbers in preview
-      vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
+      vim.cmd("autocmd User TelescopePreviewerLoaded setlocal number")
 
       -- Open one or more selected entries in the current window
       local select_one_or_multi = function(prompt_bufnr)
@@ -91,8 +91,8 @@ return {
         require("telescope.actions").close(prompt_bufnr)
       end
 
-      local telescope = require "telescope"
-      local icons = require "config.icons"
+      local telescope = require("telescope")
+      local icons = require("config.icons")
 
       -- Capture before telescope.setup() overwrites config.values.
       local default_buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker
@@ -108,12 +108,12 @@ return {
           f:close()
           if bom == "\xFF\xFE" or bom == "\xFE\xFF" then
             local enc = (bom == "\xFF\xFE") and "UTF-16LE" or "UTF-16BE"
-            local lines = vim.fn.systemlist { "iconv", "-f", enc, "-t", "UTF-8", filepath }
+            local lines = vim.fn.systemlist({ "iconv", "-f", enc, "-t", "UTF-8", filepath })
             if vim.v.shell_error == 0 then
               vim.schedule(function()
                 if vim.api.nvim_buf_is_valid(bufnr) then
                   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-                  vim.bo[bufnr].filetype = vim.filetype.match { filename = filepath } or "xml"
+                  vim.bo[bufnr].filetype = vim.filetype.match({ filename = filepath }) or "xml"
                 end
               end)
               return
@@ -122,10 +122,10 @@ return {
         end
         default_buffer_previewer_maker(filepath, bufnr, opts)
       end
-      local actions = require "telescope.actions"
-      local actions_layout = require "telescope.actions.layout"
-      local path_actions = require "telescope_insert_path"
-      local lga_actions = require "telescope-live-grep-args.actions"
+      local actions = require("telescope.actions")
+      local actions_layout = require("telescope.actions.layout")
+      local path_actions = require("telescope_insert_path")
+      local lga_actions = require("telescope-live-grep-args.actions")
 
       local mappings = {
         i = {
@@ -159,8 +159,8 @@ return {
             require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
           ["<M-a>"] = lga_actions.quote_prompt(),
-          ["<M-g>"] = lga_actions.quote_prompt { postfix = " --iglob " },
-          ["<M-i>"] = lga_actions.quote_prompt { postfix = " --no-ignore " },
+          ["<M-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
+          ["<M-i>"] = lga_actions.quote_prompt({ postfix = " --no-ignore " }),
           ["<C-o>"] = function(prompt_bufnr)
             require("telescope.actions").select_default(prompt_bufnr)
             require("telescope.builtin").resume()
@@ -198,6 +198,7 @@ return {
       local opts = {
         defaults = {
           buffer_previewer_maker = utf16_aware_previewer_maker,
+          create_layout = require("plugins.telescope.layout"),
           layout_strategy = "horizontal",
           sorting_strategy = "ascending",
           path_display = { "filename_first" },
@@ -374,7 +375,7 @@ return {
 
       -- {{{ flash.nvim integration
       local function flash(prompt_bufnr)
-        require("flash").jump {
+        require("flash").jump({
           pattern = "^",
           label = { after = { 0, 0 } },
           search = {
@@ -389,7 +390,7 @@ return {
             local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
             picker:set_selection(match.pos[1] - 1)
           end,
-        }
+        })
       end
       opts.defaults = vim.tbl_deep_extend("force", opts.defaults or {}, {
         mappings = {
@@ -400,25 +401,25 @@ return {
       -- }}} flash.nvim integration
 
       telescope.setup(opts)
-      telescope.load_extension "fzf"
-      telescope.load_extension "project"
+      telescope.load_extension("fzf")
+      telescope.load_extension("project")
       -- telescope.load_extension "dap"
-      telescope.load_extension "hop"
-      telescope.load_extension "live_grep_args"
-      telescope.load_extension "lazygit"
-      telescope.load_extension "undo"
-      telescope.load_extension "menufacture"
-      telescope.load_extension "terraform_doc"
-      telescope.load_extension "advanced_git_search"
+      telescope.load_extension("hop")
+      telescope.load_extension("live_grep_args")
+      telescope.load_extension("lazygit")
+      telescope.load_extension("undo")
+      telescope.load_extension("menufacture")
+      telescope.load_extension("terraform_doc")
+      telescope.load_extension("advanced_git_search")
 
       -- this is a hack to add menufacture items to all the builtin pickers
-      local telescope_builtin = require "telescope.builtin"
+      local telescope_builtin = require("telescope.builtin")
       local menufacture = require("telescope").extensions.menufacture
       -- this menu items will be present in all the pickers
       local global_menu_items = {
         ["change cwd to the current file dir"] = function(options, callback)
           options.search_dirs = {}
-          options.cwd = vim.fn.expand "%:p:h"
+          options.cwd = vim.fn.expand("%:p:h")
           callback(options)
         end,
         ["change cwd to parent"] = function(options, callback)
@@ -428,7 +429,7 @@ return {
         end,
         ["find with fd in $HOME"] = function(options, callback)
           options.search_dirs = {}
-          options.cwd = vim.fn.expand "$HOME"
+          options.cwd = vim.fn.expand("$HOME")
           options.find_command = {
             "fd",
             "--type",
@@ -436,7 +437,7 @@ return {
             "--hidden",
             "--follow",
             "--ignore-file",
-            vim.fn.expand "$HOME/.config/fd/vim-ignore",
+            vim.fn.expand("$HOME/.config/fd/vim-ignore"),
           }
           callback(options)
         end,
@@ -483,9 +484,9 @@ return {
         QuickFixOpenAll()
       end, { noremap = true, silent = false, desc = "Open all files from QuickFix" })
 
-      local telescope_previewers = require "telescope.previewers"
+      local telescope_previewers = require("telescope.previewers")
 
-      local delta_commits = telescope_previewers.new_termopen_previewer {
+      local delta_commits = telescope_previewers.new_termopen_previewer({
         get_command = function(entry)
           return {
             "git",
@@ -497,9 +498,9 @@ return {
             entry.value .. "^!",
           }
         end,
-      }
+      })
 
-      local delta_bcommits = telescope_previewers.new_termopen_previewer {
+      local delta_bcommits = telescope_previewers.new_termopen_previewer({
         get_command = function(entry)
           return {
             "git",
@@ -513,16 +514,16 @@ return {
             entry.current_file,
           }
         end,
-      }
+      })
 
       local viewer
-      if vim.fn.executable "bat" > 0 then
+      if vim.fn.executable("bat") > 0 then
         viewer = { "bat" }
       else
         viewer = { "less", "-NR", "-r" }
       end
 
-      local delta_status = telescope_previewers.new_termopen_previewer {
+      local delta_status = telescope_previewers.new_termopen_previewer({
         get_command = function(entry)
           local git_path = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
           if git_path ~= nil then
@@ -542,13 +543,13 @@ return {
             end
           end
         end,
-      }
+      })
 
       local is_in_git_repo = function()
         if vim.fn.systemlist("git rev-parse --is-inside-work-tree")[1]:lower() == "true" then
           return true
         else
-          print "Not a git repo"
+          print("Not a git repo")
           return false
         end
       end
