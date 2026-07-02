@@ -40,9 +40,9 @@ vim.keymap.set("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar>
 vim.keymap.set("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
 
 -- paste over without overwriting register
-vim.cmd([[
-  xnoremap <expr> p 'pgv"'.v:register.'y'
-]])
+vim.keymap.set("x", "p", function()
+  return 'pgv"' .. vim.v.register .. "y"
+end, { expr = true })
 
 -- send changed text segment to black hole
 vim.keymap.set({ "n", "v" }, "c", '"_c')
@@ -103,20 +103,18 @@ vim.keymap.set(
   { desc = "Close all tabs except the current one" }
 )
 -- Switch to last tab
-vim.cmd([[
-if !exists('g:lasttab')
-  let g:lasttab = 1
-endif
-autocmd TabLeave * let g:lasttab = tabpagenr()
-]])
+vim.g.lasttab = 1
+vim.api.nvim_create_autocmd("TabLeave", {
+  callback = function()
+    vim.g.lasttab = vim.fn.tabpagenr()
+  end,
+})
 vim.keymap.set(
   "n",
   "<leader>tt",
   "<Cmd>exe 'tabn '.g:lasttab<CR>",
   { desc = "Switch to last tab" }
 )
--- vim.keymap.set("n", "gz", "<Cmd>bdelete<CR>") -- overriden by bufdelete plugin
-
 -- Toggle spell checking
 --stylua: ignore
 vim.keymap.set("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
@@ -274,8 +272,8 @@ vim.keymap.set("n", "<F4>", [[:set paste!<CR>:set paste?<CR>]], { noremap = true
 -- stylua: ignore
 vim.keymap.set({ "n", "i" }, "<M-CR>", "<Cmd>call append(line('.') - 1, repeat([''], v:count1))<CR>")
 
--- Blazingly fast macros!
--- (https://www.reddit.com/r/neovim/comments/1cgoz22/blazingly_fast_macros)
+-- Blazingly fast macros (run without triggering autocmds/redraws)
+-- https://www.reddit.com/r/neovim/comments/1cgoz22/blazingly_fast_macros
 vim.cmd([[
   nnoremap @ <Cmd>set lazyredraw <bar> execute "noautocmd norm! " . v:count1 . "@" . getcharstr() <bar> set nolazyredraw<CR>
   xnoremap @ :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! " . v:count1 . "@" . getcharstr()<bar> set nolazyredraw<CR>
@@ -297,7 +295,7 @@ vim.keymap.set("x", ".", ":norm .<CR>", { silent = false })
 vim.keymap.set("x", "@", ":norm @q<CR>", { silent = false })
 
 -- Cmd line navigation
-vim.cmd([[set cedit=<C-y>]])
+vim.opt.cedit = "<C-y>"
 vim.keymap.set("c", "<C-a>", "<Home>", { desc = "move to start" })
 vim.keymap.set("c", "<M-^>", "<Home>", { desc = "move to start" })
 vim.keymap.set("c", "<C-b>", "<Left>", { desc = "move left" })
@@ -315,7 +313,6 @@ vim.keymap.set("c", "<M-n>", "<S-Down>", { desc = "next history" })
 vim.keymap.set("c", "<M-J>", "<S-Down>", { desc = "next history" })
 vim.keymap.set("c", "<M-p>", "<S-Up>", { desc = "prev history" })
 vim.keymap.set("c", "<M-K>", "<S-Up>", { desc = "prev history" })
-vim.keymap.set("c", "<M-b>", "<S-Left>", { desc = "move to prev word" })
 vim.keymap.set("c", "<M-b>", "<S-Left>", { desc = "move to prev word" })
 vim.keymap.set("c", "<M-f>", "<S-Right>", { desc = "move to next word" })
 vim.keymap.set("c", "<M-w>", "<S-Right>", { desc = "move to next word" })
