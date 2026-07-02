@@ -281,21 +281,20 @@ end
 -- {{{ Toggle snacks/fzf-lua/telescope keymaps
 vim.g.FuzzySearchKeymaps = "snacks" -- snacks|fzf-lua|telescope
 function _G.ToggleFuzzySearchKeymaps()
-  if vim.g.FuzzySearchKeymaps == "snacks" then
-    require("plugins.fzf-lua.keymaps").setup()
-    vim.g.FuzzySearchKeymaps = "fzf-lua"
-    print("Fuzzy search keymaps switched to fzf-lua")
-  elseif vim.g.FuzzySearchKeymaps == "fzf-lua" then
-    require("plugins.telescope.keymaps").setup()
-    vim.g.FuzzySearchKeymaps = "telescope"
-    print("Fuzzy search keymaps switched to telescope")
-  elseif vim.g.FuzzySearchKeymaps == "telescope" then
-    require("plugins.snacks.keymaps").setup()
-    vim.g.FuzzySearchKeymaps = "snacks"
-    print("Fuzzy search keymaps switched to snacks")
-  else
-    print("Invalid value for vim.g.FuzzySearchKeymaps: " .. vim.g.FuzzySearchKeymaps)
+  local cycle = {
+    snacks = { next = "fzf-lua", mod = "plugins.fzf-lua.keymaps" },
+    ["fzf-lua"] = { next = "telescope", mod = "plugins.telescope.keymaps" },
+    telescope = { next = "snacks", mod = "plugins.snacks.keymaps" },
+  }
+  local from = vim.g.FuzzySearchKeymaps
+  local entry = cycle[from]
+  if not entry then
+    vim.notify("Invalid picker: " .. tostring(from), vim.log.levels.ERROR)
+    return
   end
+  require(entry.mod).setup()
+  vim.g.FuzzySearchKeymaps = entry.next
+  vim.notify("Fuzzy picker: " .. entry.next, vim.log.levels.INFO)
 end
 vim.keymap.set("n", "<leader>fT", function()
   ToggleFuzzySearchKeymaps()
