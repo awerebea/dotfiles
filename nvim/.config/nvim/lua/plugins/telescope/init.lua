@@ -588,7 +588,9 @@ return {
         telescope_builtin.git_status(options)
       end
 
-      require("plugins.telescope.keymaps").setup()
+      if vim.g.FuzzySearchKeymaps == "telescope" then
+        require("plugins.telescope.keymaps").setup()
+      end
     end,
   },
 }

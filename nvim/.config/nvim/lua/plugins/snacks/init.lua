@@ -30,6 +30,9 @@ return {
   },
   config = function(_, opts)
     require("snacks").setup(opts)
+    if vim.g.FuzzySearchKeymaps == "snacks" then
+      require("plugins.snacks.keymaps").setup()
+    end
     vim.api.nvim_create_user_command("Notifications", function()
       ---@diagnostic disable: undefined-global
       Snacks.notifier.show_history()
