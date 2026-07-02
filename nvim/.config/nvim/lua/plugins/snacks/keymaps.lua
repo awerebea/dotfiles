@@ -6,6 +6,10 @@ function M.setup()
     Snacks.picker.files()
   end, { desc = "Find files" })
 
+  vim.keymap.set("n", "<leader>fG", function()
+    Snacks.picker.git_files()
+  end, { desc = "Find Git files" })
+
   vim.keymap.set("v", "<leader>ff", function()
     Snacks.picker.files({ pattern = require("utils").get_visual_selection_text()[1] })
   end, { desc = "Find files (with selected text)" })
@@ -26,9 +30,9 @@ function M.setup()
     Snacks.picker.grep_word()
   end, { desc = "Grep word (fuzzy)" })
 
-  vim.keymap.set("n", "<leader>fw", function()
+  vim.keymap.set({ "n", "x" }, "<leader>fw", function()
     Snacks.picker.grep_word()
-  end, { desc = "Find word under cursor" })
+  end, { desc = "Find word / selection" })
 
   vim.keymap.set("v", "<leader>8", function()
     Snacks.picker.grep_word()

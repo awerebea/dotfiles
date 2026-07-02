@@ -11,6 +11,10 @@ function M.setup()
     }
   end, { desc = "Find files (with selected text)" })
 
+  vim.keymap.set("n", "<leader>fG", function()
+    require("fzf-lua").git_files()
+  end, { desc = "Find Git files" })
+
   vim.keymap.set("n", "<leader>f/", function()
     require("fzf-lua").live_grep()
   end, { desc = "Live grep" })
@@ -22,6 +26,10 @@ function M.setup()
   vim.keymap.set("n", "<leader>fw", function()
     require("fzf-lua").grep_cword()
   end, { desc = "Find word under cursor" })
+
+  vim.keymap.set("v", "<leader>fw", function()
+    require("fzf-lua").grep_visual()
+  end, { desc = "Find selection" })
 
   vim.keymap.set("n", "<leader>fF", function()
     require("fzf-lua").builtin()

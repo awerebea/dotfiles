@@ -3,10 +3,18 @@ return {
   dependencies = { "folke/snacks.nvim", "nvim-telescope/telescope.nvim" },
   cmd = { "Seeker" },
   keys = {
-    { "<leader>sa", ":Seeker files<CR>", desc = "Seek Files" },
-    { "<leader>sf", ":Seeker git_files<CR>", desc = "Seek Git Files" },
-    { "<leader>sg", ":Seeker grep<CR>", desc = "Seek Grep" },
-    { "<leader>sw", ":Seeker grep_word<CR>", desc = "Seek Grep Word" },
+    { "<leader>sf", ":Seeker files<CR>", desc = "Seek Files" },
+    { "<leader>sG", ":Seeker git_files<CR>", desc = "Seek Git Files" },
+    { "<leader>sg", ":Seeker grep<CR>", desc = "Seek Grep (fuzzy)" },
+    { "<leader>s/", ":Seeker grep<CR>", desc = "Seek Grep (live)" },
+    {
+      "<leader>sw",
+      function()
+        require("seeker").seek({ mode = "grep_word" })
+      end,
+      mode = { "n", "x" },
+      desc = "Seek Grep Word / Selection",
+    },
   },
   opts = {
     -- picker_provider = "telescope",

@@ -16,43 +16,50 @@ function M.setup()
 
   -- {{{ Neoscopes related keymaps
   vim.keymap.set("n", "<leader>ff", function()
-    require("telescope.builtin").find_files { search_dirs = get_search_dirs() }
+    require("telescope.builtin").find_files({ search_dirs = get_search_dirs() })
   end, { desc = "Find files" })
 
   vim.keymap.set("v", "<leader>ff", function()
-    require("telescope.builtin").find_files {
+    require("telescope.builtin").find_files({
       search_dirs = get_search_dirs(),
       default_text = require("utils").get_visual_selection_text()[1],
-    }
+    })
   end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>f/", function()
-    require("telescope.builtin").live_grep { search_dirs = get_search_dirs() }
+    require("telescope.builtin").live_grep({ search_dirs = get_search_dirs() })
   end, { desc = "Live grep" })
 
   vim.keymap.set("n", "<leader>faa", function()
-    require("telescope").extensions.live_grep_args.live_grep_args {
+    require("telescope").extensions.live_grep_args.live_grep_args({
       search_dirs = get_search_dirs(),
       shorten_path = true,
       word_match = "-w",
       only_sort_text = true,
       search = "",
-    }
+    })
   end, { desc = "Live grep (custom args)" })
 
   vim.keymap.set("n", "<leader>f?", function()
-    require("telescope.builtin").grep_string {
+    require("telescope.builtin").grep_string({
       search_dirs = get_search_dirs(),
       shorten_path = true,
       word_match = "-w",
       only_sort_text = true,
       search = "",
-    }
+    })
   end, { desc = "Fuzzy Grep" })
 
   vim.keymap.set("n", "<leader>fw", function()
-    require("telescope.builtin").grep_string { search_dirs = get_search_dirs() }
+    require("telescope.builtin").grep_string({ search_dirs = get_search_dirs() })
   end, { desc = "Find word under cursor" })
+
+  vim.keymap.set("v", "<leader>fw", function()
+    require("telescope.builtin").grep_string({
+      search_dirs = get_search_dirs(),
+      search = require("utils").get_visual_selection_text()[1],
+    })
+  end, { desc = "Find selection" })
   -- }}} Neoscopes related keymaps
 
   vim.keymap.set("n", "<leader>fw", function()
@@ -67,12 +74,20 @@ function M.setup()
     require("telescope.builtin").current_buffer_fuzzy_find()
   end, { desc = "Fuzzy grep in current buffer" })
 
-  vim.keymap.set("n", "<leader>fg", function()
+  vim.keymap.set("n", "<leader>fG", function()
     local ok = pcall(require("telescope.builtin").git_files, {})
     if not ok then
       require("telescope.builtin").find_files()
     end
   end, { desc = "Find Git managed files" })
+
+  vim.keymap.set("n", "<leader>fg", function()
+    require("telescope.builtin").grep_string({
+      search_dirs = get_search_dirs(),
+      search = "",
+      only_sort_text = true,
+    })
+  end, { desc = "Fuzzy grep" })
 
   vim.keymap.set("n", "<leader><CR>", function()
     require("telescope.builtin").buffers()
@@ -91,7 +106,7 @@ function M.setup()
   end, { desc = "Workspace symbols" })
 
   vim.keymap.set("n", "<leader><leader>c", function()
-    require("telescope.builtin").colorscheme { enable_preview = true }
+    require("telescope.builtin").colorscheme({ enable_preview = true })
   end, { desc = "Colorscheme" })
 
   vim.keymap.set("n", "<leader>fo", function()
@@ -107,7 +122,7 @@ function M.setup()
   end, { desc = "Search Git repo" })
 
   vim.keymap.set("n", "<leader>fP", function()
-    require("telescope").extensions.project.project { display_type = "minimal" }
+    require("telescope").extensions.project.project({ display_type = "minimal" })
   end, { desc = "Project extension" })
 
   vim.keymap.set("n", "<leader>fd", function()
@@ -123,7 +138,7 @@ function M.setup()
   -- Defined later in this file using custom previewer with delta
   vim.keymap.set("n", "<leader>glg", function()
     -- require("telescope.builtin").git_commits()
-    Delta_git_commits {
+    Delta_git_commits({
       git_command = {
         "git",
         "log",
@@ -132,7 +147,7 @@ function M.setup()
         "--",
         ".",
       },
-    }
+    })
   end, { desc = "Commits" })
 
   vim.keymap.set("x", "<leader>glf", function()
@@ -141,14 +156,14 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>glf", function()
     -- require("telescope.builtin").git_bcommits()
-    Delta_git_bcommits {
+    Delta_git_bcommits({
       git_command = {
         "git",
         "log",
         "--format=%h %ad %<(20,trunc)%an %s",
         "--date=format:%Y-%m.%d",
       },
-    }
+    })
   end, { desc = "Commits of current file" })
 
   vim.keymap.set("n", "<leader>gb", function()
