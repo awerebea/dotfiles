@@ -22,14 +22,6 @@ function M.setup()
     Snacks.picker.grep()
   end, { desc = "Fuzzy grep" })
 
-  vim.keymap.set("n", "<leader>faa", function()
-    Snacks.picker.grep()
-  end, { desc = "Live grep (custom args via '--')" })
-
-  vim.keymap.set("n", "<leader>f?", function()
-    Snacks.picker.grep_word()
-  end, { desc = "Grep word (fuzzy)" })
-
   vim.keymap.set({ "n", "x" }, "<leader>fw", function()
     Snacks.picker.grep_word()
   end, { desc = "Find word / selection" })
