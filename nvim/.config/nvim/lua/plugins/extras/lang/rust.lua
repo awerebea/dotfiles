@@ -1,4 +1,4 @@
-local install_root_dir = vim.fn.stdpath "data" .. "/mason"
+local install_root_dir = vim.fn.stdpath("data") .. "/mason"
 local extension_path = install_root_dir .. "/packages/codelldb/extension/"
 local codelldb_path = extension_path .. "adapter/codelldb"
 local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
@@ -30,7 +30,7 @@ return {
     },
     setup = {
       rust_analyzer = function(_, opts)
-        local lsp_utils = require "plugins.lsp.utils"
+        local lsp_utils = require("plugins.lsp.utils")
         lsp_utils.on_attach(function(client, buffer)
           -- stylua: ignore
           if client.name == "rust_analyzer" then
@@ -40,7 +40,7 @@ return {
           end
         end)
 
-        require("rust-tools").setup {
+        require("rust-tools").setup({
           tools = {
             hover_actions = { border = "solid" },
             on_initialized = function()
@@ -57,22 +57,19 @@ return {
           },
           server = opts,
           dap = {
-            adapter = require("rust-tools.dap").get_codelldb_adapter(
-              codelldb_path,
-              liblldb_path
-            ),
+            adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
           },
-        }
+        })
         return true
       end,
-    }
+    },
   },
   {
     "mfussenegger/nvim-dap",
     opts = {
       setup = {
         codelldb = function()
-          local dap = require "dap"
+          local dap = require("dap")
           dap.adapters.codelldb = {
             type = "server",
             port = "${port}",

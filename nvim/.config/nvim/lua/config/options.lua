@@ -14,27 +14,27 @@ vim.opt.scrolloff = 5
 vim.opt.sidescrolloff = 8
 
 -- hide "-- INSERT --" text in status
-vim.cmd "set noshowmode"
+vim.cmd("set noshowmode")
 
 -- {{{ Wildmenu completion
 vim.opt.wildmenu = true
 -- vim.opt.wildmode = "full"
 vim.opt.wildmode = "longest:full,full"
 
-vim.opt.wildignore:append ".hg,.git,.svn" -- Version control
-vim.opt.wildignore:append "*.aux,*.out,*.toc" -- LaTeX intermediate files
-vim.opt.wildignore:append "*.jpg,*.bmp,*.gif,*.png,*.jpeg" -- binary images
-vim.opt.wildignore:append "*.o,*.obj,*.exe,*.dll,*.manifest" -- compiled object files
-vim.opt.wildignore:append "*.spl" -- compiled spelling word list
-vim.opt.wildignore:append "*.sw?" -- Vim swap files
-vim.opt.wildignore:append "*.DS_Store" -- OSX bullshit
-vim.opt.wildignore:append "*.luac" -- Lua byte code
-vim.opt.wildignore:append "migrations" -- Django migrations
-vim.opt.wildignore:append "go/pkg" -- Go static files
-vim.opt.wildignore:append "go/bin" -- Go bin files
-vim.opt.wildignore:append "go/bin-vagrant" -- Go bin-vagrant files
-vim.opt.wildignore:append "*.pyc" -- Python byte code
-vim.opt.wildignore:append "*.orig" -- Merge resolution files
+vim.opt.wildignore:append(".hg,.git,.svn") -- Version control
+vim.opt.wildignore:append("*.aux,*.out,*.toc") -- LaTeX intermediate files
+vim.opt.wildignore:append("*.jpg,*.bmp,*.gif,*.png,*.jpeg") -- binary images
+vim.opt.wildignore:append("*.o,*.obj,*.exe,*.dll,*.manifest") -- compiled object files
+vim.opt.wildignore:append("*.spl") -- compiled spelling word list
+vim.opt.wildignore:append("*.sw?") -- Vim swap files
+vim.opt.wildignore:append("*.DS_Store") -- OSX bullshit
+vim.opt.wildignore:append("*.luac") -- Lua byte code
+vim.opt.wildignore:append("migrations") -- Django migrations
+vim.opt.wildignore:append("go/pkg") -- Go static files
+vim.opt.wildignore:append("go/bin") -- Go bin files
+vim.opt.wildignore:append("go/bin-vagrant") -- Go bin-vagrant files
+vim.opt.wildignore:append("*.pyc") -- Python byte code
+vim.opt.wildignore:append("*.orig") -- Merge resolution files
 -- }}} end of Wildmenu completion
 
 -- line wrapping
@@ -64,7 +64,7 @@ vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "latin1" }
 vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
 
 -- clipboard
-vim.opt.clipboard:append "unnamedplus" -- use system clipboard as default register
+vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default register
 
 -- split windows
 vim.opt.splitright = true -- split vertical window to the right
@@ -74,22 +74,22 @@ vim.opt.splitbelow = true -- split horizontal window to the bottom
 
 -- Show non-visible white spaces
 vim.opt.list = true
-vim.opt.listchars:append "eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·"
+vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space:·")
 
 -- {{{ Backup, Undo and Swap files settings
 -- Save your backup files to a less annoying place than the current directory.
 -- Default location of backup files is ~/.local/state/nvim/backup
 vim.opt.backup = true
-vim.opt.backupdir = { vim.fn.expand "~/.local/state/nvim/backup", "." }
+vim.opt.backupdir = { vim.fn.expand("~/.local/state/nvim/backup"), "." }
 -- Try to create a backup directory in the default location if it doesn't exist
-vim.cmd [[
+vim.cmd([[
   if !isdirectory($HOME."/.local/state/nvim/backup")
     try
       silent call mkdir ($HOME."/.local/state/nvim/backup", "p")
     catch
     endtry
   endif
-]]
+]])
 
 -- Default location of swap files (echo &directory) is ~/.local/state/nvim/swap
 vim.opt.swapfile = false
@@ -97,7 +97,7 @@ vim.opt.updatecount = 100
 
 -- Viminfo stores the state of your previous editing session
 vim.opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
-vim.opt.viminfo:append("n" .. vim.fn.stdpath "data" .. "/nviminfo")
+vim.opt.viminfo:append("n" .. vim.fn.stdpath("data") .. "/nviminfo")
 -- vim.opt.sessionoptions:remove { "folds" } -- don't keep folds between sessions
 -- vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize" }
 
@@ -106,7 +106,7 @@ vim.opt.viminfo:append("n" .. vim.fn.stdpath "data" .. "/nviminfo")
 vim.opt.undofile = true
 vim.opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
-vim.opt.viewoptions:remove { "folds" }
+vim.opt.viewoptions:remove({ "folds" })
 -- }}} end of Backup, Undo and Swap files settings
 
 -- {{{ spell check
@@ -115,14 +115,14 @@ vim.opt.viewoptions:remove { "folds" }
 -- vim.opt.spellfile:append(os.getenv("HOME") .. "/.config/nvim/spell/nvim-config.en.utf-8.add")
 
 -- re-create spl files for additional vocabularies
-vim.cmd [[
+vim.cmd([[
 for d in glob('~/.config/nvim/spell/*.add', 1, 1)
   if filereadable(d) && (!filereadable(d . '.spl') || getftime(d) >
   \ getftime(d . '.spl'))
     exec 'mkspell! ' . fnameescape(d)
   endif
 endfor
-]]
+]])
 -- }}} end of spell check
 
 -- {{{ tabs (indentation) settings
@@ -132,7 +132,7 @@ vim.opt.shiftwidth = 2 -- 2 spaces for indent width
 vim.opt.expandtab = true -- expand tab to spaces
 vim.opt.autoindent = true -- copy indent from current line when starting new one
 
-vim.cmd [[
+vim.cmd([[
 function! TabsNoExpandByFourSpaces()
   setlocal tabstop=4
   setlocal shiftwidth=4
@@ -182,7 +182,7 @@ augroup filetypeRelatedSettings
   autocmd FileType ps1,psm1,psd1,ps1xml
     \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab textwidth=99
 augroup END
-]]
+]])
 -- }}} end of tabs (indentation) settings
 
 -- {{{ Tabs navigation
@@ -195,12 +195,12 @@ function ToggleTabSwitcherMode()
     vim.keymap.set("n", "<M-S-l>", "<Cmd>tabnext<CR>")
     vim.keymap.set("n", "<M-S-h>", "<Cmd>tabprevious<CR>")
     tab_switcher_mode = "tabs"
-    print "Switch tabs"
+    print("Switch tabs")
   else
     vim.keymap.set("n", "<M-S-l>", "<Cmd>bnext<CR>")
     vim.keymap.set("n", "<M-S-h>", "<Cmd>bprevious<CR>")
     tab_switcher_mode = "buffers"
-    print "Switch buffers"
+    print("Switch buffers")
   end
 end
 -- this keymap is defined in config/keymaps.lua
@@ -231,7 +231,7 @@ function SetRelativeNumberAutocmd(events, mode)
         else
           if vim.o.number then
             vim.opt.relativenumber = false
-            vim.cmd "redraw"
+            vim.cmd("redraw")
           end
         end
       end
@@ -267,7 +267,7 @@ function _G.ToggleSmartRelativenumbers()
     vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = true })
     if vim.o.number then
       vim.opt.relativenumber = false
-      vim.cmd "redraw"
+      vim.cmd("redraw")
     end
     vim.g.SmartRelativenumbersEnabled = false
   end
@@ -284,15 +284,15 @@ function _G.ToggleFuzzySearchKeymaps()
   if vim.g.FuzzySearchKeymaps == "snacks" then
     require("plugins.fzf-lua.keymaps").setup()
     vim.g.FuzzySearchKeymaps = "fzf-lua"
-    print "Fuzzy search keymaps switched to fzf-lua"
+    print("Fuzzy search keymaps switched to fzf-lua")
   elseif vim.g.FuzzySearchKeymaps == "fzf-lua" then
     require("plugins.telescope.keymaps").setup()
     vim.g.FuzzySearchKeymaps = "telescope"
-    print "Fuzzy search keymaps switched to telescope"
+    print("Fuzzy search keymaps switched to telescope")
   elseif vim.g.FuzzySearchKeymaps == "telescope" then
     require("plugins.snacks.keymaps").setup()
     vim.g.FuzzySearchKeymaps = "snacks"
-    print "Fuzzy search keymaps switched to snacks"
+    print("Fuzzy search keymaps switched to snacks")
   else
     print("Invalid value for vim.g.FuzzySearchKeymaps: " .. vim.g.FuzzySearchKeymaps)
   end
@@ -308,7 +308,7 @@ vim.opt.wrapmargin = 0
 vim.opt.colorcolumn = "+1"
 vim.opt.wrap = true
 vim.opt.linebreak = false
-vim.cmd [[
+vim.cmd([[
 function! AutoWrapToggle()
   if &formatoptions =~ 't'
     setlocal textwidth=0
@@ -324,7 +324,7 @@ function! AutoWrapToggle()
     setlocal colorcolumn=+1
   endif
 endfunction
-]]
+]])
 -- Toggle word wrap for current buffer
 -- vim.keymap.set( -- this keymap is defined in config/keymaps.lua
 --   "n",
@@ -345,7 +345,7 @@ endfunction
 -- List of filenames to skip mkview
 vim.g.skipview_files =
   { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo", "DiffviewFilePanel" }
-vim.cmd [[
+vim.cmd([[
 function! MakeViewCheck()
     if has('quickfix') && &buftype =~ 'nofile'
         " Buffer is marked as not a file
@@ -375,7 +375,7 @@ augroup vimrcAutoView
     autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
     autocmd BufWinEnter ?* if MakeViewCheck() | silent! loadview | endif
 augroup end
-]]
+]])
 -- }}} end of Auto save/load view
 
 -- Change cursor view:
@@ -401,7 +401,7 @@ vim.opt.foldlevelstart = 4
 vim.opt.foldnestmax = 4 -- max level of fold
 
 -- A way to delete 'mkview' for current file
-vim.cmd [[
+vim.cmd([[
 function! MyDeleteView()
   let path = fnamemodify(bufname('%'),':p')
   " vim's odd =~ escaping for /
@@ -421,22 +421,22 @@ endfunction
 command! Delview call MyDeleteView()
 " Lower-case user commands: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
 cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
-]]
+]])
 
 -- Toggle diff view for all visible windows
 local diff_view_active = false
 function ToggleDiffViewMode()
   if diff_view_active then
-    vim.cmd ":diffoff!"
+    vim.cmd(":diffoff!")
     diff_view_active = false
-    print "Diff view deactivated"
+    print("Diff view deactivated")
   else
-    vim.cmd [[
+    vim.cmd([[
     :NvimTreeClose
     :windo diffthis
-    ]]
+    ]])
     diff_view_active = true
-    print "Diff view activated"
+    print("Diff view activated")
   end
 end
 vim.keymap.set(
@@ -468,11 +468,11 @@ function QFToggle()
     end
   end
   if qf_exists == true then
-    vim.cmd "cclose"
+    vim.cmd("cclose")
     return
   end
   if not vim.tbl_isempty(vim.fn.getqflist()) then
-    vim.cmd "copen"
+    vim.cmd("copen")
   end
 end
 vim.keymap.set("n", "<leader>qf", function()
@@ -481,7 +481,7 @@ end, { desc = "Toggle QuickFix" })
 -- }}} end of Toggle QuickFix window
 
 -- Easily search and replace using quickfix window
-vim.cmd [[
+vim.cmd([[
   function! QuickfixMapping()
     " Make the quickfix list modifiable and set errorformat
     setlocal errorformat+=%f\|%l\ col\ %c\|%m, modifiable
@@ -503,23 +503,23 @@ vim.cmd [[
       autocmd!
       autocmd BufWinEnter quickfix call QuickfixMapping()
   augroup END
-]]
+]])
 
 -- Disable formatting when saving file (disable autocommands)
-vim.cmd [[
+vim.cmd([[
   command! WriteNoFormat noautocmd write
   cabbrev wnf <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'WriteNoFormat' : 'wnf')<CR>
-]]
+]])
 
 -- Delete current file
-vim.cmd [[
+vim.cmd([[
   command! DeleteCurrentFile lua require"utils".delete_current_file()
-]]
+]])
 
 -- misc
 vim.opt.showcmd = true
 vim.opt.laststatus = 3
-vim.opt.whichwrap:append "<,>,[,]"
+vim.opt.whichwrap:append("<,>,[,]")
 vim.opt.mousemoveevent = true
 vim.opt.timeoutlen = 300
 
@@ -542,4 +542,4 @@ vim.opt.smartindent = false
 vim.opt.updatetime = 200
 vim.opt.startofline = true
 
-vim.diagnostic.config { virtual_lines = false }
+vim.diagnostic.config({ virtual_lines = false })

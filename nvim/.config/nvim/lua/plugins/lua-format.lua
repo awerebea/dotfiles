@@ -20,7 +20,7 @@ return {
       vim.api.nvim_create_autocmd("BufWritePre", {
         pattern = "*.lua",
         callback = function()
-          vim.cmd "call LuaFormat()"
+          vim.cmd("call LuaFormat()")
         end,
       })
     end,

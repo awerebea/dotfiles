@@ -11,17 +11,17 @@ return {
   lazy = false,
   config = function()
     -- don't save current directory in session to avoid erros and dead buffers when loading session
-    vim.opt.sessionoptions:remove { "curdir" }
+    vim.opt.sessionoptions:remove({ "curdir" })
 
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
-    local path_aliases_file = vim.fn.stdpath "config" .. sep .. "path_aliases.json"
+    local path_aliases_file = vim.fn.stdpath("config") .. sep .. "path_aliases.json"
 
     -- Load custom path aliases
     local path_aliases = {}
     if vim.fn.filereadable(path_aliases_file) == 1 then
       path_aliases = vim.fn.json_decode(vim.fn.readfile(path_aliases_file))
-      vim.validate { path_aliases = { path_aliases, "table" } }
+      vim.validate({ path_aliases = { path_aliases, "table" } })
     end
 
     ---@param str string
@@ -33,10 +33,10 @@ return {
 
     if next(path_aliases) ~= nil then
       for alias, path in pairs(path_aliases) do
-        vim.validate {
+        vim.validate({
           alias = { alias, "string" },
           path = { path, "string" },
-        }
+        })
         -- normilize paths in home directory
         path = home_to_tilde(path)
         -- remove trailing path separators
@@ -77,7 +77,7 @@ return {
       return path
     end
 
-    require("possession").setup {
+    require("possession").setup({
       prompt_no_cr = true, -- don't add a carriage return to the prompt
       autosave = {
         current = true,
@@ -113,15 +113,15 @@ return {
           },
         },
       },
-    }
+    })
 
     local function get_session_file(session_name)
-      return vim.fn.stdpath "data" .. sep .. "possession" .. sep .. session_name .. ".json"
+      return vim.fn.stdpath("data") .. sep .. "possession" .. sep .. session_name .. ".json"
     end
 
     local function close_neo_tree()
       require("neo-tree.sources.manager").close_all()
-      vim.notify "closed all"
+      vim.notify("closed all")
     end
 
     local function handle_current_cwd_session(cmd, args)
@@ -167,22 +167,22 @@ return {
       require("telescope").extensions.scope.buffers()
     end, { desc = "Buffers accross all tabs" })
     vim.keymap.set("n", "<leader>qL", function()
-      handle_current_cwd_session "load"
+      handle_current_cwd_session("load")
     end, { desc = "Load the current CWD session" })
     vim.keymap.set("n", "<leader>qS", function()
       handle_current_cwd_session("save", { no_confirm = true })
     end, { desc = "Save the current CWD session" })
     vim.keymap.set("n", "<leader>qD", function()
-      handle_current_cwd_session "delete"
+      handle_current_cwd_session("delete")
     end, { desc = "Delete the current CWD session" })
     vim.keymap.set("n", "<leader>qs", function()
-      save_session { no_confirm = false }
+      save_session({ no_confirm = false })
     end, { desc = "Save session" })
     vim.keymap.set("n", "<leader>qx", function()
       require("possession.session").close()
     end, { desc = "Close current session" })
 
-    require("telescope").load_extension "possession"
-    require("telescope").load_extension "scope"
+    require("telescope").load_extension("possession")
+    require("telescope").load_extension("scope")
   end,
 }

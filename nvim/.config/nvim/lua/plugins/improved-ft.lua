@@ -4,15 +4,15 @@ return {
   enabled = false,
   event = "VeryLazy",
   config = function()
-    local ft = require "improved-ft"
-    ft.setup {
+    local ft = require("improved-ft")
+    ft.setup({
       -- Maps default f/F/t/T/;/, keys, default: false
       use_default_mappings = true,
       -- Ignores case of the given characters, default: false.
       ignore_char_case = false,
       -- Takes a last jump direction into account during repetition jumps, default: false.
       use_relative_repetition = true,
-    }
+    })
 
     local imap = function(key, fn, description)
       vim.keymap.set("i", key, fn, { desc = description })

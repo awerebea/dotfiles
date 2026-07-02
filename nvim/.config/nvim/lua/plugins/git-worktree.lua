@@ -3,8 +3,8 @@ return {
   branch = "main",
   opts = {},
   config = function()
-    require("telescope").load_extension "git_worktree"
-    local Worktree = require "git-worktree"
+    require("telescope").load_extension("git_worktree")
+    local Worktree = require("git-worktree")
     Worktree.on_tree_change(function(op, metadata)
       if op == Worktree.Operations.Switch then
         print("Switched from " .. metadata.prev_path .. " to " .. metadata.path)
@@ -29,14 +29,14 @@ return {
     {
       "<leader>gwm",
       function()
-        require("telescope").extensions.git_worktree.git_worktrees { path_display = {} }
+        require("telescope").extensions.git_worktree.git_worktrees({ path_display = {} })
       end,
       desc = "Manage",
     },
     {
       "<leader>gwt",
       function()
-        require("telescope").extensions.git_worktree.git_worktrees { path_display = {} }
+        require("telescope").extensions.git_worktree.git_worktrees({ path_display = {} })
       end,
       desc = "Manage",
     },

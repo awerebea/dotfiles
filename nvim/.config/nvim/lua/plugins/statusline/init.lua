@@ -4,7 +4,7 @@ return {
     event = "VeryLazy",
 
     config = function()
-      vim.cmd [[
+      vim.cmd([[
         function! LightlineFileName()
           let filename = expand('%:p:h:t') . '/' . expand('%:t')
           if &filetype == 'nerdtree' || &filetype == 'NvimTree'
@@ -86,11 +86,11 @@ return {
             return ''
           endif
         endfunction
-      ]]
+      ]])
 
-      local components = require "plugins.statusline.components"
+      local components = require("plugins.statusline.components")
 
-      require("lualine").setup {
+      require("lualine").setup({
         options = {
           icons_enabled = true,
           theme = "auto",
@@ -155,7 +155,7 @@ return {
           lualine_z = {},
         },
         extensions = { "nvim-tree", "toggleterm", "quickfix" },
-      }
+      })
     end,
   },
 }

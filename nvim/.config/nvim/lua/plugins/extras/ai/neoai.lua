@@ -24,8 +24,8 @@ return {
     { "<leader>ag", desc = "Generate Git Message" },
   },
   config = function()
-    require("neoai").setup {
+    require("neoai").setup({
       -- Options go here
-    }
+    })
   end,
 }

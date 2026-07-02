@@ -3,7 +3,7 @@ return {
   config = function()
     -- Navigate tmux, and nvim splits.
     -- Sync nvim buffer with tmux buffer.
-    require("tmux").setup {
+    require("tmux").setup({
       copy_sync = {
         enable = true,
         sync_clipboard = false,
@@ -12,6 +12,6 @@ return {
       resize = {
         enable_default_keybindings = false,
       },
-    }
+    })
   end,
 }

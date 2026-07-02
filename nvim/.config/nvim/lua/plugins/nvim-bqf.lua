@@ -3,6 +3,6 @@ return {
   ft = "qf",
   dependencies = { "junegunn/fzf" },
   config = function()
-    require("bqf").setup { preview = { auto_preview = false } }
+    require("bqf").setup({ preview = { auto_preview = false } })
   end,
 }

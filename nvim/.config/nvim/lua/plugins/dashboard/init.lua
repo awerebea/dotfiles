@@ -2,7 +2,7 @@ return {
   "goolord/alpha-nvim",
   lazy = false,
   config = function()
-    local dashboard = require "alpha.themes.dashboard"
+    local dashboard = require("alpha.themes.dashboard")
     dashboard.section.header.val = require("plugins.dashboard.logo")[2] -- "random" key is allowed
     dashboard.section.buttons.val = {
       dashboard.button("f", " " .. " Find file", "<Cmd>Telescope find_files<CR>"),
@@ -50,7 +50,7 @@ return {
           .. vim.version().minor
           .. "."
           .. vim.version().patch
-        local fortune = require "alpha.fortune"
+        local fortune = require("alpha.fortune")
         local quote = table.concat(fortune(), "\n")
         local plugins = "⚡Neovim loaded "
           .. stats.loaded

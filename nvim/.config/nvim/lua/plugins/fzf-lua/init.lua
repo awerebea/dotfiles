@@ -6,7 +6,7 @@ return {
   config = function()
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
-    local query_history_dir = vim.fn.stdpath "data" .. sep .. "fzf-lua_history"
+    local query_history_dir = vim.fn.stdpath("data") .. sep .. "fzf-lua_history"
 
     local function ensure_dir_exists(dir_path)
       local uv = vim.loop
@@ -33,8 +33,8 @@ return {
 
     ensure_dir_exists(query_history_dir)
 
-    local actions = require "fzf-lua.actions"
-    require("fzf-lua").setup {
+    local actions = require("fzf-lua.actions")
+    require("fzf-lua").setup({
       -- fzf_bin         = 'sk',            -- use skim instead of fzf?
       -- https://github.com/skim-rs/skim
       -- can also be set to 'fzf-tmux'
@@ -305,12 +305,14 @@ return {
             -- The builtin previewer reads raw bytes and bypasses vim's
             -- fileencodings, so we must handle conversion here instead.
             ["xml"] = {
-              "bash", "-c",
+              "bash",
+              "-c",
               'f="$1"; bom=$(head -c 2 "$f" | xxd -p 2>/dev/null | tr -d " \\n"); '
                 .. 'if [ "$bom" = "fffe" ] || [ "$bom" = "feff" ]; then '
                 .. '  iconv -f UTF-16 -t UTF-8 "$f" 2>/dev/null | bat --color=always --language=xml --style=numbers --paging=never; '
                 .. 'else bat --color=always --language=xml --style=numbers --paging=never "$f" 2>/dev/null || cat "$f"; fi',
-              "xml-preview", "{file}",
+              "xml-preview",
+              "{file}",
             },
           },
           -- if using `ueberzug` in the above extensions map
@@ -559,7 +561,7 @@ return {
         -- second returned string are (optional) additional rg flags
         -- @return string, string?
         rg_glob_fn = function(query, opts)
-          local regex, flags = query:match "^(.-)%s%-%-(.*)$"
+          local regex, flags = query:match("^(.-)%s%-%-(.*)$")
           -- If no separator is detected will return the original query
           return (regex or query), flags
         end,
@@ -821,13 +823,13 @@ return {
           -- by default display all LSP locations
           -- to customize, duplicate table and delete unwanted providers
           providers = {
-            { "references", prefix = require("fzf-lua").utils.ansi_codes.blue "ref " },
-            { "definitions", prefix = require("fzf-lua").utils.ansi_codes.green "def " },
-            { "declarations", prefix = require("fzf-lua").utils.ansi_codes.magenta "decl" },
-            { "typedefs", prefix = require("fzf-lua").utils.ansi_codes.red "tdef" },
-            { "implementations", prefix = require("fzf-lua").utils.ansi_codes.green "impl" },
-            { "incoming_calls", prefix = require("fzf-lua").utils.ansi_codes.cyan "in  " },
-            { "outgoing_calls", prefix = require("fzf-lua").utils.ansi_codes.yellow "out " },
+            { "references", prefix = require("fzf-lua").utils.ansi_codes.blue("ref ") },
+            { "definitions", prefix = require("fzf-lua").utils.ansi_codes.green("def ") },
+            { "declarations", prefix = require("fzf-lua").utils.ansi_codes.magenta("decl") },
+            { "typedefs", prefix = require("fzf-lua").utils.ansi_codes.red("tdef") },
+            { "implementations", prefix = require("fzf-lua").utils.ansi_codes.green("impl") },
+            { "incoming_calls", prefix = require("fzf-lua").utils.ansi_codes.cyan("in  ") },
+            { "outgoing_calls", prefix = require("fzf-lua").utils.ansi_codes.yellow("out ") },
           },
         },
       },
@@ -893,7 +895,7 @@ return {
       -- uncomment if your terminal/font does not support unicode character
       -- 'EN SPACE' (U+2002), the below sets it to 'NBSP' (U+00A0) instead
       -- nbsp = '\xc2\xa0',
-    }
+    })
 
     if vim.g.FuzzySearchKeymaps == "fzf-lua" then
       require("plugins.fzf-lua.keymaps").setup()

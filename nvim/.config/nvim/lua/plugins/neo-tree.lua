@@ -16,7 +16,7 @@ return {
   },
   config = function()
     local win_width = 40
-    require("neo-tree").setup {
+    require("neo-tree").setup({
       close_if_last_window = false, -- Close Neo-tree if it is the last window left in the tab
       use_default_mappings = false,
       event_handlers = {
@@ -24,7 +24,7 @@ return {
           event = "vim_buffer_enter",
           handler = function()
             if vim.bo.filetype == "neo-tree" then
-              vim.cmd "setlocal relativenumber"
+              vim.cmd("setlocal relativenumber")
             end
           end,
         },
@@ -35,7 +35,7 @@ return {
           ---@diagnostic disable-next-line
           handler = function(input)
             -- enter input popup with normal mode by default.
-            vim.cmd "stopinsert"
+            vim.cmd("stopinsert")
           end,
         },
       },
@@ -385,11 +385,11 @@ return {
           },
         },
       },
-    }
+    })
 
     local function get_reveal_path()
       local reveal_path = nil
-      reveal_path = vim.fn.expand "%:p"
+      reveal_path = vim.fn.expand("%:p")
       if reveal_path == "" then
         reveal_path = vim.fn.getcwd()
       else
@@ -405,44 +405,44 @@ return {
 
     local function conditional_neotree_exec(neotree_opts)
       if vim.bo.filetype == "neo-tree" then
-        require("neo-tree.command").execute { action = "close" }
+        require("neo-tree.command").execute({ action = "close" })
       else
         require("neo-tree.command").execute(neotree_opts)
       end
     end
 
     vim.keymap.set("n", "<F2>", function()
-      conditional_neotree_exec {
+      conditional_neotree_exec({
         action = "focus",
         source = "filesystem",
         position = "right",
         reveal_force_cwd = false,
-      }
+      })
     end, { desc = "Toggle neo-tree" })
 
     vim.keymap.set("n", "<leader><F2>", function()
-      conditional_neotree_exec {
+      conditional_neotree_exec({
         action = "focus",
         source = "filesystem",
         position = "right",
         reveal_file = get_reveal_path(), -- path to file or folder to reveal
         reveal_force_cwd = true,
-      }
+      })
     end, { desc = "Toggle neo-tree at current file or working directory" })
 
     vim.keymap.set("n", "<leader><leader><F2>", function()
       local git_base = ""
       if vim.bo.filetype ~= "neo-tree" then
-        git_base = vim.fn.input "Enter a Git base or just <CR> for default HEAD: "
+        git_base = vim.fn.input("Enter a Git base or just <CR> for default HEAD: ")
       end
-      print "\n"
-      conditional_neotree_exec {
+      print("\n")
+      conditional_neotree_exec({
         action = "focus",
         source = "filesystem",
         position = "right",
         git_base = git_base == "" and "HEAD" or git_base,
         reveal_force_cwd = false,
-      }
+      })
     end, { desc = "Toggle neo-tree with custom Git base" })
   end,
 }

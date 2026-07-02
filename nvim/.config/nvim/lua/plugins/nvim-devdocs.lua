@@ -18,12 +18,12 @@ return {
     "DevdocsUpdateAll",
   },
   config = function()
-    require("nvim-devdocs").setup {
+    require("nvim-devdocs").setup({
       previewer_cmd = "glow",
       cmd_args = { "-s", "dark", "-w", "80" },
       after_open = function(bufnr)
         vim.api.nvim_buf_set_keymap(bufnr, "n", "<Esc>", "<Cmd>bdelete<CR>", {})
       end,
-    }
+    })
   end,
 }

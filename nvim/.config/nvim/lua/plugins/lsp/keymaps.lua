@@ -10,26 +10,26 @@ function M.on_attach(client, buffer)
   self:map("gf", "Telescope lsp_references", { desc = "Telescope References" })
   self:map("gI", vim.lsp.buf.implementation, { desc = "Implementations" })
   self:map("gy", function()
-    require("telescope.builtin").lsp_type_definitions { reuse_win = true }
+    require("telescope.builtin").lsp_type_definitions({ reuse_win = true })
   end, { desc = "Goto Type Definition" })
   self:map("gY", function()
-    require("telescope.builtin").lsp_implementations { reuse_win = true }
+    require("telescope.builtin").lsp_implementations({ reuse_win = true })
   end, { desc = "Goto Implementation" })
   -- self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
   self:map("]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
   self:map("[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
   self:map("]e", function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
   end, { desc = "Next Error" })
   self:map("[e", function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.ERROR }
+    vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
   end, { desc = "Prev Error" })
   self:map("]w", function()
-    vim.diagnostic.goto_next { severity = vim.diagnostic.severity.WARN }
+    vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
   end, { desc = "Next Warning" })
   self:map("[w", function()
-    vim.diagnostic.goto_prev { severity = vim.diagnostic.severity.WARN }
+    vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
   end, { desc = "Prev Warning" })
   self:map(
     "<leader>ca",
@@ -46,7 +46,7 @@ function M.on_attach(client, buffer)
   )
   -- self:map("<leader>rn", vim.lsp.buf.rename, { expr = true, desc = "Rename", has = "rename" })
   self:map("<leader>rn", function()
-    return ":IncRename " .. vim.fn.expand "<cword>"
+    return ":IncRename " .. vim.fn.expand("<cword>")
   end, { expr = true, desc = "Rename", has = "rename" })
 
   self:map(

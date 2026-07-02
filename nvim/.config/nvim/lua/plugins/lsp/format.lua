@@ -79,8 +79,8 @@ function M.supports_format(client)
   then
     return false
   end
-  return client.supports_method "textDocument/formatting"
-    or client.supports_method "textDocument/rangeFormatting"
+  return client.supports_method("textDocument/formatting")
+    or client.supports_method("textDocument/rangeFormatting")
 end
 
 function M.get_formatters(bufnr)
@@ -96,7 +96,7 @@ function M.get_formatters(bufnr)
     null_ls = null_ls,
   }
 
-  local clients = vim.lsp.get_clients { bufnr = bufnr }
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
   for _, client in ipairs(clients) do
     if M.supports_format(client) then
       if (#null_ls > 0 and client.name == "null-ls") or #null_ls == 0 then

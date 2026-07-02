@@ -43,7 +43,7 @@ return {
     },
   },
   config = function(_, opts)
-    local picker = require "window-picker"
+    local picker = require("window-picker")
     picker.setup(opts)
     vim.keymap.set("n", "<leader>w", function()
       local picked_window_id = picker.pick_window() or vim.api.nvim_get_current_win()

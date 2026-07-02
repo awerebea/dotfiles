@@ -41,19 +41,19 @@ return {
     config = function()
       local opts = {
         adapters = {
-          require "neotest-python" {
+          require("neotest-python")({
             dap = { justMyCode = false },
             runner = "unittest",
-          },
-          require "neotest-plenary",
-          require "neotest-vim-test" {
+          }),
+          require("neotest-plenary"),
+          require("neotest-vim-test")({
             ignore_file_types = { "python", "vim", "lua" },
-          },
-          require "neotest-rust",
+          }),
+          require("neotest-rust"),
         },
         -- overseer.nvim
         consumers = {
-          overseer = require "neotest.consumers.overseer",
+          overseer = require("neotest.consumers.overseer"),
         },
         overseer = {
           enabled = true,

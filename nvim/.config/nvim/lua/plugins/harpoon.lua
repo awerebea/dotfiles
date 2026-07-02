@@ -20,25 +20,25 @@ return {
       "<leader>i",
     },
     config = function()
-      require("telescope").load_extension "harpoon"
-      local harpoon = require "harpoon"
-      harpoon:setup { settings = { save_on_toggle = true, sync_on_ui_close = true } }
+      require("telescope").load_extension("harpoon")
+      local harpoon = require("harpoon")
+      harpoon:setup({ settings = { save_on_toggle = true, sync_on_ui_close = true } })
 
-      harpoon:extend {
+      harpoon:extend({
         UI_CREATE = function(cx)
           vim.keymap.set("n", "<C-v>", function()
-            harpoon.ui:select_menu_item { vsplit = true }
+            harpoon.ui:select_menu_item({ vsplit = true })
           end, { buffer = cx.bufnr })
 
           vim.keymap.set("n", "<C-x>", function()
-            harpoon.ui:select_menu_item { split = true }
+            harpoon.ui:select_menu_item({ split = true })
           end, { buffer = cx.bufnr })
 
           vim.keymap.set("n", "<C-t>", function()
-            harpoon.ui:select_menu_item { tabedit = true }
+            harpoon.ui:select_menu_item({ tabedit = true })
           end, { buffer = cx.bufnr })
         end,
-      }
+      })
 
       local conf = require("telescope.config").values
       local function toggle_telescope(harpoon_files)
@@ -48,20 +48,20 @@ return {
             table.insert(paths, item.value)
           end
 
-          return require("telescope.finders").new_table {
+          return require("telescope.finders").new_table({
             results = paths,
-          }
+          })
         end
 
         require("telescope.pickers")
           .new({}, {
             prompt_title = "Harpoon",
             finder = finder(),
-            previewer = conf.file_previewer {},
-            sorter = conf.generic_sorter {},
+            previewer = conf.file_previewer({}),
+            sorter = conf.generic_sorter({}),
             attach_mappings = function(prompt_bufnr, map)
               map("i", "<C-x>", function()
-                local state = require "telescope.actions.state"
+                local state = require("telescope.actions.state")
                 local selected_entry = state.get_selected_entry()
                 local current_picker = state.get_current_picker(prompt_bufnr)
 
@@ -85,7 +85,7 @@ return {
           message = message .. "\n"
         end
         if #harpoon_list.items == 0 then
-          vim.notify "Harpoon's list is empty. There is nothing to select."
+          vim.notify("Harpoon's list is empty. There is nothing to select.")
           return
         end
         vim.api.nvim_echo({ { message, "Normal" } }, true, {})
@@ -108,7 +108,7 @@ return {
       local function add_file_to_harpoon_list()
         local filename = vim.api.nvim_buf_get_name(0)
         if filename == "" then
-          vim.notify "Couldn't find a valid file name to add to list, sorry."
+          vim.notify("Couldn't find a valid file name to add to list, sorry.")
           return
         end
         vim.notify("Add a file to the Harpoon list: " .. vim.fn.fnamemodify(filename, ":."))

@@ -1,5 +1,5 @@
-local h = require "null-ls.helpers"
-local nls = require "null-ls"
+local h = require("null-ls.helpers")
+local nls = require("null-ls")
 
 local DIAGNOSTICS = nls.methods.DIAGNOSTICS
 
@@ -7,7 +7,7 @@ local refurb = {
   name = "refurb",
   method = DIAGNOSTICS,
   filetypes = { "python" },
-  generator = nls.generator {
+  generator = nls.generator({
     command = "refurb",
     to_stdin = false,
     from_stderr = false,
@@ -23,7 +23,7 @@ local refurb = {
       return success
     end,
     on_output = h.diagnostics.from_pattern([[:(%d+):(%d+) (.*)]], { "row", "col", "message" }),
-  },
+  }),
   factory = h.generator_factory,
 }
 

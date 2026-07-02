@@ -2,11 +2,11 @@
 local telescopePickers = {}
 
 -- Store Utilities we'll use frequently
-local telescopeUtilities = require "telescope.utils"
-local telescopeMakeEntryModule = require "telescope.make_entry"
-local plenaryStrings = require "plenary.strings"
-local devIcons = require "nvim-web-devicons"
-local telescopeEntryDisplayModule = require "telescope.pickers.entry_display"
+local telescopeUtilities = require("telescope.utils")
+local telescopeMakeEntryModule = require("telescope.make_entry")
+local plenaryStrings = require("plenary.strings")
+local devIcons = require("nvim-web-devicons")
+local telescopeEntryDisplayModule = require("telescope.pickers.entry_display")
 
 -- Obtain Filename icon width
 -- --------------------------
@@ -52,7 +52,7 @@ end
 function telescopePickers.prettyFilesPicker(pickerAndOptions)
   -- Parameter integrity check
   if type(pickerAndOptions) ~= "table" or pickerAndOptions.picker == nil then
-    print "Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }"
+    print("Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }")
 
     -- Avoid further computation
     return
@@ -81,14 +81,14 @@ function telescopePickers.prettyFilesPicker(pickerAndOptions)
     -- INSIGHT: An "entry display" is an abstract concept that defines the "container" within which data
     --          will be displayed inside the picker, this means that we must define options that define
     --          its dimensions, like, for example, its width.
-    local displayer = telescopeEntryDisplayModule.create {
+    local displayer = telescopeEntryDisplayModule.create({
       separator = " ", -- Telescope will use this separator between each entry item
       items = {
         { width = fileTypeIconWidth },
         { width = nil },
         { remaining = true },
       },
-    }
+    })
 
     -- LIFECYCLE: At this point the "displayer" has been created by the create() method, which has in turn
     --            returned a function. This means that we can now call said function by using the
@@ -115,11 +115,11 @@ function telescopePickers.prettyFilesPicker(pickerAndOptions)
       -- INSIGHT: This return value should be a tuple of 2, where the first value is the actual value
       --          and the second one is the highlight information, this will be done by the displayer
       --          internally and return in the correct format.
-      return displayer {
+      return displayer({
         { icon, iconHighlight },
         tailForDisplay,
         { pathToDisplay, "TelescopeResultsComment" },
-      }
+      })
     end
 
     return originalEntryTable
@@ -133,9 +133,9 @@ function telescopePickers.prettyFilesPicker(pickerAndOptions)
   elseif pickerAndOptions.picker == "oldfiles" then
     require("telescope.builtin").oldfiles(options)
   elseif pickerAndOptions.picker == "" then
-    print "Picker was not specified"
+    print("Picker was not specified")
   else
-    print "Picker is not supported by Pretty Find Files"
+    print("Picker is not supported by Pretty Find Files")
   end
 end
 
@@ -153,7 +153,7 @@ end
 function telescopePickers.prettyGrepPicker(pickerAndOptions)
   -- Parameter integrity check
   if type(pickerAndOptions) ~= "table" or pickerAndOptions.picker == nil then
-    print "Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }"
+    print("Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }")
 
     -- Avoid further computation
     return
@@ -182,7 +182,7 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
     -- INSIGHT: An "entry display" is an abstract concept that defines the "container" within which data
     --          will be displayed inside the picker, this means that we must define options that define
     --          its dimensions, like, for example, its width.
-    local displayer = telescopeEntryDisplayModule.create {
+    local displayer = telescopeEntryDisplayModule.create({
       separator = " ", -- Telescope will use this separator between each entry item
       items = {
         { width = fileTypeIconWidth },
@@ -190,7 +190,7 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
         { width = nil }, -- Maximum path size, keep it short
         { remaining = true },
       },
-    }
+    })
 
     -- LIFECYCLE: At this point the "displayer" has been created by the create() method, which has in turn
     --            returned a function. This means that we can now call said function by using the
@@ -244,12 +244,12 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
       -- INSIGHT: This return value should be a tuple of 2, where the first value is the actual value
       --          and the second one is the highlight information, this will be done by the displayer
       --          internally and return in the correct format.
-      return displayer {
+      return displayer({
         { icon, iconHighlight },
         tailForDisplay,
         { pathToDisplay, "TelescopeResultsComment" },
         text,
-      }
+      })
     end
 
     return originalEntryTable
@@ -261,9 +261,9 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
   elseif pickerAndOptions.picker == "grep_string" then
     require("telescope.builtin").grep_string(options)
   elseif pickerAndOptions.picker == "" then
-    print "Picker was not specified"
+    print("Picker was not specified")
   else
-    print "Picker is not supported by Pretty Grep Picker"
+    print("Picker is not supported by Pretty Grep Picker")
   end
 end
 
@@ -271,7 +271,7 @@ local kind_icons = require("config.icons").kind
 
 function telescopePickers.prettyDocumentSymbols(localOptions)
   if localOptions ~= nil and type(localOptions) ~= "table" then
-    print "Options must be a table."
+    print("Options must be a table.")
     return
   end
 
@@ -282,21 +282,21 @@ function telescopePickers.prettyDocumentSymbols(localOptions)
   options.entry_maker = function(line)
     local originalEntryTable = originalEntryMaker(line)
 
-    local displayer = telescopeEntryDisplayModule.create {
+    local displayer = telescopeEntryDisplayModule.create({
       separator = " ",
       items = {
         { width = fileTypeIconWidth },
         { width = 20 },
         { remaining = true },
       },
-    }
+    })
 
     originalEntryTable.display = function(entry)
-      return displayer {
+      return displayer({
         string.format("%s", kind_icons[(entry.symbol_type:lower():gsub("^%l", string.upper))]),
         { entry.symbol_type:lower(), "TelescopeResultsVariable" },
         { entry.symbol_name, "TelescopeResultsConstant" },
-      }
+      })
     end
 
     return originalEntryTable
@@ -307,7 +307,7 @@ end
 
 function telescopePickers.prettyWorkspaceSymbols(localOptions)
   if localOptions ~= nil and type(localOptions) ~= "table" then
-    print "Options must be a table."
+    print("Options must be a table.")
     return
   end
 
@@ -318,7 +318,7 @@ function telescopePickers.prettyWorkspaceSymbols(localOptions)
   options.entry_maker = function(line)
     local originalEntryTable = originalEntryMaker(line)
 
-    local displayer = telescopeEntryDisplayModule.create {
+    local displayer = telescopeEntryDisplayModule.create({
       separator = " ",
       items = {
         { width = fileTypeIconWidth },
@@ -327,7 +327,7 @@ function telescopePickers.prettyWorkspaceSymbols(localOptions)
         { width = nil },
         { remaining = true },
       },
-    }
+    })
 
     originalEntryTable.display = function(entry)
       local tail, _ = telescopePickers.getPathAndTail(entry.filename)
@@ -336,13 +336,13 @@ function telescopePickers.prettyWorkspaceSymbols(localOptions)
         path_display = { shorten = { num = 2, exclude = { -2, -1 } }, "truncate" },
       }, entry.value.filename)
 
-      return displayer {
+      return displayer({
         string.format("%s", kind_icons[(entry.symbol_type:lower():gsub("^%l", string.upper))]),
         { entry.symbol_type:lower(), "TelescopeResultsVariable" },
         { entry.symbol_name, "TelescopeResultsConstant" },
         tailForDisplay,
         { pathToDisplay, "TelescopeResultsComment" },
-      }
+      })
     end
 
     return originalEntryTable
@@ -353,7 +353,7 @@ end
 
 function telescopePickers.prettyBuffersPicker(localOptions)
   if localOptions ~= nil and type(localOptions) ~= "table" then
-    print "Options must be a table."
+    print("Options must be a table.")
     return
   end
 
@@ -364,7 +364,7 @@ function telescopePickers.prettyBuffersPicker(localOptions)
   options.entry_maker = function(line)
     local originalEntryTable = originalEntryMaker(line)
 
-    local displayer = telescopeEntryDisplayModule.create {
+    local displayer = telescopeEntryDisplayModule.create({
       separator = " ",
       items = {
         { width = fileTypeIconWidth },
@@ -372,19 +372,19 @@ function telescopePickers.prettyBuffersPicker(localOptions)
         { width = nil },
         { remaining = true },
       },
-    }
+    })
 
     originalEntryTable.display = function(entry)
       local tail, path = telescopePickers.getPathAndTail(entry.filename)
       local tailForDisplay = tail .. " "
       local icon, iconHighlight = telescopeUtilities.get_devicons(tail)
 
-      return displayer {
+      return displayer({
         { icon, iconHighlight },
         tailForDisplay,
         { "(" .. entry.bufnr .. ")", "TelescopeResultsNumber" },
         { path, "TelescopeResultsComment" },
-      }
+      })
     end
 
     return originalEntryTable

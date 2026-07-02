@@ -27,7 +27,7 @@ return {
         },
       }
       require("Comment").setup(opts)
-      local api = require "Comment.api"
+      local api = require("Comment.api")
       -- Toggle current line (linewise) using C-/
       vim.keymap.set("n", "<C-_>", api.toggle.linewise.current)
       -- Toggle current line (blockwise) using C-\
@@ -49,7 +49,7 @@ return {
 
       ---Operator function to invert comments on each line
       function _G.__flip_flop_comment()
-        local U = require "Comment.utils"
+        local U = require("Comment.utils")
         local s = vim.api.nvim_buf_get_mark(0, "[")
         local e = vim.api.nvim_buf_get_mark(0, "]")
         local range = { srow = s[1], scol = s[2], erow = e[1], ecol = e[2] }
@@ -93,7 +93,7 @@ return {
           vim.api.nvim_win_set_cursor(0, { sl, 0 }) -- idk why it's needed to prevent one-line ranges from being substituted with line under cursor
           vim.api.nvim_buf_set_mark(0, "[", sl, 0, {})
           vim.api.nvim_buf_set_mark(0, "]", el, 0, {})
-          require("Comment.api").locked "toggle.linewise" ""
+          require("Comment.api").locked("toggle.linewise")("")
         end
 
         toggle_lines(s[1], e[1])

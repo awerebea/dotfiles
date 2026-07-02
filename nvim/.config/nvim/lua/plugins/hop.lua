@@ -3,7 +3,7 @@ return {
   event = "VeryLazy",
   opts = { keys = "etovxqpdygfblzhckisuran" },
   config = function(_, opts)
-    local hop = require "hop"
+    local hop = require("hop")
     hop.setup(opts)
 
     vim.api.nvim_set_hl(0, "HopNextKey", { fg = "Black", bg = "#ccff88" })
@@ -21,18 +21,18 @@ return {
     vim.keymap.set("", "<leader><leader>f", "<Cmd>HopChar1AC<CR>")
     vim.keymap.set("", "<leader><leader>F", "<Cmd>HopChar1BC<CR>")
     vim.keymap.set("", "<leader><leader>t", function()
-      hop.hint_char1 {
+      hop.hint_char1({
         direction = directions.AFTER_CURSOR,
         current_line_only = false,
         hint_offset = -1,
-      }
+      })
     end)
     vim.keymap.set("", "<leader><leader>T", function()
-      hop.hint_char1 {
+      hop.hint_char1({
         direction = directions.BEFORE_CURSOR,
         current_line_only = false,
         hint_offset = 1,
-      }
+      })
     end)
     -- vim.keymap.set("", "<leader><leader>e", function()
     --   hop.hint_words {
@@ -41,24 +41,24 @@ return {
     --   }
     -- end)
     vim.keymap.set("", "<leader><leader>ge", function()
-      hop.hint_words {
+      hop.hint_words({
         hint_position = position.END,
         direction = directions.BEFORE_CURSOR,
-      }
+      })
     end)
     vim.keymap.set("", "<leader><leader>E", function()
-      hop.hint_words {
+      hop.hint_words({
         hint_position = position.END,
         direction = directions.AFTER_CURSOR,
         hint_offset = 1,
-      }
+      })
     end)
     vim.keymap.set("", "<leader><leader>gE", function()
-      hop.hint_words {
+      hop.hint_words({
         hint_position = position.END,
         direction = directions.BEFORE_CURSOR,
         hint_offset = 1,
-      }
+      })
     end)
     vim.keymap.set("", "<leader><leader>s", "<Cmd>HopChar1<CR>")
     vim.keymap.set("", "<leader><leader>S", "<Cmd>HopChar2<CR>")

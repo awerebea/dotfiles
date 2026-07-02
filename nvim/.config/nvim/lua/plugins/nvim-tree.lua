@@ -6,7 +6,7 @@ return {
     keys = { { "<leader>e", "<leader><leader>e" } },
     opts = {
       on_attach = function(bufnr)
-        local api = require "nvim-tree.api"
+        local api = require("nvim-tree.api")
         local function opts(desc)
           return {
             desc = "nvim-tree: " .. desc,
@@ -21,17 +21,17 @@ return {
         -- remove a default
         vim.keymap.del("n", "-", { buffer = bufnr })
         -- override a default
-        vim.keymap.set("n", "<C-e>", api.tree.reload, opts "Refresh")
-        vim.keymap.set("n", "u", api.tree.change_root_to_parent, opts "Up")
-        vim.keymap.set("n", "h", api.node.navigate.parent_close, opts "Close Directory")
-        vim.keymap.set("n", "l", api.node.open.edit, opts "Open")
-        vim.keymap.set("n", "F1", api.node.show_info_popup, opts "Info")
+        vim.keymap.set("n", "<C-e>", api.tree.reload, opts("Refresh"))
+        vim.keymap.set("n", "u", api.tree.change_root_to_parent, opts("Up"))
+        vim.keymap.set("n", "h", api.node.navigate.parent_close, opts("Close Directory"))
+        vim.keymap.set("n", "l", api.node.open.edit, opts("Open"))
+        vim.keymap.set("n", "F1", api.node.show_info_popup, opts("Info"))
         vim.keymap.set("n", "<", function()
-          require("nvim-tree.view").resize "+5"
-        end, opts "Increase size")
+          require("nvim-tree.view").resize("+5")
+        end, opts("Increase size"))
         vim.keymap.set("n", ">", function()
-          require("nvim-tree.view").resize "-5"
-        end, opts "Decrease size")
+          require("nvim-tree.view").resize("-5")
+        end, opts("Decrease size"))
 
         -- Copy the selected part of the file path {{
         local function copy_selector()
@@ -79,7 +79,7 @@ return {
         end
         vim.keymap.set("n", "Y", function()
           copy_selector()
-        end, opts "Copy selector")
+        end, opts("Copy selector"))
         -- }}
       end,
       disable_netrw = false,
@@ -136,7 +136,7 @@ return {
       vim.g.loaded_netrw = 1
       vim.g.loaded_netrwPlugin = 1
       -- change color for arrows in tree to light blue
-      vim.api.nvim_command "highlight NvimTreeIndentMarker guifg=#3FC5FF"
+      vim.api.nvim_command("highlight NvimTreeIndentMarker guifg=#3FC5FF")
       require("nvim-tree").setup(opts)
       vim.keymap.set("n", "<leader>e", function()
         if vim.bo.filetype == "NvimTree" then
@@ -146,7 +146,7 @@ return {
         end
       end, { desc = "Toggle NvimTree" })
       vim.keymap.set("n", "<leader><leader>e", function()
-        require("nvim-tree.api").tree.find_file { open = true, focus = true }
+        require("nvim-tree.api").tree.find_file({ open = true, focus = true })
       end, { desc = "Find file in NvimTree" })
     end,
   },

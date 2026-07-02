@@ -4,7 +4,7 @@ return {
   event = "VeryLazy",
   opts = {
     scopes = {
-      { name = "nvim", dirs = { vim.fn.stdpath "config" } },
+      { name = "nvim", dirs = { vim.fn.stdpath("config") } },
       { name = "<disable>", dirs = {} },
     },
     -- diff_branches_for_scopes = { "main", "dev" }, -- use per-project settings defined in neoscopes.config.json
@@ -12,9 +12,9 @@ return {
   },
   config = function(_, opts)
     require("neoscopes").setup(opts)
-    local scopes = require "neoscopes"
-    if vim.fn.filereadable(vim.fn.stdpath "config" .. "/lua/scopes.lua") == 1 then
-      for _, scope in ipairs(require "scopes") do
+    local scopes = require("neoscopes")
+    if vim.fn.filereadable(vim.fn.stdpath("config") .. "/lua/scopes.lua") == 1 then
+      for _, scope in ipairs(require("scopes")) do
         scopes.add(scope)
       end
     end
@@ -31,7 +31,7 @@ return {
       end
       -- Execute the loaded Lua code and get the returned value
       local project_scopes = load_func()
-      vim.validate { project_scopes = { project_scopes, "table" } }
+      vim.validate({ project_scopes = { project_scopes, "table" } })
       for _, scope in ipairs(project_scopes) do
         scopes.add(scope)
       end
@@ -40,7 +40,7 @@ return {
     -- scopes.add_startup_scope()
 
     vim.keymap.set("n", "<leader>Sc", function()
-      require("neoscopes").select {}
+      require("neoscopes").select({})
     end, { desc = "Select scope" })
   end,
 }

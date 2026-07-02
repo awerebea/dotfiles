@@ -1,4 +1,4 @@
-local icons = require "config.icons"
+local icons = require("config.icons")
 
 local function fg(name)
   return function()
@@ -17,8 +17,8 @@ return {
   },
   git_repo = {
     function()
-      if vim.fn.trim(vim.fn.system "git rev-parse --is-inside-work-tree") == "true" then
-        return vim.fn.trim(vim.fn.system "basename `git rev-parse --show-toplevel`")
+      if vim.fn.trim(vim.fn.system("git rev-parse --is-inside-work-tree")) == "true" then
+        return vim.fn.trim(vim.fn.system("basename `git rev-parse --show-toplevel`"))
       end
       return ""
     end,
@@ -46,7 +46,7 @@ return {
   lsp_client = {
     function(msg)
       msg = msg or ""
-      local buf_clients = vim.lsp.get_clients { bufnr = 0 }
+      local buf_clients = vim.lsp.get_clients({ bufnr = 0 })
 
       if next(buf_clients) == nil then
         if type(msg) == "boolean" or #msg == 0 then
@@ -66,7 +66,7 @@ return {
       end
 
       -- add formatter
-      local lsp_utils = require "plugins.lsp.utils"
+      local lsp_utils = require("plugins.lsp.utils")
       local formatters = lsp_utils.list_formatters(buf_ft)
       vim.list_extend(buf_client_names, formatters)
 
@@ -96,7 +96,7 @@ return {
     -- icon = icons.ui.Code,
     colored = true,
     on_click = function()
-      vim.cmd [[LspInfo]]
+      vim.cmd([[LspInfo]])
     end,
   },
   noice_mode = {
@@ -106,7 +106,7 @@ return {
     cond = function()
       return package.loaded["noice"] and require("noice").api.status.mode.has()
     end,
-    color = fg "Constant",
+    color = fg("Constant"),
   },
   noice_command = {
     function()
@@ -115,7 +115,7 @@ return {
     cond = function()
       return package.loaded["noice"] and require("noice").api.status.command.has()
     end,
-    color = fg "Statement",
+    color = fg("Statement"),
   },
   noice_search = {
     function()

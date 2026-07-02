@@ -12,19 +12,19 @@ return {
       "danymat/neogen",
     },
     config = function()
-      local cmp = require "cmp"
-      local luasnip = require "luasnip"
-      local icons = require "config.icons"
-      local neogen = require "neogen"
+      local cmp = require("cmp")
+      local luasnip = require("luasnip")
+      local icons = require("config.icons")
+      local neogen = require("neogen")
 
       local has_words_before = function()
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
         return col ~= 0
-          and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match "%s"
+          and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s")
             == nil
       end
 
-      cmp.setup {
+      cmp.setup({
         completion = {
           completeopt = "menu,menuone,noinsert,noselect",
         },
@@ -33,13 +33,13 @@ return {
             require("luasnip").lsp_expand(args.body)
           end,
         },
-        mapping = cmp.mapping.preset.insert {
+        mapping = cmp.mapping.preset.insert({
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
           ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.confirm { select = true },
-          ["<C-e>"] = cmp.mapping { i = cmp.mapping.abort(), c = cmp.mapping.close() },
-          ["<Esc><Esc>"] = cmp.mapping { i = cmp.mapping.abort(), c = cmp.mapping.close() },
-          ["<CR>"] = cmp.mapping.confirm { select = false },
+          ["<C-Space>"] = cmp.mapping.confirm({ select = true }),
+          ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
+          ["<Esc><Esc>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
+          ["<CR>"] = cmp.mapping.confirm({ select = false }),
           ["<C-j>"] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
@@ -72,12 +72,12 @@ return {
             "s",
             "c",
           }),
-        },
+        }),
         window = {
           completion = cmp.config.window.bordered(),
           documentation = cmp.config.window.bordered(),
         },
-        sources = cmp.config.sources {
+        sources = cmp.config.sources({
           { name = "nvim_lsp_signature_help" },
           { name = "nvim_lsp" },
           -- { name = "luasnip" },
@@ -93,7 +93,7 @@ return {
           --     end,
           --   },
           -- }, -- spell dictionary
-        },
+        }),
         formatting = {
           fields = { "kind", "abbr", "menu" },
           format = function(entry, item)
@@ -120,7 +120,7 @@ return {
             return item
           end,
         },
-      }
+      })
 
       -- -- Hide Copilot suggestion when popupmenu-completion is open.
       -- cmp.event:on("menu_opened", function()

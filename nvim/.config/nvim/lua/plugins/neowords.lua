@@ -3,7 +3,7 @@ return {
   enabled = false, -- not require("utils").is_windows(),
   event = "VeryLazy",
   config = function()
-    local neowords = require "neowords"
+    local neowords = require("neowords")
     local presets = neowords.pattern_presets
 
     local hops = neowords.get_word_hops(

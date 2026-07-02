@@ -1,19 +1,19 @@
 --- Install lazy.nvim
-local lazypath = vim.fn.stdpath "data" .. "/lazy/lazy.nvim"
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
+  vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
     lazypath,
-  }
+  })
 end
 vim.opt.rtp:prepend(lazypath)
 
 -- Configure lazy.nvim
-require("lazy").setup {
+require("lazy").setup({
   spec = {
     { import = "plugins" },
     { import = "plugins.extras.lang" },
@@ -45,5 +45,5 @@ require("lazy").setup {
       },
     },
   },
-}
+})
 vim.keymap.set("n", "<leader><leader>z", "<cmd>:Lazy<cr>", { desc = "Plugin Manager" })

@@ -29,7 +29,7 @@ return {
       end,
     })
 
-    require("oil").setup {
+    require("oil").setup({
       default_file_explorer = false,
       skip_confirm_for_simple_edits = true,
       prompt_save_on_select_new_entry = false,
@@ -52,6 +52,6 @@ return {
       buf_options = {
         buflisted = false,
       },
-    }
+    })
   end,
 }

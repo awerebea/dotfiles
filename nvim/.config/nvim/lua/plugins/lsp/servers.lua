@@ -1,7 +1,7 @@
 local M = {}
 
-local lsp_utils = require "plugins.lsp.utils"
-local icons = require "config.icons"
+local lsp_utils = require("plugins.lsp.utils")
+local icons = require("config.icons")
 
 local function lsp_init()
   -- LSP handlers configuration
@@ -60,7 +60,12 @@ local function lsp_init()
 
   -- Signature help configuration
   vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, opts)
-    vim.lsp.handlers.signature_help(err, result, ctx, vim.tbl_extend("force", opts or {}, config.float))
+    vim.lsp.handlers.signature_help(
+      err,
+      result,
+      ctx,
+      vim.tbl_extend("force", opts or {}, config.float)
+    )
   end
 end
 
@@ -90,7 +95,7 @@ function M.setup(_, opts)
       end
     end
     vim.lsp.config(server, server_opts)
-    vim.lsp.enable { server }
+    vim.lsp.enable({ server })
   end
 
   -- get all the servers that are available thourgh mason-lspconfig
@@ -106,7 +111,7 @@ function M.setup(_, opts)
     if server_opts then
       server_opts = server_opts == true and {} or server_opts
       -- remove @version from server name
-      local server_name = (server:find "@" and server:sub(1, server:find "@" - 1)) or server
+      local server_name = (server:find("@") and server:sub(1, server:find("@") - 1)) or server
       -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
       if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server_name) then
         setup(server)
@@ -117,8 +122,8 @@ function M.setup(_, opts)
   end
 
   if has_mason then
-    mlsp.setup { ensure_installed = ensure_installed }
-    mlsp.setup_handlers { setup }
+    mlsp.setup({ ensure_installed = ensure_installed })
+    mlsp.setup_handlers({ setup })
   end
 end
 

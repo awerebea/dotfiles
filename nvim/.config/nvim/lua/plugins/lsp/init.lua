@@ -79,14 +79,14 @@ return {
       },
       setup = {
         lua_ls = function(_, _)
-          local lsp_utils = require "plugins.lsp.utils"
+          local lsp_utils = require("plugins.lsp.utils")
           lsp_utils.on_attach(function(client, buffer)
             if client.name == "lua_ls" then
               vim.keymap.set("n", "<leader>dX", function()
                 require("osv").run_this()
               end, { buffer = buffer, desc = "OSV Run" })
               vim.keymap.set("n", "<leader>dL", function()
-                require("osv").launch { port = 8086 }
+                require("osv").launch({ port = 8086 })
               end, { buffer = buffer, desc = "OSV Launch" })
             elseif client.name == "pyright" then
               vim.keymap.set("n", "<leader>tC", function()
@@ -143,7 +143,7 @@ return {
     },
     config = function(_, opts)
       require("mason").setup()
-      local mr = require "mason-registry"
+      local mr = require("mason-registry")
       local function ensure_installed()
         for _, tool in ipairs(opts.ensure_installed) do
           local p = mr.get_package(tool)
@@ -167,9 +167,9 @@ return {
       "nvimtools/none-ls-extras.nvim",
     },
     config = function()
-      local nls = require "null-ls"
-      local refurb = require "plugins.lsp.refurb"
-      nls.setup {
+      local nls = require("null-ls")
+      local refurb = require("plugins.lsp.refurb")
+      nls.setup({
         root_dir = require("null-ls.utils").root_pattern(
           ".null-ls-root",
           ".neoconf.json",
@@ -178,7 +178,7 @@ return {
         ),
         sources = {
           refurb,
-          nls.builtins.formatting.prettierd.with {
+          nls.builtins.formatting.prettierd.with({
             filetypes = {
               "css",
               "graphql",
@@ -193,7 +193,7 @@ return {
               "typescriptreact",
               -- "yaml",
             },
-          },
+          }),
           -- nls.builtins.formatting.yamlfix.with {
           --   extra_args = {
           --     "--config-file",
@@ -201,11 +201,11 @@ return {
           --   },
           -- },
           nls.builtins.formatting.yamlfmt,
-          nls.builtins.formatting.stylua.with {
+          nls.builtins.formatting.stylua.with({
             extra_args = {
               -- "--column-width", "99"
             },
-          },
+          }),
           -- nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
           --   -- only enable eslint if root has .eslintrc.js
           --   condition = function(utils)
@@ -217,7 +217,7 @@ return {
           --     "--style={based_on_style: google, column_limit: 88, indent_width: 4}",
           --   },
           -- },
-          nls.builtins.diagnostics.mypy.with {
+          nls.builtins.diagnostics.mypy.with({
             extra_args = {
               "--ignore-missing-imports",
               "--follow-imports=silent",
@@ -226,11 +226,11 @@ return {
               "--allow-untyped-calls",
               "--strict",
             },
-          },
+          }),
           nls.builtins.formatting.isort,
-          nls.builtins.formatting.black.with {
+          nls.builtins.formatting.black.with({
             extra_args = { "--line-length=88" },
-          },
+          }),
           -- nls.builtins.diagnostics.ruff,
           -- nls.builtins.formatting.autopep8,
           -- nls.builtins.diagnostics.pylama,
@@ -239,10 +239,10 @@ return {
           -- nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.shellharden,
-          nls.builtins.formatting.shfmt.with { extra_args = { "-i", "4" } },
-          require("none-ls.formatting.beautysh").with { filetypes = { "zsh" } },
+          nls.builtins.formatting.shfmt.with({ extra_args = { "-i", "4" } }),
+          require("none-ls.formatting.beautysh").with({ filetypes = { "zsh" } }),
         },
-      }
+      })
     end,
   },
   {
@@ -266,16 +266,16 @@ return {
       local diagnostics_mode = 0
       function ToggleDiagnosticsMode()
         if diagnostics_mode == 0 then
-          vim.diagnostic.config { virtual_text = false, virtual_lines = true }
+          vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
           diagnostics_mode = 1
         elseif diagnostics_mode == 1 then
-          vim.diagnostic.config { virtual_text = false, virtual_lines = false }
+          vim.diagnostic.config({ virtual_text = false, virtual_lines = false })
           diagnostics_mode = 2
         elseif diagnostics_mode == 2 then
-          vim.diagnostic.config {
+          vim.diagnostic.config({
             virtual_text = { severity = { min = vim.diagnostic.severity.ERROR } },
             virtual_lines = false,
-          }
+          })
           diagnostics_mode = 0
         end
       end
@@ -303,35 +303,35 @@ return {
       {
         "<leader>xw",
         function()
-          require("trouble").toggle "workspace_diagnostics"
+          require("trouble").toggle("workspace_diagnostics")
         end,
         desc = "Workspace Diagnostics",
       },
       {
         "<leader>xd",
         function()
-          require("trouble").toggle "document_diagnostics"
+          require("trouble").toggle("document_diagnostics")
         end,
         desc = "Document Diagnostics",
       },
       {
         "<leader>xq",
         function()
-          require("trouble").toggle "quickfix"
+          require("trouble").toggle("quickfix")
         end,
         desc = "Trouble quickfix",
       },
       {
         "<leader>xl",
         function()
-          require("trouble").toggle "loclist"
+          require("trouble").toggle("loclist")
         end,
         desc = "Trouble loclist",
       },
       {
         "gR",
         function()
-          require("trouble").toggle "lsp_references"
+          require("trouble").toggle("lsp_references")
         end,
         desc = "Trouble LSP references",
       },
@@ -341,7 +341,7 @@ return {
     "Bekaboo/dropbar.nvim",
     event = "BufReadPost",
     enabled = function()
-      return vim.fn.has "nvim-0.10.0" == 1
+      return vim.fn.has("nvim-0.10.0") == 1
     end,
   },
 }

@@ -4,12 +4,12 @@ return {
     enabled = false,
     keys = function()
       local ret = {}
-      for key, desc in pairs {
+      for key, desc in pairs({
         ["<leader><leader>J"] = "Leap to line start downwards",
         ["<leader><leader>K"] = "Leap to line start upwards",
         ["<leader><leader>j"] = "Leap downwards",
         ["<leader><leader>k"] = "Leap upwards",
-      } do
+      }) do
         ret[#ret + 1] = { key, mode = { "n", "x", "o" }, desc = desc }
       end
       ret[#ret + 1] = { "s", mode = { "n", "x", "o" }, desc = "Leap (bidirectional)" }
@@ -29,7 +29,7 @@ return {
       },
     },
     config = function(_, opts)
-      local leap = require "leap"
+      local leap = require("leap")
       for k, v in pairs(opts) do
         leap.opts[k] = v
       end
@@ -47,8 +47,8 @@ return {
       local function get_line_targets(winid, skip_range, is_upward, keep_column)
         local wininfo = vim.fn.getwininfo(winid)[1]
         local bufid = vim.api.nvim_win_get_buf(winid)
-        local cur_line = vim.fn.line "."
-        local cur_col = vim.fn.col "."
+        local cur_line = vim.fn.line(".")
+        local cur_col = vim.fn.col(".")
         -- Skip lines close to the cursor.
         local skip_range = skip_range or 2
         local keep_column = keep_column or false
@@ -107,14 +107,14 @@ return {
         local is_upward = args.is_upward
         local keep_column = args.keep_column
         local winid = vim.api.nvim_get_current_win()
-        require("leap").leap {
+        require("leap").leap({
           target_windows = { winid },
           targets = get_line_targets(winid, skip_range, is_upward, keep_column),
-        }
+        })
       end
 
       -- For maximum comfort, force linewise selection in the mappings:
-      for key, args in pairs {
+      for key, args in pairs({
         ["|"] = { { keep_column = true }, { desc = "Leap vertically" } },
         ["<leader><leader>J"] = {
           { is_upward = false },
@@ -132,22 +132,22 @@ return {
           { is_upward = true, keep_column = true },
           { desc = "Leap upwards" },
         },
-      } do
-        for mode, rhs_expr in pairs {
+      }) do
+        for mode, rhs_expr in pairs({
           n = function()
             leap_vertically(args[1])
           end,
           x = function()
             -- Only force V if not already in it (otherwise it would exit Visual mode).
             if vim.fn.mode(1) ~= "V" then
-              vim.cmd "normal! V"
+              vim.cmd("normal! V")
             end
             leap_vertically(args[1])
           end,
           o = "V<Cmd>lua leap_vertically(" .. require("utils")
             .serialize_table(args[1])
             :gsub("\n", "") .. ")<CR>",
-        } do
+        }) do
           vim.keymap.set(mode, key, rhs_expr, args[2])
         end
       end
@@ -158,7 +158,7 @@ return {
     enabled = false,
     keys = function()
       local ret = {}
-      for _, key in ipairs { "f", "F", "t", "T" } do
+      for _, key in ipairs({ "f", "F", "t", "T" }) do
         ret[#ret + 1] = { key, mode = { "n", "x", "o" }, desc = key }
       end
       return ret

@@ -29,7 +29,7 @@ return {
   opts = {
     enable_persistent_history = true,
     continuous_sync = false,
-    db_path = vim.fn.stdpath "data" .. "/databases/neoclip.sqlite3",
+    db_path = vim.fn.stdpath("data") .. "/databases/neoclip.sqlite3",
     default_register = "+",
     content_spec_column = true,
     keys = {
@@ -55,6 +55,6 @@ return {
   },
   config = true,
   init = function()
-    require("telescope").load_extension "neoclip"
+    require("telescope").load_extension("neoclip")
   end,
 }

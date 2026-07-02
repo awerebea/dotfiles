@@ -3,10 +3,10 @@ return {
   event = "VeryLazy",
   config = function()
     require("tabby").setup()
-    local filename = require "tabby.filename"
-    local util = require "tabby.util"
+    local filename = require("tabby.filename")
+    local util = require("tabby.util")
 
-    local hl_tabline_fill = util.extract_nvim_hl "TabLineFill"
+    local hl_tabline_fill = util.extract_nvim_hl("TabLineFill")
     local hl_tab_active = { fg = "#c0caf5", bg = "#3d59a1" }
     local hl_tab_inactive = { fg = "#8a8fb0", bg = "#273967" }
     local hl_win_active = { fg = "#c0caf5", bg = "#3b4261" }
@@ -112,8 +112,8 @@ return {
       },
     }
 
-    require("tabby").setup {
+    require("tabby").setup({
       tabline = tabline,
-    }
+    })
   end,
 }

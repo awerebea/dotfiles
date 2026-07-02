@@ -21,7 +21,7 @@ local function list_registered_providers_names(ft)
   if not loaded then
     init()
   end
-  local s = require "null-ls.sources"
+  local s = require("null-ls.sources")
   local available_sources = s.get_available(ft)
   local registered = {}
   for _, source in ipairs(available_sources) do
@@ -98,7 +98,7 @@ function M.opts(name)
   if not plugin then
     return {}
   end
-  local Plugin = require "lazy.core.plugin"
+  local Plugin = require("lazy.core.plugin")
   return Plugin.values(plugin, "opts", false)
 end
 

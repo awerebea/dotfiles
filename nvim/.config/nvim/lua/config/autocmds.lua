@@ -3,7 +3,7 @@ local aucmd_dict = {
   TextYankPost = {
     {
       callback = function()
-        vim.highlight.on_yank { timeout = 500 }
+        vim.highlight.on_yank({ timeout = 500 })
       end,
       group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
       pattern = "*",
@@ -63,7 +63,7 @@ local aucmd_dict = {
   BufEnter = {
     {
       callback = function()
-        vim.opt.formatoptions:remove { "c", "r", "o" }
+        vim.opt.formatoptions:remove({ "c", "r", "o" })
       end,
     },
     -- Fix using Treesitter based folds with sessions
@@ -77,7 +77,7 @@ local aucmd_dict = {
     {
       pattern = "*",
       callback = function()
-        local not_executable = vim.fn.getfperm(vim.fn.expand "%"):sub(3, 3) ~= "x"
+        local not_executable = vim.fn.getfperm(vim.fn.expand("%")):sub(3, 3) ~= "x"
         local line = vim.fn.getline(1)
         if type(line) == "table" then
           line = line[1] or "" -- Use the first element of the table or an empty string
@@ -85,8 +85,8 @@ local aucmd_dict = {
         local has_shebang = string.match(line, "^#!")
         local has_bin = string.match(line, "/bin/")
         if not_executable and has_shebang and has_bin then
-          vim.notify "File made executable"
-          vim.cmd [[!chmod +x <afile>]]
+          vim.notify("File made executable")
+          vim.cmd([[!chmod +x <afile>]])
         end
       end,
       once = false,
@@ -107,7 +107,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   group = vim.api.nvim_create_augroup("utf16_bom", { clear = true }),
   pattern = "*.xml",
   callback = function()
-    if vim.bo.fileencoding:lower():find "utf%-16" then
+    if vim.bo.fileencoding:lower():find("utf%-16") then
       vim.bo.bomb = true
     end
   end,

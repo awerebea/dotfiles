@@ -81,12 +81,12 @@ return {
         map("n", "ghp", gs.preview_hunk, { desc = "Preview Hunk" })
         map("n", "ghi", gs.preview_hunk_inline, { desc = "Preview Hunk Inline" })
         map("n", "ghb", function()
-          gs.blame_line { full = true }
+          gs.blame_line({ full = true })
         end, { desc = "Blame Line" })
         map("n", "ghtb", gs.toggle_current_line_blame, { desc = "Toggle Line Blame" })
         map("n", "ghd", gs.diffthis, { desc = "Diff This" })
         map("n", "ghD", function()
-          gs.diffthis "~"
+          gs.diffthis("~")
         end, { desc = "Diff This ~" })
         map("n", "ghtd", gs.toggle_deleted, { desc = "Toggle Delete" })
 

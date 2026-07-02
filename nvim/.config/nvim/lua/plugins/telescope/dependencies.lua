@@ -12,7 +12,7 @@ return {
     },
     config = true,
     init = function()
-      require("telescope").load_extension "aerial"
+      require("telescope").load_extension("aerial")
     end,
   },
   {
@@ -36,7 +36,7 @@ return {
     },
     cmd = "ProjectRoot",
     config = function()
-      require("project_nvim").setup {
+      require("project_nvim").setup({
         -- Manual mode doesn't automatically change your root directory, so you have
         -- the option to manually do so using `:ProjectRoot` command.
         manual_mode = true,
@@ -71,8 +71,8 @@ return {
 
         -- Path where project.nvim will store the project history for use in
         -- telescope
-        datapath = vim.fn.stdpath "data",
-      }
+        datapath = vim.fn.stdpath("data"),
+      })
       vim.keymap.set(
         "n",
         "<leader>pr",
@@ -81,7 +81,7 @@ return {
       )
     end,
     init = function()
-      require("telescope").load_extension "projects"
+      require("telescope").load_extension("projects")
     end,
   },
   {
@@ -97,8 +97,8 @@ return {
       { "<leader>ga", "ga", desc = "Show the char code" },
     },
     config = function()
-      require("textcase").setup {}
-      require("telescope").load_extension "textcase"
+      require("textcase").setup({})
+      require("telescope").load_extension("textcase")
     end,
   },
   {
@@ -184,7 +184,7 @@ return {
       },
     },
     init = function()
-      require("telescope").load_extension "macrothis"
+      require("telescope").load_extension("macrothis")
     end,
   },
 }

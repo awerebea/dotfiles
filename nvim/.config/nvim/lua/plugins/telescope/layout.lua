@@ -1,6 +1,6 @@
 -- Custom telescope layout using native nvim_open_win borders.
 -- Bypasses plenary's text-based border system which is broken in Neovim 0.13.
-local Layout = require "telescope.pickers.layout"
+local Layout = require("telescope.pickers.layout")
 
 local function get_line_count()
   local n = vim.o.lines - vim.o.cmdheight
@@ -26,8 +26,8 @@ local function make_win(enter, opts, hl_normal, hl_border, hl_title, border)
     relative = "editor",
     width = opts.width,
     height = opts.height,
-    row = opts.line - 2,  -- opts.line is 1-indexed content row; border corner is 1 above that
-    col = opts.col - 2,   -- opts.col is 1-indexed content col; border corner is 1 to the left
+    row = opts.line - 2, -- opts.line is 1-indexed content row; border corner is 1 above that
+    col = opts.col - 2, -- opts.col is 1-indexed content col; border corner is 1 to the left
     border = border,
     zindex = 100,
     focusable = opts.focusable,
@@ -45,7 +45,7 @@ local function make_win(enter, opts, hl_normal, hl_border, hl_title, border)
     "EndOfBuffer:" .. hl_normal,
   }, ",")
 
-  return Layout.Window {
+  return Layout.Window({
     bufnr = bufnr,
     winid = winid,
     border = {
@@ -55,7 +55,7 @@ local function make_win(enter, opts, hl_normal, hl_border, hl_title, border)
         end
       end,
     },
-  }
+  })
 end
 
 local function destroy_win(win)
@@ -85,29 +85,38 @@ end
 return function(picker)
   local border = get_border()
 
-  return Layout {
+  return Layout({
     picker = picker,
 
     mount = function(self)
       local o = picker:get_window_options(vim.o.columns, get_line_count())
 
       self.results = make_win(
-        false, o.results,
-        "TelescopeResultsNormal", "TelescopeResultsBorder", "TelescopeResultsTitle",
+        false,
+        o.results,
+        "TelescopeResultsNormal",
+        "TelescopeResultsBorder",
+        "TelescopeResultsTitle",
         border
       )
 
       if o.preview then
         self.preview = make_win(
-          false, o.preview,
-          "TelescopePreviewNormal", "TelescopePreviewBorder", "TelescopePreviewTitle",
+          false,
+          o.preview,
+          "TelescopePreviewNormal",
+          "TelescopePreviewBorder",
+          "TelescopePreviewTitle",
           border
         )
       end
 
       self.prompt = make_win(
-        true, o.prompt,
-        "TelescopePromptNormal", "TelescopePromptBorder", "TelescopePromptTitle",
+        true,
+        o.prompt,
+        "TelescopePromptNormal",
+        "TelescopePromptBorder",
+        "TelescopePromptTitle",
         border
       )
     end,
@@ -136,5 +145,5 @@ return function(picker)
       reposition(self.preview, o.preview)
       reposition(self.prompt, o.prompt)
     end,
-  }
+  })
 end

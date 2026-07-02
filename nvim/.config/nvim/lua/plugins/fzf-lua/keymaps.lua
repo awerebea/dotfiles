@@ -6,9 +6,9 @@ function M.setup()
   end, { desc = "Find files" })
 
   vim.keymap.set("v", "<leader>ff", function()
-    require("telescope.builtin").find_files {
+    require("telescope.builtin").find_files({
       default_text = require("utils").get_visual_selection_text()[1],
-    }
+    })
   end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>fG", function()
@@ -20,7 +20,7 @@ function M.setup()
   end, { desc = "Live grep" })
 
   vim.keymap.set("n", "<leader>fg", function()
-    require("fzf-lua").grep { search = "" }
+    require("fzf-lua").grep({ search = "" })
   end, { desc = "Fuzzy Grep" })
 
   vim.keymap.set("n", "<leader>fw", function()

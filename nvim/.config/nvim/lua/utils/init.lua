@@ -1,7 +1,7 @@
 local M = {}
 
 local function default_on_open(term)
-  vim.cmd "stopinsert"
+  vim.cmd("stopinsert")
   vim.api.nvim_buf_set_keymap(
     term.bufnr,
     "n",
@@ -20,7 +20,7 @@ function M.open_term(cmd, opts)
   opts.dir = opts.dir or "git_dir"
 
   local Terminal = require("toggleterm.terminal").Terminal
-  local new_term = Terminal:new {
+  local new_term = Terminal:new({
     cmd = cmd,
     dir = opts.dir,
     auto_scroll = false,
@@ -28,17 +28,17 @@ function M.open_term(cmd, opts)
     start_in_insert = true,
     on_open = opts.on_open,
     on_exit = opts.on_exit,
-  }
+  })
   new_term:open(opts.size, opts.direction)
 end
 
 -- Returns true if current directory is a git worktree
 function M.is_git_worktree()
-  local _, ret, _ = require("telescope.utils").get_os_command_output {
+  local _, ret, _ = require("telescope.utils").get_os_command_output({
     "git",
     "rev-parse",
     "--is-inside-work-tree",
-  }
+  })
   if ret == 0 then
     return true
   end
@@ -46,16 +46,16 @@ function M.is_git_worktree()
 end
 
 function M.git_diff_picker(opts)
-  opts = opts or require("telescope.themes").get_dropdown {}
-  local pickers = require "telescope.pickers"
-  local finders = require "telescope.finders"
+  opts = opts or require("telescope.themes").get_dropdown({})
+  local pickers = require("telescope.pickers")
+  local finders = require("telescope.finders")
   local conf = require("telescope.config").values
   local list = nil
 
   if M.is_git_worktree() then
-    list = vim.fn.systemlist "git diff --name-only"
+    list = vim.fn.systemlist("git diff --name-only")
   else
-    print "Not a git worktree."
+    print("Not a git worktree.")
     return
   end
 
@@ -69,7 +69,7 @@ function M.git_diff_picker(opts)
   pickers
     .new(opts, {
       prompt_title = "Git Diff Files",
-      finder = finders.new_table { results = list },
+      finder = finders.new_table({ results = list }),
       sorter = conf.generic_sorter(opts),
     })
     :find()
@@ -77,14 +77,14 @@ end
 
 -- Delete the current file
 function M.delete_current_file()
-  local current_buffer = vim.fn.bufnr "%" -- Get the buffer number of the current buffer
-  local current_file = vim.fn.expand "%:p" -- Get the full path of the current file
+  local current_buffer = vim.fn.bufnr("%") -- Get the buffer number of the current buffer
+  local current_file = vim.fn.expand("%:p") -- Get the full path of the current file
 
   -- Close the buffer associated with the current file
   local success, bufdel = pcall(require, "bufdel")
   if success then
     bufdel.setup()
-    vim.api.nvim_command "BufDel!" -- Delete buffer with nvim-bufdel
+    vim.api.nvim_command("BufDel!") -- Delete buffer with nvim-bufdel
   else
     vim.api.nvim_command(current_buffer .. "bdel") -- Buffer deletion command
   end
@@ -109,7 +109,7 @@ function M.switch_project()
       ["ctrl-d"] = function(x)
         local choice = vim.fn.confirm("Delete '" .. #x .. "' projects? ", "&Yes\n&No", 2)
         if choice == 1 then
-          local history = require "project_nvim.utils.history"
+          local history = require("project_nvim.utils.history")
           for _, v in ipairs(x) do
             history.delete_project(v)
           end
@@ -120,7 +120,7 @@ function M.switch_project()
 end
 
 function M.is_windows()
-  return vim.fn.has "win32" == 1 or vim.fn.has "win64" == 1
+  return vim.fn.has("win32") == 1 or vim.fn.has("win64") == 1
 end
 
 function M.path_separator()
@@ -189,8 +189,8 @@ end
 ---
 --- @return string[]|nil lines The selected text as an array of lines.
 function M.get_visual_selection_text()
-  local _, srow, scol = unpack(vim.fn.getpos "v")
-  local _, erow, ecol = unpack(vim.fn.getpos ".")
+  local _, srow, scol = unpack(vim.fn.getpos("v"))
+  local _, erow, ecol = unpack(vim.fn.getpos("."))
 
   -- visual line mode
   if vim.fn.mode() == "V" then

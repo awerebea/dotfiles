@@ -40,9 +40,9 @@ vim.keymap.set("c", "w!!", "execute 'silent! write !sudo tee % >/dev/null' <bar>
 vim.keymap.set("n", "<Esc><Esc>", "<Cmd>nohlsearch<CR>")
 
 -- paste over without overwriting register
-vim.cmd [[
+vim.cmd([[
   xnoremap <expr> p 'pgv"'.v:register.'y'
-]]
+]])
 
 -- send changed text segment to black hole
 vim.keymap.set({ "n", "v" }, "c", '"_c')
@@ -55,7 +55,7 @@ vim.keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
 -- split left
 SplitLeft = function()
   vim.opt.splitright = false
-  vim.cmd "vsplit"
+  vim.cmd("vsplit")
   vim.opt.splitright = true
 end
 vim.keymap.set("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
@@ -63,7 +63,7 @@ vim.keymap.set("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
 -- split above
 SplitAbove = function()
   vim.opt.splitbelow = false
-  vim.cmd "split"
+  vim.cmd("split")
   vim.opt.splitbelow = true
 end
 vim.keymap.set("n", "<leader><M-->", "<Cmd>lua SplitAbove()<CR>")
@@ -103,12 +103,12 @@ vim.keymap.set(
   { desc = "Close all tabs except the current one" }
 )
 -- Switch to last tab
-vim.cmd [[
+vim.cmd([[
 if !exists('g:lasttab')
   let g:lasttab = 1
 endif
 autocmd TabLeave * let g:lasttab = tabpagenr()
-]]
+]])
 vim.keymap.set(
   "n",
   "<leader>tt",
@@ -137,7 +137,7 @@ vim.keymap.set(
 )
 
 -- Jump to closed folds
-vim.cmd [[
+vim.cmd([[
   function! NextClosedFold(dir)
   let cmd = 'norm!z'..a:dir
   let view = winsaveview()
@@ -159,7 +159,7 @@ vim.cmd [[
           let n -= 1
       endwhile
   endfunction
-]]
+]])
 
 --stylua: ignore
 vim.keymap.set("n", "zJ", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
@@ -167,7 +167,7 @@ vim.keymap.set("n", "zJ", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr
 vim.keymap.set("n", "zK", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
 -- Insert empty line above/below (functions from vim-unimpaired)
-vim.cmd [[
+vim.cmd([[
 function! UnimpairedBlankUp() abort
   let cmd = 'put!=repeat(nr2char(10), v:count1)|silent '']+'
   if &modifiable
@@ -183,7 +183,7 @@ function! UnimpairedBlankDown() abort
   endif
   return cmd
 endfunction
-]]
+]])
 vim.keymap.set("n", "[<Space>", ":<C-U>exe UnimpairedBlankUp()<CR>")
 vim.keymap.set("n", "]<Space>", ":<C-U>exe UnimpairedBlankDown()<CR>")
 
@@ -214,7 +214,7 @@ vim.keymap.set(
 
 -- Auto Indent the Current Empty Line
 vim.keymap.set("n", "i", function()
-  if #vim.fn.getline "." == 0 then
+  if #vim.fn.getline(".") == 0 then
     return [["_cc]]
   else
     return "i"
@@ -222,14 +222,14 @@ vim.keymap.set("n", "i", function()
 end, { expr = true })
 
 -- Copy current file name/full path/dir name/dir path
-vim.cmd [[
+vim.cmd([[
   command! CopyFileName let @+ = expand("%:t")
   command! CopyFilePath let @+ = expand("%:p")
   command! CopyFileRelPath let @+ = (expand("%:h") . "/" . expand("%:t"))
   command! CopyDirName let @+ = expand("%:h:t")
   command! CopyDirPath let @+ = expand("%:p:h")
   command! CopyDirRelPath let @+ = expand("%:h")
-]]
+]])
 vim.keymap.set(
   "n",
   "<leader>cpfn",
@@ -276,16 +276,16 @@ vim.keymap.set({ "n", "i" }, "<M-CR>", "<Cmd>call append(line('.') - 1, repeat([
 
 -- Blazingly fast macros!
 -- (https://www.reddit.com/r/neovim/comments/1cgoz22/blazingly_fast_macros)
-vim.cmd [[
+vim.cmd([[
   nnoremap @ <Cmd>set lazyredraw <bar> execute "noautocmd norm! " . v:count1 . "@" . getcharstr() <bar> set nolazyredraw<CR>
   xnoremap @ :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! " . v:count1 . "@" . getcharstr()<bar> set nolazyredraw<CR>
   nnoremap Q <Cmd>set lazyredraw <bar> execute "noautocmd norm! Q" <bar> set nolazyredraw<cr>
   xnoremap Q :<C-U>set lazyredraw <bar> execute "noautocmd '<,'>norm! Q" <bar> set nolazyredraw<cr>
-]]
+]])
 
 -- Yank the line on `dd` only if it is non-empty
 vim.keymap.set("n", "dd", function()
-  if vim.fn.getline("."):match "^%s*$" then
+  if vim.fn.getline("."):match("^%s*$") then
     return '"_dd'
   end
   return "dd"
@@ -297,7 +297,7 @@ vim.keymap.set("x", ".", ":norm .<CR>", { silent = false })
 vim.keymap.set("x", "@", ":norm @q<CR>", { silent = false })
 
 -- Cmd line navigation
-vim.cmd [[set cedit=<C-y>]]
+vim.cmd([[set cedit=<C-y>]])
 vim.keymap.set("c", "<C-a>", "<Home>", { desc = "move to start" })
 vim.keymap.set("c", "<M-^>", "<Home>", { desc = "move to start" })
 vim.keymap.set("c", "<C-b>", "<Left>", { desc = "move left" })

@@ -25,13 +25,13 @@ return {
       },
       cache_enabled = 1,
     }
-    local utils = require "yanky.utils"
-    local mapping = require "yanky.telescope.mapping"
-    require("yanky").setup {
+    local utils = require("yanky.utils")
+    local mapping = require("yanky.telescope.mapping")
+    require("yanky").setup({
       ring = {
         history_length = 1000,
         storage = "sqlite", -- shada, sqlite or memory
-        storage_path = vim.fn.stdpath "data" .. "/databases/yanky.db", -- Only for sqlite storage
+        storage_path = vim.fn.stdpath("data") .. "/databases/yanky.db", -- Only for sqlite storage
         sync_with_numbered_registers = true,
         cancel_event = "update",
         ignore_registers = { "_" },
@@ -42,14 +42,14 @@ return {
           mappings = {
             default = mapping.set_register(utils.get_default_register()),
             i = {
-              ["<c-g>"] = mapping.put "p",
-              ["<c-k>"] = mapping.put "P",
+              ["<c-g>"] = mapping.put("p"),
+              ["<c-k>"] = mapping.put("P"),
               ["<c-x>"] = mapping.delete(),
               ["<c-r>"] = mapping.set_register(utils.get_default_register()),
             },
             n = {
-              p = mapping.put "p",
-              P = mapping.put "P",
+              p = mapping.put("p"),
+              P = mapping.put("P"),
               d = mapping.delete(),
               r = mapping.set_register(utils.get_default_register()),
             },
@@ -70,8 +70,8 @@ return {
       textobj = {
         enabled = true,
       },
-    }
-    require("telescope").load_extension "git_worktree"
+    })
+    require("telescope").load_extension("git_worktree")
     vim.keymap.set({ "n", "x" }, "y", "<Plug>(YankyYank)")
     vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
     vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")

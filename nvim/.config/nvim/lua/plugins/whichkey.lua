@@ -22,15 +22,15 @@ return {
       {
         "<leader>?",
         function()
-          require("which-key").show { global = false }
+          require("which-key").show({ global = false })
         end,
         desc = "Buffer Local Keymaps (which-key)",
       },
     },
     config = function(_, opts)
-      local wk = require "which-key"
+      local wk = require("which-key")
       wk.setup(opts)
-      wk.add {
+      wk.add({
         -- stylua: ignore
         {
           mode = { "n", "v" },
@@ -107,7 +107,7 @@ return {
           {"<leader>i", desc = "Select Harpoon item" },
           -- }}}
         },
-      }
+      })
     end,
   },
 }
