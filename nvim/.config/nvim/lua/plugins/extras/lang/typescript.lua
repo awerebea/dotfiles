@@ -19,8 +19,8 @@ return {
           lsp_utils.on_attach(function(client, buffer)
             -- stylua: ignore
             if client.name == "tsserver" then
-              vim.keymap.set("n", "<leader>co", "TypescriptOrganizeImports", { buffer = buffer, desc = "Organize Imports" })
-              vim.keymap.set("n", "<leader>cR", "TypescriptRenameFile", { desc = "Rename File", buffer = buffer })
+              vim.keymap.set("n", "<leader>co", "<Cmd>TypescriptOrganizeImports<CR>", { buffer = buffer, desc = "Organize Imports" })
+              vim.keymap.set("n", "<leader>cR", "<Cmd>TypescriptRenameFile<CR>", { buffer = buffer, desc = "Rename File" })
             end
           end)
           require("typescript").setup({ server = opts })
