@@ -19,11 +19,11 @@ function M.setup_always()
   -- {{{ advanced-git-search (telescope extension, no equivalent in other pickers)
   vim.keymap.set("n", "<leader>gcb", function()
     require("telescope").extensions.advanced_git_search.diff_branch_file()
-  end, { desc = "current file diff against other branch" })
+  end, { desc = "Current file diff against other branch" })
 
   vim.keymap.set("n", "<leader>gcs", function()
     require("telescope").extensions.advanced_git_search.show_custom_functions()
-  end, { desc = "show custom AdvancedGitSearch commands" })
+  end, { desc = "Show AdvancedGitSearch commands" })
   -- }}} advanced-git-search
 end
 
@@ -123,7 +123,7 @@ function M.setup()
 
   -- git commands
   vim.keymap.set("n", "<leader>glg", function()
-    -- require("telescope.builtin").git_commits()
+    -- Replacement for require("telescope.builtin").git_commits() using delta
     Delta_git_commits({
       git_command = {
         "git",
@@ -141,7 +141,7 @@ function M.setup()
   end, { desc = "Commits of current file in selected lines range" })
 
   vim.keymap.set("n", "<leader>glf", function()
-    -- require("telescope.builtin").git_bcommits()
+    -- Replacement for require("telescope.builtin").git_bcommits() using delta
     Delta_git_bcommits({
       git_command = {
         "git",
@@ -157,7 +157,7 @@ function M.setup()
   end, { desc = "Branches" })
 
   vim.keymap.set("n", "<leader>gst", function()
-    -- require("telescope.builtin").git_status()
+    -- Replacement for require("telescope.builtin").git_status() using delta
     Delta_git_status()
   end, { desc = "Git status (telescope)" })
 
@@ -167,7 +167,7 @@ function M.setup()
 
   vim.keymap.set("n", "<leader>gcf", function()
     require("telescope").extensions.advanced_git_search.diff_commit_file()
-  end, { desc = "current file Git history" })
+  end, { desc = "Current file Git history" })
 
   vim.keymap.set("n", "<leader>tu", function()
     require("telescope").extensions.undo.undo()
