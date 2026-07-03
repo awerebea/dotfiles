@@ -29,19 +29,22 @@ return {
         end,
       })
 
+      local telescope_actions = require("telescope.actions")
+      local telescope_actions_state = require("telescope.actions.state")
+
       -- Open one or more selected entries in the current window
       local select_one_or_multi = function(prompt_bufnr)
-        local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+        local picker = telescope_actions_state.get_current_picker(prompt_bufnr)
         local multi = picker:get_multi_selection()
         if not vim.tbl_isempty(multi) then
-          require("telescope.actions").close(prompt_bufnr)
+          telescope_actions.close(prompt_bufnr)
           for _, j in pairs(multi) do
             if j.path ~= nil then
               vim.cmd(string.format("%s %s", "edit", j.path))
             end
           end
         else
-          require("telescope.actions").select_default(prompt_bufnr)
+          telescope_actions.select_default(prompt_bufnr)
         end
       end
 
@@ -49,7 +52,7 @@ return {
       local get_item_path = function()
         -- Get the full path
         local file_path = nil
-        local content = require("telescope.actions.state").get_selected_entry()
+        local content = telescope_actions_state.get_selected_entry()
         if content == nil then
           return
         end
@@ -80,7 +83,7 @@ return {
       local open_terminal = function(prompt_bufnr)
         local file_dir = get_item_dirpath()
         -- Close the Telescope window
-        require("telescope.actions").close(prompt_bufnr)
+        telescope_actions.close(prompt_bufnr)
         require("utils").open_term(nil, { direction = "horizontal", size = 10, dir = file_dir })
       end
 
@@ -88,21 +91,22 @@ return {
       local copy_dirpath_of_selected_item = function(prompt_bufnr)
         local file_dir = get_item_dirpath()
         vim.fn.setreg("*", file_dir)
-        require("telescope.actions").close(prompt_bufnr)
+        telescope_actions.close(prompt_bufnr)
       end
 
       -- Copy the path to the selected item to the clipboard
       local copy_path_of_selected_item = function(prompt_bufnr)
         local file_path = get_item_path()
         vim.fn.setreg("*", file_path)
-        require("telescope.actions").close(prompt_bufnr)
+        telescope_actions.close(prompt_bufnr)
       end
 
       local telescope = require("telescope")
       local icons = require("config.icons")
+      local telescope_previewers = require("telescope.previewers")
 
       -- Capture before telescope.setup() overwrites config.values.
-      local default_buffer_previewer_maker = require("telescope.previewers").buffer_previewer_maker
+      local default_buffer_previewer_maker = telescope_previewers.buffer_previewer_maker
 
       -- Custom maker: convert UTF-16 LE/BE files to UTF-8 before loading into
       -- the preview buffer. Without this, bufload sees null bytes and renders
@@ -129,75 +133,80 @@ return {
         end
         default_buffer_previewer_maker(filepath, bufnr, opts)
       end
-      local actions = require("telescope.actions")
+      local telescope_builtin = require("telescope.builtin")
       local actions_layout = require("telescope.actions.layout")
       local path_actions = require("telescope_insert_path")
       local lga_actions = require("telescope-live-grep-args.actions")
+      local trouble_telescope = require("trouble.sources.telescope")
 
       local mappings = {
         i = {
-          ["<C-x>"] = actions.delete_buffer,
-          ["<C-j>"] = actions.move_selection_next,
-          ["<C-k>"] = actions.move_selection_previous,
-          ["<C-n>"] = actions.move_selection_next,
-          ["<M-j>"] = actions.cycle_history_next,
-          ["<M-k>"] = actions.cycle_history_prev,
-          ["<M-n>"] = actions.cycle_history_next,
-          ["<M-p>"] = actions.cycle_history_prev,
+          ["<C-x>"] = telescope_actions.delete_buffer,
+          ["<C-j>"] = telescope_actions.move_selection_next,
+          ["<C-k>"] = telescope_actions.move_selection_previous,
+          ["<C-n>"] = telescope_actions.move_selection_next,
+          ["<M-j>"] = telescope_actions.cycle_history_next,
+          ["<M-k>"] = telescope_actions.cycle_history_prev,
+          ["<M-n>"] = telescope_actions.cycle_history_next,
+          ["<M-p>"] = telescope_actions.cycle_history_prev,
           ["<C-p>"] = actions_layout.toggle_preview,
-          ["<C-q>"] = actions.send_to_qflist + actions.open_qflist, -- send all to quickfixlist
-          ["<M-q>"] = actions.send_selected_to_qflist + actions.open_qflist, -- send selected to quickfixlist
-          ["<C-c"] = actions.close,
-          ["<Esc><Esc>"] = actions.close,
-          ["<C-t>"] = require("trouble.sources.telescope").open,
+          ["<C-q>"] = telescope_actions.send_to_qflist + telescope_actions.open_qflist, -- send all to quickfixlist
+          ["<M-q>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist, -- send selected to quickfixlist
+          ["<C-c"] = telescope_actions.close,
+          ["<Esc><Esc>"] = telescope_actions.close,
+          ["<C-t>"] = trouble_telescope.open,
           ["<C-h>"] = function(prompt_bufnr)
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
           ["<C-M-h>"] = function(prompt_bufnr)
-            telescope.extensions.hop._hop(prompt_bufnr, { callback = actions.toggle_selection })
+            telescope.extensions.hop._hop(
+              prompt_bufnr,
+              { callback = telescope_actions.toggle_selection }
+            )
           end,
           -- custom hop loop to multi selects and sending selected entries to quickfix list
           ["<C-l>"] = function(prompt_bufnr)
             local opts = {
-              callback = actions.toggle_selection,
-              loop_callback = actions.send_selected_to_qflist + actions.open_qflist,
+              callback = telescope_actions.toggle_selection,
+              loop_callback = telescope_actions.send_selected_to_qflist
+                + telescope_actions.open_qflist,
             }
-            require("telescope").extensions.hop._hop_loop(prompt_bufnr, opts)
+            telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
           ["<M-a>"] = lga_actions.quote_prompt(),
           ["<M-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
           ["<M-i>"] = lga_actions.quote_prompt({ postfix = " --no-ignore " }),
           ["<C-o>"] = function(prompt_bufnr)
-            require("telescope.actions").select_default(prompt_bufnr)
-            require("telescope.builtin").resume()
+            telescope_actions.select_default(prompt_bufnr)
+            telescope_builtin.resume()
           end,
           ["<CR>"] = select_one_or_multi,
-          ["<C-g>"] = actions.to_fuzzy_refine,
+          ["<C-g>"] = telescope_actions.to_fuzzy_refine,
           ["<C-z>"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
-          ["<M-h>"] = actions.results_scrolling_left,
-          ["<M-l>"] = actions.results_scrolling_right,
-          ["<C-f>"] = actions.results_scrolling_down,
-          ["<C-b>"] = actions.results_scrolling_up,
-          ["<M-f>"] = actions.preview_scrolling_down,
-          ["<M-b>"] = actions.preview_scrolling_up,
-          ["<C-/>"] = actions.which_key,
-          ["<C-_>"] = actions.which_key, -- keys from pressing <C-/>
+          ["<M-h>"] = telescope_actions.results_scrolling_left,
+          ["<M-l>"] = telescope_actions.results_scrolling_right,
+          ["<C-f>"] = telescope_actions.results_scrolling_down,
+          ["<C-b>"] = telescope_actions.results_scrolling_up,
+          ["<M-f>"] = telescope_actions.preview_scrolling_down,
+          ["<M-b>"] = telescope_actions.preview_scrolling_up,
+          ["<C-/>"] = telescope_actions.which_key,
+          ["<C-_>"] = telescope_actions.which_key, -- keys from pressing <C-/>
         },
         n = {
           ["<C-p>"] = actions_layout.toggle_preview,
-          ["dd"] = actions.delete_buffer,
-          ["<C-t>"] = require("trouble.sources.telescope").open,
+          ["dd"] = telescope_actions.delete_buffer,
+          ["<C-t>"] = trouble_telescope.open,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
           ["z"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
-          ["<C-f>"] = actions.results_scrolling_down,
-          ["<C-b>"] = actions.results_scrolling_up,
-          ["<M-f>"] = actions.preview_scrolling_down,
-          ["<M-b>"] = actions.preview_scrolling_up,
+          ["<C-f>"] = telescope_actions.results_scrolling_down,
+          ["<C-b>"] = telescope_actions.results_scrolling_up,
+          ["<M-f>"] = telescope_actions.preview_scrolling_down,
+          ["<M-b>"] = telescope_actions.preview_scrolling_up,
         },
       }
 
@@ -332,32 +341,35 @@ return {
             -- jump to entry where hoop loop was started from
             reset_selection = true,
           },
-          undo = {
-            layout_strategy = "vertical",
-            layout_config = {
-              vertical = {
-                mirror = true,
+          undo = (function()
+            local undo_actions = require("telescope-undo.actions")
+            return {
+              layout_strategy = "vertical",
+              layout_config = {
+                vertical = {
+                  mirror = true,
+                },
               },
-            },
-            -- use_delta = true,
-            use_custom_command = { "bash", "-c", "echo '$DIFF' | delta" },
-            side_by_side = true,
-            vim_diff_opts = { ctxlen = vim.o.scrolloff },
-            entry_format = "state #$ID, $STAT, $TIME",
-            time_format = "",
-            mappings = {
-              i = {
-                ["<C-a>"] = require("telescope-undo.actions").yank_additions,
-                ["<C-d>"] = require("telescope-undo.actions").yank_deletions,
-                ["<cr>"] = require("telescope-undo.actions").restore,
+              -- use_delta = true,
+              use_custom_command = { "bash", "-c", "echo '$DIFF' | delta" },
+              side_by_side = true,
+              vim_diff_opts = { ctxlen = vim.o.scrolloff },
+              entry_format = "state #$ID, $STAT, $TIME",
+              time_format = "",
+              mappings = {
+                i = {
+                  ["<C-a>"] = undo_actions.yank_additions,
+                  ["<C-d>"] = undo_actions.yank_deletions,
+                  ["<cr>"] = undo_actions.restore,
+                },
+                n = {
+                  ["<C-a>"] = undo_actions.yank_additions,
+                  ["<C-d>"] = undo_actions.yank_deletions,
+                  ["<cr>"] = undo_actions.restore,
+                },
               },
-              n = {
-                ["<C-a>"] = require("telescope-undo.actions").yank_additions,
-                ["<C-d>"] = require("telescope-undo.actions").yank_deletions,
-                ["<cr>"] = require("telescope-undo.actions").restore,
-              },
-            },
-          },
+            }
+          end)(),
           macrothis = {
             mappings = {},
             -- <CR>   Load selected entry into register,
@@ -393,7 +405,7 @@ return {
             },
           },
           action = function(match)
-            local picker = require("telescope.actions.state").get_current_picker(prompt_bufnr)
+            local picker = telescope_actions_state.get_current_picker(prompt_bufnr)
             picker:set_selection(match.pos[1] - 1)
           end,
         })
@@ -418,8 +430,7 @@ return {
       telescope.load_extension("advanced_git_search")
 
       -- this is a hack to add menufacture items to all the builtin pickers
-      local telescope_builtin = require("telescope.builtin")
-      local menufacture = require("telescope").extensions.menufacture
+      local menufacture = telescope.extensions.menufacture
       -- this menu items will be present in all the pickers
       local global_menu_items = {
         ["change cwd to the current file dir"] = function(options, callback)
@@ -488,8 +499,6 @@ return {
       vim.keymap.set("n", "<leader>ka", function()
         QuickFixOpenAll()
       end, { noremap = true, silent = false, desc = "Open all files from QuickFix" })
-
-      local telescope_previewers = require("telescope.previewers")
 
       local delta_commits = telescope_previewers.new_termopen_previewer({
         get_command = function(entry)

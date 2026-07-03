@@ -28,102 +28,107 @@ function M.setup_always()
 end
 
 function M.setup()
+  local telescope_builtin = require("telescope.builtin")
+  local telescope = require("telescope")
+  local utils = require("utils")
+  local pickers = require("plugins.telescope.telescopePickers")
+
   vim.keymap.set("n", "<leader>ff", function()
-    require("telescope.builtin").find_files()
+    telescope_builtin.find_files()
   end, { desc = "Find files" })
 
   vim.keymap.set("v", "<leader>ff", function()
-    require("telescope.builtin").find_files({
-      default_text = require("utils").get_visual_selection_text()[1],
+    telescope_builtin.find_files({
+      default_text = utils.get_visual_selection_text()[1],
     })
   end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>f/", function()
-    require("telescope.builtin").live_grep()
+    telescope_builtin.live_grep()
   end, { desc = "Live grep" })
 
   vim.keymap.set("n", "<leader>fw", function()
-    require("telescope.builtin").grep_string()
+    telescope_builtin.grep_string()
   end, { desc = "Find word under cursor" })
 
   vim.keymap.set("v", "<leader>fw", function()
-    require("telescope.builtin").grep_string({
-      search = require("utils").get_visual_selection_text()[1],
+    telescope_builtin.grep_string({
+      search = utils.get_visual_selection_text()[1],
     })
   end, { desc = "Find selection" })
 
   vim.keymap.set({ "n", "x" }, "<leader>ft", function()
-    require("telescope.builtin").builtin()
+    telescope_builtin.builtin()
   end, { desc = "Telescope" })
 
   vim.keymap.set("n", "<leader>//", function()
-    require("telescope.builtin").current_buffer_fuzzy_find()
+    telescope_builtin.current_buffer_fuzzy_find()
   end, { desc = "Search in current buffer (fuzzy)" })
 
   vim.keymap.set("n", "<leader>/?", function()
-    require("telescope.builtin").live_grep({
+    telescope_builtin.live_grep({
       search_dirs = { vim.api.nvim_buf_get_name(0) },
       prompt_title = "Grep in Buffer",
     })
   end, { desc = "Grep in current buffer (exact)" })
 
   vim.keymap.set("n", "<leader>fG", function()
-    local ok = pcall(require("telescope.builtin").git_files, {})
+    local ok = pcall(telescope_builtin.git_files, {})
     if not ok then
-      require("telescope.builtin").find_files()
+      telescope_builtin.find_files()
     end
   end, { desc = "Find Git managed files" })
 
   vim.keymap.set("n", "<leader>fg", function()
-    require("telescope.builtin").grep_string({
+    telescope_builtin.grep_string({
       search = "",
       only_sort_text = true,
     })
   end, { desc = "Fuzzy grep" })
 
   vim.keymap.set("n", "<leader><CR>", function()
-    require("telescope.builtin").buffers()
+    telescope_builtin.buffers()
   end, { desc = "Buffers" })
 
   vim.keymap.set("n", "<leader>fh", function()
-    require("telescope.builtin").help_tags()
+    telescope_builtin.help_tags()
   end, { desc = "Help tags" })
 
   vim.keymap.set("n", "<leader>fSd", function()
-    require("plugins.telescope.telescopePickers").prettyDocumentSymbols()
+    pickers.prettyDocumentSymbols()
   end, { desc = "Document symbols" })
 
   vim.keymap.set("n", "<leader>fSw", function()
-    require("plugins.telescope.telescopePickers").prettyWorkspaceSymbols()
+    pickers.prettyWorkspaceSymbols()
   end, { desc = "Workspace symbols" })
 
   vim.keymap.set("n", "<leader><leader>c", function()
-    require("telescope.builtin").colorscheme({ enable_preview = true })
+    telescope_builtin.colorscheme({ enable_preview = true })
   end, { desc = "Colorscheme" })
 
   vim.keymap.set("n", "<leader>fo", function()
-    require("telescope.builtin").oldfiles()
+    telescope_builtin.oldfiles()
   end, { desc = "Recent files" })
 
   vim.keymap.set("n", "<leader>fr", function()
-    require("telescope.builtin").resume()
+    telescope_builtin.resume()
   end, { desc = "Resume" })
 
   vim.keymap.set("n", "<leader>fP", function()
-    require("telescope").extensions.project.project({ display_type = "minimal" })
+    telescope.extensions.project.project({ display_type = "minimal" })
   end, { desc = "Project extension" })
 
   vim.keymap.set("n", "<leader>fd", function()
-    require("telescope.builtin").diagnostics()
+    telescope_builtin.diagnostics()
   end, { desc = "Diagnostics" })
 
   vim.keymap.set("n", "<leader>fn", function()
-    require("telescope").extensions.notify.notify()
+    telescope.extensions.notify.notify()
   end, { desc = "Notifications" })
 
   -- git commands
   vim.keymap.set("n", "<leader>glg", function()
-    -- Replacement for require("telescope.builtin").git_commits() using delta
+    -- Replacement for telescope_builtin.git_commits() using delta
     Delta_git_commits({
       git_command = {
         "git",
@@ -137,11 +142,11 @@ function M.setup()
   end, { desc = "Commits" })
 
   vim.keymap.set("x", "<leader>glf", function()
-    require("telescope.builtin").git_bcommits_range()
+    telescope_builtin.git_bcommits_range()
   end, { desc = "Commits of current file in selected lines range" })
 
   vim.keymap.set("n", "<leader>glf", function()
-    -- Replacement for require("telescope.builtin").git_bcommits() using delta
+    -- Replacement for telescope_builtin.git_bcommits() using delta
     Delta_git_bcommits({
       git_command = {
         "git",
@@ -153,24 +158,24 @@ function M.setup()
   end, { desc = "Commits of current file" })
 
   vim.keymap.set("n", "<leader>gb", function()
-    require("telescope.builtin").git_branches()
+    telescope_builtin.git_branches()
   end, { desc = "Branches" })
 
   vim.keymap.set("n", "<leader>gst", function()
-    -- Replacement for require("telescope.builtin").git_status() using delta
+    -- Replacement for telescope_builtin.git_status() using delta
     Delta_git_status()
   end, { desc = "Git status (telescope)" })
 
   vim.keymap.set("n", "<leader>gss", function()
-    require("utils").git_diff_picker()
+    utils.git_diff_picker()
   end, { desc = "Changed files names only (telescope)" })
 
   vim.keymap.set("n", "<leader>gcf", function()
-    require("telescope").extensions.advanced_git_search.diff_commit_file()
+    telescope.extensions.advanced_git_search.diff_commit_file()
   end, { desc = "Current file Git history" })
 
   vim.keymap.set("n", "<leader>tu", function()
-    require("telescope").extensions.undo.undo()
+    telescope.extensions.undo.undo()
   end, { desc = "Undo tree" })
 end
 
