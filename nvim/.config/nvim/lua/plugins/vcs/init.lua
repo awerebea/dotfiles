@@ -9,12 +9,12 @@ return {
       "DiffviewToggleFiles",
     },
     keys = {
-      { "<leader>gdd", "<Cmd>DiffviewClose<CR>", desc = "close Diffview tab" },
-      { "<leader>gdf", "<Cmd>DiffviewFileHistory %<CR>", desc = "current file history" },
-      { "<leader>gdl", mode = "x", [[:DiffviewFileHistory<CR>]], desc = "selected lines history" },
-      { "<leader>gdF", ":DiffviewFileHistory ", desc = "diff history repo/file/rev" },
-      { "<leader>gdo", "<Cmd>DiffviewOpen<CR>", desc = "open current changes" },
-      { "<leader>gdO", ":DiffviewOpen ", desc = "open changes [rev] [ -- {paths...} ]" },
+      { "<leader>gdd", "<Cmd>DiffviewClose<CR>", desc = "Close Diffview tab" },
+      { "<leader>gdf", "<Cmd>DiffviewFileHistory %<CR>", desc = "Current file history" },
+      { "<leader>gdl", mode = "x", [[:DiffviewFileHistory<CR>]], desc = "Selected lines history" },
+      { "<leader>gdF", ":DiffviewFileHistory ", desc = "Diff history repo/file/rev" },
+      { "<leader>gdo", "<Cmd>DiffviewOpen<CR>", desc = "Open current changes" },
+      { "<leader>gdO", ":DiffviewOpen ", desc = "Open changes [rev] [-- {paths}]" },
     },
     config = true,
   },
@@ -25,7 +25,7 @@ return {
       integrations = { diffview = true },
     },
     keys = {
-      { "<leader>gsn", "<cmd>Neogit kind=tab<cr>", desc = "Git status (neogit)" },
+      { "<leader>gsn", "<cmd>Neogit kind=tab<cr>", desc = "Git status (Neogit)" },
     },
   },
   {
@@ -114,13 +114,10 @@ return {
       "GitConflictListQf",
     },
     keys = {
-      { "<leader>gcr", "<Cmd>GitConflictRefresh<CR>" },
-      { "<leader>gcq", "<Cmd>GitConflictListQf<CR>" },
+      { "<leader>gcr", "<Cmd>GitConflictRefresh<CR>", desc = "Refresh conflicts" },
+      { "<leader>gcq", "<Cmd>GitConflictListQf<CR>", desc = "Conflicts to quickfix" },
     },
-    opts = {},
-    config = function(_, opts)
-      require("git-conflict").setup(opts)
-    end,
+    config = true,
   },
   {
     "kdheepak/lazygit.nvim",
