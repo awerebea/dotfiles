@@ -318,7 +318,7 @@ return {
             theme = "dropdown",
           },
           hop = {
-          --stylua: ignore
+          -- stylua: ignore
             keys = {
               "a", "s", "d", "f", "g", "h", "j", "k", "l", ";",
               "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",

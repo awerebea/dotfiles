@@ -15,7 +15,7 @@ return {
     local directions = hop_hint.HintDirection
     local position = hop_hint.HintPosition
 
-    --stylua: ignore
+    -- stylua: ignore
     vim.keymap.set("", "<leader><leader>W", "<Cmd>HopWordMW<CR>", { desc = "Hop word (all windows)" })
     vim.keymap.set("", "<leader><leader>w", "<Cmd>HopWordAC<CR>", { desc = "Hop word forward" })
     vim.keymap.set("", "<leader><leader>b", "<Cmd>HopWordBC<CR>", { desc = "Hop word backward" })
@@ -60,9 +60,9 @@ return {
     vim.keymap.set("", "<C-s>", "<Cmd>HopChar2<CR>", { desc = "Hop 2-char" })
     vim.keymap.set("", "<leader><leader>J", "<Cmd>HopLineAC<CR>", { desc = "Hop line forward" })
     vim.keymap.set("", "<leader><leader>K", "<Cmd>HopLineBC<CR>", { desc = "Hop line backward" })
-    --stylua: ignore
+    -- stylua: ignore
     vim.keymap.set("", "<leader><leader>j", "<Cmd>HopVerticalAC<CR>", { desc = "Hop vertical forward" })
-    --stylua: ignore
+    -- stylua: ignore
     vim.keymap.set("", "<leader><leader>k", "<Cmd>HopVerticalBC<CR>", { desc = "Hop vertical backward" })
     vim.keymap.set("", "<leader><leader>/", "<Cmd>HopPattern<CR>", { desc = "Hop pattern" })
   end,

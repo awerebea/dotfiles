@@ -6,7 +6,7 @@ return {
     dashboard = {
       enabled = true,
       preset = {
-        --stylua: ignore
+        -- stylua: ignore
         keys = {
           { icon = "", key = "f", desc = "Find file", action = ":lua Snacks.dashboard.pick('files')" },
           { icon = "", key = "n", desc = "New file", action = ":enew | startinsert" },
@@ -21,7 +21,7 @@ return {
       },
       sections = {
         function()
-          --stylua: ignore
+          -- stylua: ignore
           return { header = table.concat(require("plugins.snacks.dashboard_logo")[2], "\n"), padding = 0 }
         end,
         function()

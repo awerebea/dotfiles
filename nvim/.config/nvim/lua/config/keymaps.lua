@@ -116,11 +116,11 @@ vim.keymap.set(
   { desc = "Switch to last tab" }
 )
 -- Toggle spell checking
---stylua: ignore
+-- stylua: ignore
 vim.keymap.set("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
---stylua: ignore
+-- stylua: ignore
 vim.keymap.set("n", "<leader>sce", "<Cmd>setlocal spell! spelllang=en_us<CR>", { desc = "Toggle spellcheck English" })
---stylua: ignore
+-- stylua: ignore
 vim.keymap.set("n", "<leader>scr", "<Cmd>setlocal spell! spelllang=ru_yo<CR>", { desc = "Toggle spellcheck Russian" })
 
 -- Toggle show non-visible white spaces
@@ -159,9 +159,9 @@ vim.cmd([[
   endfunction
 ]])
 
---stylua: ignore
+-- stylua: ignore
 vim.keymap.set("n", "zJ", ":<c-u>call RepeatCmd('call NextClosedFold(\"j\")')<cr>", { silent = true })
---stylua: ignore
+-- stylua: ignore
 vim.keymap.set("n", "zK", ":<c-u>call RepeatCmd('call NextClosedFold(\"k\")')<cr>", { silent = true })
 
 -- Insert empty line above/below (functions from vim-unimpaired)
