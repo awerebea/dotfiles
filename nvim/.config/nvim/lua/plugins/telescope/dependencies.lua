@@ -77,7 +77,7 @@ return {
         "n",
         "<leader>pr",
         "<Cmd>ProjectRoot<CR>",
-        { desc = "Set CWD to the root of the project." }
+        { desc = "Set CWD to the root of the project" }
       )
     end,
     init = function()
@@ -110,56 +110,56 @@ return {
         function()
           require("macrothis").delete()
         end,
-        desc = "delete",
+        desc = "Delete",
       },
       {
         "<Leader>kke",
         function()
           require("macrothis").edit()
         end,
-        desc = "edit",
+        desc = "Edit",
       },
       {
         "<Leader>kkl",
         function()
           require("macrothis").load()
         end,
-        desc = "load",
+        desc = "Load",
       },
       {
         "<Leader>kkn",
         function()
           require("macrothis").rename()
         end,
-        desc = "rename",
+        desc = "Rename",
       },
       {
         "<Leader>kkq",
         function()
           require("macrothis").quickfix()
         end,
-        desc = "run macro on all files in quickfix",
+        desc = "Run macro on all quickfix files",
       },
       {
         "<Leader>kkr",
         function()
           require("macrothis").run()
         end,
-        desc = "run macro",
+        desc = "Run macro",
       },
       {
         "<Leader>kks",
         function()
           require("macrothis").save()
         end,
-        desc = "save",
+        desc = "Save",
       },
       {
         "<Leader>kkx",
         function()
           require("macrothis").register()
         end,
-        desc = "edit register",
+        desc = "Edit register",
       },
       {
         "<Leader>kkp",
