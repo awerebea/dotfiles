@@ -136,7 +136,7 @@ return {
       vim.g.loaded_netrw = 1
       vim.g.loaded_netrwPlugin = 1
       -- change color for arrows in tree to light blue
-      vim.api.nvim_command("highlight NvimTreeIndentMarker guifg=#3FC5FF")
+      vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#3FC5FF" })
       require("nvim-tree").setup(opts)
       vim.keymap.set("n", "<leader>e", function()
         if vim.bo.filetype == "NvimTree" then
