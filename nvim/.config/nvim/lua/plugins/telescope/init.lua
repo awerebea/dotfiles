@@ -240,7 +240,7 @@ return {
           selection_caret = icons.ui.Forward .. " ",
           mappings = mappings,
           border = true,
-          borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
+          -- borderchars = { "─", "│", "─", "│", "┌", "┐", "┘", "└" },
           color_devicons = true,
           vimgrep_arguments = {
             "rg",
