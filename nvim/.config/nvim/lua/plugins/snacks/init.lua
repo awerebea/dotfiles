@@ -48,6 +48,12 @@ return {
         files = { hidden = true },
         grep = { hidden = true },
         grep_word = { hidden = true },
+        projects = {
+          dev = { "~/Github" },
+          max_depth = 5,
+          -- stylua: ignore
+          patterns = { ".project", ".git", "_darcs", ".hg", ".bzr", ".svn", "package.json", "Makefile" },
+        },
       },
       layouts = {
         default = {
