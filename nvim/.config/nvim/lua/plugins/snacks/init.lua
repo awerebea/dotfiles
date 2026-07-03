@@ -51,6 +51,7 @@ return {
         projects = {
           dev = { "~/Github" },
           max_depth = 5,
+          cwd = vim.fn.expand("~"),
           -- stylua: ignore
           patterns = { ".project", ".git", "_darcs", ".hg", ".bzr", ".svn", "package.json", "Makefile" },
         },
