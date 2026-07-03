@@ -1,7 +1,6 @@
 return {
   "awerebea/git-worktree.nvim", -- Temporary switch to fork
   branch = "main",
-  opts = {},
   config = function()
     require("telescope").load_extension("git_worktree")
     local Worktree = require("git-worktree")
@@ -27,25 +26,18 @@ return {
   },
   keys = {
     {
-      "<leader>gwm",
-      function()
-        require("telescope").extensions.git_worktree.git_worktrees({ path_display = {} })
-      end,
-      desc = "Manage",
-    },
-    {
       "<leader>gwt",
       function()
         require("telescope").extensions.git_worktree.git_worktrees({ path_display = {} })
       end,
-      desc = "Manage",
+      desc = "Manage worktrees",
     },
     {
       "<leader>gwa",
       function()
         require("telescope").extensions.git_worktree.create_git_worktree()
       end,
-      desc = "Add",
+      desc = "Add worktree",
     },
   },
 }
