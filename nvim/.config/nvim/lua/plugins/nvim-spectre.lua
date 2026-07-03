@@ -2,12 +2,12 @@ return {
   "windwp/nvim-spectre",
   cmd = { "Spectre" },
   keys = {
-    { "<leader>Ss", "<Cmd>Spectre<CR>", desc = "Replace in workplace" },
+    { "<leader>Ss", "<Cmd>Spectre<CR>", desc = "Replace in workspace" },
     -- search current word
     {
       "<leader>Sw",
       "<Cmd>lua require('spectre').open_visual({select_word=true})<CR>",
-      desc = "Replace word under curson in workplace",
+      desc = "Replace word under cursor in workspace",
     },
     -- search in current file
     {
