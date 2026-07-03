@@ -11,8 +11,9 @@ return {
     vim.api.nvim_set_hl(0, "HopNextKey2", { fg = "Black", bg = "#a4e84a" })
     vim.api.nvim_set_hl(0, "HopUnmatched", { fg = "#6c7086" })
 
-    local directions = require("hop.hint").HintDirection
-    local position = require("hop.hint").HintPosition
+    local hop_hint = require("hop.hint")
+    local directions = hop_hint.HintDirection
+    local position = hop_hint.HintPosition
 
     --stylua: ignore
     vim.keymap.set("", "<leader><leader>W", "<Cmd>HopWordMW<CR>", { desc = "Hop word (all windows)" })

@@ -22,8 +22,7 @@ function telescopePickers.getPathAndTail(fileName)
   local bufferNameTail = telescopeUtilities.path_tail(fileName)
 
   -- Now remove the tail from the Full Path
-  local pathWithoutTail =
-    require("plenary.strings").truncate(fileName, #fileName - #bufferNameTail, "")
+  local pathWithoutTail = plenaryStrings.truncate(fileName, #fileName - #bufferNameTail, "")
 
   -- Apply truncation and other pertaining modifications to the path according to Telescope path rules
   local pathToDisplay = telescopeUtilities.transform_path({
@@ -52,7 +51,9 @@ end
 function telescopePickers.prettyFilesPicker(pickerAndOptions)
   -- Parameter integrity check
   if type(pickerAndOptions) ~= "table" or pickerAndOptions.picker == nil then
-    print("Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }")
+    print(
+      "Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }"
+    )
 
     -- Avoid further computation
     return
@@ -126,12 +127,13 @@ function telescopePickers.prettyFilesPicker(pickerAndOptions)
   end
 
   -- Finally, check which file picker was requested and open it with its associated options
+  local telescope_builtin = require("telescope.builtin")
   if pickerAndOptions.picker == "find_files" then
-    require("telescope.builtin").find_files(options)
+    telescope_builtin.find_files(options)
   elseif pickerAndOptions.picker == "git_files" then
-    require("telescope.builtin").git_files(options)
+    telescope_builtin.git_files(options)
   elseif pickerAndOptions.picker == "oldfiles" then
-    require("telescope.builtin").oldfiles(options)
+    telescope_builtin.oldfiles(options)
   elseif pickerAndOptions.picker == "" then
     print("Picker was not specified")
   else
@@ -153,7 +155,9 @@ end
 function telescopePickers.prettyGrepPicker(pickerAndOptions)
   -- Parameter integrity check
   if type(pickerAndOptions) ~= "table" or pickerAndOptions.picker == nil then
-    print("Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }")
+    print(
+      "Incorrect argument format. Correct format is: { picker = 'desiredPicker', (optional) options = { ... } }"
+    )
 
     -- Avoid further computation
     return
@@ -256,10 +260,11 @@ function telescopePickers.prettyGrepPicker(pickerAndOptions)
   end
 
   -- Finally, check which file picker was requested and open it with its associated options
+  local telescope_builtin = require("telescope.builtin")
   if pickerAndOptions.picker == "live_grep" then
-    require("telescope.builtin").live_grep(options)
+    telescope_builtin.live_grep(options)
   elseif pickerAndOptions.picker == "grep_string" then
-    require("telescope.builtin").grep_string(options)
+    telescope_builtin.grep_string(options)
   elseif pickerAndOptions.picker == "" then
     print("Picker was not specified")
   else

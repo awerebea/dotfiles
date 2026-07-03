@@ -139,10 +139,11 @@ return {
       vim.api.nvim_set_hl(0, "NvimTreeIndentMarker", { fg = "#3FC5FF" })
       require("nvim-tree").setup(opts)
       vim.keymap.set("n", "<leader>e", function()
+        local nvim_tree_api = require("nvim-tree.api")
         if vim.bo.filetype == "NvimTree" then
-          require("nvim-tree.api").tree.close()
+          nvim_tree_api.tree.close()
         else
-          require("nvim-tree.api").tree.open()
+          nvim_tree_api.tree.open()
         end
       end, { desc = "Toggle NvimTree" })
       vim.keymap.set("n", "<leader><leader>e", function()
