@@ -74,7 +74,6 @@ return {
     require("CopilotChat").setup(opts)
 
     vim.keymap.set("n", "<leader>ccp", function()
-      local chat = require("CopilotChat")
       require("CopilotChat").select_prompt()
     end, { desc = "Prompt actions" })
   end,
