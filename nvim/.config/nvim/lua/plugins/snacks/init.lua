@@ -21,13 +21,21 @@ return {
       },
       sections = {
         function()
-          return {
-            header = table.concat(require("plugins.snacks.dashboard_logo")[2], "\n"),
-            padding = 2,
-          }
+          --stylua: ignore
+          return { header = table.concat(require("plugins.snacks.dashboard_logo")[2], "\n"), padding = 2 }
         end,
         { section = "keys", gap = 1, padding = 1 },
         { section = "startup" },
+        function()
+          local v = vim.version()
+          return {
+            text = {
+              { string.format("  Neovim v%d.%d.%d", v.major, v.minor, v.patch), "Comment" },
+            },
+            align = "center",
+            padding = 1,
+          }
+        end,
       },
     },
     bigfile = { enabled = true },
