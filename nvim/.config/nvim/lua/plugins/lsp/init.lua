@@ -119,17 +119,10 @@ return {
       ensure_installed = {
         "prettierd",
         "stylua",
-        -- "eslint_d",
-        -- "autopep8",
-        -- "flake8",
-        -- "yapf",
         "isort",
         "black",
         "mypy",
-        -- "pydocstyle",
-        -- "pylama",
         "pylint",
-        -- "tflint",
         "shellcheck",
         "shellharden",
         "beautysh",
@@ -138,7 +131,6 @@ return {
         "codelldb",
         "powershell-editor-services",
         "yamlfmt",
-        -- "yamlfix",
       },
     },
     config = function(_, opts)
@@ -194,29 +186,12 @@ return {
               -- "yaml",
             },
           }),
-          -- nls.builtins.formatting.yamlfix.with {
-          --   extra_args = {
-          --     "--config-file",
-          --     vim.loop.os_homedir() .. "/.yamlfix.toml",
-          --   },
-          -- },
           nls.builtins.formatting.yamlfmt,
           nls.builtins.formatting.stylua.with({
             extra_args = {
               -- "--column-width", "99"
             },
           }),
-          -- nls.builtins.diagnostics.eslint_d.with { -- js/ts linter
-          --   -- only enable eslint if root has .eslintrc.js
-          --   condition = function(utils)
-          --     return utils.root_has_file ".eslintrc.js" -- change file extension if you use something else
-          --   end,
-          -- },
-          -- nls.builtins.formatting.yapf.with {
-          --   extra_args = {
-          --     "--style={based_on_style: google, column_limit: 88, indent_width: 4}",
-          --   },
-          -- },
           nls.builtins.diagnostics.mypy.with({
             extra_args = {
               "--ignore-missing-imports",
@@ -231,12 +206,6 @@ return {
           nls.builtins.formatting.black.with({
             extra_args = { "--line-length=88" },
           }),
-          -- nls.builtins.diagnostics.ruff,
-          -- nls.builtins.formatting.autopep8,
-          -- nls.builtins.diagnostics.pylama,
-          -- nls.builtins.diagnostics.pylint,
-          -- nls.builtins.diagnostics.pydocstyle,
-          -- nls.builtins.diagnostics.flake8.with { extra_args = { "--max-line-length=88" } },
           nls.builtins.formatting.terraform_fmt,
           nls.builtins.formatting.shellharden,
           nls.builtins.formatting.shfmt.with({ extra_args = { "-i", "4" } }),
@@ -259,7 +228,6 @@ return {
   {
     "ErichDonGubler/lsp_lines.nvim",
     event = "VeryLazy",
-    -- config = true,
     config = function()
       require("lsp_lines").setup()
       -- toggle diagnostic lines
