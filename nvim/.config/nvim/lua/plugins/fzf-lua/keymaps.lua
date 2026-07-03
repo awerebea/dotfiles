@@ -1,8 +1,9 @@
 local M = {}
 
 function M.setup()
+  local fzf_lua = require("fzf-lua")
   vim.keymap.set("n", "<leader>ff", function()
-    require("fzf-lua").files()
+    fzf_lua.files()
   end, { desc = "Find files" })
 
   vim.keymap.set("v", "<leader>ff", function()
@@ -12,113 +13,58 @@ function M.setup()
   end, { desc = "Find files (with selected text)" })
 
   vim.keymap.set("n", "<leader>fG", function()
-    require("fzf-lua").git_files()
+    fzf_lua.git_files()
   end, { desc = "Find Git files" })
 
   vim.keymap.set("n", "<leader>f/", function()
-    require("fzf-lua").live_grep()
+    fzf_lua.live_grep()
   end, { desc = "Live grep" })
 
   vim.keymap.set("n", "<leader>fg", function()
-    require("fzf-lua").grep({ search = "" })
+    fzf_lua.grep({ search = "" })
   end, { desc = "Fuzzy Grep" })
 
   vim.keymap.set("n", "<leader>fw", function()
-    require("fzf-lua").grep_cword()
+    fzf_lua.grep_cword()
   end, { desc = "Find word under cursor" })
 
   vim.keymap.set("v", "<leader>fw", function()
-    require("fzf-lua").grep_visual()
+    fzf_lua.grep_visual()
   end, { desc = "Find selection" })
 
   vim.keymap.set("n", "<leader>fF", function()
-    require("fzf-lua").builtin()
+    fzf_lua.builtin()
   end, { desc = "FzfLua" })
 
   vim.keymap.set("n", "<leader>fr", function()
-    require("fzf-lua").resume()
+    fzf_lua.resume()
   end, { desc = "Resume" })
 
-  -- vim.keymap.set("n", "<leader>r", require("fzf-lua").registers, { desc = "Registers" })
+  vim.keymap.set("n", "<leader><CR>", fzf_lua.buffers, { desc = "FZF Buffers" })
 
-  -- vim.keymap.set("n", "<leader>m", require("fzf-lua").marks, { desc = "Marks" })
+  vim.keymap.set("v", "<leader>8", fzf_lua.grep_visual, { desc = "FZF Selection" })
 
-  -- vim.keymap.set("n", "<leader>k", require("fzf-lua").keymaps, { desc = "Keymaps" })
+  vim.keymap.set("n", "<leader>fh", fzf_lua.helptags, { desc = "Help Tags" })
 
-  vim.keymap.set("n", "<leader><CR>", require("fzf-lua").buffers, { desc = "FZF Buffers" })
+  vim.keymap.set("n", "<leader>//", fzf_lua.blines, { desc = "Search in current buffer (fuzzy)" })
 
-  vim.keymap.set("v", "<leader>8", require("fzf-lua").grep_visual, { desc = "FZF Selection" })
-
-  vim.keymap.set("n", "<leader>fw", require("fzf-lua").grep_cword, { desc = "FZF Word" })
-
-  vim.keymap.set("n", "<leader>fh", require("fzf-lua").helptags, { desc = "Help Tags" })
-
-  vim.keymap.set("n", "<leader>//", require("fzf-lua").blines, { desc = "Search in current buffer (fuzzy)" })
-
-  vim.keymap.set("n", "<leader>/?", require("fzf-lua").lgrep_curbuf, { desc = "Grep in current buffer (exact)" })
+  vim.keymap.set(
+    "n",
+    "<leader>/?",
+    fzf_lua.lgrep_curbuf,
+    { desc = "Grep in current buffer (exact)" }
+  )
 
   vim.keymap.set(
     { "n", "x" },
     "<leader>gcf",
-    require("fzf-lua").git_bcommits,
-    { desc = "current file Git history" }
+    fzf_lua.git_bcommits,
+    { desc = "Current file Git history" }
   )
 
-  vim.keymap.set(
-    "x",
-    "<leader>gcl",
-    require("fzf-lua").git_bcommits,
-    { desc = "selected lines Git history" }
-  )
+  vim.keymap.set("x", "<leader>gcl", fzf_lua.git_bcommits, { desc = "Selected lines Git history" })
 
-  vim.keymap.set(
-    "n",
-    "<leader>gst",
-    require("fzf-lua").git_status,
-    { desc = "Git status (fzf-lua)" }
-  )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>s",
-  --   require("fzf-lua").spell_suggest,
-  --   { desc = "Spelling Suggestions" }
-  -- )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>cj",
-  --   require("fzf-lua").lsp_definitions,
-  --   { desc = "Jump to Definition" }
-  -- )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>cs",
-  --   ":lua require'fzf-lua'.lsp_document_symbols({winopts = {preview={wrap='wrap'}}})<cr>",
-  --   { desc = "Document Symbols" }
-  -- )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>cr",
-  --   require("fzf-lua").lsp_references,
-  --   { desc = "LSP References" }
-  -- )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>cd",
-  --   ":lua require'fzf-lua'.diagnostics_document({fzf_opts = { ['--wrap'] = true }})<cr>",
-  --   { desc = "Document Diagnostics" }
-  -- )
-
-  -- vim.keymap.set(
-  --   "n",
-  --   "<leader>ca",
-  --   ":lua require'fzf-lua'.lsp_code_actions({ winopts = {relative='cursor',row=1.01, col=0, height=0.2, width=0.4} })<cr>",
-  --   { desc = "Code Actions" }
-  -- )
+  vim.keymap.set("n", "<leader>gst", fzf_lua.git_status, { desc = "Git status" })
 end
 
 return M
