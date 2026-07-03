@@ -97,7 +97,7 @@ return {
       sync_root_with_cwd = true,
       prefer_startup_root = true,
       update_focused_file = {
-        enable = false,
+        enable = true,
         update_root = true,
       },
       actions = {
