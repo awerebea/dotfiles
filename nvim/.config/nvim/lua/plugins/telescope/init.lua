@@ -21,9 +21,13 @@ return {
     init = function()
       require("plugins.telescope.keymaps").setup_always()
     end,
-    config = function(_, _)
-      -- Show line numbers in preview
-      vim.cmd("autocmd User TelescopePreviewerLoaded setlocal number")
+    config = function()
+      vim.api.nvim_create_autocmd("User", {
+        pattern = "TelescopePreviewerLoaded",
+        callback = function()
+          vim.opt_local.number = true
+        end,
+      })
 
       -- Open one or more selected entries in the current window
       local select_one_or_multi = function(prompt_bufnr)
@@ -136,7 +140,6 @@ return {
           ["<C-j>"] = actions.move_selection_next,
           ["<C-k>"] = actions.move_selection_previous,
           ["<C-n>"] = actions.move_selection_next,
-          -- ["<C-p>"] = actions.move_selection_previous,
           ["<M-j>"] = actions.cycle_history_next,
           ["<M-k>"] = actions.cycle_history_prev,
           ["<M-n>"] = actions.cycle_history_next,
@@ -406,7 +409,6 @@ return {
       telescope.setup(opts)
       telescope.load_extension("fzf")
       telescope.load_extension("project")
-      -- telescope.load_extension "dap"
       telescope.load_extension("hop")
       telescope.load_extension("live_grep_args")
       telescope.load_extension("lazygit")
