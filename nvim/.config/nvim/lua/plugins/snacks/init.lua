@@ -28,6 +28,7 @@ return {
           keys = {
             ["<M-f>"] = { "preview_scroll_down", mode = { "i", "n" } },
             ["<M-b>"] = { "preview_scroll_up", mode = { "i", "n" } },
+            ["<M-g>"] = { "toggle_live", mode = { "i", "n" } },
           },
         },
       },
