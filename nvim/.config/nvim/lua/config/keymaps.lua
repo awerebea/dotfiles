@@ -53,7 +53,7 @@ vim.keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
 vim.keymap.set("n", "<leader>-", "<C-w>s") -- split window horizontally
 
 -- split left
-SplitLeft = function()
+_G.SplitLeft = function()
   vim.opt.splitright = false
   vim.cmd("vsplit")
   vim.opt.splitright = true
@@ -61,7 +61,7 @@ end
 vim.keymap.set("n", "<leader><M-\\>", "<Cmd>lua SplitLeft()<CR>")
 
 -- split above
-SplitAbove = function()
+_G.SplitAbove = function()
   vim.opt.splitbelow = false
   vim.cmd("split")
   vim.opt.splitbelow = true

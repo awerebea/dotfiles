@@ -9,7 +9,7 @@ return {
     local query_history_dir = vim.fn.stdpath("data") .. sep .. "fzf-lua_history"
 
     local function ensure_dir_exists(dir_path)
-      local uv = vim.loop
+      local uv = vim.uv
 
       -- Check if the path exists
       local stat = uv.fs_stat(dir_path)

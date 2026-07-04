@@ -1,6 +1,6 @@
 return {
   "michaelb/sniprun",
-  enabled = string.sub(string.lower(vim.loop.os_uname().sysname), 1, string.len("windows"))
+  enabled = string.sub(string.lower(vim.uv.os_uname().sysname), 1, string.len("windows"))
     ~= "windows",
   event = "VeryLazy",
   branch = "master",

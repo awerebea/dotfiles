@@ -32,7 +32,7 @@ return {
 
       for _, v in pairs(windows) do
         local cfg = vim.api.nvim_win_get_config(v)
-        local ft = vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(v), "filetype")
+        local ft = vim.bo[vim.api.nvim_win_get_buf(v)].filetype
 
         if (cfg.relative == "" or cfg.external == true) and ft ~= "qf" then
           wc = wc + 1
@@ -81,7 +81,7 @@ return {
               .. vim.api.nvim_win_get_buf(winid)
               .. ")"
               .. (
-                vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(winid), "modified")
+                vim.bo[vim.api.nvim_win_get_buf(winid)].modified
                   -- and "[●]"
                   and " [+]"
                 or ""
@@ -100,7 +100,7 @@ return {
               .. vim.api.nvim_win_get_buf(winid)
               .. ")"
               .. (
-                vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(winid), "modified")
+                vim.bo[vim.api.nvim_win_get_buf(winid)].modified
                   and " [+]"
                 or ""
               ),

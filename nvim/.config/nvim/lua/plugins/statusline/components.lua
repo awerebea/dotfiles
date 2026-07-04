@@ -2,15 +2,15 @@ local icons = require("config.icons")
 
 local function fg(name)
   return function()
-    local hl = vim.api.nvim_get_hl_by_name(name, true)
-    return hl and hl.foreground and { fg = string.format("#%06x", hl.foreground) }
+    local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+    return hl and hl.fg and { fg = string.format("#%06x", hl.fg) }
   end
 end
 
 return {
   spaces = {
     function()
-      local shiftwidth = vim.api.nvim_buf_get_option(0, "shiftwidth")
+      local shiftwidth = vim.bo.shiftwidth
       return icons.ui.Tab .. " " .. shiftwidth
     end,
     padding = 1,

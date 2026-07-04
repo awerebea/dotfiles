@@ -27,7 +27,7 @@ return {
     ---@param str string
     ---@return string collapsed path in the home directory
     local function home_to_tilde(str)
-      str, _ = string.gsub(str, "^" .. vim.loop.os_homedir(), "~")
+      str, _ = string.gsub(str, "^" .. vim.uv.os_homedir(), "~")
       return str
     end
 
