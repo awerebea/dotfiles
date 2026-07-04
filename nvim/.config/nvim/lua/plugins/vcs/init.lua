@@ -43,6 +43,13 @@ return {
       sign_priority = 100,
       max_file_length = 40000, -- Disable if file is longer than this (in lines)
       -- update_debounce = 100,
+      preview_config = {
+        border = "rounded",
+        style = "minimal",
+        relative = "cursor",
+        row = 0,
+        col = 1,
+      },
       on_attach = function(bufnr)
         local gs = package.loaded.gitsigns
         local function map(mode, l, r, opts)
@@ -78,7 +85,10 @@ return {
         map("n", "ghS", gs.stage_buffer, { desc = "Stage Buffer" })
         map("n", "ghu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
         map("n", "ghR", gs.reset_buffer, { desc = "Reset Buffer" })
-        map("n", "ghp", gs.preview_hunk, { desc = "Preview Hunk" })
+        map("n", "ghp", function()
+          require("gitsigns.config").config.preview_config.width = math.floor(vim.o.columns * 0.99)
+          gs.preview_hunk()
+        end, { desc = "Preview Hunk" })
         map("n", "ghi", gs.preview_hunk_inline, { desc = "Preview Hunk Inline" })
         map("n", "ghb", function()
           gs.blame_line({ full = true })
