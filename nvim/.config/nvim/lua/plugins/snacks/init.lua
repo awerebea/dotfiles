@@ -40,6 +40,34 @@ return {
       },
     },
     bigfile = { enabled = true },
+    explorer = {
+      enabled = true,
+      -- Keymaps (in explorer list window):
+      -- l / <CR>     confirm / open
+      -- h            close directory
+      -- <BS>         go up to parent directory
+      -- a            add file/directory
+      -- d            delete
+      -- r            rename
+      -- c            copy
+      -- m            move
+      -- y            yank path (n/x)
+      -- p            paste
+      -- o            open with system application
+      -- u            update / refresh
+      -- .            focus (set as cwd)
+      -- <C-c>        change tab cwd
+      -- I            toggle ignored files
+      -- H            toggle hidden files
+      -- Z            close all directories
+      -- P            toggle preview
+      -- <leader>/    grep in directory
+      -- <C-t>        open terminal
+      -- ]g / [g      next/prev git change
+      -- ]d / [d      next/prev diagnostic
+      -- ]w / [w      next/prev warning
+      -- ]e / [e      next/prev error
+    },
     notifier = { enabled = true },
     quickfile = { enabled = true },
     statuscolumn = { enabled = false },
@@ -49,6 +77,11 @@ return {
         files = { hidden = true },
         grep = { hidden = true },
         grep_word = { hidden = true },
+        explorer = {
+          watch = true,        -- auto-refresh tree on filesystem changes
+          follow_file = true,  -- reveal current buffer's file in tree on buffer switch
+          git_untracked = true, -- show '?' marker for files not yet added to git
+        },
         projects = {
           dev = { "~/Github" },
           max_depth = 5,

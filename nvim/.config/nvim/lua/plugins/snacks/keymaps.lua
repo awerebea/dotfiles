@@ -2,6 +2,10 @@ local M = {}
 
 function M.setup()
   -- Files
+  vim.keymap.set("n", "<leader>fe", function()
+    Snacks.explorer()
+  end, { desc = "Explorer" })
+
   vim.keymap.set("n", "<leader>ff", function()
     Snacks.picker.files()
   end, { desc = "Find files" })
