@@ -41,7 +41,6 @@ local aucmd_dict = {
         "query",
         "spectre_panel",
         "startuptime",
-        "toggleterm",
         "tsplayground",
         "vim",
         "neoai-input",

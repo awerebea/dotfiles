@@ -79,14 +79,6 @@ return {
         return vim.fs.dirname(file_path)
       end
 
-      -- Toggleterm
-      local open_terminal = function(prompt_bufnr)
-        local file_dir = get_item_dirpath()
-        -- Close the Telescope window
-        telescope_actions.close(prompt_bufnr)
-        require("utils").open_term(nil, { direction = "horizontal", size = 10, dir = file_dir })
-      end
-
       -- Copy the path to the directory containing the selected item to the clipboard
       local copy_dirpath_of_selected_item = function(prompt_bufnr)
         local file_dir = get_item_dirpath()
@@ -182,7 +174,6 @@ return {
           end,
           ["<CR>"] = select_one_or_multi,
           ["<C-g>"] = telescope_actions.to_fuzzy_refine,
-          ["<C-z>"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
           ["<M-h>"] = telescope_actions.results_scrolling_left,
@@ -200,7 +191,6 @@ return {
           ["<C-t>"] = trouble_telescope.open,
           ["[i"] = path_actions.insert_relpath_i_visual,
           ["]i"] = path_actions.insert_abspath_i_visual,
-          ["z"] = open_terminal,
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
           ["<C-f>"] = telescope_actions.results_scrolling_down,

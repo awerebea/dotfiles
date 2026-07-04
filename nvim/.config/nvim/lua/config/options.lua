@@ -205,7 +205,7 @@ local function SetRelativeNumberAutocmd(events, mode)
     group = SmartRelativenumbers_group,
     pattern = "*",
     callback = function()
-      local blacklist = { "toggleterm" }
+      local blacklist = { "snacks_terminal" }
       if not vim.tbl_contains(blacklist, vim.bo.filetype) then
         if mode then
           if vim.o.number and vim.api.nvim_get_mode().mode ~= "i" then
