@@ -42,7 +42,7 @@ vim.opt.smartcase = true -- if you include mixed case in your search, assumes yo
 
 -- highlight the current cursor line and column
 vim.wo.cursorline = true
-vim.wo.cursorcolumn = true
+vim.wo.cursorcolumn = false
 
 -- appearance
 
