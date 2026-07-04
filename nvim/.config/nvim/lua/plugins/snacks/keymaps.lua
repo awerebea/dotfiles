@@ -57,6 +57,16 @@ function M.setup_always()
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-L>", true, false, true), "n", false)
   end, { desc = "Redraw / Clear hlsearch / Diff Update" })
   vim.keymap.set("n", "<leader>ttN", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
+
+  -- Scratch buffers
+  -- stylua: ignore start
+  vim.keymap.set("n", "<leader>..", function() Snacks.scratch() end, { desc = "Toggle scratch (current ft)" })
+  vim.keymap.set("n", "<leader>.s", function() Snacks.scratch.select() end, { desc = "Select scratch buffer" })
+  vim.keymap.set("n", "<leader>.g", function() Snacks.scratch({ name = "Notes", ft = "markdown", filekey = { cwd = false, branch = false } }) end, { desc = "Global notes" })
+  vim.keymap.set("n", "<leader>.n", function() Snacks.scratch({ name = "Notes", ft = "markdown" }) end, { desc = "Project notes" })
+  vim.keymap.set("n", "<leader>.N", function() Snacks.scratch({ name = "Notes", ft = "markdown", filekey = { cwd = true, branch = false } }) end, { desc = "Project notes (all branches)" })
+  vim.keymap.set("n", "<leader>.l", function() Snacks.scratch({ ft = "lua" }) end, { desc = "Lua scratch (runnable)" })
+  -- stylua: ignore end
 end
 
 function M.setup()

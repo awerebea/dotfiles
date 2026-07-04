@@ -90,6 +90,7 @@ return {
           { "<leader>r", group = "Remove duplicates, Restart LSP, rename symbol" },
           { "<leader>s", group = "Spellcheck" },
           { "<leader>sc", group = "Spellcheck toggle" },
+          { "<leader>.", group = "Scratch" },
           { "<leader>t", group = "Tabs / Toggle" },
           { "<leader>tN", group = "Neotest" },
           { "<leader>tt", group = "Toggle" },
