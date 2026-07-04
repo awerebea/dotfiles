@@ -71,7 +71,11 @@ return {
     notifier = { enabled = true },
     quickfile = { enabled = true },
     statuscolumn = { enabled = false },
-    terminal = { enabled = true },
+    terminal = {
+      win = {
+        height = 0.4,
+      },
+    },
     picker = {
       sources = {
         files = { hidden = true },
