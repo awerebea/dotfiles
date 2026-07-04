@@ -439,7 +439,7 @@ return {
           callback(options)
         end,
         ["change cwd to parent"] = function(options, callback)
-          local cwd = options.cwd and vim.fn.expand(options.cwd) or vim.loop.cwd()
+          local cwd = options.cwd and vim.fn.expand(options.cwd) or vim.uv.cwd()
           options.cwd = vim.fn.fnamemodify(cwd, ":p:h:h")
           callback(options)
         end,
@@ -542,7 +542,7 @@ return {
           local git_path = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
           if git_path ~= nil then
             if entry.status and (entry.status == "??" or entry.status == "A ") then
-              return { unpack(viewer), git_path .. "/" .. entry.value }
+              return { table.unpack(viewer), git_path .. "/" .. entry.value }
             else
               return {
                 "git",

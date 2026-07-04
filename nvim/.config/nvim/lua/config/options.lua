@@ -200,7 +200,7 @@ local SmartRelativenumbers_group_name = "SmartRelativenumbers"
 local SmartRelativenumbers_group =
   vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = false })
 
-function SetRelativeNumberAutocmd(events, mode)
+local function SetRelativeNumberAutocmd(events, mode)
   vim.api.nvim_create_autocmd(events, {
     group = SmartRelativenumbers_group,
     pattern = "*",
@@ -386,7 +386,7 @@ cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delvie
 
 -- Toggle diff view for all visible windows
 local diff_view_active = false
-function ToggleDiffViewMode()
+_G.ToggleDiffViewMode = function()
   if diff_view_active then
     vim.cmd(":diffoff!")
     diff_view_active = false
@@ -421,7 +421,7 @@ vim.keymap.set(
 -- }}}
 
 -- {{{ Toggle QuickFix window
-function QFToggle()
+_G.QFToggle = function()
   local qf_exists = false
   for _, win in pairs(vim.fn.getwininfo()) do
     if win["quickfix"] == 1 then
