@@ -70,7 +70,7 @@ return {
     },
     notifier = { enabled = true },
     quickfile = { enabled = true },
-    statuscolumn = { enabled = false },
+    statuscolumn = { enabled = true },
     terminal = {
       win = {
         height = 0.4,

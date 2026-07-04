@@ -50,7 +50,7 @@ vim.wo.cursorcolumn = true
 -- (have to use iterm2 or any other true color terminal)
 vim.opt.termguicolors = true
 vim.opt.background = "dark" -- colorschemes that can be light or dark will be made dark
-vim.opt.signcolumn = "yes:2" -- Always show signcolumn, max width 2
+vim.opt.signcolumn = "yes:1" -- Always show signcolumn; git signs handled separately by snacks statuscolumn
 
 -- encoding detection: check BOM first so UTF-16 LE files (e.g. Windows Task
 -- Scheduler XML exports) are opened and saved back in their original encoding
@@ -356,7 +356,7 @@ vim.opt.foldmethod = "expr" -- "manual" for manual folds; "expr"
 vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()" -- use treesitter to generate folds
 vim.opt.foldtext = ""
 vim.opt.fillchars = [[eob: ,fold: ,foldopen:,foldsep: ,foldclose:]]
-vim.opt.foldcolumn = "1"
+vim.opt.foldcolumn = "0" -- fold icons rendered by snacks statuscolumn
 vim.opt.foldlevel = 99 -- fold levels opened at file opens
 vim.opt.foldlevelstart = 4
 vim.opt.foldnestmax = 4 -- max level of fold
