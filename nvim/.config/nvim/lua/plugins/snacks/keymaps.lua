@@ -22,6 +22,41 @@ function M.setup_always()
   vim.keymap.set("n", "<leader>;", function()
     Snacks.terminal.toggle()
   end, { desc = "Toggle terminal" })
+
+  -- Snacks toggle menu under <leader>tt
+  -- stylua: ignore start
+  Snacks.toggle.diagnostics():map("<leader>ttd")
+  Snacks.toggle.inlay_hints():map("<leader>tti")
+  Snacks.toggle.line_number():map("<leader>ttn")
+  Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>ttL")
+  Snacks.toggle.treesitter():map("<leader>ttT")
+  Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>ttw")
+  Snacks.toggle.option("spell", { name = "Spell" }):map("<leader>tts")
+  Snacks.toggle.option("conceallevel", { on = 2, off = 0, name = "Conceal Level" }):map("<leader>ttc")
+  Snacks.toggle.indent():map("<leader>ttI")
+  Snacks.toggle.animate():map("<leader>tta")
+  Snacks.toggle.new({
+    id = "autopairs",
+    name = "Auto Pairs",
+    get = function() return require("ultimate-autopair").isenabled() end,
+    set = function(state)
+      if state then require("ultimate-autopair").enable() else require("ultimate-autopair").disable() end
+    end,
+  }):map("<leader>ttp")
+  Snacks.toggle.new({
+    id = "render_markdown",
+    name = "Render Markdown",
+    get = function() return require("render-markdown").get() end,
+    set = function(state)
+      if state then require("render-markdown").enable() else require("render-markdown").disable() end
+    end,
+  }):map("<leader>ttm")
+  -- stylua: ignore end
+  vim.keymap.set("n", "<leader>ttr", function()
+    vim.cmd("nohlsearch | diffupdate")
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-L>", true, false, true), "n", false)
+  end, { desc = "Redraw / Clear hlsearch / Diff Update" })
+  vim.keymap.set("n", "<leader>ttN", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
 end
 
 function M.setup()

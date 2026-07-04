@@ -111,7 +111,7 @@ vim.api.nvim_create_autocmd("TabLeave", {
 })
 vim.keymap.set(
   "n",
-  "<leader>tt",
+  "<leader>t;",
   "<Cmd>exe 'tabn '.g:lasttab<CR>",
   { desc = "Switch to last tab" }
 )
