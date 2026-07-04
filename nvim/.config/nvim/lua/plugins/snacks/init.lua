@@ -40,6 +40,7 @@ return {
       },
     },
     bigfile = { enabled = true },
+    toggle = { enabled = true },
     scope = { enabled = true },
     indent = {
       enabled = true,
