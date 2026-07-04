@@ -40,6 +40,7 @@ return {
       },
     },
     bigfile = { enabled = true },
+    scope = { enabled = true },
     indent = {
       enabled = true,
       indent = { hl = "Whitespace" },
