@@ -53,6 +53,7 @@ return {
         },
       },
     },
+    image = { enabled = true },
     explorer = {
       enabled = true,
       -- Keymaps (in explorer list window):
