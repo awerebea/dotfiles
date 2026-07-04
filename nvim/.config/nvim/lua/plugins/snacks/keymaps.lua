@@ -1,7 +1,30 @@
 local M = {}
 
+-- Keymaps for snacks-only features (no telescope/fzf-lua equivalent).
+-- Called unconditionally at startup regardless of the active picker.
+function M.setup_always()
+  vim.keymap.set("n", "<leader>fe", function()
+    Snacks.explorer()
+  end, { desc = "Explorer" })
+
+  vim.keymap.set("n", "gz", function()
+    Snacks.bufdelete.delete()
+  end, { desc = "Delete buffer" })
+
+  vim.keymap.set("n", "gZ", function()
+    Snacks.bufdelete.other()
+  end, { desc = "Delete other buffers" })
+
+  vim.keymap.set("n", "<leader>gB", function()
+    Snacks.git.blame_line()
+  end, { desc = "Show git log for the current line" })
+
+  vim.keymap.set("n", "<leader>;", function()
+    Snacks.terminal.toggle()
+  end, { desc = "Toggle terminal" })
+end
+
 function M.setup()
-  -- Files
   vim.keymap.set("n", "<leader>fe", function()
     Snacks.explorer()
   end, { desc = "Explorer" })

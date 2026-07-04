@@ -78,8 +78,8 @@ return {
         grep = { hidden = true },
         grep_word = { hidden = true },
         explorer = {
-          watch = true,        -- auto-refresh tree on filesystem changes
-          follow_file = true,  -- reveal current buffer's file in tree on buffer switch
+          watch = true, -- auto-refresh tree on filesystem changes
+          follow_file = true, -- reveal current buffer's file in tree on buffer switch
           git_untracked = true, -- show '?' marker for files not yet added to git
         },
         projects = {
@@ -112,6 +112,7 @@ return {
   },
   config = function(_, opts)
     require("snacks").setup(opts)
+    require("plugins.snacks.keymaps").setup_always()
     if vim.g.FuzzySearchKeymaps == "snacks" then
       require("plugins.snacks.keymaps").setup()
     end
@@ -119,22 +120,5 @@ return {
       ---@diagnostic disable: undefined-global
       Snacks.notifier.show_history()
     end, { desc = "Show notification history using Snacks" })
-
-    -- Keymaps
-    vim.keymap.set("n", "gz", function()
-      Snacks.bufdelete.delete()
-    end, { desc = "Delete buffer" })
-
-    vim.keymap.set("n", "gZ", function()
-      Snacks.bufdelete.other()
-    end, { desc = "Delete other buffers" })
-
-    vim.keymap.set("n", "<leader>gB", function()
-      Snacks.git.blame_line()
-    end, { desc = "Show git log for the current line" })
-
-    vim.keymap.set("n", "<leader>;", function()
-      Snacks.terminal.toggle()
-    end, { desc = "Toggle terminal" })
   end,
 }
