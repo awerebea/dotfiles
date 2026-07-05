@@ -1,5 +1,6 @@
 return {
   "awerebea/git-worktree.nvim", -- Temporary switch to fork
+  enabled = false,
   branch = "main",
   config = function()
     require("telescope").load_extension("git_worktree")
