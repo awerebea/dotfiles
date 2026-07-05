@@ -11,14 +11,14 @@ return {
     {
       "<leader>gwa",
       function()
-        require("worktrees").new_worktree(true)
+        Snacks.picker.worktrees_new()
       end,
       desc = "Worktree for existing branch",
     },
     {
       "<leader>gwn",
       function()
-        require("worktrees").new_worktree()
+        require("worktrees").new_worktree(false)
       end,
       desc = "New worktree (new branch)",
     },
