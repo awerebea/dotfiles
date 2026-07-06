@@ -39,12 +39,8 @@ function M.on_attach(client, buffer)
   )
 
   local format = require("plugins.lsp.format").format
-  self:map("<leader>cf", format, { desc = "Format Document", has = "documentFormatting" })
-  self:map(
-    "<leader>cf",
-    format,
-    { desc = "Format Range", mode = "v", has = "documentRangeFormatting" }
-  )
+  self:map("<leader>cf", format, { desc = "Format Document" })
+  self:map("<leader>cf", format, { desc = "Format Range", mode = "v" })
   -- self:map("<leader>rn", vim.lsp.buf.rename, { expr = true, desc = "Rename", has = "rename" })
   self:map("<leader>rn", function()
     return ":IncRename " .. vim.fn.expand("<cword>")

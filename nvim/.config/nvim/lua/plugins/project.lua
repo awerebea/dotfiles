@@ -19,9 +19,7 @@ return {
     manual_mode = true,
     detection_methods = { "pattern", "lsp" },
     patterns = { ".project", ".git" },
-    lsp = {
-      ignore = { "null-ls" },
-    },
+    lsp = {},
     show_hidden = true,
     silent_chdir = false,
     scope_chdir = "global",

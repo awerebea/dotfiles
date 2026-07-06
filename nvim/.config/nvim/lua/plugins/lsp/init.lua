@@ -151,68 +151,6 @@ return {
     end,
   },
   {
-    "nvimtools/none-ls.nvim",
-    event = { "BufReadPre", "BufNewFile" },
-    dependencies = {
-      "mason.nvim",
-      "nvimtools/none-ls-extras.nvim",
-    },
-    config = function()
-      local nls = require("null-ls")
-      local refurb = require("plugins.lsp.refurb")
-      nls.setup({
-        root_dir = require("null-ls.utils").root_pattern(
-          ".null-ls-root",
-          ".neoconf.json",
-          "Makefile",
-          ".git"
-        ),
-        sources = {
-          refurb,
-          nls.builtins.formatting.prettierd.with({
-            filetypes = {
-              "css",
-              "graphql",
-              "html",
-              "javascript",
-              "javascriptreact",
-              "json",
-              "less",
-              "markdown",
-              "scss",
-              "typescript",
-              "typescriptreact",
-              -- "yaml",
-            },
-          }),
-          nls.builtins.formatting.yamlfmt,
-          nls.builtins.formatting.stylua.with({
-            extra_args = {
-              -- "--column-width", "99"
-            },
-          }),
-          nls.builtins.diagnostics.mypy.with({
-            extra_args = {
-              "--ignore-missing-imports",
-              "--follow-imports=silent",
-              "--allow-untyped-defs",
-              "--allow-subclassing-any",
-              "--allow-untyped-calls",
-              "--strict",
-            },
-          }),
-          nls.builtins.formatting.isort,
-          nls.builtins.formatting.black.with({
-            extra_args = { "--line-length=88" },
-          }),
-          nls.builtins.formatting.terraform_fmt,
-          nls.builtins.formatting.shfmt.with({ extra_args = { "-i", "4" } }),
-          require("none-ls.formatting.beautysh").with({ filetypes = { "zsh" } }),
-        },
-      })
-    end,
-  },
-  {
     "utilyre/barbecue.nvim",
     event = "VeryLazy",
     dependencies = {
