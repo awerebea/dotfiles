@@ -36,6 +36,18 @@ function M.setup_always()
   Snacks.toggle.indent():map("<leader>ttI")
   Snacks.toggle.animate():map("<leader>tta")
   Snacks.toggle.new({
+    id = "autoformat_global",
+    name = "Auto Format (Global)",
+    get = function() return require("plugins.lsp.format").autoformat end,
+    set = function(state) require("plugins.lsp.format").autoformat = state end,
+  }):map("<leader>ttf")
+  Snacks.toggle.new({
+    id = "autoformat_buffer",
+    name = "Auto Format (Buffer)",
+    get = function() return not vim.b.disable_autoformat end,
+    set = function(state) vim.b.disable_autoformat = not state end,
+  }):map("<leader>ttF")
+  Snacks.toggle.new({
     id = "autopairs",
     name = "Auto Pairs",
     get = function() return require("ultimate-autopair").isenabled() end,
