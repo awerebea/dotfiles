@@ -99,11 +99,7 @@ return {
               .. " ("
               .. vim.api.nvim_win_get_buf(winid)
               .. ")"
-              .. (
-                vim.bo[vim.api.nvim_win_get_buf(winid)].modified
-                  and " [+]"
-                or ""
-              ),
+              .. (vim.bo[vim.api.nvim_win_get_buf(winid)].modified and " [+]" or ""),
             hl = { fg = hl_win_inactive.fg, bg = hl_win_inactive.bg },
           }
         end,
