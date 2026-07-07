@@ -1,5 +1,6 @@
 return {
   "Juksuu/worktrees.nvim",
+  enabled = false,
   dependencies = { "nvim-lua/plenary.nvim" },
   cmd = {
     "GitWorktreeCreate",

@@ -70,6 +70,7 @@ return {
           { "<leader>fS", group = "Symbols" },
           { "<leader>fT", desc = "Toggle fuzzy picker" },
           { "<leader>g", group = "Git, ChatGPT" },
+          { "<leader>gb", group = "Git Branches" },
           { "<leader>gc", group = "Conflicts, Advanced Git search" },
           { "<leader>gcq", group = "Conflicts to quickfix list" },
           { "<leader>gcr", group = "Conflicts refresh" },
