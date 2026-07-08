@@ -1,5 +1,6 @@
 return {
   "awerebea/git-worktrees.nvim",
+  -- dir = "/Users/andreibulgakov/Github/git-worktrees.nvim",
   dependencies = { "folke/snacks.nvim" },
 
   -- Lazy-load: plugin is loaded on first keymap press or command use.
@@ -79,6 +80,15 @@ return {
 
     -- Keys managed by Lazy keys = {} above, so disable plugin-side registration (default: false).
     disable_default_keymaps = true,
+
+    -- Timeout in ms for plugin notifications. nil (default) uses the notification handler's own default.
+    notify_timeout = nil,
+
+    -- Timeout in ms for the branch info popup opened by <C-o>. 0 = keep until dismissed.
+    branch_info_timeout = 5000, -- default
+
+    -- Timeout in ms for the git-status popup shown before a force-delete confirm. 0 = keep until dismissed (default).
+    status_win_timeout = 0,
 
     -- Lifecycle hooks.
     hooks = {}, -- default
