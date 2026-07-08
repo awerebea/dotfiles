@@ -56,6 +56,7 @@ return {
         },
       },
     },
+    input = { enabled = true },
     image = { enabled = true },
     explorer = {
       enabled = true,
