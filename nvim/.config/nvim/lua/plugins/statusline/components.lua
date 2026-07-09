@@ -124,6 +124,14 @@ return {
     end,
     color = { fg = "#ff9e64" },
   },
+  grapple = {
+    function()
+      return require("grapple").statusline()
+    end,
+    cond = function()
+      return package.loaded["grapple"] ~= nil
+    end,
+  },
   session_name = {
     function()
       return "📌 " .. require("possession.session").get_session_name()
