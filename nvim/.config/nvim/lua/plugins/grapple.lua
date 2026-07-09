@@ -29,17 +29,23 @@ return {
       },
       {
         "<leader><leader>m",
-        function() require("grapple").toggle_tags() end,
+        function()
+          require("grapple").toggle_tags()
+        end,
         desc = "Grapple tags",
       },
       {
         "[g",
-        function() require("grapple").cycle_tags("prev") end,
+        function()
+          require("grapple").cycle_tags("prev")
+        end,
         desc = "Prev grapple tag",
       },
       {
         "]g",
-        function() require("grapple").cycle_tags("next") end,
+        function()
+          require("grapple").cycle_tags("next")
+        end,
         desc = "Next grapple tag",
       },
     }
@@ -47,13 +53,17 @@ return {
     for i = 1, 9 do
       table.insert(k, {
         "<leader><leader>" .. i,
-        function() require("grapple").select({ index = i }) end,
+        function()
+          require("grapple").select({ index = i })
+        end,
         desc = "Grapple tag " .. i,
       })
     end
     table.insert(k, {
       "<leader><leader>0",
-      function() require("grapple").select({ index = 10 }) end,
+      function()
+        require("grapple").select({ index = 10 })
+      end,
       desc = "Grapple tag 10",
     })
     return k
