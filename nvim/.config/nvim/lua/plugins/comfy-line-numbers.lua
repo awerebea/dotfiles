@@ -105,6 +105,7 @@ return {
     -- Line numbers will be completely hidden for the following file/buffer types
     hidden_file_types = {
       -- "undotree",
+      "grapple",
     },
     hidden_buffer_types = {
       -- "terminal",
