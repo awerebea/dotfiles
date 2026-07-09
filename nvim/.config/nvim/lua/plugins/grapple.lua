@@ -4,36 +4,44 @@ return {
   cmd = "Grapple",
 
   -- Lazy-load on first keymap press or command.
-  keys = {
-    {
-      "<leader>m",
-      function()
-        require("grapple").toggle()
-      end,
-      desc = "Grapple tag toggle",
-    },
-    {
-      "<leader><leader>m",
-      function()
-        require("grapple").toggle_tags()
-      end,
-      desc = "Grapple tags",
-    },
-    {
-      "[g",
-      function()
-        require("grapple").cycle_tags("prev")
-      end,
-      desc = "Prev grapple tag",
-    },
-    {
-      "]g",
-      function()
-        require("grapple").cycle_tags("next")
-      end,
-      desc = "Next grapple tag",
-    },
-  },
+  keys = (function()
+    local k = {
+      {
+        "<leader>m",
+        function() require("grapple").toggle() end,
+        desc = "Grapple tag toggle",
+      },
+      {
+        "<leader><leader>m",
+        function() require("grapple").toggle_tags() end,
+        desc = "Grapple tags",
+      },
+      {
+        "[g",
+        function() require("grapple").cycle_tags("prev") end,
+        desc = "Prev grapple tag",
+      },
+      {
+        "]g",
+        function() require("grapple").cycle_tags("next") end,
+        desc = "Next grapple tag",
+      },
+    }
+    -- <leader><leader>1-9 jump to tags 1-9; <leader><leader>0 jumps to tag 10.
+    for i = 1, 9 do
+      table.insert(k, {
+        "<leader><leader>" .. i,
+        function() require("grapple").select({ index = i }) end,
+        desc = "Grapple tag " .. i,
+      })
+    end
+    table.insert(k, {
+      "<leader><leader>0",
+      function() require("grapple").select({ index = 10 }) end,
+      desc = "Grapple tag 10",
+    })
+    return k
+  end)(),
 
   opts = {
     -- Tags are namespaced per git repo. Switching repos gives you a fresh list.
@@ -45,8 +53,8 @@ return {
     -- Show the tag name (if set via R in the window) after the path.
     name_pos = "end",
 
-    -- Press 1-9 inside the tags window to jump instantly.
-    quick_select = "123456789",
+    -- Press 1-9 or 0 (slot 10) inside the tags window to jump instantly.
+    quick_select = "1234567890",
 
     -- Requires nvim-web-devicons (already a dep above).
     icons = true,
