@@ -8,7 +8,16 @@ return {
     local k = {
       {
         "<leader>m",
-        function() require("grapple").toggle() end,
+        function()
+          local grapple = require("grapple")
+          if grapple.exists() then
+            if vim.fn.confirm("Remove grapple tag?", "&Yes\n&No", 2) == 1 then
+              grapple.untag()
+            end
+          else
+            grapple.tag()
+          end
+        end,
         desc = "Grapple tag toggle",
       },
       {
