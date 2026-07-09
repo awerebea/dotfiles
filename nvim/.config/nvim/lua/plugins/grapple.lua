@@ -28,7 +28,40 @@ return {
       {
         "<leader><leader>m",
         function()
-          require("grapple").toggle_tags()
+          local grapple = require("grapple")
+          local tags = grapple.tags() or {}
+
+          -- Resolve scope root to compute the relative display path length.
+          local scope_root = vim.fn.getcwd()
+          pcall(function()
+            local scope, err = require("grapple.app").get():resolve_scope({})
+            if scope and not err then
+              scope_root = scope.path
+            end
+          end)
+
+          local max_len = 0
+          for _, tag in ipairs(tags) do
+            local path = tag.path or ""
+            -- Strip scope root to match grapple's style="relative" rendering.
+            if path:sub(1, #scope_root + 1) == scope_root .. "/" then
+              path = path:sub(#scope_root + 2)
+            end
+            -- Include tag name width if the tag is named.
+            local name_extra = tag.name and (#tag.name + 2) or 0
+            local w = #path + name_extra
+            if w > max_len then
+              max_len = w
+            end
+          end
+
+          -- Overhead: "/001" (4) + icon (2) + spaces (3) + border (2) = ~12.
+          local min_w = 40
+          local max_w = math.floor(vim.o.columns * 0.9)
+          local width = math.max(min_w, math.min(max_w, max_len + 12))
+
+          require("grapple.app").get().settings.inner.win_opts.width = width
+          grapple.toggle_tags()
         end,
         desc = "Grapple tags",
       },
@@ -87,6 +120,7 @@ return {
     prune = "30d",
 
     win_opts = {
+      -- Width is overridden dynamically on each open; this is only the fallback.
       width = 80,
       height = 12,
       border = "rounded",
