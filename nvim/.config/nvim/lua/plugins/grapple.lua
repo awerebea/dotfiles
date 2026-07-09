@@ -6,35 +6,28 @@ return {
   -- Lazy-load on first keymap press or command.
   keys = {
     {
-      "<leader>ha",
+      "<leader>m",
       function()
         require("grapple").toggle()
       end,
       desc = "Grapple tag toggle",
     },
     {
-      "<leader>hl",
+      "<leader><leader>m",
       function()
         require("grapple").toggle_tags()
       end,
       desc = "Grapple tags",
     },
     {
-      "<leader>hL",
-      function()
-        require("grapple").toggle_scopes()
-      end,
-      desc = "Grapple scopes",
-    },
-    {
-      "[h",
+      "[g",
       function()
         require("grapple").cycle_tags("prev")
       end,
       desc = "Prev grapple tag",
     },
     {
-      "]h",
+      "]g",
       function()
         require("grapple").cycle_tags("next")
       end,

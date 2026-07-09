@@ -81,7 +81,7 @@ return {
           { "<leader>gpr", group = "Run command" },
           { "<leader>gs", group = "Git status" },
           { "<leader>gw", group = "Git Worktree" },
-          { "<leader>h", group = "Help, Grapple" },
+          { "<leader>h", group = "Help" },
           { "<leader>k", group = "Open from quickfix, Macrothis" },
           { "<leader>kk", group = "Macrothis" },
           { "<leader>l", group = "Toggle non-printable symbols" },
@@ -105,11 +105,10 @@ return {
           { "<leader>/", group = "Search in buffer" },
           { "<localleader>d", group = "Diff actions" },
           -- {{{ Grapple
-          { "<leader>ha", desc = "Grapple tag toggle" },
-          { "<leader>hl", desc = "Grapple tags" },
-          { "<leader>hL", desc = "Grapple scopes" },
-          { "[h", desc = "Prev grapple tag" },
-          { "]h", desc = "Next grapple tag" },
+          { "<leader>m", desc = "Grapple tag toggle" },
+          { "<leader><leader>m", desc = "Grapple tags" },
+          { "[g", desc = "Prev grapple tag" },
+          { "]g", desc = "Next grapple tag" },
           -- }}}
         },
       })
