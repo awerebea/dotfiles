@@ -15,7 +15,14 @@ return {
               grapple.untag()
             end
           else
-            grapple.tag()
+            local tags = grapple.tags() or {}
+            local suggested = tostring(#tags + 1)
+            vim.ui.input({ prompt = "Tag name: ", default = suggested }, function(name)
+              if name == nil then
+                return
+              end
+              grapple.tag({ name = name ~= "" and name or nil })
+            end)
           end
         end,
         desc = "Grapple tag toggle",
