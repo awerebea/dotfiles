@@ -117,7 +117,7 @@ return {
             },
           },
           -- lualine_b = { components.git_repo, "branch" },
-          lualine_b = { "branch" },
+          lualine_b = { "branch", components.grapple },
           lualine_c = {
             components.diff,
             components.diagnostics,

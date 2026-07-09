@@ -81,7 +81,7 @@ return {
           { "<leader>gpr", group = "Run command" },
           { "<leader>gs", group = "Git status" },
           { "<leader>gw", group = "Git Worktree" },
-          { "<leader>h", group = "Help, Harpoon" },
+          { "<leader>h", group = "Help, Grapple" },
           { "<leader>k", group = "Open from quickfix, Macrothis" },
           { "<leader>kk", group = "Macrothis" },
           { "<leader>l", group = "Toggle non-printable symbols" },
@@ -104,14 +104,12 @@ return {
           { "<leader>x", group = "Trouble, diagnostics" },
           { "<leader>/", group = "Search in buffer" },
           { "<localleader>d", group = "Diff actions" },
-          -- {{{ Harpoon
-          {"<leader>ht", desc = "Harpoon list in Telescope" },
-          {"<leader>hl", desc = "Harpoon list" },
-          {"<leader><leader>h", desc = "Add a file to the Harpoon list" },
-          {"<leader>ha", desc = "Add a file to the Harpoon list" },
-          {"[h", desc = "Previous Harpoon file" },
-          {"]h", desc = "Next Harpoon file" },
-          {"<leader>i", desc = "Select Harpoon item" },
+          -- {{{ Grapple
+          { "<leader>ha", desc = "Grapple tag toggle" },
+          { "<leader>hl", desc = "Grapple tags" },
+          { "<leader>hL", desc = "Grapple scopes" },
+          { "[h", desc = "Prev grapple tag" },
+          { "]h", desc = "Next grapple tag" },
           -- }}}
         },
       })
