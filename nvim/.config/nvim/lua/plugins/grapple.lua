@@ -10,19 +10,7 @@ return {
       {
         "<leader>m",
         function()
-          local grapple = require("grapple")
-          if grapple.exists() then
-            if vim.fn.confirm("Remove grapple tag?", "&Yes\n&No", 2) == 1 then
-              grapple.untag()
-            end
-          else
-            vim.ui.input({ prompt = "Tag name (optional): " }, function(name)
-              if name == nil then
-                return
-              end
-              grapple.tag({ name = name ~= "" and name or nil })
-            end)
-          end
+          require("grapple").toggle()
         end,
         desc = "Grapple tag toggle",
       },
@@ -87,6 +75,8 @@ return {
     -- Remove save files older than 30 days automatically.
     prune = "30d",
 
+    name_on_tag = true,
+    confirm_untag = true,
     dynamic_win_width = 0.9,
     win_opts = {
       width = 40,
