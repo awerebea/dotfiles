@@ -157,7 +157,7 @@ function M.setup()
     })
   end, { desc = "Commits of current file" })
 
-  vim.keymap.set("n", "<leader>gb", function()
+  vim.keymap.set("n", "<leader>gbb", function()
     telescope_builtin.git_branches()
   end, { desc = "Branches" })
 

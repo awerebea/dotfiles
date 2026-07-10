@@ -15,7 +15,7 @@ function M.setup_always()
     Snacks.bufdelete.other()
   end, { desc = "Delete other buffers" })
 
-  vim.keymap.set("n", "<leader>gB", function()
+  vim.keymap.set("n", "<leader>gbl", function()
     Snacks.git.blame_line()
   end, { desc = "Show git log for the current line" })
 
@@ -189,7 +189,7 @@ function M.setup()
     require("telescope").extensions.advanced_git_search.diff_commit_line()
   end, { desc = "Selected lines Git history (telescope)" })
 
-  vim.keymap.set("n", "<leader>gb", function()
+  vim.keymap.set("n", "<leader>gbb", function()
     Snacks.picker.git_branches()
   end, { desc = "Git branches" })
 
