@@ -1,5 +1,6 @@
 return {
-  dir = "/Users/andreibulgakov/Github/grapple.nvim",
+  "awerebea/grapple.nvim",
+  -- dir = "/Users/andreibulgakov/Github/grapple.nvim",
   -- "cbochs/grapple.nvim",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   cmd = "Grapple",
