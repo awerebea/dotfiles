@@ -46,15 +46,7 @@ return {
     indent = {
       enabled = true,
       indent = { hl = "Whitespace" },
-      animate = {
-        enabled = vim.fn.has("nvim-0.10") == 1,
-        style = "out",
-        easing = "linear",
-        duration = {
-          step = 10, -- ms per step
-          total = 200, -- maximum duration
-        },
-      },
+      animate = { enabled = false },
     },
     input = { enabled = true },
     image = { enabled = true },
