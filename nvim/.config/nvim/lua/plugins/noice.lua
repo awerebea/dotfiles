@@ -18,6 +18,21 @@ return {
       inc_rename = true, -- set true if using inc-rename.nvim
       lsp_doc_border = true, -- consistent with border = "rounded" everywhere else
     },
+    views = {
+      -- command_palette preset overrides row to 3 (near top); put it back to center.
+      cmdline_popup = {
+        position = {
+          row = "50%",
+          col = "50%",
+        },
+      },
+      cmdline_popupmenu = {
+        position = {
+          row = "60%",
+          col = "50%",
+        },
+      },
+    },
   },
   -- stylua: ignore
   keys = {
