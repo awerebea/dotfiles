@@ -31,9 +31,10 @@ return {
         normal = "q",
         insert = "<C-c>",
       },
+      -- <C-l> conflicts with smart-splits navigation; use :CopilotChatReset as alternative
       reset = {
-        normal = "<C-l>",
-        insert = "<C-l>",
+        normal = "<M-r>",
+        insert = "<M-r>",
       },
       submit_prompt = {
         normal = "<CR>",
