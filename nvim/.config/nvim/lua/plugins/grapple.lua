@@ -2,6 +2,7 @@ return {
   "awerebea/grapple.nvim",
   -- dir = "/Users/andreibulgakov/Github/grapple.nvim",
   -- "cbochs/grapple.nvim",
+  event = "VeryLazy",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   cmd = "Grapple",
 
