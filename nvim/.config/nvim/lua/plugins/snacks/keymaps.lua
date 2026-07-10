@@ -68,10 +68,8 @@ function M.setup_always()
     vim.cmd("nohlsearch | diffupdate")
     vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<C-L>", true, false, true), "n", false)
   end, { desc = "Redraw / Clear hlsearch / Diff Update" })
-  -- Moved to noice.lua. Uncomment and re-enable Snacks.notifier when switching back.
-  -- vim.keymap.set("n", "<leader>ttN", function()
-  --   Snacks.notifier.hide()
-  -- end, { desc = "Dismiss All Notifications" })
+  -- stylua: ignore
+  vim.keymap.set("n", "<leader>ttN", function() Snacks.notifier.hide() end, { desc = "Dismiss All Notifications" })
 
   -- Scratch buffers
   -- stylua: ignore start

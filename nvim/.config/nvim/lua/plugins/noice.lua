@@ -12,11 +12,11 @@ return {
       },
     },
     presets = {
-      bottom_search = false, -- when true - keep / search at the bottom bar (less disorienting)
-      command_palette = true, -- float the : cmdline + popupmenu together
-      long_message_to_split = true, -- long messages go to a split instead of a popup
-      inc_rename = true, -- set true if using inc-rename.nvim
-      lsp_doc_border = true, -- consistent with border = "rounded" everywhere else
+      bottom_search = false, -- when true - use a classic bottom cmdline for search
+      command_palette = true, -- position the cmdline and popupmenu together
+      long_message_to_split = true, -- long messages will be sent to a split
+      inc_rename = true, -- enables an input dialog for inc-rename.nvim
+      lsp_doc_border = true, -- add a border to hover docs and signature help
     },
     views = {
       -- command_palette preset overrides row to 3 (near top); put it back to center.
@@ -34,23 +34,27 @@ return {
       },
     },
   },
-  -- stylua: ignore
-  keys = {
-    { "<M-CR>", function() require("noice").redirect(vim.fn.getcmdline()) end, mode = "c", desc = "Redirect Cmdline to split" },
-    { "<leader>snl", function() require("noice").cmd("last") end, desc = "Noice Last Message" },
-    { "<leader>snh", function() require("noice").cmd("history") end, desc = "Noice History" },
-    { "<leader>sna", function() require("noice").cmd("all") end, desc = "Noice All" },
-    { "<leader>snd", function() require("noice").cmd("dismiss") end, desc = "Noice Dismiss" },
-    -- Moved from snacks/keymaps.lua (was Snacks.notifier.hide()).
-    { "<leader>ttN", function() require("noice").cmd("dismiss") end, desc = "Dismiss All Notifications" },
-    { "<c-f>", function() if not require("noice.lsp").scroll(4) then return "<c-f>" end end,  expr = true, desc = "Scroll forward" },
-    { "<c-b>", function() if not require("noice.lsp").scroll(-4) then return "<c-b>" end end, expr = true, desc = "Scroll backward"},
-  },
   config = function(_, opts)
-    require("noice").setup(opts)
+    local noice = require("noice")
+    local noice_lsp = require("noice.lsp")
+    noice.setup(opts)
+
+    local map = vim.keymap.set
+    -- stylua: ignore start
+    map("c", "<M-CR>",       function() noice.redirect(vim.fn.getcmdline()) end, { desc = "Redirect Cmdline to split" })
+    map("n", "<leader>snl",  function() noice.cmd("last") end,                   { desc = "Noice Last Message" })
+    map("n", "<leader>snh",  function() noice.cmd("history") end,                { desc = "Noice History" })
+    map("n", "<leader>sna",  function() noice.cmd("all") end,                    { desc = "Noice All" })
+    map("n", "<leader>snd",  function() noice.cmd("dismiss") end,                { desc = "Noice Dismiss" })
+    -- Moved from snacks/keymaps.lua (was Snacks.notifier.hide()).
+    -- map("n", "<leader>ttN",  function() noice.cmd("dismiss") end,                { desc = "Dismiss All Notifications" })
+    map("n", "<c-f>", function() if not noice_lsp.scroll(4)  then return "<c-f>" end end, { expr = true, desc = "Scroll forward" })
+    map("n", "<c-b>", function() if not noice_lsp.scroll(-4) then return "<c-b>" end end, { expr = true, desc = "Scroll backward" })
+    -- stylua: ignore end
+
     -- Moved from snacks/init.lua (was Snacks.notifier.show_history()).
     vim.api.nvim_create_user_command("NotificationsNoice", function()
-      require("noice").cmd("history")
+      noice.cmd("history")
     end, { desc = "Show notification history" })
   end,
 }
