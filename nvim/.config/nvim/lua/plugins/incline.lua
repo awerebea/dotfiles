@@ -29,7 +29,8 @@ local function get_git_context(buf)
   if vim.fn.fnamemodify(git_common_dir, ":t") == ".git" then
     repo_name = vim.fn.fnamemodify(git_common_dir, ":h:t")
   else
-    repo_name = vim.fn.fnamemodify(git_common_dir, ":t"):gsub("%.git$", "")
+    -- repo_name = vim.fn.fnamemodify(git_common_dir, ":t"):gsub("%.git$", "") -- trim `.git` suffix
+    repo_name = vim.fn.fnamemodify(git_common_dir, ":t")
   end
 
   -- Branch name; detached HEAD shows short commit hash instead
