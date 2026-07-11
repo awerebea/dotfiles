@@ -1,5 +1,6 @@
 return {
   "DrKJeff16/project.nvim",
+  event = "VeryLazy",
   cmd = "Project",
   keys = {
     {
@@ -16,7 +17,7 @@ return {
     },
   },
   opts = {
-    manual_mode = true,
+    manual_mode = false,
     detection_methods = { "pattern", "lsp" },
     patterns = { ".project", ".git" },
     lsp = {},
