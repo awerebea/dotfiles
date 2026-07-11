@@ -35,8 +35,6 @@ else
     export EDITOR='nano'
 fi
 
-export TERM=xterm-256color
-
 # FZF settings
 if command -v "fd" &>/dev/null; then
     FD_BIN_NAME="fd"
