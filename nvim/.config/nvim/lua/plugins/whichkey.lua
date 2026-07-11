@@ -76,6 +76,7 @@ return {
           { "<leader>gcr", group = "Conflicts refresh" },
           { "<leader>gd", group = "DiffView" },
           { "<leader>gf", group = "Vim-Flog" },
+          { "<leader>gg", group = "CodeDiff" },
           { "<leader>gl", group = "Git log" },
           { "<leader>gp", group = "ChatGPT" },
           { "<leader>gpr", group = "Run command" },
