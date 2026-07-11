@@ -553,6 +553,8 @@ run-shell 'tmux setenv -g TMUX_VERSION $(tmux -V | \
 # set -g default-terminal "xterm-256color-italic" # colors, italic (linux)
 set -g default-terminal "tmux-256color" # colors, italic (macOS)
 set -as terminal-overrides ',xterm*:sitm=\E[3m' # colors, italic (macOS)
+set -as terminal-features ",xterm-kitty:RGB"   # true color for kitty
+set -as terminal-features ",xterm-kitty:sync"  # synchronized updates - prevents cursor sweep flicker in Neovim
 
 # set Allow multiple commands to be entered without pressing the prefix-key again
 # in the specified time milliseconds (the default is 500).
