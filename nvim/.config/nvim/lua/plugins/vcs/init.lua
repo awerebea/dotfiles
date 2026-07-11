@@ -139,7 +139,7 @@ return {
       "LazyGitFilterCurrentFile",
     },
     keys = {
-      { "<leader>gg", "<Cmd>LazyGit<CR>", desc = "LazyGit" },
+      { "<leader>glz", "<Cmd>LazyGit<CR>", desc = "LazyGit" },
     },
   },
   {
