@@ -78,30 +78,27 @@ vim.keymap.set("n", "<M-S-j>", "<Cmd>tabprevious<CR>")
 vim.keymap.set("n", "gp", "<Cmd>bprevious<CR>")
 vim.keymap.set("n", "gn", "<Cmd>bnext<CR>")
 -- tabs management
-vim.keymap.set(
-  "n",
-  "<leader>ta",
-  "<Cmd>tab ball<CR>",
-  { desc = "Open all buffers in separate tabs" }
-)
-vim.keymap.set("n", "<leader><Left>", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
-vim.keymap.set("n", "<leader><Right>", "<Cmd>tabnext<CR>", { desc = "Next tab" })
-vim.keymap.set("n", "<leader>tp", "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
-vim.keymap.set("n", "<leader>tn", "<Cmd>tabnext<CR>", { desc = "Next tab" })
+-- stylua: ignore
+vim.keymap.set("n", "<leader>tA", "<Cmd>tab ball<CR>", { desc = "Open all buffers in separate tabs" })
+for _, key in ipairs({ "<leader><Left>", "<leader>tp" }) do
+  vim.keymap.set("n", key, "<Cmd>tabprevious<CR>", { desc = "Previous tab" })
+end
+for _, key in ipairs({ "<leader><Right>", "<leader>tn" }) do
+  vim.keymap.set("n", key, "<Cmd>tabnext<CR>", { desc = "Next tab" })
+end
+vim.keymap.set("n", "<leader>tj", ":tabnext<Space>", { desc = "Jump to tab N" })
 vim.keymap.set("n", "<leader>th", "<Cmd>tabfirst<CR>", { desc = "First tab" })
 vim.keymap.set("n", "<leader>tl", "<Cmd>tablast<CR>", { desc = "Last tab" })
-vim.keymap.set("n", "<leader>te", ":tabedit<Space>", { desc = "Tab .. N" })
+vim.keymap.set("n", "<leader>te", ":tabedit<Space>", { desc = "Create a tab with a file .. Name" })
 vim.keymap.set("n", "<leader>tc", "<Cmd>tabnew<CR>", { desc = "Open new tab" })
-vim.keymap.set("n", "<leader>tm", ":tabmove<Space>", { desc = "Move tab to position .. N" })
+vim.keymap.set("n", "<leader>tM", ":tabmove<Space>", { desc = "Move tab to position .. N" })
 vim.keymap.set("n", "<leader>tmp", "<Cmd>-tabmove<CR>", { desc = "Move current tab left" })
 vim.keymap.set("n", "<leader>tmn", "<Cmd>+tabmove<CR>", { desc = "Move current tab right" })
-vim.keymap.set("n", "<leader>tx", "<Cmd>tabclose<CR>", { desc = "Close current tab" })
-vim.keymap.set(
-  "n",
-  "<leader>tz",
-  "<Cmd>tabonly<CR>",
-  { desc = "Close all tabs except the current one" }
-)
+for _, key in ipairs({ "<leader>tx", "<leader>tz" }) do
+  vim.keymap.set("n", key, "<Cmd>tabclose<CR>", { desc = "Close current tab" })
+end
+-- stylua: ignore
+vim.keymap.set("n", "<leader>tZ", "<Cmd>tabonly<CR>", { desc = "Close all tabs except the current one" })
 -- Switch to last tab
 vim.g.lasttab = 1
 vim.api.nvim_create_autocmd("TabLeave", {
@@ -109,12 +106,10 @@ vim.api.nvim_create_autocmd("TabLeave", {
     vim.g.lasttab = vim.fn.tabpagenr()
   end,
 })
-vim.keymap.set(
-  "n",
-  "<leader>t;",
-  "<Cmd>exe 'tabn '.g:lasttab<CR>",
-  { desc = "Switch to last tab" }
-)
+-- stylua: ignore
+for _, key in ipairs({ "<leader>t;", "<leader>ta" }) do
+  vim.keymap.set("n", key, "<Cmd>exe 'tabn '.g:lasttab<CR>", { desc = "Switch to previously used tab" })
+end
 -- Toggle spell checking
 -- stylua: ignore
 vim.keymap.set("n", "<leader>sca", "<Cmd>setlocal spell! spelllang=en_us,ru_yo<CR>", { desc = "Toggle spellcheck All" })
