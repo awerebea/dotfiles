@@ -17,7 +17,7 @@ return {
     },
   },
   opts = {
-    manual_mode = false,
+    manual_mode = true,
     detection_methods = { "pattern", "lsp" },
     patterns = { ".project", ".git" },
     lsp = {},
