@@ -341,7 +341,8 @@ augroup end
 -- }}} end of Auto save/load view
 
 -- Change cursor view:
-vim.opt.guicursor = "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkwait700-blinkon500-blinkoff500"
+vim.opt.guicursor =
+  "n-v-c-sm:block,i-ci-ve:ver25-Cursor,r-cr-o:hor20,a:blinkwait700-blinkon500-blinkoff500"
 
 -- Folding settings
 -- zc close fold
