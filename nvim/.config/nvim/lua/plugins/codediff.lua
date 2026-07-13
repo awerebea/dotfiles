@@ -2,9 +2,9 @@ return {
   "esmuellert/codediff.nvim",
   cmd = "CodeDiff",
   keys = {
-    { "<leader>ggs", "<cmd>CodeDiff<cr>",           desc = "CodeDiff: git status" },
+    { "<leader>ggs", "<cmd>CodeDiff<cr>", desc = "CodeDiff: git status" },
     { "<leader>ggh", "<cmd>CodeDiff history %<cr>", desc = "CodeDiff: file history" },
-    { "<leader>ggH", "<cmd>CodeDiff history<cr>",   desc = "CodeDiff: repo history" },
+    { "<leader>ggH", "<cmd>CodeDiff history<cr>", desc = "CodeDiff: repo history" },
   },
   opts = {},
   -- Main commands:
