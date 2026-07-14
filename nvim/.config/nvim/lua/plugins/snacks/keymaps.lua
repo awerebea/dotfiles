@@ -1,5 +1,36 @@
 local M = {}
 
+-- Open a Snacks picker that lists all directories under root (via fd) and
+-- lcd to the selected one on confirm.
+local function lcd_picker(root, title)
+  if not root or root == "" then
+    return
+  end
+  Snacks.picker.pick({
+    title = title,
+    cwd = root,
+    finder = function(_, _)
+      local items = { { text = ".", file = ".", name = "." } }
+      local out = vim.fn.systemlist({ "fd", "--type", "d", "--hidden", "--follow", ".", root })
+      for _, line in ipairs(out) do
+        if line ~= "" then
+          local rel = line:sub(#root + 2)
+          items[#items + 1] = { text = rel, file = rel, name = rel }
+        end
+      end
+      return items
+    end,
+    format = "file",
+    confirm = function(picker, item)
+      picker:close()
+      if item then
+        local abs = item.file == "." and root or (root .. "/" .. item.file)
+        pcall(vim.cmd.lcd, abs)
+      end
+    end,
+  })
+end
+
 -- Keymaps for snacks-only features (no telescope/fzf-lua equivalent).
 -- Called unconditionally at startup regardless of the active picker.
 function M.setup_always()
@@ -223,6 +254,30 @@ function M.setup()
   vim.keymap.set("n", "<leader>tu", function()
     Snacks.picker.undo()
   end, { desc = "Undo history" })
+
+  -- lcd: picker-based directory navigation
+  vim.keymap.set("n", "<leader>cdg", function()
+    local dir = vim.fn.expand("%:p:h")
+    local out = vim.fn.system({ "git", "-C", dir, "rev-parse", "--show-toplevel" })
+    if vim.v.shell_error ~= 0 then
+      vim.notify("Not in a git repo", vim.log.levels.WARN)
+      return
+    end
+    lcd_picker(out:gsub("\n$", ""), "lcd: git root")
+  end, { desc = "lcd: pick dir under git root" })
+
+  vim.keymap.set("n", "<leader>cdf", function()
+    local dir = vim.fn.expand("%:p:h")
+    if dir == "" or dir == "." then
+      vim.notify("No file in current buffer", vim.log.levels.WARN)
+      return
+    end
+    lcd_picker(dir, "lcd: file dir")
+  end, { desc = "lcd: pick dir under file's directory" })
+
+  vim.keymap.set("n", "<leader>cdc", function()
+    lcd_picker(vim.fn.getcwd(0), "lcd: cwd")
+  end, { desc = "lcd: pick dir under current cwd" })
 end
 
 return M

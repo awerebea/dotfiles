@@ -313,3 +313,12 @@ vim.keymap.set("c", "<M-f>", "<S-Right>", { desc = "move to next word" })
 vim.keymap.set("c", "<M-w>", "<S-Right>", { desc = "move to next word" })
 
 vim.keymap.set("n", "::", "<Cmd>update<CR>", { desc = "Save file if it was changed" })
+
+vim.keymap.set("n", "<leader>cdd", function()
+  local dir = vim.fn.expand("%:p:h")
+  if dir == "" or dir == "." then
+    vim.notify("No file in current buffer", vim.log.levels.WARN)
+    return
+  end
+  pcall(vim.cmd.lcd, dir)
+end, { desc = "lcd to current file's dir" })
