@@ -46,12 +46,14 @@ return {
       layout = "active_wins_at_tail",
       active_tab = {
         label = function(tabid)
+          local ok, gts = pcall(require, "git-tabscopes")
+          local gts_name = ok and gts.get_tab_name(tabid)
+          -- stylua: ignore
+          local name = gts_name
+            and (gts_name .. " [" .. count_windows() .. "]")
+            or (get_parent() .. "/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t") .. " [" .. count_windows() .. "]")
           return {
-            -- stylua: ignore
-              vim.api.nvim_tabpage_get_number(tabid)
-              .. " " .. get_parent()
-              .. "/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":t")
-              .. " [" .. count_windows() .. "]",
+            vim.api.nvim_tabpage_get_number(tabid) .. " " .. name,
             hl = { fg = hl_tab_active.fg, bg = hl_tab_active.bg, style = "bold" },
           }
         end,
@@ -60,13 +62,14 @@ return {
       },
       inactive_tab = {
         label = function(tabid)
+          local ok, gts = pcall(require, "git-tabscopes")
+          local gts_name = ok and gts.get_tab_name(tabid)
+          -- stylua: ignore
+          local name = gts_name
+            and (gts_name .. " [" .. #vim.api.nvim_tabpage_list_wins(tabid) .. "]")
+            or (filename.unique(vim.api.nvim_tabpage_get_win(tabid)) .. " [" .. #vim.api.nvim_tabpage_list_wins(tabid) .. "]")
           return {
-            -- stylua: ignore
-              vim.api.nvim_tabpage_get_number(tabid)
-              .. " " .. filename.unique(vim.api.nvim_tabpage_get_win(tabid))
-              .. " ["
-              .. #vim.api.nvim_tabpage_list_wins(tabid)
-              .. "]",
+            vim.api.nvim_tabpage_get_number(tabid) .. " " .. name,
             hl = { fg = hl_tab_inactive.fg, bg = hl_tab_inactive.bg, style = "bold" },
           }
         end,
