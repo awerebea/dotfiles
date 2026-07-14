@@ -54,6 +54,8 @@ return {
     hide = { cursorline = "focused_win" },
     window = { margin = { vertical = 0 }, overlap = { borders = true } },
     render = function(props)
+      local bufname = vim.api.nvim_buf_get_name(props.buf)
+      local filename = bufname ~= "" and vim.fn.fnamemodify(bufname, ":t") or "[No Name]"
       local modified = vim.bo[props.buf].modified
       local context = get_git_context(props.buf)
 
@@ -62,7 +64,9 @@ return {
         table.insert(result, { context.repo, guifg = "#89b4fa" })
         table.insert(result, { "/", guifg = nil })
         table.insert(result, { context.branch, guifg = "#74c7ec" })
+        table.insert(result, "  ")
       end
+      table.insert(result, filename)
       if modified then
         table.insert(result, { " *", guifg = "#888888", gui = "bold" })
       end
