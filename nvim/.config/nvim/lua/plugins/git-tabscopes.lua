@@ -23,7 +23,26 @@ return {
       "GitTabscopesLockToggle",
       "GitTabscopesClearCache",
     },
-    opts = {},
+    opts = {
+      -- String prepended to the tab label when the workspace is locked.
+      -- Default: "🔒 "
+      lock_indicator = "🔒 ",
+
+      -- Maximum characters for the repo name in the tab label (nil = no limit).
+      -- When two names truncate to the same string a -1/-2 suffix disambiguates.
+      -- Default: nil
+      tab_name_max_length = nil,
+
+      -- Milliseconds of event silence before the tracker re-evaluates the anchor
+      -- window. Raise this if a window-layout plugin fires many rapid events.
+      -- Default: 50
+      debounce_ms = 50,
+
+      -- Register the built-in keymaps when setup() is called.
+      -- Keep false when keymaps are managed via lazy keys = {} (as done here).
+      -- Default: false
+      enable_default_keymaps = false,
+    },
     config = function(_, opts)
       require("git-tabscopes").setup(opts)
     end,
