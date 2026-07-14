@@ -45,6 +45,7 @@ return {
           { "<leader>b", group = "Buffers / Tabscopes" },
           { "<leader>c", group = "Code, Copy path, CopilotChat" },
           { "<leader>cc", group = "CopilotChat" },
+          { "<leader>cd", group = "cd (change dir)" },
           { "<leader>ccp", desc = "Prompt actions" },
           { "<leader>cg", group = "neogen" },
           { "<leader>cp", group = "Copy path to clipboard" },
