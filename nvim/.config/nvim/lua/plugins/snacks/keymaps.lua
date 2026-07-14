@@ -131,9 +131,26 @@ function M.setup()
     Snacks.picker.recent()
   end, { desc = "Recent files" })
 
-  vim.keymap.set("n", "<leader><CR>", function()
-    Snacks.picker.buffers({ current = false })
-  end, { desc = "Buffers" })
+  for _, key in ipairs({ "<leader><CR>", "<leader>bb" }) do
+    vim.keymap.set("n", key, function()
+      Snacks.picker.buffers({ current = false })
+    end, { desc = "Buffers" })
+  end
+
+  vim.keymap.set("n", "<leader>ba", function()
+    Snacks.picker.buffers({
+      hidden = true,
+      filter = {
+        cwd = false,
+        filter = function(item)
+          return item.buftype == ""
+            and item.name ~= ""
+            and not item.name:find("://", 1, true)
+            and not item.name:find(vim.fn.stdpath("data") .. "/scratch/", 1, true)
+        end,
+      },
+    })
+  end, { desc = "All buffers" })
 
   vim.keymap.set("n", "<leader>fh", function()
     Snacks.picker.help()
