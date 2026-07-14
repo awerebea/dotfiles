@@ -1,6 +1,6 @@
 return {
   "awerebea/git-worktrees.nvim",
-  -- dir = "/Users/andreibulgakov/Github/git-worktrees.nvim",
+  -- dir = vim.fn.expand("~/Github/git-worktrees.nvim"),
   dependencies = { "folke/snacks.nvim" },
 
   -- Lazy-load: plugin is loaded on first keymap press or command use.
