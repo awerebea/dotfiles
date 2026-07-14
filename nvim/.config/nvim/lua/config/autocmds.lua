@@ -112,6 +112,45 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- Per-buffer window-local cwd save/restore.
+-- Keeps picker search scope (Snacks find/grep) tied to the repo/dir that was
+-- active when the user last worked in each buffer. Uses lcd so other windows
+-- are unaffected.
+--   BufLeave  -> snapshot getcwd(0) for this buffer
+--   BufEnter  -> lcd to the snapshot if present; otherwise seed it with the
+--                current cwd so the next re-entry restores it correctly
+--   BufWipeout -> prune the entry to avoid unbounded table growth
+do
+  local buf_cwd = {}
+  local aug = vim.api.nvim_create_augroup("buf_cwd", { clear = true })
+
+  vim.api.nvim_create_autocmd("BufLeave", {
+    group = aug,
+    callback = function(ev)
+      buf_cwd[ev.buf] = vim.fn.getcwd(0)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufEnter", {
+    group = aug,
+    callback = function(ev)
+      local cwd = buf_cwd[ev.buf]
+      if cwd then
+        pcall(vim.cmd.lcd, cwd)
+      else
+        buf_cwd[ev.buf] = vim.fn.getcwd(0)
+      end
+    end,
+  })
+
+  vim.api.nvim_create_autocmd("BufWipeout", {
+    group = aug,
+    callback = function(ev)
+      buf_cwd[ev.buf] = nil
+    end,
+  })
+end
+
 -- Auto Create Intermediary Directories
 vim.api.nvim_create_autocmd({ "BufWritePre" }, {
   group = vim.api.nvim_create_augroup("auto_create_dir", { clear = true }),
