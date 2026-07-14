@@ -147,6 +147,7 @@ function M.setup()
             and item.name ~= ""
             and not item.name:find("://", 1, true)
             and not item.name:find(vim.fn.stdpath("data") .. "/scratch/", 1, true)
+            and (item.info.listed == 1 or vim.api.nvim_buf_is_loaded(item.buf))
         end,
       },
     })
