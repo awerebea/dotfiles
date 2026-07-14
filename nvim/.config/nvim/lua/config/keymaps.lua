@@ -107,7 +107,7 @@ vim.api.nvim_create_autocmd("TabLeave", {
   end,
 })
 -- stylua: ignore
-for _, key in ipairs({ "<leader>t;", "<leader>ta" }) do
+for _, key in ipairs({ "<leader>tt", "<leader>t;", "<leader>ta" }) do
   vim.keymap.set("n", key, "<Cmd>exe 'tabn '.g:lasttab<CR>", { desc = "Switch to previously used tab" })
 end
 -- Toggle spell checking

@@ -78,9 +78,6 @@ return {
     -- "edit" (default) | "tabedit" | "vsplit" | "split" | nil
     switch_file_command = "vsplit",
 
-    -- Keys managed by Lazy keys = {} above, so disable plugin-side registration (default: false).
-    disable_default_keymaps = true,
-
     -- Timeout in ms for plugin notifications. nil (default) uses the notification handler's own default.
     notify_timeout = nil,
 
