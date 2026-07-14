@@ -87,6 +87,14 @@ return {
       },
     },
     picker = {
+      -- Default in-picker toggle keymaps (insert and normal mode):
+      --   <a-h>   toggle hidden files/dirs (show/hide dotfiles)
+      --   <a-i>   toggle ignored files/dirs (respect/bypass .gitignore)
+      --   <a-f>   toggle follow symlinks
+      --   <a-r>   toggle regex filter
+      --   <a-m>   toggle maximize layout
+      --   <a-p>   toggle preview
+      --   <a-w>   cycle windows (input / list / preview)
       sources = {
         files = { hidden = true },
         grep = { hidden = true },

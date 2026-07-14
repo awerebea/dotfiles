@@ -2,6 +2,8 @@ local M = {}
 
 -- Open a Snacks picker that lists all directories under root (via fd) and
 -- lcd to the selected one on confirm.
+-- hidden = true by default (show dotdirs); toggle with <a-h>.
+-- ignored = false by default (respect .gitignore); toggle with <a-i>.
 local function lcd_picker(root, title)
   if not root or root == "" then
     return
@@ -9,13 +11,26 @@ local function lcd_picker(root, title)
   Snacks.picker.pick({
     title = title,
     cwd = root,
-    finder = function(_, _)
+    hidden = true,
+    ignored = false,
+    finder = function(opts, _)
+      local cmd = { "fd", "--type", "d", "--follow", "--exclude", ".git" }
+      if opts.hidden then
+        cmd[#cmd + 1] = "--hidden"
+      end
+      if opts.ignored then
+        cmd[#cmd + 1] = "--no-ignore"
+      end
+      cmd[#cmd + 1] = "."
+      cmd[#cmd + 1] = root
       local items = { { text = ".", file = ".", name = "." } }
-      local out = vim.fn.systemlist({ "fd", "--type", "d", "--hidden", "--follow", ".", root })
+      local out = vim.fn.systemlist(cmd)
       for _, line in ipairs(out) do
         if line ~= "" then
           local rel = line:sub(#root + 2)
-          items[#items + 1] = { text = rel, file = rel, name = rel }
+          if rel ~= "" then
+            items[#items + 1] = { text = rel, file = rel, name = rel }
+          end
         end
       end
       return items

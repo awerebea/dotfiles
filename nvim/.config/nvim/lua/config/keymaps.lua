@@ -322,3 +322,17 @@ vim.keymap.set("n", "<leader>cdd", function()
   end
   pcall(vim.cmd.lcd, dir)
 end, { desc = "lcd to current file's dir" })
+
+vim.keymap.set("n", "<leader>cdr", function()
+  local dir = vim.fn.expand("%:p:h")
+  if dir == "" or dir == "." then
+    vim.notify("No file in current buffer", vim.log.levels.WARN)
+    return
+  end
+  local out = vim.fn.system({ "git", "-C", dir, "rev-parse", "--show-toplevel" })
+  if vim.v.shell_error ~= 0 then
+    vim.notify("Not in a git repo", vim.log.levels.WARN)
+    return
+  end
+  pcall(vim.cmd.lcd, out:gsub("\n$", ""))
+end, { desc = "lcd to git root" })
