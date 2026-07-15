@@ -143,8 +143,8 @@ return {
       end
     end
 
-    local function save_session(args)
-      local session_cwd = vim.fn.getcwd(-1, -1)
+    local function save_session(args, use_global_cwd)
+      local session_cwd = use_global_cwd and vim.fn.getcwd(-1, -1) or vim.fn.getcwd(0)
       local parts = {}
       if session_cwd then
         parts = vim.fn.split(session_cwd, sep)
@@ -168,16 +168,16 @@ return {
     end, { desc = "Buffers accross all tabs" })
     vim.keymap.set("n", "<leader>qL", function()
       handle_current_cwd_session("load")
-    end, { desc = "Load the current CWD session" })
+    end, { desc = "Load session (global cwd)" })
     vim.keymap.set("n", "<leader>qS", function()
-      handle_current_cwd_session("save", { no_confirm = true })
-    end, { desc = "Save the current CWD session" })
+      save_session({ no_confirm = false }, true)
+    end, { desc = "Save session (global cwd)" })
     vim.keymap.set("n", "<leader>qD", function()
       handle_current_cwd_session("delete")
     end, { desc = "Delete the current CWD session" })
     vim.keymap.set("n", "<leader>qs", function()
-      save_session({ no_confirm = false })
-    end, { desc = "Save session" })
+      save_session({ no_confirm = false }, false)
+    end, { desc = "Save session (window-local cwd)" })
     vim.keymap.set("n", "<leader>qx", function()
       require("possession.session").close()
     end, { desc = "Close current session" })
