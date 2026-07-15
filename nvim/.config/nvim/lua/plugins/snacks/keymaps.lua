@@ -77,7 +77,7 @@ function M.setup_always()
   end, { desc = "Show git log for the current line" })
 
   vim.keymap.set("n", "<leader>;", function()
-    Snacks.terminal.toggle()
+    Snacks.terminal.toggle(nil, { cwd = vim.fn.getcwd(0) })
   end, { desc = "Toggle terminal" })
 
   -- Snacks toggle menu under <leader>tt
