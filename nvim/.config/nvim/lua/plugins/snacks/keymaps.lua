@@ -23,13 +23,15 @@ local function lcd_picker(root, title)
       end
       cmd[#cmd + 1] = "."
       cmd[#cmd + 1] = root
-      local items = { { text = ".", file = ".", name = "." } }
+      -- root itself as selectable "." entry; cwd is set so Snacks resolves the
+      -- path correctly for display (normalize(root + "/" + ".") = root)
+      local items = { { text = ".", file = ".", cwd = root, name = root } }
       local out = vim.fn.systemlist(cmd)
       for _, line in ipairs(out) do
         if line ~= "" then
           local rel = line:sub(#root + 2)
           if rel ~= "" then
-            items[#items + 1] = { text = rel, file = rel, name = rel }
+            items[#items + 1] = { text = rel, file = rel, cwd = root, name = rel }
           end
         end
       end
@@ -39,8 +41,17 @@ local function lcd_picker(root, title)
     confirm = function(picker, item)
       picker:close()
       if item then
-        local abs = item.file == "." and root or (root .. "/" .. item.file)
-        pcall(vim.cmd.lcd, abs)
+        -- Resolve via Snacks so item.cwd + item.file -> absolute dir path.
+        -- vim.schedule defers until after the picker float is fully closed.
+        local path = Snacks.picker.util.dir(item)
+        vim.schedule(function()
+          local ok, err = pcall(vim.cmd, { cmd = "lcd", args = { path } })
+          if not ok then
+            vim.notify("lcd failed: " .. tostring(err), vim.log.levels.ERROR)
+          else
+            vim.notify("cwd: " .. vim.fn.getcwd(0), vim.log.levels.INFO)
+          end
+        end)
       end
     end,
   })
