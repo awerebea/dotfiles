@@ -116,10 +116,12 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 -- Keeps picker search scope (Snacks find/grep) tied to the repo/dir that was
 -- active when the user last worked in each buffer. Uses lcd so other windows
 -- are unaffected.
---   BufLeave  -> snapshot getcwd(0) for this buffer
---   BufEnter  -> lcd to the snapshot if present; otherwise seed it with the
---                current cwd so the next re-entry restores it correctly
---   BufWipeout -> prune the entry to avoid unbounded table growth
+--   BufLeave     -> snapshot getcwd(0) for this buffer
+--   BufEnter     -> lcd to the snapshot if present; otherwise seed it
+--   DirChanged   -> update snapshot immediately when lcd changes in this window
+--                   so manual <leader>cdd / <leader>cdr / <leader>cdp changes persist
+--                   across buffer navigation (BufLeave alone wouldn't catch them)
+--   BufWipeout   -> prune the entry to avoid unbounded table growth
 do
   local buf_cwd = {}
   local aug = vim.api.nvim_create_augroup("buf_cwd", { clear = true })
@@ -140,6 +142,16 @@ do
       else
         buf_cwd[ev.buf] = vim.fn.getcwd(0)
       end
+    end,
+  })
+
+  -- Keep buf_cwd in sync when lcd is set manually (keymaps, picker confirm).
+  -- Without this, BufEnter would restore the stale pre-lcd cwd on next re-entry.
+  vim.api.nvim_create_autocmd("DirChanged", {
+    group = aug,
+    pattern = "window",
+    callback = function()
+      buf_cwd[vim.api.nvim_get_current_buf()] = vim.fn.getcwd(0)
     end,
   })
 

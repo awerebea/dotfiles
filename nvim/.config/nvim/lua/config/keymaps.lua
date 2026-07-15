@@ -314,14 +314,32 @@ vim.keymap.set("c", "<M-w>", "<S-Right>", { desc = "move to next word" })
 
 vim.keymap.set("n", "::", "<Cmd>update<CR>", { desc = "Save file if it was changed" })
 
+local function do_lcd(path)
+  local ok, err = pcall(vim.cmd, { cmd = "lcd", args = { path } })
+  if not ok then
+    vim.notify("lcd failed: " .. tostring(err), vim.log.levels.ERROR)
+  else
+    vim.notify("cwd: " .. vim.fn.getcwd(0), vim.log.levels.INFO)
+  end
+end
+
 vim.keymap.set("n", "<leader>cdd", function()
   local dir = vim.fn.expand("%:p:h")
   if dir == "" or dir == "." then
     vim.notify("No file in current buffer", vim.log.levels.WARN)
     return
   end
-  pcall(vim.cmd.lcd, dir)
+  do_lcd(dir)
 end, { desc = "lcd to current file's dir" })
+
+vim.keymap.set("n", "<leader>cdp", function()
+  local dir = vim.fn.expand("%:p:h:h")
+  if dir == "" or dir == "." then
+    vim.notify("No file in current buffer", vim.log.levels.WARN)
+    return
+  end
+  do_lcd(dir)
+end, { desc = "lcd to parent of current file's dir" })
 
 vim.keymap.set("n", "<leader>cdr", function()
   local dir = vim.fn.expand("%:p:h")
@@ -334,5 +352,5 @@ vim.keymap.set("n", "<leader>cdr", function()
     vim.notify("Not in a git repo", vim.log.levels.WARN)
     return
   end
-  pcall(vim.cmd.lcd, out:gsub("\n$", ""))
+  do_lcd(vim.trim(out))
 end, { desc = "lcd to git root" })
