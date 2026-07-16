@@ -312,6 +312,10 @@ return {
       })
     end
 
+    vim.api.nvim_create_user_command("PossessionPicker", function()
+      possession_picker()
+    end, {})
+
     vim.keymap.set("n", "<leader>qa", function()
       possession_picker()
     end, { desc = "All sessions" })
