@@ -297,9 +297,6 @@ return {
     vim.keymap.set("n", "<leader>qa", function()
       possession_picker()
     end, { desc = "All sessions" })
-    vim.keymap.set("n", "<leader>fb", function()
-      require("telescope").extensions.scope.buffers()
-    end, { desc = "Buffers accross all tabs" })
     vim.keymap.set("n", "<leader>ql", function()
       handle_current_cwd_session("load", nil, false)
     end, { desc = "Load session (window-local cwd)" })
@@ -318,7 +315,5 @@ return {
     vim.keymap.set("n", "<leader>qx", function()
       require("possession.session").close()
     end, { desc = "Close current session" })
-
-    require("telescope").load_extension("scope")
   end,
 }
