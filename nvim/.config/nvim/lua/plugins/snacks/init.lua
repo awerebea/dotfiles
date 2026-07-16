@@ -14,7 +14,7 @@ return {
           { icon = "", key = "g", desc = "Find text", action = ":lua Snacks.dashboard.pick('live_grep')" },
           { icon = "", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})" },
           { icon = "", key = "p", desc = "Projects", action = function() require("project.extensions.snacks").pick() end },
-          { icon = "", key = "s", desc = "Browse sessions", action = function() require("telescope").extensions.possession.list() end },
+          { icon = "", key = "s", desc = "Browse sessions", action = ":PossessionPicker" },
           { icon = "", key = "S", desc = "Restore session", action = ":PossessionLoadCwd" },
           { icon = "󰒲 ", key = "l", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
           { icon = "", key = "q", desc = "Quit", action = ":quitall" },
