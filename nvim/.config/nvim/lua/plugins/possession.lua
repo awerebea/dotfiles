@@ -161,6 +161,20 @@ return {
       )
     end
 
+    local function filter_empty(tbl)
+      if type(tbl) ~= "table" then
+        return tbl
+      end
+      local result = {}
+      for k, v in pairs(tbl) do
+        local filtered = filter_empty(v)
+        if type(filtered) ~= "table" or next(filtered) ~= nil then
+          result[k] = filtered
+        end
+      end
+      return result
+    end
+
     local function possession_picker()
       local possession_dir = vim.fn.stdpath("data") .. sep .. "possession"
       Snacks.picker.pick({
@@ -195,6 +209,14 @@ return {
                 }
                 for _, buf in ipairs(buffers) do
                   preview_lines[#preview_lines + 1] = "  " .. buf
+                end
+                local plugins = filter_empty(data.plugins)
+                if type(plugins) == "table" and next(plugins) ~= nil then
+                  preview_lines[#preview_lines + 1] = ""
+                  preview_lines[#preview_lines + 1] = "Plugin data:"
+                  for line in vim.inspect(plugins):gmatch("[^\n]+") do
+                    preview_lines[#preview_lines + 1] = line
+                  end
                 end
                 items[#items + 1] = {
                   text = name,
