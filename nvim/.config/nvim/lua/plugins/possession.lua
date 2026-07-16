@@ -13,6 +13,9 @@ return {
     -- don't save current directory in session to avoid erros and dead buffers when loading session
     vim.opt.sessionoptions:remove({ "curdir" })
 
+    -- capture launch cwd before any session loading changes the global cwd via :cd
+    local launch_cwd = vim.fn.getcwd(-1, -1)
+
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
 
     local path_aliases_file = vim.fn.stdpath("config") .. sep .. "path_aliases.json"
@@ -99,7 +102,7 @@ return {
           end
           return true
         end,
-        tmp_name = "autosave_" .. collapse_path(vim.fn.getcwd(-1, -1)),
+        tmp_name = "autosave_" .. collapse_path(launch_cwd),
       },
       plugins = { delete_hidden_buffers = { hooks = {} } },
       telescope = {
@@ -125,27 +128,37 @@ return {
     end
 
     local function handle_current_cwd_session(cmd, args, use_global_cwd)
-      local session_cwd = (use_global_cwd == nil or use_global_cwd) and vim.fn.getcwd(-1, -1)
+      local session_cwd = (use_global_cwd == nil or use_global_cwd) and launch_cwd
         or vim.fn.getcwd(0)
       local session_name = collapse_path(session_cwd)
       local session_file = get_session_file(require("utils").url_encode(session_name))
+      -- for load: if no manually-saved session exists, fall back to the autosave for this cwd
+      if cmd == "load" and vim.fn.filereadable(session_file) ~= 1 then
+        local autosave_name = "autosave_" .. session_name
+        local autosave_file = get_session_file(require("utils").url_encode(autosave_name))
+        if vim.fn.filereadable(autosave_file) == 1 then
+          session_name = autosave_name
+          session_file = autosave_file
+        end
+      end
       if cmd == "load" then
         if vim.fn.filereadable(session_file) == 1 then
           require("possession").load(session_name)
+        else
+          vim.notify("No session for: " .. session_cwd, vim.log.levels.WARN)
         end
       elseif cmd == "delete" then
         if vim.fn.filewritable(session_file) == 1 then
           require("possession").delete(session_name)
         end
       elseif cmd == "save" then
-        -- close_neo_tree()
         -- Overwrite without confirmation
         require("possession").save(session_name, args)
       end
     end
 
     local function save_session(args, use_global_cwd)
-      local session_cwd = use_global_cwd and vim.fn.getcwd(-1, -1) or vim.fn.getcwd(0)
+      local session_cwd = use_global_cwd and launch_cwd or vim.fn.getcwd(0)
       local parts = {}
       if session_cwd then
         parts = vim.fn.split(session_cwd, sep)
@@ -245,7 +258,12 @@ return {
           picker:close()
           if item then
             vim.schedule(function()
-              require("possession").load(item.session_name)
+              local ok, err = pcall(require("possession").load, item.session_name)
+              if not ok then
+                vim.notify("Session load failed: " .. tostring(err), vim.log.levels.ERROR)
+              else
+                vim.notify("Session loaded: " .. item.session_name, vim.log.levels.INFO)
+              end
             end)
           end
         end,
