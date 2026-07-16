@@ -124,8 +124,9 @@ return {
       vim.notify("closed all")
     end
 
-    local function handle_current_cwd_session(cmd, args)
-      local session_cwd = vim.fn.getcwd(-1, -1)
+    local function handle_current_cwd_session(cmd, args, use_global_cwd)
+      local session_cwd = (use_global_cwd == nil or use_global_cwd) and vim.fn.getcwd(-1, -1)
+        or vim.fn.getcwd(0)
       local session_name = collapse_path(session_cwd)
       local session_file = get_session_file(require("utils").url_encode(session_name))
       if cmd == "load" then
@@ -160,14 +161,17 @@ return {
       )
     end
 
-    vim.keymap.set("n", "<leader>ql", function()
+    vim.keymap.set("n", "<leader>qa", function()
       require("telescope").extensions.possession.list()
-    end, { desc = "List sessions" })
+    end, { desc = "All sessions" })
     vim.keymap.set("n", "<leader>fb", function()
       require("telescope").extensions.scope.buffers()
     end, { desc = "Buffers accross all tabs" })
+    vim.keymap.set("n", "<leader>ql", function()
+      handle_current_cwd_session("load", nil, false)
+    end, { desc = "Load session (window-local cwd)" })
     vim.keymap.set("n", "<leader>qL", function()
-      handle_current_cwd_session("load")
+      handle_current_cwd_session("load", nil, true)
     end, { desc = "Load session (global cwd)" })
     vim.keymap.set("n", "<leader>qS", function()
       save_session({ no_confirm = false }, true)
