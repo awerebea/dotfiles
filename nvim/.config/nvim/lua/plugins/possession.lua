@@ -161,8 +161,119 @@ return {
       )
     end
 
+    local function possession_picker()
+      local possession_dir = vim.fn.stdpath("data") .. sep .. "possession"
+      Snacks.picker.pick({
+        title = "Sessions",
+        finder = function()
+          local items = {}
+          local files = vim.fn.glob(possession_dir .. sep .. "*.json", false, true)
+          for _, filepath in ipairs(files) do
+            local stat = vim.uv.fs_stat(filepath)
+            local mtime = stat and stat.mtime.sec or 0
+            local ok, raw = pcall(vim.fn.readfile, filepath)
+            if ok then
+              local ok2, data = pcall(vim.fn.json_decode, table.concat(raw, "\n"))
+              if ok2 and type(data) == "table" then
+                local name = data.name or vim.fn.fnamemodify(filepath, ":t:r")
+                local cwd = home_to_tilde(data.cwd or "")
+                local buffers = {}
+                if type(data.vimscript) == "string" then
+                  for line in data.vimscript:gmatch("[^\n]+") do
+                    local buf_path = line:match("^badd %+%d+ (.+)$")
+                    if buf_path then
+                      buffers[#buffers + 1] = home_to_tilde(buf_path)
+                    end
+                  end
+                end
+                local preview_lines = {
+                  "Name: " .. name,
+                  "File: " .. home_to_tilde(filepath),
+                  "Cwd:  " .. cwd,
+                  "",
+                  "Buffers:",
+                }
+                for _, buf in ipairs(buffers) do
+                  preview_lines[#preview_lines + 1] = "  " .. buf
+                end
+                items[#items + 1] = {
+                  text = name,
+                  session_name = name,
+                  mtime = mtime,
+                  date_str = os.date("%b %d %H:%M", mtime),
+                  preview = { text = table.concat(preview_lines, "\n") },
+                }
+              end
+            end
+          end
+          table.sort(items, function(a, b)
+            return a.mtime > b.mtime
+          end)
+          return items
+        end,
+        format = function(item, _)
+          return {
+            { item.date_str, "SnacksPickerTime" },
+            { " " },
+            { item.session_name },
+          }
+        end,
+        preview = "preview",
+        confirm = function(picker, item)
+          picker:close()
+          if item then
+            vim.schedule(function()
+              require("possession").load(item.session_name)
+            end)
+          end
+        end,
+        actions = {
+          session_delete = function(picker, item)
+            if item then
+              require("possession").delete(item.session_name)
+              picker:find()
+            end
+          end,
+          session_save = function(picker, item)
+            picker:close()
+            if item then
+              vim.schedule(function()
+                require("possession").save(item.session_name, { no_confirm = true })
+              end)
+            end
+          end,
+          session_rename = function(picker, item)
+            if not item then
+              return
+            end
+            picker:close()
+            vim.schedule(function()
+              vim.ui.input(
+                { prompt = "Rename session: ", default = item.session_name },
+                function(new_name)
+                  if new_name and new_name ~= "" and new_name ~= item.session_name then
+                    require("possession").save(new_name, { no_confirm = true })
+                    require("possession").delete(item.session_name)
+                  end
+                end
+              )
+            end)
+          end,
+        },
+        win = {
+          input = {
+            keys = {
+              ["<c-s>"] = { "session_save", mode = { "i", "n" } },
+              ["<c-x>"] = { "session_delete", mode = { "i", "n" } },
+              ["<c-r>"] = { "session_rename", mode = { "i", "n" } },
+            },
+          },
+        },
+      })
+    end
+
     vim.keymap.set("n", "<leader>qa", function()
-      require("telescope").extensions.possession.list()
+      possession_picker()
     end, { desc = "All sessions" })
     vim.keymap.set("n", "<leader>fb", function()
       require("telescope").extensions.scope.buffers()
@@ -186,7 +297,6 @@ return {
       require("possession.session").close()
     end, { desc = "Close current session" })
 
-    require("telescope").load_extension("possession")
     require("telescope").load_extension("scope")
   end,
 }
