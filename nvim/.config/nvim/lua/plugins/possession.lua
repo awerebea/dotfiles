@@ -316,6 +316,10 @@ return {
       possession_picker()
     end, {})
 
+    vim.api.nvim_create_user_command("PossessionLoadCwd", function()
+      handle_current_cwd_session("load", nil, true)
+    end, { desc = "Load session for the global (launch) cwd" })
+
     vim.keymap.set("n", "<leader>qa", function()
       possession_picker()
     end, { desc = "All sessions" })
