@@ -78,7 +78,7 @@ return {
       -- ]w / [w      next/prev warning
       -- ]e / [e      next/prev error
     },
-    notifier = { enabled = false },
+    notifier = { enabled = true },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     terminal = {
@@ -138,5 +138,9 @@ return {
     if vim.g.FuzzySearchKeymaps == "snacks" then
       require("plugins.snacks.keymaps").setup()
     end
+    vim.api.nvim_create_user_command("Notifications", function()
+      ---@diagnostic disable: undefined-global
+      Snacks.notifier.show_history()
+    end, { desc = "Show notification history using Snacks" })
   end,
 }

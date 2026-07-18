@@ -1,11 +1,8 @@
 return {
   "folke/noice.nvim",
   event = "VeryLazy",
-  dependencies = { "MunifTanjim/nui.nvim", "rcarriga/nvim-notify" },
+  dependencies = { "MunifTanjim/nui.nvim" },
   opts = {
-    routes = {
-      { view = "notify", filter = { event = "notify" } },
-    },
     lsp = {
       override = {
         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
