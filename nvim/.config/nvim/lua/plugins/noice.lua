@@ -26,12 +26,6 @@ return {
           col = "50%",
         },
       },
-      cmdline_popupmenu = {
-        position = {
-          row = "60%",
-          col = "50%",
-        },
-      },
     },
   },
   config = function(_, opts)
