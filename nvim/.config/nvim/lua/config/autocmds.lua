@@ -2,7 +2,10 @@ local aucmd_dict = {
   TextYankPost = {
     {
       callback = function()
-        vim.hl.hl_op({ higroup = "IncSearch", timeout = 500 })
+        -- TODO: revert to vim.hl.hl_op(...) directly once on nvim >= 0.13 stable
+        -- (hl_op not yet available in 0.12.x; on_yank is deprecated in 0.13+)
+        local hl_fn = vim.hl.hl_op or vim.hl.on_yank
+        hl_fn({ higroup = "IncSearch", timeout = 500 })
       end,
       group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
       pattern = "*",
