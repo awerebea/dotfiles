@@ -53,29 +53,25 @@ return {
             modify(filename, ":e"),
           }
 
-          local messages = {
-            "Choose to copy to clipboard:",
-            "1. File path absolute         : " .. results[1],
-            "2. File path relative to CWD  : " .. results[2],
-            "3. File path relative to HOME : " .. results[3],
-            "4. Dir path absolute          : " .. results[4],
-            "5. Dir path relative to CWD   : " .. results[5],
-            "6. Dir path relative to HOME  : " .. results[6],
-            "7. Filename                   : " .. results[7],
-            "8. File basename              : " .. results[8],
-            "9. Extension of the file      : " .. results[9],
+          local items = {
+            "File path absolute         : " .. results[1],
+            "File path relative to CWD  : " .. results[2],
+            "File path relative to HOME : " .. results[3],
+            "Dir path absolute          : " .. results[4],
+            "Dir path relative to CWD   : " .. results[5],
+            "Dir path relative to HOME  : " .. results[6],
+            "Filename                   : " .. results[7],
+            "File basename              : " .. results[8],
+            "Extension of the file      : " .. results[9],
           }
 
-          vim.api.nvim_echo({ { table.concat(messages, "\n"), "Normal" } }, true, {})
-          local choice = vim.fn.getchar() - 48
-
-          if choice >= 1 and choice <= 9 then
-            local result = results[choice]
-            vim.notify(("Copied: `%s`"):format(result))
-            vim.fn.setreg("+", result)
-          elseif choice then
-            vim.notify("Invalid choice: " .. string.char(choice + 48))
-          end
+          vim.ui.select(items, { prompt = "Copy to clipboard:" }, function(_, idx)
+            if idx then
+              local result = results[idx]
+              vim.fn.setreg("+", result)
+              vim.notify(("Copied: `%s`"):format(result))
+            end
+          end)
         end
         vim.keymap.set("n", "Y", function()
           copy_selector()
