@@ -261,8 +261,6 @@ return {
               local ok, err = pcall(require("possession").load, item.session_name)
               if not ok then
                 vim.notify("Session load failed: " .. tostring(err), vim.log.levels.ERROR)
-              else
-                vim.notify("Session loaded: " .. item.session_name, vim.log.levels.INFO)
               end
             end)
           end
