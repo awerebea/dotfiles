@@ -46,8 +46,6 @@ return {
     map("n", "<leader>snh",  function() noice.cmd("history") end,                { desc = "Noice History" })
     map("n", "<leader>sna",  function() noice.cmd("all") end,                    { desc = "Noice All" })
     map("n", "<leader>snd",  function() noice.cmd("dismiss") end,                { desc = "Noice Dismiss" })
-    -- Moved from snacks/keymaps.lua (was Snacks.notifier.hide()).
-    -- map("n", "<leader>ttN",  function() noice.cmd("dismiss") end,                { desc = "Dismiss All Notifications" })
     map("n", "<c-f>", function() if not noice_lsp.scroll(4)  then return "<c-f>" end end, { expr = true, desc = "Scroll forward" })
     map("n", "<c-b>", function() if not noice_lsp.scroll(-4) then return "<c-b>" end end, { expr = true, desc = "Scroll backward" })
     -- stylua: ignore end
