@@ -1,9 +1,8 @@
 local aucmd_dict = {
-  -- See `:help vim.highlight.on_yank()`
   TextYankPost = {
     {
       callback = function()
-        vim.highlight.on_yank({ timeout = 500 })
+        vim.hl.hl_op({ higroup = "IncSearch", timeout = 500 })
       end,
       group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
       pattern = "*",
