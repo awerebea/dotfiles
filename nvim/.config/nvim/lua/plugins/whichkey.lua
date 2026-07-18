@@ -42,6 +42,7 @@ return {
           { "<leader>To", group = "Overseer" },
           { "<leader>Tt", group = "vim-test" },
           { "<leader>a", group = "AI & Anchor" },
+          { "<leader>ag", group = "Anchor grep in dir" },
           { "<leader>b", group = "Buffers / Tabscopes" },
           { "<leader>c", group = "Code, Copy path, CopilotChat" },
           { "<leader>cc", group = "CopilotChat" },
