@@ -108,7 +108,7 @@ return {
         desc = "Copy macro as printable",
       },
       {
-        "<leader>fm",
+        "<leader>fM",
         function()
           require("telescope").extensions.macrothis.macrothis()
         end,
