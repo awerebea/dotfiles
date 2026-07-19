@@ -24,6 +24,13 @@ return {
         desc = "Grapple tags",
       },
       {
+        "<leader>fm",
+        function()
+          require("grapple").open_snacks()
+        end,
+        desc = "Grapple tags (snacks picker)",
+      },
+      {
         "[g",
         function()
           require("grapple").cycle_tags("prev")
@@ -78,6 +85,7 @@ return {
     prune = "30d",
 
     name_on_tag = true,
+    suggest_name = true,
     confirm_untag = true,
     dynamic_win_width = 0.9,
     win_opts = {
