@@ -521,10 +521,86 @@ if command -v tfws-profile.sh >/dev/null 2>&1; then
     alias tfwsp='tfws-profile'
 fi
 
-if command -v aws-sso-creds >/dev/null 2>&1; then
+if command -v fzf >/dev/null 2>&1; then
     aws-profile-select() {
-        # shellcheck disable=2155
-        eval "export AWS_PROFILE='$(eval aws-sso-creds select)'"
+        local query="$1"
+        local -a files=()
+        [[ -f "$HOME/.aws/config" ]] && files+=("$HOME/.aws/config")
+        [[ -f "$HOME/.aws/credentials" ]] && files+=("$HOME/.aws/credentials")
+
+        if [[ ${#files[@]} -eq 0 ]]; then
+            echo "aws-profile-select: no ~/.aws/config or ~/.aws/credentials found" >&2
+            return 1
+        fi
+
+        local profiles
+        profiles=$(awk '
+            /^\[.*\]$/ {
+                name = $0
+                gsub(/^\[(profile )?/, "", name)
+                gsub(/\]$/, "", name)
+                print name
+            }
+        ' "${files[@]}" | sort -u)
+
+        if [[ -z "$profiles" ]]; then
+            echo "aws-profile-select: no AWS profiles found" >&2
+            return 1
+        fi
+
+        # Renders a "[profile]" header followed by its "Key: value" fields,
+        # used as the fzf preview for the currently highlighted profile.
+        local preview_awk='
+            function title_case(key,    n, i, parts, out) {
+                n = split(key, parts, "_")
+                out = ""
+                for (i = 1; i <= n; i++) {
+                    out = out (i > 1 ? " " : "") toupper(substr(parts[i], 1, 1)) substr(parts[i], 2)
+                }
+                return out
+            }
+            /^\[.*\]$/ {
+                name = $0
+                gsub(/^\[(profile )?/, "", name)
+                gsub(/\]$/, "", name)
+                printing = (name == want)
+                if (printing) print "[" name "]"
+                next
+            }
+            printing && /=/ {
+                line = $0
+                sub(/^[ \t]+/, "", line)
+                sub(/[ \t]*#.*/, "", line)
+                if (line == "") next
+                split(line, kv, "=")
+                key = kv[1]
+                gsub(/[ \t]+$/, "", key)
+                val = substr(line, index(line, "=") + 1)
+                gsub(/^[ \t]+|[ \t]+$/, "", val)
+                print title_case(key) ": " val
+            }
+        '
+
+        local files_str=""
+        local f
+        for f in "${files[@]}"; do
+            files_str+=" \"$f\""
+        done
+        local preview_cmd="awk -v want={} '${preview_awk}'${files_str}"
+
+        local selected
+        selected=$(printf '%s\n' "$profiles" | fzf \
+            --query="$query" \
+            --height='50%' \
+            --layout='reverse' \
+            --header='Select AWS profile' \
+            --preview-window='right:50%:wrap:hidden' \
+            --preview="$preview_cmd")
+
+        [[ -z "$selected" ]] && return 1
+
+        export AWS_PROFILE="$selected"
+        echo "AWS_PROFILE set to '$selected'"
     }
     alias aps='aws-profile-select'
 fi
