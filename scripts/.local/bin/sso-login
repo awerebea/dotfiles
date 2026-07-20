@@ -17,6 +17,14 @@ _check_inputs() {
     fi
 }
 
+_is_valid_env() {
+    local candidate="$1" valid
+    for valid in "${VALID_ENVS[@]}"; do
+        [[ "$candidate" == "$valid" ]] && return 0
+    done
+    return 1
+}
+
 _get_envs() {
     local -a envs_raw=()
     local arg
@@ -39,17 +47,23 @@ _get_envs() {
 
     local env
     for env in "${envs[@]}"; do
-        # shellcheck disable=SC2076
-        if [[ ! "${VALID_ENVS[*]}" =~ "$env" ]]; then
-            echo "Invalid environment passed." >&2
+        if ! _is_valid_env "$env"; then
+            echo "Invalid environment passed: $env" >&2
             exit 1
         fi
         if [ "$env" = "all" ]; then
             envs=("${VALID_ENVS[@]}")
-            unset 'envs[0]' # remove "all" from an array of envs
             break
         fi
     done
+
+    # Remove "all" from the final list by value, not by index
+    local -a filtered=()
+    for env in "${envs[@]}"; do
+        [ "$env" = "all" ] && continue
+        filtered+=("$env")
+    done
+    envs=("${filtered[@]}")
 
     for env in "${envs[@]}"; do
         echo "$env"
@@ -70,10 +84,24 @@ _main() {
 
     local env
     for env in "${envs[@]}"; do
-        local output url code
-        output=$(aws sso login --profile="$env" 2>/dev/null)
+        local output url code status
+        output=$(aws sso login --profile="$env" 2>&1)
+        status=$?
+        if [ "$status" -ne 0 ]; then
+            echo "Failed to start SSO login for profile '$env':" >&2
+            printf '%s\n' "$output" >&2
+            continue
+        fi
+
         url=$(printf '%s\n' "$output" | grep -E '^https://')
-        code=$(printf '%s\n' "$output" | grep -E '^[A-Z]{4}-[A-Z]{4}$')
+        code=$(printf '%s\n' "$output" | grep -E '^[A-Z0-9]{4}-[A-Z0-9]{4}$')
+
+        if [ -z "$url" ] || [ -z "$code" ]; then
+            echo "Could not find login URL/code for profile '$env'. Output was:" >&2
+            printf '%s\n' "$output" >&2
+            continue
+        fi
+
         echo "${url}?user_code=${code}"
     done
 }
