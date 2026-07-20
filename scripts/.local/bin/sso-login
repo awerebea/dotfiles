@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-VALID_ENVS=(
-    "all"
-    bright_sso_{admin,devops,buildsecurityprovisioning}
-)
-
 _check_inputs() {
     if ! command -v aws &>/dev/null; then
         echo "AWS CLI is not installed." >&2
@@ -15,14 +10,6 @@ _check_inputs() {
         printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
         exit 1
     fi
-}
-
-_is_valid_env() {
-    local candidate="$1" valid
-    for valid in "${VALID_ENVS[@]}"; do
-        [[ "$candidate" == "$valid" ]] && return 0
-    done
-    return 1
 }
 
 _get_envs() {
@@ -46,25 +33,6 @@ _get_envs() {
     done
 
     local env
-    for env in "${envs[@]}"; do
-        if ! _is_valid_env "$env"; then
-            echo "Invalid environment passed: $env" >&2
-            exit 1
-        fi
-        if [ "$env" = "all" ]; then
-            envs=("${VALID_ENVS[@]}")
-            break
-        fi
-    done
-
-    # Remove "all" from the final list by value, not by index
-    local -a filtered=()
-    for env in "${envs[@]}"; do
-        [ "$env" = "all" ] && continue
-        filtered+=("$env")
-    done
-    envs=("${filtered[@]}")
-
     for env in "${envs[@]}"; do
         echo "$env"
     done
