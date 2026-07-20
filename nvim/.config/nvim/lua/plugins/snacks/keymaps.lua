@@ -260,9 +260,11 @@ function M.setup()
   end, { desc = "Current line Git history" })
 
   vim.keymap.set("x", "<leader>gcl", function()
-    -- snacks git_log_line only supports single cursor line; use telescope for visual range
-    require("telescope").extensions.advanced_git_search.diff_commit_line()
-  end, { desc = "Selected lines Git history (telescope)" })
+    -- snacks does not support multi-line range; fzf-lua detects visual mode
+    -- and automatically applies -L start,end:file to git log
+    require("fzf-lua").git_bcommits()
+    -- require("telescope.builtin").git_bcommits_range() -- use telescope backend instead
+  end, { desc = "Selected lines Git history" })
 
   vim.keymap.set("n", "<leader>gbb", function()
     Snacks.picker.git_branches()
