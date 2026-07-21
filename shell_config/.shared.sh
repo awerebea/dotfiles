@@ -523,7 +523,7 @@ fi
 
 if command -v fzf >/dev/null 2>&1; then
     aws-profile-select() {
-        local query="$1"
+        local query="$*"
         local -a files=()
         [[ -f "$HOME/.aws/config" ]] && files+=("$HOME/.aws/config")
         [[ -f "$HOME/.aws/credentials" ]] && files+=("$HOME/.aws/credentials")
