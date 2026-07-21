@@ -2,27 +2,36 @@
 
 usage() {
     cat <<'EOF'
-Usage: clear-tf-cache [-f|--force-lockfile]
+Usage: clear-tf-cache [-f|--force] [-n|--dry-run]
 
-Remove .terraform and .terragrunt-cache directories found under the
-current directory. These are always removed, regardless of .gitignore.
+Remove .terraform and .terragrunt-cache directories, and
+.terraform.lock.hcl files, found under the current directory.
 
-.terraform.lock.hcl files are only removed if they are covered by
-.gitignore (i.e. not intentionally tracked), unless -f/--force-lockfile
-is given.
+By default, a matching path is only removed if it is both:
+  - inside a git worktree, and
+  - covered by .gitignore (i.e. not intentionally tracked)
+Paths that don't meet these criteria are skipped, with a warning
+explaining why.
 
 Options:
-  -f, --force-lockfile  Also remove .terraform.lock.hcl files that are
-                        not gitignored (e.g. intentionally tracked)
-  -h, --help            Show this help message
+  -f, --force     Remove matching paths regardless of git-worktree or
+                  .gitignore status
+  -d, --dry-run   Show what would be removed and the space that would
+                  be reclaimed, without deleting anything
+  -h, --help      Show this help message
 EOF
 }
 
-force_lockfile=0
+force=0
+dry_run=0
 while [ $# -gt 0 ]; do
     case "$1" in
-    -f | --force-lockfile)
-        force_lockfile=1
+    -f | --force)
+        force=1
+        shift
+        ;;
+    -d | --dry-run)
+        dry_run=1
         shift
         ;;
     -h | --help)
@@ -36,65 +45,96 @@ while [ $# -gt 0 ]; do
     esac
 done
 
+# Converts a size in KB (as reported by `du -sk`) into a human-readable
+# string, scaling up through KB/MB/GB/TB/PB as appropriate.
+human_size() {
+    awk -v kb="$1" 'BEGIN {
+        split("KB MB GB TB PB", units, " ")
+        i = 1
+        value = kb + 0
+        while (value >= 1024 && i < 5) {
+            value /= 1024
+            i++
+        }
+        printf "%.2f %s", value, units[i]
+    }'
+}
+
+path_size_kb() {
+    du -sk -- "$1" 2>/dev/null | awk '{print $1}'
+}
+
 paths=()
-lock_paths=()
 
 if command -v fd &>/dev/null; then
-    # Cache directories are always removed, regardless of .gitignore status.
     while IFS= read -r -d '' path; do
         paths+=("$path")
     done < <(fd -0 -HI -td '\.terragrunt-cache|\.terraform$')
 
-    # The lock file is only removed by default if it's actually gitignored,
-    # since it's common (and recommended) to commit it intentionally. See
-    # the per-path filtering below.
     while IFS= read -r -d '' path; do
-        lock_paths+=("$path")
+        paths+=("$path")
     done < <(fd -0 -HI -tf '\.terraform\.lock\.hcl$')
 else
-    # find has no concept of .gitignore, so it already finds everything
-    # unconditionally, matching the desired behavior for both lists.
     while IFS= read -r -d '' path; do
         paths+=("$path")
     done < <(
         find . \( -type d -name '.terragrunt-cache' -exec printf '%s/\0' {} + \) \
-            -o \( -type d -name '.terraform' -exec printf '%s/\0' {} + \)
+            -o \( -type d -name '.terraform' -exec printf '%s/\0' {} + \) \
+            -o \( -type f -name '.terraform.lock.hcl' -print0 \)
     )
-
-    while IFS= read -r -d '' path; do
-        lock_paths+=("$path")
-    done < <(find . -type f -name '.terraform.lock.hcl' -print0)
 fi
 
-if [ "${#lock_paths[@]}" -gt 0 ] && [ "$force_lockfile" -eq 0 ]; then
-    filtered=()
-    if command -v git &>/dev/null; then
-        for lock_path in "${lock_paths[@]}"; do
-            lock_dir=$(dirname -- "$lock_path")
-            lock_base=$(basename -- "$lock_path")
-            # -C scopes git to the repo containing this specific lock file,
-            # so this works when the current directory holds multiple
-            # unrelated clones rather than a single git worktree.
-            if git -C "$lock_dir" rev-parse --is-inside-work-tree &>/dev/null &&
-                git -C "$lock_dir" check-ignore -q -- "$lock_base"; then
-                filtered+=("$lock_path")
-            fi
-        done
+if [ "${#paths[@]}" -eq 0 ]; then
+    exit 0
+fi
+
+sorted=()
+while IFS= read -r path; do
+    sorted+=("$path")
+done < <(printf '%s\n' "${paths[@]}" | sort)
+paths=("${sorted[@]}")
+
+to_remove=()
+total_kb=0
+
+for path in "${paths[@]}"; do
+    size_kb=$(path_size_kb "$path")
+    [ -z "$size_kb" ] && size_kb=0
+    size_human=$(human_size "$size_kb")
+
+    keep=1
+    reason=""
+    if [ "$force" -eq 0 ]; then
+        path_dir=$(dirname -- "$path")
+        path_base=$(basename -- "$path")
+        # -C scopes git to the repo containing this specific path, so this
+        # works when the current directory holds multiple unrelated clones
+        # rather than a single git worktree.
+        if ! command -v git &>/dev/null || ! git -C "$path_dir" rev-parse --is-inside-work-tree &>/dev/null; then
+            keep=0
+            reason="outside git-worktree"
+        elif ! git -C "$path_dir" check-ignore -q -- "$path_base"; then
+            keep=0
+            reason="not Git-ignored"
+        fi
     fi
-    lock_paths=("${filtered[@]}")
-fi
 
-paths+=("${lock_paths[@]}")
+    if [ "$keep" -eq 1 ]; then
+        to_remove+=("$path")
+        total_kb=$((total_kb + size_kb))
+        echo "$path ($size_human)"
+    else
+        echo "WARNING: Skipped ($reason): $path ($size_human)"
+    fi
+done
 
-if [ "${#paths[@]}" -gt 0 ]; then
-    sorted=()
-    while IFS= read -r path; do
-        sorted+=("$path")
-    done < <(printf '%s\n' "${paths[@]}" | sort)
-    paths=("${sorted[@]}")
-fi
+total_human=$(human_size "$total_kb")
 
-if [ "${#paths[@]}" -gt 0 ]; then
-    printf '%s\n' "${paths[@]}"
-    rm -rf -- "${paths[@]}"
+if [ "$dry_run" -eq 1 ]; then
+    echo "Would reclaim: $total_human"
+else
+    if [ "${#to_remove[@]}" -gt 0 ]; then
+        rm -rf -- "${to_remove[@]}"
+    fi
+    echo "Reclaimed: $total_human"
 fi
