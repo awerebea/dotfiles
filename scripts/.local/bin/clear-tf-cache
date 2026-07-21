@@ -11,10 +11,11 @@ COLOR_RESET=$'\033[0m'
 
 usage() {
     cat <<'EOF'
-Usage: clear-tf-cache [-f|--force] [-n|--dry-run] [-C|--no-color] [-w|--warnings]
+Usage: clear-tf-cache [-f|--force] [-n|--dry-run] [-C|--no-color]
+                       [-w|--warnings] [-p|--path DIR]
 
 Remove .terraform and .terragrunt-cache directories, and
-.terraform.lock.hcl files, found under the current directory.
+.terraform.lock.hcl files, found under DIR (default: current directory).
 
 By default, a matching path is only removed if it is both:
   - inside a git worktree, and
@@ -29,9 +30,17 @@ Options:
                    be reclaimed, without deleting anything
   -C, --no-color   Disable colored output
   -w, --warnings   Print warnings for skipped paths (off by default)
+  -p, --path DIR   Directory to search (default: .)
   -h, --help       Show this help message
 EOF
 }
+
+# Short options that require a value. Used by the squash-expansion below to
+# stop mid-token once one of these is hit: a value-taking short option
+# consumes the rest of its token (or the next argv item, if nothing is left)
+# as its value, and nothing after it is treated as more flags -- same
+# GNU/POSIX convention as `tar -xvf file` (note -f must come last).
+VALUE_OPTS="p"
 
 # Expand squashed short options (-fd -> -f -d) into separate tokens so the
 # parsing loop below can handle them one at a time, same as `ls -la`.
@@ -45,7 +54,15 @@ while [ $# -gt 0 ]; do
         if [ "${#1}" -gt 2 ]; then
             chars="${1#-}"
             for ((i = 0; i < ${#chars}; i++)); do
-                expanded+=("-${chars:i:1}")
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                *"$c"*)
+                    rest="${chars:i+1}"
+                    [ -n "$rest" ] && expanded+=("$rest")
+                    break
+                    ;;
+                esac
             done
         else
             expanded+=("$1")
@@ -63,6 +80,7 @@ force=0
 dry_run=0
 no_color=0
 show_warnings=0
+search_path="."
 while [ $# -gt 0 ]; do
     case "$1" in
     -f | --force)
@@ -79,6 +97,18 @@ while [ $# -gt 0 ]; do
         ;;
     -w | --warnings)
         show_warnings=1
+        shift
+        ;;
+    -p | --path)
+        if [ "$#" -lt 2 ]; then
+            echo "${ERROR_COLOR}ERROR:${COLOR_RESET} option '$1' requires a value" >&2
+            exit 1
+        fi
+        search_path="$2"
+        shift 2
+        ;;
+    --path=*)
+        search_path="${1#--path=}"
         shift
         ;;
     -h | --help)
@@ -124,16 +154,16 @@ paths=()
 if command -v fd &>/dev/null; then
     while IFS= read -r -d '' path; do
         paths+=("$path")
-    done < <(fd -0 -HI -td '\.terragrunt-cache|\.terraform$')
+    done < <(fd -0 -HI -td '\.terragrunt-cache|\.terraform$' -- "$search_path")
 
     while IFS= read -r -d '' path; do
         paths+=("$path")
-    done < <(fd -0 -HI -tf '\.terraform\.lock\.hcl$')
+    done < <(fd -0 -HI -tf '\.terraform\.lock\.hcl$' -- "$search_path")
 else
     while IFS= read -r -d '' path; do
         paths+=("$path")
     done < <(
-        find . \( -type d -name '.terragrunt-cache' -exec printf '%s/\0' {} + \) \
+        find "$search_path" \( -type d -name '.terragrunt-cache' -exec printf '%s/\0' {} + \) \
             -o \( -type d -name '.terraform' -exec printf '%s/\0' {} + \) \
             -o \( -type f -name '.terraform.lock.hcl' -print0 \)
     )
