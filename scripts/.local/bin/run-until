@@ -45,6 +45,7 @@ EOF
     # Validate first positional argument
     if [[ $# -lt 2 ]]; then
         usage
+        return 1
     fi
 
     mode=$1
@@ -56,6 +57,7 @@ EOF
     *)
         echo "Error: first argument must be 'success' or 'fail'" >&2
         usage
+        return 1
         ;;
     esac
 
@@ -149,6 +151,7 @@ EOF
         *)
             echo "Unknown argument: $1" >&2
             usage
+            return 1
             ;;
         esac
         shift
@@ -157,6 +160,7 @@ EOF
     if [[ ${#cmd[@]} -eq 0 ]]; then
         echo "Error: command must be specified with -c or --command" >&2
         usage
+        return 1
     fi
 
     # Validation functions
