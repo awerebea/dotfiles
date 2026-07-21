@@ -1,8 +1,17 @@
 #! /usr/bin/env bash
 
+# Colors used for output; edit these to change the look. Empty string means
+# "use the terminal's default color" (used for paths). -C/--no-color blanks
+# all of these out at runtime.
+ERROR_COLOR=$'\033[0;31m' # red
+WARN_COLOR=$'\033[0;33m'  # yellow
+PATH_COLOR=''             # default terminal foreground
+SIZE_COLOR=$'\033[0;36m'  # cyan
+COLOR_RESET=$'\033[0m'
+
 usage() {
     cat <<'EOF'
-Usage: clear-tf-cache [-f|--force] [-n|--dry-run]
+Usage: clear-tf-cache [-f|--force] [-n|--dry-run] [-C|--no-color]
 
 Remove .terraform and .terragrunt-cache directories, and
 .terraform.lock.hcl files, found under the current directory.
@@ -14,11 +23,12 @@ Paths that don't meet these criteria are skipped, with a warning
 explaining why.
 
 Options:
-  -f, --force     Remove matching paths regardless of git-worktree or
-                  .gitignore status
-  -d, --dry-run   Show what would be removed and the space that would
-                  be reclaimed, without deleting anything
-  -h, --help      Show this help message
+  -f, --force      Remove matching paths regardless of git-worktree or
+                   .gitignore status
+  -d, --dry-run    Show what would be removed and the space that would
+                   be reclaimed, without deleting anything
+  -C, --no-color   Disable colored output
+  -h, --help       Show this help message
 EOF
 }
 
@@ -50,6 +60,7 @@ set -- "${expanded[@]}"
 
 force=0
 dry_run=0
+no_color=0
 while [ $# -gt 0 ]; do
     case "$1" in
     -f | --force)
@@ -60,16 +71,28 @@ while [ $# -gt 0 ]; do
         dry_run=1
         shift
         ;;
+    -C | --no-color)
+        no_color=1
+        shift
+        ;;
     -h | --help)
         usage
         exit 0
         ;;
     *)
-        echo "clear-tf-cache: unknown option '$1'" >&2
+        echo "${ERROR_COLOR}ERROR:${COLOR_RESET} unknown option '$1'" >&2
         exit 1
         ;;
     esac
 done
+
+if [ "$no_color" -eq 1 ]; then
+    ERROR_COLOR=''
+    WARN_COLOR=''
+    PATH_COLOR=''
+    SIZE_COLOR=''
+    COLOR_RESET=''
+fi
 
 # Converts a size in KB (as reported by `du -sk`) into a human-readable
 # string, scaling up through KB/MB/GB/TB/PB as appropriate.
@@ -133,7 +156,8 @@ for path in "${paths[@]}"; do
     if [ "$force" -eq 0 ]; then
         path_dir=$(dirname -- "$path")
         path_base=$(basename -- "$path")
-        # -C scopes git to the repo containing this specific path, so this
+        # git's own -C flag (unrelated to this script's -C/--no-color) scopes
+        # the command to the repo containing this specific path, so this
         # works when the current directory holds multiple unrelated clones
         # rather than a single git worktree.
         if ! command -v git &>/dev/null || ! git -C "$path_dir" rev-parse --is-inside-work-tree &>/dev/null; then
@@ -148,19 +172,19 @@ for path in "${paths[@]}"; do
     if [ "$keep" -eq 1 ]; then
         to_remove+=("$path")
         total_kb=$((total_kb + size_kb))
-        echo "$path ($size_human)"
+        echo "${PATH_COLOR}$path${COLOR_RESET} ${SIZE_COLOR}($size_human)${COLOR_RESET}"
     else
-        echo "WARNING: Skipped ($reason): $path ($size_human)"
+        echo "${WARN_COLOR}WARNING: Skipped ($reason):${COLOR_RESET} ${PATH_COLOR}$path${COLOR_RESET} ${SIZE_COLOR}($size_human)${COLOR_RESET}"
     fi
 done
 
 total_human=$(human_size "$total_kb")
 
 if [ "$dry_run" -eq 1 ]; then
-    echo "Would reclaim: $total_human"
+    echo "Would reclaim: ${SIZE_COLOR}$total_human${COLOR_RESET}"
 else
     if [ "${#to_remove[@]}" -gt 0 ]; then
         rm -rf -- "${to_remove[@]}"
     fi
-    echo "Reclaimed: $total_human"
+    echo "Reclaimed: ${SIZE_COLOR}$total_human${COLOR_RESET}"
 fi
