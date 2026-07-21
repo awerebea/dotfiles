@@ -12,7 +12,8 @@ run_until() {
         local script_name="${FUNCNAME[1]:-run_until}"
 
         cat >&2 <<EOF
-Usage: $script_name <mode> [options] -c <command> [args...]
+Usage: $script_name <mode> [options] -c "<command>"
+       $script_name <mode> [options] -- <command> [args...]
 
 Modes:
   s, success   Continue executing the command until the first success
@@ -29,7 +30,13 @@ Options:
                                   [default: 1]
   -M, --pause-max SECONDS         Maximum pause value (positive float)
                                   [default: no limit]
-  -c, --command COMMAND           Command to execute (required)
+  -c, --command "COMMAND"         Command to execute, as a single string,
+                                  same as \`bash -c\` (required unless --
+                                  is used; mutually exclusive with --)
+  --                              Treat everything after this as the
+                                  command and its arguments, each as a
+                                  separate word (mutually exclusive with
+                                  -c/--command)
 EOF
         return 1
     }
@@ -41,6 +48,7 @@ EOF
     pause_multiplier=1
     pause_max=""
     cmd=()
+    cmd_source=""
 
     # Validate first positional argument
     if [[ $# -lt 2 ]]; then
@@ -66,9 +74,9 @@ EOF
     # option consumes the rest of its token (or the next argv item, if
     # nothing is left) as its value, and nothing after it is treated as
     # more flags -- same GNU/POSIX convention as `tar -xvf file` (note -f
-    # must come last). -c/--command is further special-cased below since it
-    # swallows *all* remaining args verbatim as the command to run, so
-    # nothing after it may be touched by squash-expansion at all.
+    # must come last). -c/--command only ever takes a single value (like
+    # `bash -c`), so it's an ordinary member here; only a bare `--` swallows
+    # everything after it verbatim and must not be touched by squashing.
     local value_opts="tpiMmc"
 
     # Expand squashed short options into separate tokens so the parsing
@@ -81,7 +89,7 @@ EOF
             continue
         fi
         case "$1" in
-        -c | --command)
+        --)
             expanded+=("$1")
             stop_expanding=1
             ;;
@@ -98,7 +106,6 @@ EOF
                     *"$c"*)
                         rest="${chars:i+1}"
                         [[ -n "$rest" ]] && expanded+=("$rest")
-                        [[ "$c" == "c" ]] && stop_expanding=1
                         break
                         ;;
                     esac
@@ -144,8 +151,33 @@ EOF
             ;;
         --pause-max=*) pause_max="${1#*=}" ;;
         -c | --command)
+            if [[ "$cmd_source" == "--" ]]; then
+                echo "Error: -c/--command and -- are mutually exclusive" >&2
+                usage
+                return 1
+            fi
+            shift
+            cmd=("$1")
+            cmd_source="-c"
+            ;;
+        --command=*)
+            if [[ "$cmd_source" == "--" ]]; then
+                echo "Error: -c/--command and -- are mutually exclusive" >&2
+                usage
+                return 1
+            fi
+            cmd=("${1#*=}")
+            cmd_source="-c"
+            ;;
+        --)
+            if [[ "$cmd_source" == "-c" ]]; then
+                echo "Error: -c/--command and -- are mutually exclusive" >&2
+                usage
+                return 1
+            fi
             shift
             cmd=("$@")
+            cmd_source="--"
             break
             ;;
         *)
