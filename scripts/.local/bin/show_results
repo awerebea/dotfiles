@@ -31,9 +31,17 @@ __join_by() {
 }
 
 _process_cmd_options() {
+    # Short options that require a value (none currently). Used by the
+    # squash-expansion below to stop mid-token once one of these is hit: a
+    # value-taking short option consumes the rest of its token (or the next
+    # argv item, if nothing is left) as its value, and nothing after it is
+    # treated as more flags -- same GNU/POSIX convention as `tar -xvf file`
+    # (note -f must come last).
+    local value_opts=""
+
     # Expand squashed short options (-pa -> -p -a) into separate tokens so
     # the parsing loop below can handle them one at a time, same as `ls -la`.
-    local expanded=() chars i
+    local expanded=() chars i c rest
     while [ $# -gt 0 ]; do
         case "$1" in
         --*)
@@ -43,7 +51,15 @@ _process_cmd_options() {
             if [ "${#1}" -gt 2 ]; then
                 chars="${1#-}"
                 for ((i = 0; i < ${#chars}; i++)); do
-                    expanded+=("-${chars:i:1}")
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        [ -n "$rest" ] && expanded+=("$rest")
+                        break
+                        ;;
+                    esac
                 done
             else
                 expanded+=("$1")

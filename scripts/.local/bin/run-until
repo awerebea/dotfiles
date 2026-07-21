@@ -59,6 +59,60 @@ EOF
         ;;
     esac
 
+    # Short options that require a value. Used by the squash-expansion below
+    # to stop mid-token once one of these is hit: a value-taking short
+    # option consumes the rest of its token (or the next argv item, if
+    # nothing is left) as its value, and nothing after it is treated as
+    # more flags -- same GNU/POSIX convention as `tar -xvf file` (note -f
+    # must come last). -c/--command is further special-cased below since it
+    # swallows *all* remaining args verbatim as the command to run, so
+    # nothing after it may be touched by squash-expansion at all.
+    local value_opts="tpiMmc"
+
+    # Expand squashed short options into separate tokens so the parsing
+    # loop below can handle them one at a time, same as `ls -la`.
+    local expanded=() chars i c rest stop_expanding=0
+    while [[ $# -gt 0 ]]; do
+        if [[ "$stop_expanding" -eq 1 ]]; then
+            expanded+=("$1")
+            shift
+            continue
+        fi
+        case "$1" in
+        -c | --command)
+            expanded+=("$1")
+            stop_expanding=1
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            if [[ ${#1} -gt 2 ]]; then
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        [[ -n "$rest" ]] && expanded+=("$rest")
+                        [[ "$c" == "c" ]] && stop_expanding=1
+                        break
+                        ;;
+                    esac
+                done
+            else
+                expanded+=("$1")
+            fi
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
+        esac
+        shift
+    done
+    set -- "${expanded[@]}"
+
     # Argument parsing
     while [[ $# -gt 0 ]]; do
         case "$1" in
