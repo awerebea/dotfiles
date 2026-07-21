@@ -1,22 +1,100 @@
 #! /usr/bin/env bash
 
+usage() {
+    cat <<'EOF'
+Usage: clear-tf-cache [-f|--force-lockfile]
+
+Remove .terraform and .terragrunt-cache directories found under the
+current directory. These are always removed, regardless of .gitignore.
+
+.terraform.lock.hcl files are only removed if they are covered by
+.gitignore (i.e. not intentionally tracked), unless -f/--force-lockfile
+is given.
+
+Options:
+  -f, --force-lockfile  Also remove .terraform.lock.hcl files that are
+                        not gitignored (e.g. intentionally tracked)
+  -h, --help            Show this help message
+EOF
+}
+
+force_lockfile=0
+while [ $# -gt 0 ]; do
+    case "$1" in
+    -f | --force-lockfile)
+        force_lockfile=1
+        shift
+        ;;
+    -h | --help)
+        usage
+        exit 0
+        ;;
+    *)
+        echo "clear-tf-cache: unknown option '$1'" >&2
+        exit 1
+        ;;
+    esac
+done
+
+paths=()
+lock_paths=()
+
 if command -v fd &>/dev/null; then
-    paths=$(
-        {
-            fd -IH -td '\.terragrunt-cache|\.terraform$'
-            fd -IH -tf '\.terraform\.lock\.hcl$'
-        } | sort
-    )
+    # Cache directories are always removed, regardless of .gitignore status.
+    while IFS= read -r -d '' path; do
+        paths+=("$path")
+    done < <(fd -0 -HI -td '\.terragrunt-cache|\.terraform$')
+
+    # The lock file is only removed by default if it's actually gitignored,
+    # since it's common (and recommended) to commit it intentionally. See
+    # the per-path filtering below.
+    while IFS= read -r -d '' path; do
+        lock_paths+=("$path")
+    done < <(fd -0 -HI -tf '\.terraform\.lock\.hcl$')
 else
-    paths=$(
-        find . \( -type d -name '.terragrunt-cache' -exec printf '%s/\n' {} + \) \
-            -o \( -type d -name '.terraform' -exec printf '%s/\n' {} + \) \
-            -o \( -type f -name '.terraform.lock.hcl' -print \) |
-            sort
+    # find has no concept of .gitignore, so it already finds everything
+    # unconditionally, matching the desired behavior for both lists.
+    while IFS= read -r -d '' path; do
+        paths+=("$path")
+    done < <(
+        find . \( -type d -name '.terragrunt-cache' -exec printf '%s/\0' {} + \) \
+            -o \( -type d -name '.terraform' -exec printf '%s/\0' {} + \)
     )
+
+    while IFS= read -r -d '' path; do
+        lock_paths+=("$path")
+    done < <(find . -type f -name '.terraform.lock.hcl' -print0)
 fi
 
-if [ -n "$paths" ]; then
-    printf '%s\n' "$paths"
-    printf '%s\n' "$paths" | xargs rm -rf
+if [ "${#lock_paths[@]}" -gt 0 ] && [ "$force_lockfile" -eq 0 ]; then
+    filtered=()
+    if command -v git &>/dev/null; then
+        for lock_path in "${lock_paths[@]}"; do
+            lock_dir=$(dirname -- "$lock_path")
+            lock_base=$(basename -- "$lock_path")
+            # -C scopes git to the repo containing this specific lock file,
+            # so this works when the current directory holds multiple
+            # unrelated clones rather than a single git worktree.
+            if git -C "$lock_dir" rev-parse --is-inside-work-tree &>/dev/null &&
+                git -C "$lock_dir" check-ignore -q -- "$lock_base"; then
+                filtered+=("$lock_path")
+            fi
+        done
+    fi
+    lock_paths=("${filtered[@]}")
+fi
+
+paths+=("${lock_paths[@]}")
+
+if [ "${#paths[@]}" -gt 0 ]; then
+    sorted=()
+    while IFS= read -r path; do
+        sorted+=("$path")
+    done < <(printf '%s\n' "${paths[@]}" | sort)
+    paths=("${sorted[@]}")
+fi
+
+if [ "${#paths[@]}" -gt 0 ]; then
+    printf '%s\n' "${paths[@]}"
+    rm -rf -- "${paths[@]}"
 fi
