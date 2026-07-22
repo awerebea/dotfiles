@@ -579,8 +579,8 @@ bind M-_ split-window -fvb # create new pane above target-pane
 bind _ split-window -fv
 
 # swap windows
-bind S-Left swap-window -t -1 \; previous-window
-bind S-Right swap-window -t +1 \; next-window
+bind -r S-Left swap-window -t -1 \; previous-window
+bind -r S-Right swap-window -t +1 \; next-window
 
 # {{{ --------------- List of installed plugins with their settings -------------------------------
 set -g @plugin 'tmux-plugins/tmux-sensible'
