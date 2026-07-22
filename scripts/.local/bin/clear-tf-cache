@@ -154,11 +154,11 @@ paths=()
 if command -v fd &>/dev/null; then
     while IFS= read -r -d '' path; do
         paths+=("$path")
-    done < <(fd -0 -HI -td '\.terragrunt-cache|\.terraform$' -- "$search_path")
+    done < <(fd -0 -HI -td '^\.terragrunt-cache$|^\.terraform$' -- "$search_path")
 
     while IFS= read -r -d '' path; do
         paths+=("$path")
-    done < <(fd -0 -HI -tf '\.terraform\.lock\.hcl$' -- "$search_path")
+    done < <(fd -0 -HI -tf '^\.terraform\.lock\.hcl$' -- "$search_path")
 else
     while IFS= read -r -d '' path; do
         paths+=("$path")
