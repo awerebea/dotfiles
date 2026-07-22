@@ -13,9 +13,25 @@ return {
       { mode = { "n", "x" }, "<C-\\>" },
     },
     config = function(_, _)
+      -- Filetypes without a Tree-sitter parser fall back to vim.bo.commentstring,
+      -- which is unset for these types. Return the comment string early so
+      -- ts_context_commentstring is never consulted for them.
+      local no_ts_comment = {
+        confini = "#%s",
+        kitty = "#%s",
+      }
+      local ts_pre_hook =
+        require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()
+
       local opts = {
         ignore = "^$",
-        pre_hook = require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook(),
+        pre_hook = function(ctx)
+          local override = no_ts_comment[vim.bo.filetype]
+          if override then
+            return override
+          end
+          return ts_pre_hook(ctx)
+        end,
         toggler = {
           ---Line-comment toggle keymap
           line = "gcc",
@@ -28,6 +44,7 @@ return {
         },
       }
       require("Comment").setup(opts)
+
       local api = require("Comment.api")
       -- Toggle current line (linewise) using C-/
       vim.keymap.set("n", "<C-_>", api.toggle.linewise.current)
