@@ -1064,6 +1064,14 @@ bind-key -T marked-pane-actions j join-pane
 bind-key -T marked-pane-actions d select-pane -d \; display-message "Pane disabled"
 # enable a previously disabled pane
 bind-key -T marked-pane-actions e select-pane -e \; display-message "Pane enabled"
+# swap the current pane with the pane geometrically adjacent in a direction;
+# -r keeps this table active for repeated taps within repeat-time, so you
+# can shuffle a pane around with just the arrow keys and it drops back to
+# normal mode on its own once you stop pressing
+bind-key -r -T marked-pane-actions Left swap-pane -t '{left-of}'
+bind-key -r -T marked-pane-actions Right swap-pane -t '{right-of}'
+bind-key -r -T marked-pane-actions Up swap-pane -t '{up-of}'
+bind-key -r -T marked-pane-actions Down swap-pane -t '{down-of}'
 
 # Start rectangle (block) selection in copy-mode
 bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
