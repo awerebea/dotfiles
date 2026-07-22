@@ -1030,11 +1030,14 @@ bind M-. move-pane -h -t '.-' # previous at the left, current at the right
 
 # swap current pane with the pane geometrically adjacent in a direction,
 # repeatable within repeat-time so you can hold prefix and tap the arrow
-# a few times in a row
-bind -r M-Left swap-pane -t '{left-of}'
-bind -r M-Right swap-pane -t '{right-of}'
-bind -r M-Up swap-pane -t '{up-of}'
-bind -r M-Down swap-pane -t '{down-of}'
+# a few times in a row. swap-pane alone leaves the active flag on the
+# original position, not on the pane you just moved -- chaining
+# select-pane with the same direction re-resolves it after the swap so
+# focus follows your pane as it hops across the layout.
+bind -r M-Left swap-pane -t '{left-of}' \; select-pane -t '{left-of}'
+bind -r M-Right swap-pane -t '{right-of}' \; select-pane -t '{right-of}'
+bind -r M-Up swap-pane -t '{up-of}' \; select-pane -t '{up-of}'
+bind -r M-Down swap-pane -t '{down-of}' \; select-pane -t '{down-of}'
 
 # toggle mouse
 bind-key M {
@@ -1067,11 +1070,15 @@ bind-key -T marked-pane-actions e select-pane -e \; display-message "Pane enable
 # swap the current pane with the pane geometrically adjacent in a direction;
 # -r keeps this table active for repeated taps within repeat-time, so you
 # can shuffle a pane around with just the arrow keys and it drops back to
-# normal mode on its own once you stop pressing
-bind-key -r -T marked-pane-actions Left swap-pane -t '{left-of}'
-bind-key -r -T marked-pane-actions Right swap-pane -t '{right-of}'
-bind-key -r -T marked-pane-actions Up swap-pane -t '{up-of}'
-bind-key -r -T marked-pane-actions Down swap-pane -t '{down-of}'
+# normal mode on its own once you stop pressing. swap-pane alone leaves the
+# active flag on the original position, not on the pane you just moved --
+# chaining select-pane with the same direction re-resolves it after the
+# swap so focus follows your pane as it hops across the layout, letting
+# repeated presses (even mixed directions) keep tracking the same pane.
+bind-key -r -T marked-pane-actions Left swap-pane -t '{left-of}' \; select-pane -t '{left-of}'
+bind-key -r -T marked-pane-actions Right swap-pane -t '{right-of}' \; select-pane -t '{right-of}'
+bind-key -r -T marked-pane-actions Up swap-pane -t '{up-of}' \; select-pane -t '{up-of}'
+bind-key -r -T marked-pane-actions Down swap-pane -t '{down-of}' \; select-pane -t '{down-of}'
 
 # Start rectangle (block) selection in copy-mode
 bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
