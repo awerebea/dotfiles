@@ -1028,6 +1028,14 @@ bind C-b choose-buffer -Z # choose which buffer to paste from
 bind M-, move-pane -t '.-' # previous at the top, current at the bottom
 bind M-. move-pane -h -t '.-' # previous at the left, current at the right
 
+# swap current pane with the pane geometrically adjacent in a direction,
+# repeatable within repeat-time so you can hold prefix and tap the arrow
+# a few times in a row
+bind -r M-Left swap-pane -t '{left-of}'
+bind -r M-Right swap-pane -t '{right-of}'
+bind -r M-Up swap-pane -t '{up-of}'
+bind -r M-Down swap-pane -t '{down-of}'
+
 # toggle mouse
 bind-key M {
   set-option -gF mouse "#{?mouse,off,on}"
