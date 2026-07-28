@@ -638,19 +638,25 @@ set -g @open-editor-command "tmux run-shell cd #{pane_current_path} && \
 
 
 set -g @plugin 'samoshkin/tmux-plugin-sysstat'
+# Catppuccin Mocha: green #a6e3a1 (low), yellow #f9e2af (medium), red
+# #f38ba8 (stress, paired with base #1e1e2e text since this red is
+# lighter than the old #d70000 and needs dark text for contrast), overlay1
+# #7f849c for the muted "total" label. These are @sysstat_* plugin
+# options, not tmux_conf_theme_* variables, so they were missed in the
+# first Catppuccin pass.
 set -g @sysstat_cpu_view_tmpl '#[fg=#{cpu.color3}]#[fg=#{cpu.color},bg=#{cpu.color2}]#{cpu.pused}#[default]'
-set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=colour35]#{mem.total}#[default])'
+set -g @sysstat_mem_view_tmpl '#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.used}#[default]/#[fg=#{mem.color3}]#[fg=#{mem.color},bg=#{mem.color2}]#{mem.pused}#[default](#[fg=#7f849c]#{mem.total}#[default])'
 set -g @sysstat_cpu_medium_threshold "30"
 set -g @sysstat_cpu_stress_threshold "80"
 set -g @sysstat_mem_medium_threshold "50"
 set -g @sysstat_mem_stress_threshold "80"
 set -g @sysstat_mem_size_unit "M"
-set -g @sysstat_cpu_color_low "#9ece6a default default"
-set -g @sysstat_cpu_color_medium "#d7af5f default default"
-set -g @sysstat_cpu_color_stress "white,bold #d70000 #d70000"
-set -g @sysstat_mem_color_low "#9ece6a default default"
-set -g @sysstat_mem_color_medium "#d7af5f default default"
-set -g @sysstat_mem_color_stress "white,bold #d70000 #d70000"
+set -g @sysstat_cpu_color_low "#a6e3a1 default default"
+set -g @sysstat_cpu_color_medium "#f9e2af default default"
+set -g @sysstat_cpu_color_stress "#1e1e2e,bold #f38ba8 #f38ba8"
+set -g @sysstat_mem_color_low "#a6e3a1 default default"
+set -g @sysstat_mem_color_medium "#f9e2af default default"
+set -g @sysstat_mem_color_stress "#1e1e2e,bold #f38ba8 #f38ba8"
 
 
 set -g @plugin 'laktak/extrakto'
@@ -869,9 +875,13 @@ bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/n
 # Show pane details.
 set -g pane-border-status top
 # Add in setting below to indicate: #D - Unique pane ID, #{pane_current_command} - running command
-set -g pane-border-format '[#[bold]#{?pane_active,#[fg=green],#[fg=#9e9e9e]}#P#[fg=default,nobold]]\
-#{?pane_active,#[bold]#[fg=green],#[fg=default]}-#[fg=default,nobold]\
-[#{?pane_active,#[bold]#[fg=green],#[fg=#9e9e9e]}#{pane_current_command}#[fg=default,nobold]]'
+# Catppuccin Mocha: green #a6e3a1 (active), overlay1 #7f849c (inactive) --
+# this is a plain native tmux directive, outside Oh My Tmux's
+# tmux_conf_theme_* system entirely, so it was missed in the first
+# Catppuccin pass (which only touched tmux_conf_theme_* variables).
+set -g pane-border-format '[#[bold]#{?pane_active,#[fg=#a6e3a1],#[fg=#7f849c]}#P#[fg=default,nobold]]\
+#{?pane_active,#[bold]#[fg=#a6e3a1],#[fg=default]}-#[fg=default,nobold]\
+[#{?pane_active,#[bold]#[fg=#a6e3a1],#[fg=#7f849c]}#{pane_current_command}#[fg=default,nobold]]'
 
 # unbind C-l # conflicts with pane movements
 # bind l send-keys 'C-l' # clear screen (conflicts with nested session)
@@ -1007,7 +1017,7 @@ tmux_conf_theme_status_right='#[fg=#f38ba8,bold]#(\
  #[fg=#f9e2af](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]\
 %a %F %R\
  ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,}\
- #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default] | #{username}#{root} | #{hostname} '
+ | #{username}#{root} | #{hostname} '
 
 # status left style
 tmux_conf_theme_status_left_fg='#1e1e2e,#1e1e2e,#a6e3a1,#cdd6f4'          # base,base,green,text
