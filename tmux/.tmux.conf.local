@@ -399,29 +399,12 @@ tmux_conf_urlscan_options="--compact --dedupe"
 
 # this is the place to override or undo settings
 
-# increase history size
-set -g history-limit 1000000
-
-# start with mouse mode enabled
-set -g mouse on
-
-# force Vi mode
-#   really you should export VISUAL or EDITOR environment variable, see manual
-set -g status-keys vi
-set -g mode-keys vi
-
-# replace C-b by C-a instead of using both prefixes
-set -gu prefix2
-unbind C-a
-unbind C-b
-set -g prefix C-a
-bind C-a send-prefix
+# (all actual overrides live below the "# My overrides" marker further down,
+# so a future upstream template refresh only ever needs to replace what's
+# above that line)
 
 # if you don't want Oh my tmux! to alter a binding or a setting, use #!important
 # bind c new-window -c '#{pane_current_path}' #!important
-
-# move status line to top
-set -g status-position top
 
 
 # -- tpm -----------------------------------------------------------------------
@@ -555,12 +538,34 @@ tmux_conf_uninstall_plugins_on_reload=false
 
 # My overrides
 
+# -- relocated from "-- user customizations --" above, so every real
+#    override lives in one place below this marker --------------------------
+
+# increase history size
+set -g history-limit 1000000
+
+# start with mouse mode enabled
+set -g mouse on
+
+# force Vi mode
+#   really you should export VISUAL or EDITOR environment variable, see manual
+set -g status-keys vi
+set -g mode-keys vi
+
+# replace C-b by C-a instead of using both prefixes
+set -gu prefix2
+unbind C-a
+unbind C-b
+set -g prefix C-a
+bind C-a send-prefix
+
+# move status line to top
+set -g status-position top
+
+# -- end of relocated settings ------------------------------------------------
+
 # Update plugins: <prefix> + U
 set -g @tpm-update "U"
-
-# Determine Tmux version for version-specific commands
-run-shell 'tmux setenv -g TMUX_VERSION $(tmux -V | \
-  sed -En "s/^tmux[^0-9]*([.0-9]+).*/\1/p")'
 
 # 24-bit color terminal
 # set -g default-terminal "xterm-256color-italic" # colors, italic (linux)
@@ -576,6 +581,7 @@ set -g repeat-time 500
 # ！！！important！！！ enabling 24 bit color
 set -ga terminal-overrides ",*256col*:Tc"
 
+# Oh My Tmux's own default of 10s, set already in the main .tmux.conf
 set -g status-interval 10     # status line redraw timeout in seconds
 
 # split current window vertically
@@ -596,10 +602,6 @@ bind -r S-Left swap-window -t -1 \; previous-window
 bind -r S-Right swap-window -t +1 \; next-window
 
 # {{{ --------------- List of installed plugins with their settings -------------------------------
-set -g @plugin 'tmux-plugins/tmux-sensible'
-set -g @plugin 'jaclu/tmux-power-zoom' # Prefix + Z
-
-
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 # save and restore window geometry for most terminals in X11
 set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
@@ -662,25 +664,6 @@ set -g @plugin 'tmux-plugins/tmux-yank'
 set -g @yank_selection_mouse 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_selection 'clipboard' # or 'primary' or 'secondary'
 set -g @yank_with_mouse on
-
-
-set -g @plugin 'MunifTanjim/tmux-mode-indicator'
-# prompt to display when tmux prefix key is pressed
-set -g @mode_indicator_prefix_prompt ' WAIT '
-# prompt to display when tmux is in copy mode
-set -g @mode_indicator_copy_prompt ' COPY '
-# prompt to display when tmux has synchronized panes
-set -g @mode_indicator_sync_prompt ' SYNC '
-# prompt to display when tmux is in normal mode
-set -g @mode_indicator_empty_prompt ' TMUX '
-# style values for prefix prompt
-set -g @mode_indicator_prefix_mode_style 'bg=#bb9af7,fg=#16161e'
-# style values for copy prompt
-set -g @mode_indicator_copy_mode_style 'bg=#e0af68,fg=#16161e'
-# style values for sync prompt
-set -g @mode_indicator_sync_mode_style 'bg=#f7768e,fg=#16161e'
-# style values for empty prompt
-set -g @mode_indicator_empty_mode_style 'bg=#7aa2f7,fg=#16161e'
 
 
 set -g @plugin 'MunifTanjim/tmux-suspend'
@@ -788,9 +771,8 @@ set -g @menus_trigger '@'
 
 set -g @plugin 'roosta/tmux-fuzzback'
 set -g @fuzzback-bind /
-if-shell -b '[ "$(echo "$TMUX_VERSION >= 3.2" | bc)" = 1 ]' " \
-  set -g @fuzzback-popup 1; \
-  set -g @fuzzback-popup-size '90%'"
+set -g @fuzzback-popup 1
+set -g @fuzzback-popup-size '90%'
 
 
 set -g @plugin 'tmux-plugins/tmux-logging'
@@ -859,6 +841,31 @@ set -g @plugin 'kristopolous/tmux-gentrify'
 set -g @plugin 'jonmosco/kube-tmux'
 # }}} --------------- end of plugins settings -----------------------------------------------------
 
+# -- native replacements for removed plugins ---------------------------------
+
+bind a last-window       # prefix a == prefix Tab, since prefix is C-a
+bind C-p previous-window
+bind C-n next-window
+
+# tmux-power-zoom's trigger key: it moved the active pane into its own new
+# window, then moved it back to its original spot on a second press --
+# not the same thing as tmux's native `resize-pane -Z` (which zooms a pane
+# in place, no window created). The real native equivalent is `break-pane`
+# / `join-pane`, which is what tmux-power-zoom used internally anyway
+# (its own source: "This plugin relies on using break-pane, and on tmux
+# 3.7 using this causes tmux to crash instantly...", the same crash risk
+# noted where the plugin was removed above). Tested `break-pane` directly
+# on this machine's tmux 3.7b in an isolated session: it does not crash.
+# @zoomed_from is a per-PANE option (set with `-p`), so it travels with
+# the pane through break-pane/join-pane and supports zooming more than
+# one pane out at a time independently -- the original plugin tracked a
+# single global @power_zoom_state, so this is actually a small
+# improvement, not just a port.
+bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/null); if [ -n \"\$zf\" ];\
+  then tmux join-pane -s '#{pane_id}' -t \"\$zf\"; tmux set-option -pu -t '#{pane_id}'\
+  @zoomed_from; else tmux set-option -p -t '#{pane_id}' @zoomed_from '#{window_id}';\
+  tmux break-pane -s '#{pane_id}'; fi"
+
 # Show pane details.
 set -g pane-border-status top
 # Add in setting below to indicate: #D - Unique pane ID, #{pane_current_command} - running command
@@ -902,65 +909,94 @@ set -g focus-events on
 setw -g aggressive-resize on
 
 # -- clipboard -----------------------------------------------------------------
-tmux_conf_copy_to_os_clipboard=true
+# Left at false (the Oh My Tmux default): tmux-plugins/tmux-yank is already
+# loaded above and does this same job (copy-mode selections + mouse drag to
+# the OS clipboard). Turning this on too meant every yank ran BOTH copy
+# mechanisms back to back -- harmless in practice, but redundant. set-clipboard
+# below is new: it makes tmux also emit OSC 52, so copies reach the host
+# terminal's clipboard over SSH or from inside a nested tmux, which neither
+# tmux_conf_copy_to_os_clipboard nor tmux-yank's local pbcopy/xclip path
+# covers on their own.
+tmux_conf_copy_to_os_clipboard=false
+set -s set-clipboard on
 
 # -- display -------------------------------------------------------------------
+# Catppuccin Mocha palette (https://catppuccin.com/palette -- Mocha flavor):
+#   base #1e1e2e  mantle #181825  surface0 #313244  surface1 #45475a
+#   surface2 #585b70  overlay0 #6c7086  overlay1 #7f849c  overlay2 #9399b2
+#   subtext0 #a6adc8  subtext1 #bac2de  text #cdd6f4
+#   rosewater #f5e0dc  flamingo #f2cdcd  pink #f5c2e7  mauve #cba6f7
+#   red #f38ba8  maroon #eba0ac  peach #fab387  yellow #f9e2af
+#   green #a6e3a1  teal #94e2d5  sky #89dceb  sapphire #74c7ec
+#   blue #89b4fa  lavender #b4befe
+# Every hex below is one of these, kept in the same semantic role (border /
+# active-border / message / etc.) the previous Tokyo-Night-ish palette used.
+
 # pane borders colours:
-tmux_conf_theme_pane_border='#444444'                   # gray
-tmux_conf_theme_pane_active_border='#9ece6a'            # my green
+tmux_conf_theme_pane_border='#45475a'                   # surface1
+tmux_conf_theme_pane_active_border='#a6e3a1'            # green
 
 # pane indicator colours
-tmux_conf_theme_pane_indicator='#9ece6a'                # my green
-tmux_conf_theme_pane_active_indicator='#9ece6a'         # my green
+tmux_conf_theme_pane_indicator='#a6e3a1'                # green
+tmux_conf_theme_pane_active_indicator='#a6e3a1'         # green
 
 # status line style
-tmux_conf_theme_message_fg='#000000'                    # black
-tmux_conf_theme_message_bg='#e0af68'                    # my yellow
+tmux_conf_theme_message_fg='#1e1e2e'                    # base
+tmux_conf_theme_message_bg='#f9e2af'                    # yellow
 tmux_conf_theme_message_attr='bold'
 
 # status line command style (<prefix> : Escape)
-tmux_conf_theme_message_command_fg='#e0af68'            # my yellow
-tmux_conf_theme_message_command_bg='#000000'            # black
+tmux_conf_theme_message_command_fg='#f9e2af'            # yellow
+tmux_conf_theme_message_command_bg='#1e1e2e'            # base
 tmux_conf_theme_message_command_attr='bold'
 
 # window modes style
-tmux_conf_theme_mode_fg='#000000'                       # black
-tmux_conf_theme_mode_bg='#e0af68'                       # my yellow
+tmux_conf_theme_mode_fg='#1e1e2e'                       # base
+tmux_conf_theme_mode_bg='#f9e2af'                       # yellow
 tmux_conf_theme_mode_attr='bold'
 
 # status line style
-tmux_conf_theme_status_fg='colour249'                   # light gray (#9e9e9e)
-tmux_conf_theme_status_bg='#3a3a3a'                     # dark gray
+tmux_conf_theme_status_fg='#a6adc8'                     # subtext0
+tmux_conf_theme_status_bg='#1e1e2e'                     # base
 tmux_conf_theme_status_attr='none'
 
 # window status style
-tmux_conf_theme_window_status_fg='#9e9e9e'              # light gray
-tmux_conf_theme_window_status_bg='#3a3a3a'              # dark gray
+tmux_conf_theme_window_status_fg='#7f849c'              # overlay1
+tmux_conf_theme_window_status_bg='#1e1e2e'              # base
 tmux_conf_theme_window_status_attr='none'
 tmux_conf_theme_window_status_format='#I #W#{?window_bell_flag,🔔,}#{?window_zoomed_flag,🔍,}'
 
 # window current status style
-tmux_conf_theme_window_status_current_fg='#000000'      # black
-tmux_conf_theme_window_status_current_bg='#9ece6a'      # my green
+tmux_conf_theme_window_status_current_fg='#1e1e2e'      # base
+tmux_conf_theme_window_status_current_bg='#a6e3a1'      # green
 tmux_conf_theme_window_status_current_attr='bold'
 tmux_conf_theme_window_status_current_format='#I #W#{?window_zoomed_flag, 🔍,}'
 
 # window bell status style
-tmux_conf_theme_window_status_bell_fg='#ffff00'         # yellow
+tmux_conf_theme_window_status_bell_fg='#f38ba8'         # red
 tmux_conf_theme_window_status_bell_bg='default'
 tmux_conf_theme_window_status_bell_attr='blink,bold'
 
 # window last status style
-tmux_conf_theme_window_status_last_fg='#9ece6a'         # my green
+tmux_conf_theme_window_status_last_fg='#a6e3a1'         # green
 tmux_conf_theme_window_status_last_bg='default'
 tmux_conf_theme_window_status_last_attr='bold'
 
 # status left/right content:
-tmux_conf_theme_status_left='#{tmux_mode_indicator}| ❐ #S |\
-#[fg=colour255,bg=colour237] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default]\
- #{kube_tmux}'
+# NOTE: each #[...] style directive below is deliberately split into
+# separate single-attribute directives (#[bg=X]#[fg=Y], not #[bg=X,fg=Y]).
+# A comma-separated multi-attribute directive nested inside a #{?a,b,c}
+# conditional breaks tmux's parser -- confirmed with `tmux display -p`,
+# even with the comma backslash-escaped -- and silently collapses the
+# *entire* conditional to empty, not just that branch. Back-to-back
+# single-attribute directives are the verified-working form.
+tmux_conf_theme_status_left='#{?client_prefix,#[bg=#fab387]#[fg=#1e1e2e]\
+WAIT ,#{?pane_in_mode,#[bg=#f9e2af]#[fg=#1e1e2e] COPY ,#{?pane_synchronized,#[bg=#f38ba8]#[fg=#1e1e2e] SYNC ,#[bg=#89b4fa]#[fg=#1e1e2e] TMUX }}}#[default]| ❐ #S |\
+#[fg=#cdd6f4,bg=#45475a] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default] {kube_tmux}'
 
-tmux_conf_theme_status_right='#[fg=yellow,bold]#(\
+# `#{online_status}`/`@is_online` (dead custom function, never activated --
+# see section on dead segments) is dropped from the end.
+tmux_conf_theme_status_right='#[fg=#f38ba8,bold]#(\
   [ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE'\
 )#[fg=default]\
 #{prefix}\
@@ -968,20 +1004,19 @@ tmux_conf_theme_status_right='#[fg=yellow,bold]#(\
 #{pairing}\
 #{synchronized}\
 #{?battery_status,#{battery_status},}#{?battery_vbar, #{battery_vbar},}#{?battery_percentage, #{battery_percentage},}\
- #[fg=colour223](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]\
+ #[fg=#f9e2af](#{sysstat_loadavg}) #{sysstat_cpu} #{sysstat_mem} #[fg=default]\
 %a %F %R\
  ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,}\
- #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default]\
- | #{username}#{root} | #{hostname} '
+ #[fg=#{?@is_online,green,red}]#{online_status}#[fg=default] | #{username}#{root} | #{hostname} '
 
 # status left style
-tmux_conf_theme_status_left_fg='#000000,#000000,#afd7af,#e4e4e4'
-tmux_conf_theme_status_left_bg='#87afaf,#a9b1d6,#4e4e4e,#00afff'
+tmux_conf_theme_status_left_fg='#1e1e2e,#1e1e2e,#a6e3a1,#cdd6f4'          # base,base,green,text
+tmux_conf_theme_status_left_bg='#94e2d5,#b4befe,#45475a,#89b4fa'         # teal,lavender,surface1,blue
 tmux_conf_theme_status_left_attr='bold,none,none'
 
 # status right style
-tmux_conf_theme_status_right_fg='#9e9e9e,#9e9e9e,#3a3a3a'
-tmux_conf_theme_status_right_bg='#3a3a3a,#4e4e4e,#8a8a8a'
+tmux_conf_theme_status_right_fg='#7f849c,#7f849c,#1e1e2e'                # overlay1,overlay1,base
+tmux_conf_theme_status_right_bg='#1e1e2e,#45475a,#6c7086'                # base,surface1,overlay0
 tmux_conf_theme_status_right_attr='none,none,bold'
 
 # pairing indicator
@@ -1011,7 +1046,7 @@ tmux_conf_theme_mouse_attr="bold"
 
 # clock style (when you hit <prefix> + t)
 # you may want to use %I:%M %p in place of %R in tmux_conf_theme_status_right
-tmux_conf_theme_clock_colour='#00afff'  # blue
+tmux_conf_theme_clock_colour='#89b4fa'  # blue
 tmux_conf_theme_clock_style='24'
 
 # Copy-mode keybinds
