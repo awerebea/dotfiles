@@ -1021,7 +1021,7 @@ tmux_conf_theme_window_status_last_attr='bold'
 # single-attribute directives are the verified-working form.
 tmux_conf_theme_status_left='#{?client_prefix,#[bg=#fab387]#[fg=#1e1e2e]\
 WAIT ,#{?pane_in_mode,#[bg=#f9e2af]#[fg=#1e1e2e] COPY ,#{?pane_synchronized,#[bg=#f38ba8]#[fg=#1e1e2e] SYNC ,#[bg=#89b4fa]#[fg=#1e1e2e] TMUX }}}#[default]| ❐ #S |\
-#[fg=#cdd6f4,bg=#45475a] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default] {kube_tmux}'
+#[fg=#cdd6f4,bg=#45475a] [#{@pane-focus-direction}][#{@pane-focus-size}]#[fg=default,bg=default] #{kube_tmux}'
 
 # `#{online_status}`/`@is_online` (dead custom function, never activated --
 # see section on dead segments) is dropped from the end.
@@ -1068,7 +1068,8 @@ tmux_conf_theme_prefix_attr="none"
 
 # mouse indicator
 # tmux_conf_theme_mouse="🖱️"            # U+1F5B1
-tmux_conf_theme_mouse="🐁"            # U+1F401
+# tmux_conf_theme_mouse="🐁"            # U+1F401
+tmux_conf_theme_mouse="󰍽"
 tmux_conf_theme_mouse_fg="none"
 tmux_conf_theme_mouse_bg="none"
 tmux_conf_theme_mouse_attr="bold"
