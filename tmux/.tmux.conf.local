@@ -919,15 +919,34 @@ set -g focus-events on
 setw -g aggressive-resize on
 
 # -- clipboard -----------------------------------------------------------------
-# Left at false (the Oh My Tmux default): tmux-plugins/tmux-yank is already
-# loaded above and does this same job (copy-mode selections + mouse drag to
-# the OS clipboard). Turning this on too meant every yank ran BOTH copy
-# mechanisms back to back -- harmless in practice, but redundant. set-clipboard
-# below is new: it makes tmux also emit OSC 52, so copies reach the host
-# terminal's clipboard over SSH or from inside a nested tmux, which neither
-# tmux_conf_copy_to_os_clipboard nor tmux-yank's local pbcopy/xclip path
-# covers on their own.
-tmux_conf_copy_to_os_clipboard=false
+# Reverted back to true (this repo's original value) after tracing a real
+# `prefix+r` crash ("unknown command: tmux" from a generated temp file) to
+# changing this to false. Oh My Tmux's own `_apply_bindings` rewrites every
+# copy-pipe/copy-selection binding it finds whenever a local clipboard tool
+# is detected (pbcopy here) -- regardless of true/false/disabled, since
+# that's a *separate* outer check. `true` takes the "insert pbcopy" branch,
+# whose regex has a negative lookahead that skips any binding that already
+# mentions pbcopy anywhere in the line. `false` (and `disabled` -- verified,
+# it hits the exact same branch, not a safer no-op) takes the "strip
+# pbcopy" branch, whose regex has no such guard: on tmux-yank's own
+# `M-y` binding (`copy-pipe-and-cancel "pbcopy; tmux paste-buffer -p"`,
+# not something in this file -- tmux-yank installs it), it strips the
+# opening quote but the closing quote it's looking for isn't immediately
+# after "pbcopy" (there's a "; tmux paste-buffer -p" first), so the
+# closing quote is left orphaned, unbalancing the whole line and cascading
+# into the next one. Reproduced by hand against a real capture of this
+# session's actual `list-keys` output before concluding this -- `true`
+# leaves the binding untouched (it already has pbcopy, so the lookahead
+# blocks the rewrite) and the generated file sources cleanly; `false`
+# corrupts it every time. So the "redundant with tmux-yank" framing this
+# doc used before was true only in the sense of what ends up in your OS
+# clipboard -- it was never redundant from a binding-rewrite-safety
+# perspective, and turning it off is what broke reload. set-clipboard
+# below is unrelated and still worth keeping: it makes tmux also emit
+# OSC 52, so copies reach the host terminal's clipboard over SSH or from
+# inside a nested tmux, which neither this setting nor tmux-yank's local
+# pbcopy/xclip path covers on their own.
+tmux_conf_copy_to_os_clipboard=true
 set -s set-clipboard on
 
 # -- display -------------------------------------------------------------------
