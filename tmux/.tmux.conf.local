@@ -424,7 +424,7 @@ tmux_conf_update_plugins_on_launch=true
 # by default, reloading the configuration will update tpm and all plugins
 #   - true (default)
 #   - false
-tmux_conf_update_plugins_on_reload=true
+# tmux_conf_update_plugins_on_reload=true
 
 # by default, reloading the configuration will uninstall tpm and plugins when no
 # plugins are enabled
@@ -566,6 +566,16 @@ set -g status-position top
 
 # Update plugins: <prefix> + U
 set -g @tpm-update "U"
+
+# Do NOT auto-run a full git-fetch + update + clean cycle across every
+# declared plugin on every `prefix+r`. Confirmed via tpm_log.txt
+# timestamps matching test reloads: the default (true) means a routine
+# "reload after tweaking a color" reruns install_plugins.sh,
+# update_plugins.sh, AND clean_plugins.sh for all ~25 plugins -- a second
+# wave of plugin re-sourcing right after the theme has already compiled,
+# and the likely cause of the status bar briefly showing the new config
+# then reverting. Plugin updates now only happen on purpose via prefix+U.
+tmux_conf_update_plugins_on_reload=false
 
 # 24-bit color terminal
 # set -g default-terminal "xterm-256color-italic" # colors, italic (linux)
@@ -852,6 +862,58 @@ set -g @plugin 'jonmosco/kube-tmux'
 bind a last-window       # prefix a == prefix Tab, since prefix is C-a
 bind C-p previous-window
 bind C-n next-window
+
+# "Lite" reload: theme + bindings only, skips the ~6-second full TPM
+# plugin re-source that `prefix+r` always runs (unconditionally, on every
+# reload, regardless of tmux_conf_update_plugins_on_reload -- that setting
+# only controls the slower git-fetch update/clean cycle, not this).
+# Root-caused a real bug this way: something within that plugin re-source
+# pass reliably clobbers status-left/status-right ~2-3 seconds after a
+# normal reload, reverting colors/icons/segment order back to whatever was
+# active before the reload -- reproduced on demand, confirmed it doesn't
+# self-correct even after 30s, and confirmed skipping _apply_plugins
+# entirely avoids it every time. Didn't pin down which of the ~25 plugins
+# is responsible despite real effort (checked every registered hook,
+# checked for leaked/duplicate background loops, traced tmux-continuum and
+# tmux-plugin-sysstat's own read-modify-write cycles on status-right) --
+# but avoiding the entire TPM re-source for routine edits sidesteps it
+# regardless of the exact culprit. Use `prefix+r` (full) after actually
+# changing which plugins are declared or their settings; use `prefix+R`
+# (this) for everyday color/icon/segment tweaks -- it's near-instant and
+# doesn't have this bug. `prefix+U` remains for explicit plugin updates.
+#
+# NOTE: two things had to be right here, not one.
+#
+# 1. All the work happens in one `sh -s eval '...'` invocation, not several
+#    separate `run` commands. `run`/`run-shell` schedule a background job
+#    and return immediately -- they don't block until that job finishes --
+#    so separate `run "... | sh -s _apply_X"` commands race each other with
+#    no guaranteed order.
+#
+# 2. Re-sourcing .tmux.conf.local itself has to go through an external
+#    `"$TMUX_PROGRAM" ... source "$TMUX_CONF_LOCAL"` process, exactly like
+#    upstream's own `bind r` (main .tmux.conf line 40) and its startup
+#    bootstrap (main .tmux.conf line 163) both do -- NOT the native
+#    `source-file` command. A first version used `source-file
+#    "#{TMUX_CONF_LOCAL}"` and it was flaky: it looked correct in an
+#    isolated test (a scratch conf sourced directly, right after the real
+#    .local's values were already live from a separate manual source), but
+#    failed against the real file in a clean end-to-end test -- old values
+#    came back even though the file on disk was confirmed correct.
+#    `source-file` runs in-process against the client's already-cached
+#    config-file variables; it doesn't repeat the same fresh
+#    variable-parsing pass that a brand-new external `tmux source` process
+#    does, which is exactly what upstream itself relies on for every
+#    reload, local-conf included. Spawning that same external process here
+#    instead of the built-in command is what made the fix actually stick.
+#
+# Both fixes together, chained with `&&` in one `run` (which already runs
+# its argument via `sh -c`, so no separate `sh -c` wrapper is needed):
+# source .local for real, then apply theme/bindings, then confirm. Verified
+# stable via atomic `send-keys C-a R` (a two-call send-keys can miss
+# tmux's prefix-wait window and never trigger the binding at all, which
+# looked like a failure in earlier rounds but wasn't one).
+bind R run '"$TMUX_PROGRAM" -S #{socket_path} source "$TMUX_CONF_LOCAL" && cut -c3- "$TMUX_CONF" | sh -s eval "_apply_tmux_256color; _apply_24b; _apply_theme; _apply_bindings" && "$TMUX_PROGRAM" -S #{socket_path} display-message "Lite reload done (theme + bindings, no plugin re-source)"'
 
 # tmux-power-zoom's trigger key: it moved the active pane into its own new
 # window, then moved it back to its original spot on a second press --
