@@ -860,8 +860,8 @@ set -g @plugin 'jonmosco/kube-tmux'
 # -- native replacements for removed plugins ---------------------------------
 
 bind a last-window       # prefix a == prefix Tab, since prefix is C-a
-bind C-p previous-window
-bind C-n next-window
+bind -r C-p previous-window
+bind -r C-n next-window
 
 # "Lite" reload: theme + bindings only, skips the ~6-second full TPM
 # plugin re-source that `prefix+r` always runs (unconditionally, on every
