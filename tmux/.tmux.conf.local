@@ -1036,14 +1036,14 @@ WAIT ,#{?pane_in_mode,#[bg=#f9e2af]#[fg=#1e1e2e] COPY ,#{?pane_synchronized,#[bg
 # `#{online_status}`/`@is_online` (dead custom function, never activated --
 # see section on dead segments) is dropped from the end.
 tmux_conf_theme_status_right='#[fg=#f38ba8,bold]#(\
-  [ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE'\
+[ $(tmux show-option -qv key-table) = 'suspended' ] && echo 'SUSPEND\ MODE'\
 )#[fg=default]\
 #{prefix}\
 #{mouse}\
 #{pairing}\
 #{synchronized}\
-#{?battery_vbar, #{battery_vbar},}#{?battery_percentage, #{battery_percentage},}\
- #[fg=#f9e2af]󰍛 #{sysstat_cpu}(#{sysstat_loadavg}) 󰆼 #{sysstat_mem} #[fg=default]\
+#{?battery_vbar,#{battery_vbar},}#{?battery_percentage, #{battery_percentage},}\
+#[fg=#f9e2af] 󰍛 #[fg=default]#{sysstat_cpu}(#[fg=#7f849c]#{sysstat_loadavg}#[fg=default])#[fg=#f9e2af] 󰆼 #[fg=default]#{sysstat_mem}#[fg=default]\
 %a %F %R\
  ↑#{?uptime_y, #{uptime_y}y,}#{?uptime_d, #{uptime_d}d,}#{?uptime_h, #{uptime_h}h,}#{?uptime_m, #{uptime_m}m,}\
  | #{username}#{root} | #{hostname} '
