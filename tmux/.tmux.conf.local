@@ -989,6 +989,15 @@ tmux_conf_theme_message_command_fg='#f9e2af'            # yellow
 tmux_conf_theme_message_command_bg='#1e1e2e'            # base
 tmux_conf_theme_message_command_attr='bold'
 
+# without an explicit color, it uses the terminal cursor color, which is
+# often light/white. This has poor contrast against the message-style yellow
+# background above, making the cursor hard to see. Set it explicitly to match
+# tmux_conf_theme_message_fg (dark/base) for better contrast.
+# Optionally force a block cursor to avoid relying on terminal cursor style
+# defaults (thin bar/underline).
+set -g prompt-cursor-colour '#1e1e2e'                   # base
+set -g prompt-cursor-style bar
+
 # window modes style
 tmux_conf_theme_mode_fg='#1e1e2e'                       # base
 tmux_conf_theme_mode_bg='#f9e2af'                       # yellow
