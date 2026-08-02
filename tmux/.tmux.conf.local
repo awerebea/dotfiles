@@ -877,9 +877,45 @@ bind -r C-n next-window
 # one pane out at a time independently -- the original plugin tracked a
 # single global @power_zoom_state, so this is actually a small
 # improvement, not just a port.
+#
+# First version's return path was a bare `join-pane -t window`, which just
+# appends the pane as the new last pane -- it lost the original position
+# and split proportions entirely. Fixed by also saving the pane's original
+# index (`@zoomed_index`) and the whole window's layout string
+# (`@zoomed_layout`) at extraction time. On return: `join-pane` targets
+# the ORIGINAL window by index (`window.N` target syntax) rather than just
+# the window, landing the pane back at the same slot (`-b` -- join before
+# -- when the original index was 0, since there's nothing to join after in
+# that case; otherwise join after index-1) -- pane indexes stay a
+# contiguous 0..n-1 range as panes come and go, so index-1 is always the
+# right neighbor to reattach next to. That alone restores correct order
+# but not correct proportions/split-direction, so `select-layout` with the
+# saved layout string runs right after to snap sizes back exactly (it
+# matches by each pane's position in index order, which the join-pane step
+# just restored). Doesn't handle breaking out the last pane in a window
+# (tmux kills a window when its last pane leaves, so there's no window to
+# return to) -- same inherent limitation the original plugin had.
+#
+# The index-0 case needs one extra step: `join-pane -b` (join *before*
+# target) only controls which SIDE the new pane appears on visually --
+# tested directly, it does NOT give the joining pane the lower index. The
+# existing target pane always keeps its own index and the joining pane
+# always gets appended with the next index up, `-b`/no `-b` alike. So
+# when the original index was 0, this joins normally (landing at index 1)
+# and then uses `swap-pane` to swap it back into index 0 -- confirmed via
+# a real layout-string diff that this combination, unlike plain `-b`,
+# reproduces the original layout exactly.
 bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/null); if [ -n \"\$zf\" ];\
-  then tmux join-pane -s '#{pane_id}' -t \"\$zf\"; tmux set-option -pu -t '#{pane_id}'\
-  @zoomed_from; else tmux set-option -p -t '#{pane_id}' @zoomed_from '#{window_id}';\
+  then idx=\$(tmux display -pt '#{pane_id}' '#{@zoomed_index}' 2>/dev/null);\
+  lo=\$(tmux display -pt '#{pane_id}' '#{@zoomed_layout}' 2>/dev/null);\
+  if [ \"\$idx\" = 0 ]; then tmux join-pane -s '#{pane_id}' -t \"\$zf.0\";\
+  tmux swap-pane -s '#{pane_id}' -t \"\$zf.0\";\
+  else tmux join-pane -s '#{pane_id}' -t \"\$zf.\$((idx - 1))\"; fi;\
+  tmux select-layout -t \"\$zf\" \"\$lo\"; tmux set-option -pu -t '#{pane_id}' @zoomed_from;\
+  tmux set-option -pu -t '#{pane_id}' @zoomed_index; tmux set-option -pu -t '#{pane_id}' @zoomed_layout;\
+  else tmux set-option -p -t '#{pane_id}' @zoomed_from '#{window_id}';\
+  tmux set-option -p -t '#{pane_id}' @zoomed_index '#{pane_index}';\
+  tmux set-option -p -t '#{pane_id}' @zoomed_layout '#{window_layout}';\
   tmux break-pane -s '#{pane_id}'; fi"
 
 # Show pane details.
