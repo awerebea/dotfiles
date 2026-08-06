@@ -37,6 +37,7 @@ local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "e", app = "Microsoft Excel",   path = "/Applications/Microsoft Excel.app",    bundleID = "com.microsoft.Excel" },
   { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
   { mods = { "cmd", "alt" }, key = "i", app = "Claude",            path = "/Applications/Claude.app",             bundleID = "com.anthropic.claudefordesktop" },
+  { mods = { "cmd", "alt" }, key = "t", app = "Telegram",          path = "/Applications/Telegram.app",           bundleID = "ru.keepcoder.Telegram" },
 }
 
 for _, item in ipairs(appHotkeys) do
