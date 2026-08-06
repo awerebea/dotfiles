@@ -28,7 +28,7 @@ local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "c", app = "Google Chrome",     path = "/Applications/Google Chrome.app",      bundleID = "com.google.Chrome" },
   { mods = { "cmd", "alt" }, key = "f", app = "Firefox",           path = "/Applications/Firefox.app",            bundleID = "org.mozilla.firefox" },
   { mods = { "cmd", "alt" }, key = "v", app = "Code",              path = "/Applications/Visual Studio Code.app", bundleID = "com.microsoft.VSCode" },
-  { mods = { "cmd", "alt" }, key = "q", app = "Calcator",          path = "/Applications/Calcator.app",           bundleID = "jeremieflrnt.calcator.tauri" },
+  { mods = { "cmd", "alt" }, key = "q", app = "qalculate-qt",      path = "/opt/homebrew/opt/qalculate-qt/qalculate-qt.app", bundleID = "com.yourcompany.qalculate-qt" },
   { mods = { "cmd", "alt" }, key = "s", app = "Slack",             path = "/Applications/Slack.app",              bundleID = "com.tinyspeck.slackmacgap" },
   { mods = { "cmd", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
   { mods = { "cmd", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
