@@ -617,3 +617,13 @@ fi
 if [[ -f "$HOME/.local/bin/run-until" ]]; then
     source "$HOME/.local/bin/run-until"
 fi
+
+if command -v pipx >/dev/null 2>&1; then
+    export PIPX_HOME="$HOME/.local/pipx"
+    export PIPX_BIN_DIR="$HOME/.local/bin"
+fi
+
+if [ -d "/opt/homebrew/opt/trash-cli/bin" ] &&
+    [[ ":$PATH:" != *":/opt/homebrew/opt/trash-cli/bin:"* ]]; then
+    export PATH="/opt/homebrew/opt/trash-cli/bin:$PATH"
+fi
