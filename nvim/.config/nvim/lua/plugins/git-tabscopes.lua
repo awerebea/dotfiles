@@ -1,7 +1,7 @@
 return {
   {
     "awerebea/git-tabscopes.nvim",
-    -- dir = vim.fn.expand("~/Github/git-tabscopes.nvim"),
+    -- dir = vim.fn.expand("~/GitHub/git-tabscopes.nvim"),
     event = "VeryLazy",
     dependencies = { "folke/snacks.nvim" },
     -- stylua: ignore
