@@ -22,6 +22,8 @@ hs.hotkey.bind({ "ctrl", "alt", "cmd" }, "Left", function()
 end)
 
 -- App hotkeys
+local home = os.getenv("HOME")
+
 -- stylua: ignore
 local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "x", app = "kitty",             path = "/Applications/kitty.app",              bundleID = "net.kovidgoyal.kitty" },
@@ -33,11 +35,12 @@ local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
   { mods = { "cmd", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
   { mods = { "cmd", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
-  { mods = { "cmd", "alt" }, key = "u", app = "Microsoft Outlook", path = "/Applications/Microsoft Outlook.app",  bundleID = "com.microsoft.Outlook" },
   { mods = { "cmd", "alt" }, key = "e", app = "Microsoft Excel",   path = "/Applications/Microsoft Excel.app",    bundleID = "com.microsoft.Excel" },
   { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
   { mods = { "cmd", "alt" }, key = "i", app = "Claude",            path = "/Applications/Claude.app",             bundleID = "com.anthropic.claudefordesktop" },
   { mods = { "cmd", "alt" }, key = "t", app = "Telegram",          path = "/Applications/Telegram.app",           bundleID = "ru.keepcoder.Telegram" },
+  { mods = { "cmd", "alt" }, key = "g", app = "ChatGPT",           path = "/Applications/ChatGPT.app",            bundleID = "com.openai.codex" },
+  { mods = { "cmd", "alt" }, key = "m", app = "Gmail",             path = home .. "/Applications/Chrome Apps.localized/Gmail.app" },
 }
 
 for _, item in ipairs(appHotkeys) do
