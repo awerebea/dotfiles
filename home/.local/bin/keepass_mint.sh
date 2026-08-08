@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/keepass_mint.sh

@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/install_tmux.sh
