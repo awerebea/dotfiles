@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/timeshift_custom.sh

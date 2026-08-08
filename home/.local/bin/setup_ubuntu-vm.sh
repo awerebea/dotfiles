@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/setup_ubuntu-vm.sh

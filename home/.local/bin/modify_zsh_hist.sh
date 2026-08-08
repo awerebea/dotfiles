@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/modify_zsh_hist.sh

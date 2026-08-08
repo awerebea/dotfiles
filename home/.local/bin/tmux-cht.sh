@@ -1,1 +1,0 @@
-../../../scripts/.local/bin/tmux-cht.sh
