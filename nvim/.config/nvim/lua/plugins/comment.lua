@@ -20,6 +20,8 @@ return {
         confini = "#%s",
         kitty = "#%s",
         tmux = "#%s",
+        gitconfig = ";%s",
+        sshconfig = "#%s",
       }
       local ts_pre_hook =
         require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()
