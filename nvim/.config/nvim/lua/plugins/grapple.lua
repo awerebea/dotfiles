@@ -1,6 +1,6 @@
 return {
   "awerebea/grapple.nvim",
-  -- dir = vim.fn.expand("~/Github/grapple.nvim"),
+  -- dir = vim.fn.expand("~/GitHub/grapple.nvim"),
   -- "cbochs/grapple.nvim",
   event = "VeryLazy",
   dependencies = { "nvim-tree/nvim-web-devicons" },

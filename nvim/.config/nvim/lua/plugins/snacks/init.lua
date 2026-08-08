@@ -108,7 +108,7 @@ return {
           git_untracked = true, -- show '?' marker for files not yet added to git
         },
         projects = {
-          dev = { "~/Github" },
+          dev = { "~/GitHub" },
           max_depth = 5,
           cwd = vim.fn.expand("~"),
           -- stylua: ignore

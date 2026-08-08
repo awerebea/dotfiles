@@ -306,8 +306,8 @@ source "$ZSH/oh-my-zsh.sh"
 
 # User configuration
 
-export GIT_DOTFILES="$HOME/Github/dotfiles"
-export GIT_WORKSPACE="$HOME/Github/workspace"
+export GIT_DOTFILES="$HOME/GitHub/dotfiles"
+export GIT_WORKSPACE="$HOME/GitHub/workspace"
 
 [[ -d "$HOME/Library/Python/3.10/bin" && ":$PATH:" != *":$HOME/Library/Python/3.10/bin:"* ]] && \
     export PATH="$HOME/Library/Python/3.10/bin:$PATH"
