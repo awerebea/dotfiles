@@ -7,7 +7,7 @@
 	path = ~/.gitconfig.home
 [includeIf "gitdir:~/Projects/"]
 	path = ~/.gitconfig.work
-[includeIf "gitdir:~/work/"]
+[includeIf "gitdir:~/Work/"]
 	path = ~/.gitconfig.work
 
 [merge]
