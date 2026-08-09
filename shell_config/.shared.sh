@@ -193,19 +193,33 @@ Options:
     fi
 
     command git rev-parse --git-dir &>/dev/null || return
-    local git_common_dir full_path
+    local git_common_dir full_path repo_name
     git_common_dir="$(git rev-parse --git-common-dir)"
 
-    if [[ "$git_common_dir" = /* ]]; then
-        full_path="$git_common_dir"
+    # --git-common-dir is only absolute when it already points outside the
+    # current worktree (e.g. a bare repo, or a worktree of a bare repo).
+    # Otherwise resolve it relative to cwd, which also covers bare repos
+    # accessed directly (git prints "." there, and --show-toplevel fails
+    # since a bare repo has no working tree to fall back on).
+    if [[ "$git_common_dir" != /* ]]; then
+        git_common_dir="$(cd "$git_common_dir" && pwd)"
+    fi
+
+    # A common dir literally named ".git" is the metadata dir of a regular
+    # worktree; the repository itself is its parent. Anything else (a bare
+    # repo, or the shared dir of a worktree attached to a bare repo) already
+    # names the repository.
+    if [[ "$(basename "$git_common_dir")" = ".git" ]]; then
+        full_path="$(dirname "$git_common_dir")"
     else
-        full_path="$(git rev-parse --show-toplevel)"
+        full_path="$git_common_dir"
     fi
 
     if [[ $show_full -eq 1 ]]; then
         echo "$full_path"
     else
-        basename "$full_path"
+        repo_name="$(basename "$full_path")"
+        echo "${repo_name%.git}"
     fi
 }
 
