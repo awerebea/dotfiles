@@ -467,28 +467,25 @@ if command -v "tmux" &>/dev/null && [ ! -d "$HOME/.tmux" ]; then
 fi
 
 # docker aliases
-if command -v "podman" &>/dev/null; then
-    DOCKER_CMD="podman"
-    # shellcheck disable=2139
-    alias docker="$DOCKER_CMD"
-elif command -v "docker" &>/dev/null; then
+if command -v docker &>/dev/null; then
     DOCKER_CMD="docker"
-    [[ -z $(groups | awk "/docker/ {print}") ]] && DOCKER_CMD="sudo $DOCKER_CMD"
+
+    # Docker group is a Linux-specific mechanism.
+    # Docker Desktop on macOS does not require sudo.
+    if [[ "$(uname)" != "Darwin" ]] && ! groups | awk '/docker/ {found=1} END {exit !found}'; then
+        DOCKER_CMD="sudo $DOCKER_CMD"
+    fi
+elif command -v podman &>/dev/null; then
+    DOCKER_CMD="podman"
 fi
 
-if [ "$DOCKER_CMD" != "" ]; then
-    # shellcheck disable=2139
+if [[ -n "$DOCKER_CMD" ]]; then
     alias dksa="$DOCKER_CMD stop \$($DOCKER_CMD ps -q)"
-    # shellcheck disable=2139
     alias dkrc="$DOCKER_CMD rm \$($DOCKER_CMD container ls -qa)"
-    # shellcheck disable=2139
     alias dkri="$DOCKER_CMD rmi \$($DOCKER_CMD image ls -qa)"
-    # shellcheck disable=2139
     alias dkreset="dksa && dkrc && dkri"
-    # shellcheck disable=2139
     alias dk="$DOCKER_CMD"
-    # shellcheck disable=2139
-    alias dkc="$DOCKER_CMD"-compose
+    alias dkc="$DOCKER_CMD compose"
 fi
 
 # Enable Helm zsh completion
