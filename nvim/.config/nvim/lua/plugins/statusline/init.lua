@@ -139,7 +139,9 @@ return {
             "LightlineIndent",
             "encoding",
             "fileformat",
-            "filetype",
+            -- the icon is rendered by real-icons.nvim, right before this
+            -- component, so the built-in devicons glyph is not needed
+            { "filetype", icons_enabled = false },
           },
           lualine_y = {
             "progress",
