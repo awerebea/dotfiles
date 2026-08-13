@@ -294,7 +294,7 @@ function M.setup()
     lcd_picker(out:gsub("\n$", ""), "lcd: git root")
   end, { desc = "lcd: pick dir under git root" })
 
-  vim.keymap.set("n", "<leader>cdf", function()
+  vim.keymap.set("n", "<leader>cdd", function()
     local dir = vim.fn.expand("%:p:h")
     if dir == "" or dir == "." then
       vim.notify("No file in current buffer", vim.log.levels.WARN)

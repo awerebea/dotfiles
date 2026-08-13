@@ -121,7 +121,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 --   BufLeave     -> snapshot getcwd(0) for this buffer
 --   BufEnter     -> lcd to the snapshot if present; otherwise seed it
 --   DirChanged   -> update snapshot immediately when lcd changes in this window
---                   so manual <leader>cdd / <leader>cdr / <leader>cdp changes persist
+--                   so manual <leader>cdf / <leader>cdr / <leader>cdp changes persist
 --                   across buffer navigation (BufLeave alone wouldn't catch them)
 --   BufWipeout   -> prune the entry to avoid unbounded table growth
 do

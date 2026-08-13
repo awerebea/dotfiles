@@ -323,7 +323,7 @@ local function do_lcd(path)
   end
 end
 
-vim.keymap.set("n", "<leader>cdd", function()
+vim.keymap.set("n", "<leader>cdf", function()
   local dir = vim.fn.expand("%:p:h")
   if dir == "" or dir == "." then
     vim.notify("No file in current buffer", vim.log.levels.WARN)
