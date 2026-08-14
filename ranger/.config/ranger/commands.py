@@ -4,19 +4,20 @@
 # documentation.  Do NOT add them all here, or you may end up with defunct
 # commands when upgrading ranger.
 
+# You can import any python module as needed.
+import os
+import re
+import subprocess
+
 # You always need to import ranger.api.commands here to get the Command class:
 from functools import partial
+
 from ranger.api.commands import *
 from ranger.core.loader import CommandLoader
 from ranger.ext.get_executables import get_executables
 
 # A simple command for demonstration purposes follows.
-#------------------------------------------------------------------------------
-
-# You can import any python module as needed.
-import os
-import re
-import subprocess
+# ------------------------------------------------------------------------------
 
 
 # Any class that is a subclass of "Command" will be integrated into ranger as a
@@ -75,20 +76,22 @@ class fzf_select(Command):
 
     See: https://github.com/junegunn/fzf
     """
+
     def execute(self):
         import subprocess
+
         if self.quantifier:
             # match only directories
-            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            command = r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
             -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
         else:
             # match files and directories
-            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            command = r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
             -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
         fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
+            fzf_file = os.path.abspath(stdout.decode("utf-8").rstrip("\n"))
             if os.path.isdir(fzf_file):
                 self.fm.cd(fzf_file)
             else:
@@ -106,16 +109,18 @@ class fzf_locate(Command):
 
     See: https://github.com/junegunn/fzf
     """
+
     def execute(self):
         import subprocess
+
         if self.quantifier:
-            command="locate home media | fzf -e -i"
+            command = "locate home media | fzf -e -i"
         else:
-            command="locate home media | fzf -e -i"
+            command = "locate home media | fzf -e -i"
         fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
+            fzf_file = os.path.abspath(stdout.decode("utf-8").rstrip("\n"))
             if os.path.isdir(fzf_file):
                 self.fm.cd(fzf_file)
             else:
@@ -130,21 +135,23 @@ class fzf_bring(Command):
 
     See: https://github.com/junegunn/fzf
     """
+
     def execute(self):
-        import subprocess
         import shutil
+        import subprocess
+
         if self.quantifier:
             # match only directories
-            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            command = r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
             -o -type d -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
         else:
             # match files and directories
-            command=r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
+            command = r"find -L . \( -path '*/\.*' -o -fstype 'dev' -o -fstype 'proc' \) -prune \
             -o -print 2> /dev/null | sed 1d | cut -b3- | fzf +m"
         fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
+            fzf_file = os.path.abspath(stdout.decode("utf-8").rstrip("\n"))
             shutil.move(fzf_file, self.fm.thisdir.path)
 
 
@@ -158,35 +165,38 @@ class fzf_zoxide(Command):
     URL: https://github.com/ajeetdsouza/zoxide
     URL: https://github.com/junegunn/fzf
     """
+
     def execute(self):
         import subprocess
-        command="zoxide query --list | fzf"
+
+        command = "zoxide query --list | fzf"
         fzf = self.fm.execute_command(command, stdout=subprocess.PIPE)
         stdout, stderr = fzf.communicate()
         if fzf.returncode == 0:
-            fzf_file = os.path.abspath(stdout.decode('utf-8').rstrip('\n'))
+            fzf_file = os.path.abspath(stdout.decode("utf-8").rstrip("\n"))
             self.fm.cd(fzf_file)
 
 
 class paste_as_root(Command):
     def execute(self):
         if self.fm.do_cut:
-            self.fm.execute_console('shell sudo mv %c .')
+            self.fm.execute_console("shell sudo mv %c .")
         else:
-            self.fm.execute_console('shell sudo cp -r %c .')
+            self.fm.execute_console("shell sudo cp -r %c .")
 
 
 class paste_symlink_as_root(Command):
     def execute(self):
-            self.fm.execute_console('shell sudo ln -s %c "$PWD/"')
+        self.fm.execute_console('shell sudo ln -s %c "$PWD/"')
 
 
 class ag(Command):
     """:ag 'regex'
     Looks for a string in all marked paths or current dir
     """
-    editor = os.getenv('EDITOR') or 'vim'
-    acmd = 'ag --smart-case --group --color --hidden'  # --search-zip
+
+    editor = os.getenv("EDITOR") or "vim"
+    acmd = "ag --smart-case --group --color --hidden"  # --search-zip
     qarg = re.compile(r"""^(".*"|'.*')$""")
     patterns = []
     # THINK:USE: set_clipboard on each direct ':ag' search? So I could find in vim easily
@@ -204,7 +214,7 @@ class ag(Command):
     def _arg(self, i=1):
         if self.rest(i):
             ag.patterns.append(self.rest(i))
-        return ag.patterns[-1] if ag.patterns else ''
+        return ag.patterns[-1] if ag.patterns else ""
 
     def _quot(self, patt):
         return patt if ag.qarg.match(patt) else shell_quote(patt)
@@ -212,60 +222,62 @@ class ag(Command):
     def _bare(self, patt):
         return patt[1:-1] if ag.qarg.match(patt) else patt
 
-    def _aug_vim(self, iarg, comm='Ag'):
-        if self.arg(iarg) == '-Q':
+    def _aug_vim(self, iarg, comm="Ag"):
+        if self.arg(iarg) == "-Q":
             self.shift()
-            comm = 'sil AgSet def.e.literal 1|' + comm
+            comm = "sil AgSet def.e.literal 1|" + comm
         # patt = self._quot(self._arg(iarg))
         patt = self._arg(iarg)  # No need to quote in new ag.vim
         # FIXME:(add support)  'AgPaths' + self._sel()
-        cmd = ' '.join([comm, patt])
-        cmdl = [ag.editor, '-c', cmd, '-c', 'only']
-        return (cmdl, '')
+        cmd = " ".join([comm, patt])
+        cmdl = [ag.editor, "-c", cmd, "-c", "only"]
+        return (cmdl, "")
 
     def _aug_sh(self, iarg, flags=[]):
         cmdl = ag.acmd.split() + flags
         if iarg == 1:
             import shlex
+
             cmdl += shlex.split(self.rest(iarg))
         else:
             # NOTE: only allowed switches
             opt = self.arg(iarg)
-            while opt in ['-Q', '-w']:
+            while opt in ["-Q", "-w"]:
                 self.shift()
                 cmdl.append(opt)
                 opt = self.arg(iarg)
             # TODO: save -Q/-w into ag.patterns =NEED rewrite plugin to join _aug*()
             patt = self._bare(self._arg(iarg))  # THINK? use shlex.split() also/instead
             cmdl.append(patt)
-        if '-g' not in flags:
+        if "-g" not in flags:
             cmdl += self._sel()
-        return (cmdl, '-p')
+        return (cmdl, "-p")
 
     def _choose(self):
-        if self.arg(1) == '-v':
-            return self._aug_vim(2, 'Ag')
-        elif self.arg(1) == '-g':
-            return self._aug_vim(2, 'sil AgView grp|Ag')
-        elif self.arg(1) == '-l':
-            return self._aug_sh(2, ['--files-with-matches', '--count'])
-        elif self.arg(1) == '-p':  # paths
-            return self._aug_sh(2, ['-g'])
-        elif self.arg(1) == '-f':
+        if self.arg(1) == "-v":
+            return self._aug_vim(2, "Ag")
+        elif self.arg(1) == "-g":
+            return self._aug_vim(2, "sil AgView grp|Ag")
+        elif self.arg(1) == "-l":
+            return self._aug_sh(2, ["--files-with-matches", "--count"])
+        elif self.arg(1) == "-p":  # paths
+            return self._aug_sh(2, ["-g"])
+        elif self.arg(1) == "-f":
             return self._aug_sh(2)
-        elif self.arg(1) == '-r':
-            return self._aug_sh(2, ['--files-with-matches'])
+        elif self.arg(1) == "-r":
+            return self._aug_sh(2, ["--files-with-matches"])
         else:
             return self._aug_sh(1)
 
     def _catch(self, cmd):
-        from subprocess import check_output, CalledProcessError
+        from subprocess import CalledProcessError, check_output
+
         try:
             out = check_output(cmd)
         except CalledProcessError:
             return None
         else:
-            return out[:-1].decode('utf-8').splitlines()
+            return out[:-1].decode("utf-8").splitlines()
 
     # DEV
     # NOTE: regex becomes very big for big dirs
@@ -286,7 +298,7 @@ class ag(Command):
         cmd, flags = self._choose()
         # self.fm.notify(cmd)
         # TODO:ENH: cmd may be [..] -- no need to shell_escape
-        if self.arg(1) != '-r':
+        if self.arg(1) != "-r":
             self.fm.execute_command(cmd, flags=flags)
         else:
             self._filter(self._catch(cmd))
@@ -296,9 +308,9 @@ class ag(Command):
         #   <= EXPL: aliases expanded before parsing cmdline
         cmd = self.arg(0)
         flg = self.arg(1)
-        if flg[0] == '-' and flg[1] in 'flvgprw':
-            cmd += ' ' + flg
-        return ['{} {}'.format(cmd, p) for p in reversed(ag.patterns)]
+        if flg[0] == "-" and flg[1] in "flvgprw":
+            cmd += " " + flg
+        return ["{} {}".format(cmd, p) for p in reversed(ag.patterns)]
 
 
 #  class show_files_in_finder(Command):
@@ -317,7 +329,7 @@ class show_files_in_finder(Command):
 
     def execute(self):
         """Execute the command."""
-        if sys.platform != 'darwin':
+        if sys.platform != "darwin":
             return
         files = ",".join(
             [
@@ -325,8 +337,8 @@ class show_files_in_finder(Command):
                 for file in self.fm.thistab.get_selection()
             ]
         )
-        reveal_script = "tell application \"Finder\" to reveal {{{0}}}".format(files)
-        activate_script = "tell application \"Finder\" to set frontmost to true"
+        reveal_script = 'tell application "Finder" to reveal {{{0}}}'.format(files)
+        activate_script = 'tell application "Finder" to set frontmost to true'
         script = "osascript -e '{0}' -e '{1}'".format(reveal_script, activate_script)
         self.fm.notify(script)
         subprocess.check_output(
@@ -339,9 +351,12 @@ class trash_with_confirmation(Command):
 
     def execute(self):
         """Execute the command."""
-        trash_cmd = 'trash-put'
+        trash_cmd = "trash-put"
         if trash_cmd not in get_executables():
-            self.fm.notify("Couldn't find {trash_cmd} on the PATH.".format(trash_cmd=trash_cmd), bad=True)
+            self.fm.notify(
+                "Couldn't find {trash_cmd} on the PATH.".format(trash_cmd=trash_cmd),
+                bad=True,
+            )
             return
 
         files = [f.relative_path for f in self.fm.thistab.get_selection()]
@@ -351,14 +366,14 @@ class trash_with_confirmation(Command):
         self.fm.ui.console.ask(
             "Confirm deletion of: {files} (y/N)".format(files=files),
             partial(self._question_callback, files),
-            ('n', 'N', 'y', 'Y'),
+            ("n", "N", "y", "Y"),
         )
 
     def _question_callback(self, files, answer):
-        if answer == 'y' or answer == 'Y':
+        if answer == "y" or answer == "Y":
             for f in files:
                 file = re.escape(f)
-                cmd = 'trash-put {file}'.format(file=file)
+                cmd = "trash-put {file}".format(file=file)
                 trash_cli = self.fm.execute_command(cmd, stdout=subprocess.PIPE)
                 trash_cli.communicate()
 
