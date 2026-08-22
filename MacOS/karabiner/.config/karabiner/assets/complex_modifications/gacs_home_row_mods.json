@@ -1,0 +1,178 @@
+{
+    "title": "GACS Home Row Mods (left modifiers only, excludes Keychron Q11)",
+    "rules": [
+        {
+            "description": "A/S/D/F and J/K/L/; become Gui/Alt/Ctrl/Shift when held, letters when tapped. All events use left_* modifiers on both hands. Excluded from the Keychron Q11, which already implements this in firmware via Vial.",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "a",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "a" }],
+                    "to_if_held_down": [{ "key_code": "left_command" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "s",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "s" }],
+                    "to_if_held_down": [{ "key_code": "left_option" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "d",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "d" }],
+                    "to_if_held_down": [{ "key_code": "left_control" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "f",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "f" }],
+                    "to_if_held_down": [{ "key_code": "left_shift" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "j",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "j" }],
+                    "to_if_held_down": [{ "key_code": "left_shift" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "k",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "k" }],
+                    "to_if_held_down": [{ "key_code": "left_control" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "l",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "l" }],
+                    "to_if_held_down": [{ "key_code": "left_option" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "semicolon",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to_if_alone": [{ "key_code": "semicolon" }],
+                    "to_if_held_down": [{ "key_code": "left_command" }],
+                    "parameters": {
+                        "basic.to_if_alone_timeout_milliseconds": 200,
+                        "basic.to_if_held_down_threshold_milliseconds": 200
+                    },
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
