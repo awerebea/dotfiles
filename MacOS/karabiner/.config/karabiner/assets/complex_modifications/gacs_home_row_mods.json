@@ -27,6 +27,11 @@
                             "type": "variable_unless",
                             "name": "caps_word",
                             "value": 1
+                        },
+                        {
+                            "type": "variable_unless",
+                            "name": "space_layer",
+                            "value": 1
                         }
                     ]
                 },
@@ -52,6 +57,11 @@
                         {
                             "type": "variable_unless",
                             "name": "caps_word",
+                            "value": 1
+                        },
+                        {
+                            "type": "variable_unless",
+                            "name": "space_layer",
                             "value": 1
                         }
                     ]
@@ -79,6 +89,11 @@
                             "type": "variable_unless",
                             "name": "caps_word",
                             "value": 1
+                        },
+                        {
+                            "type": "variable_unless",
+                            "name": "space_layer",
+                            "value": 1
                         }
                     ]
                 },
@@ -104,6 +119,11 @@
                         {
                             "type": "variable_unless",
                             "name": "caps_word",
+                            "value": 1
+                        },
+                        {
+                            "type": "variable_unless",
+                            "name": "space_layer",
                             "value": 1
                         }
                     ]
@@ -223,6 +243,11 @@
                         {
                             "type": "variable_unless",
                             "name": "caps_word",
+                            "value": 1
+                        },
+                        {
+                            "type": "variable_unless",
+                            "name": "space_layer",
                             "value": 1
                         }
                     ]
