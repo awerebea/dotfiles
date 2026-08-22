@@ -1,0 +1,55 @@
+{
+    "title": "Caps Lock <-> Escape/QW (excludes Keychron Q11)",
+    "rules": [
+        {
+            "description": "Caps Lock key becomes Escape. Excluded from the Keychron Q11.",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "key_code": "caps_lock",
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "escape" }],
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "description": "Q+W pressed together produces real Caps Lock. Excluded from the Keychron Q11.",
+            "manipulators": [
+                {
+                    "type": "basic",
+                    "from": {
+                        "simultaneous": [
+                            { "key_code": "q" },
+                            { "key_code": "w" }
+                        ],
+                        "simultaneous_options": {
+                            "key_down_order": "insensitive",
+                            "key_up_order": "insensitive",
+                            "detect_key_down_uninterruptedly": true
+                        },
+                        "modifiers": { "optional": ["any"] }
+                    },
+                    "to": [{ "key_code": "caps_lock" }],
+                    "conditions": [
+                        {
+                            "type": "device_unless",
+                            "identifiers": [
+                                { "vendor_id": 13364, "product_id": 480 }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
