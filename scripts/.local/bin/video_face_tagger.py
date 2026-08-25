@@ -38,6 +38,10 @@ survives even if digiKam rewrites a frame sidecar and drops unknown fields:
        fallback when the hash is unknown (video moved or renamed since
        extraction) and as a cross-check otherwise.
 
+Defaults can be set in ~/.config/video_face_tagger/config.toml (see the
+'config' subcommand, which also writes a starter template). Command-line
+arguments always take precedence over the file.
+
 Optional face pre-filter: with opencv installed and the YuNet model fetched
 (see requirements_video_face_tagger.txt and the 'fetch-model' subcommand),
 phase 1 discards frames containing no detectable face before digiKam ever
@@ -123,9 +127,10 @@ FACE_MODEL_SHA256 = (
 )
 
 DEFAULT_ROOT = Path("~/Photo").expanduser()
-DEFAULT_WORK = Path("~/video-faces-work").expanduser()
+DEFAULT_WORK = Path("~/video_face_tagger_work").expanduser()
 CONFIG_DIR = Path("~/.config/video_face_tagger").expanduser()
 EXIFTOOL_CONFIG = CONFIG_DIR / "ExifTool_config"
+CONFIG_FILE = CONFIG_DIR / "config.toml"
 FACE_MODEL_PATH = CONFIG_DIR / "face_detection_yunet.onnx"
 
 # Private XMP namespace for this tool's bookkeeping. Chosen so that no other
@@ -1370,6 +1375,150 @@ def cmd_status(args: argparse.Namespace) -> int:
 # ---------------------------------------------------------------------------
 
 
+# Settings that name a filesystem location. argparse's type= conversion does
+# not run on values injected as defaults, so these are converted by hand.
+PATH_SETTINGS = frozenset({"root", "work", "log"})
+
+CONFIG_TEMPLATE = """\
+# Configuration for video_face_tagger.py
+#
+# Every setting here is optional and simply changes a default; anything passed
+# on the command line still wins. Keys match the long option names with the
+# leading dashes removed and hyphens turned into underscores, so --max-frames
+# becomes max_frames.
+
+# Applied to every subcommand.
+[defaults]
+# root = "~/Photo"
+# work = "~/video_face_tagger_work"
+# jobs = 6
+# people_root = "People"
+
+# Applied to 'extract' only, and takes precedence over [defaults].
+[extract]
+# interval = 5.0
+# max_frames = 40
+# long_edge = 1280
+# select = "sharpest"
+# face_filter = "auto"
+# face_threshold = 0.6
+# keep_min = 1
+
+# Applied to 'collect' only.
+[collect]
+# extra_tag_fields = false
+"""
+
+
+def load_config(path: Path) -> dict[str, Any]:
+    """Read the TOML config, returning {} when absent or unreadable.
+
+    A broken config must not stop a long archive run, so parse errors are
+    reported and then ignored rather than raised.
+    """
+    if not path.is_file():
+        return {}
+    try:
+        import tomllib
+    except ImportError:  # Python < 3.11
+        print(
+            f"warning: ignoring {path} (this Python has no tomllib)",
+            file=sys.stderr,
+        )
+        return {}
+    try:
+        with path.open("rb") as handle:
+            return tomllib.load(handle)
+    except Exception as exc:  # noqa: BLE001 - a bad config should not be fatal
+        print(f"warning: ignoring {path}: {exc}", file=sys.stderr)
+        return {}
+
+
+def config_has_settings(config: dict[str, Any]) -> bool:
+    """True only if some table actually carries a key.
+
+    A freshly written template parses into empty tables, which must not be
+    reported as though settings had been loaded.
+    """
+    return any(
+        isinstance(table, dict) and table for table in config.values()
+    )
+
+
+def config_defaults_for(config: dict[str, Any], command: str) -> dict[str, Any]:
+    """Merge [defaults] with the command's own table, the latter winning."""
+    merged: dict[str, Any] = {}
+    for section in ("defaults", command):
+        table = config.get(section)
+        if isinstance(table, dict):
+            merged.update(table)
+    return merged
+
+
+def apply_config_defaults(
+    parser: argparse.ArgumentParser,
+    config: dict[str, Any],
+    command: str,
+) -> list[str]:
+    """Override a subparser's defaults from config; return unknown keys."""
+    settings = config_defaults_for(config, command)
+    if not settings:
+        return []
+
+    known = {
+        action.dest for action in parser._actions if action.dest != "help"
+    }
+    accepted: dict[str, Any] = {}
+    unknown: list[str] = []
+    for key, value in settings.items():
+        if key not in known:
+            unknown.append(key)
+            continue
+        if key in PATH_SETTINGS and isinstance(value, str):
+            value = Path(value).expanduser()
+        accepted[key] = value
+
+    if accepted:
+        parser.set_defaults(**accepted)
+    return unknown
+
+
+def cmd_config(args: argparse.Namespace) -> int:
+    """Show where config is read from, or write a commented template."""
+    path: Path = args.config
+    if args.init:
+        if path.exists() and not args.force:
+            LOG.error("%s already exists (use --force to overwrite)", path)
+            return 1
+        if args.dry_run:
+            LOG.info("[dry-run] would write template to %s", path)
+            return 0
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(CONFIG_TEMPLATE, encoding="utf-8")
+        LOG.info("wrote template: %s", path)
+        return 0
+
+    LOG.info("config file : %s", path)
+    LOG.info("exists      : %s", "yes" if path.is_file() else "no")
+    config = load_config(path)
+    if config_has_settings(config):
+        LOG.info("")
+        LOG.info("Parsed contents:")
+        for section, table in config.items():
+            LOG.info("  [%s]", section)
+            if isinstance(table, dict):
+                for key, value in table.items():
+                    LOG.info("    %s = %r", key, value)
+    elif path.is_file():
+        LOG.info("")
+        LOG.info("No settings active (every key is commented out).")
+    else:
+        LOG.info("")
+        LOG.info("No config file. Create one with:")
+        LOG.info("  %s config --init", Path(sys.argv[0]).name)
+    return 0
+
+
 def resolve_scope(args: argparse.Namespace) -> tuple[Path, Path]:
     """Return (archive root, directory to scan) honouring --path."""
     root: Path = args.root.expanduser().resolve()
@@ -1417,7 +1566,7 @@ def check_dependencies() -> None:
         )
 
 
-def build_parser() -> argparse.ArgumentParser:
+def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="video_face_tagger.py",
         description=__doc__,
@@ -1447,6 +1596,10 @@ def build_parser() -> argparse.ArgumentParser:
         help="append a detailed log here (default: <work>/logs/<phase>.log)",
     )
     common.add_argument("--verbose", action="store_true", help="debug output")
+    common.add_argument(
+        "--config", type=Path, default=CONFIG_FILE,
+        help=f"TOML config supplying defaults (default: {CONFIG_FILE})",
+    )
     common.add_argument(
         "--probe-all", action="store_true",
         help="ffprobe every file instead of trusting known extensions",
@@ -1549,17 +1702,53 @@ def build_parser() -> argparse.ArgumentParser:
     )
     fetch.set_defaults(func=cmd_fetch_model)
 
+    config_cmd = subparsers.add_parser(
+        "config", parents=[common, writing],
+        help="show the config file in use, or write a starter template",
+    )
+    config_cmd.add_argument(
+        "--init", action="store_true", help="write a commented template"
+    )
+    config_cmd.add_argument(
+        "--force", action="store_true", help="overwrite an existing config"
+    )
+    config_cmd.set_defaults(func=cmd_config)
+
     status = subparsers.add_parser(
         "status", parents=[common],
         help="report how many videos are scanned, pending, or staged",
     )
     status.set_defaults(func=cmd_status, dry_run=True)
 
+    if config_has_settings(config):
+        every_option: set[str] = set()
+        for name, sub in subparsers.choices.items():
+            apply_config_defaults(sub, config, name)
+            every_option.update(action.dest for action in sub._actions)
+
+        # A setting no subcommand accepts is almost certainly a typo. Settings
+        # that merely do not apply to every subcommand (interval, say) are
+        # fine and must not warn.
+        configured: set[str] = set()
+        for section in ("defaults", *subparsers.choices):
+            table = config.get(section)
+            if isinstance(table, dict):
+                configured.update(table)
+        for key in sorted(configured - every_option):
+            print(f"warning: unknown config setting: {key}", file=sys.stderr)
+
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = build_parser()
+    # --config has to be known before the real parser is built, since it
+    # supplies that parser's defaults.
+    pre = argparse.ArgumentParser(add_help=False)
+    pre.add_argument("--config", type=Path, default=CONFIG_FILE)
+    pre_args, _ = pre.parse_known_args(argv)
+    config = load_config(pre_args.config.expanduser())
+
+    parser = build_parser(config)
     args = parser.parse_args(argv)
 
     args.work = args.work.expanduser()
@@ -1571,6 +1760,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     started = dt.datetime.now()
     LOG.info("=== video_face_tagger.py %s: %s ===", args.command, started.isoformat(timespec="seconds"))
+    if config_has_settings(config):
+        LOG.info("config: %s", pre_args.config.expanduser())
     if getattr(args, "dry_run", False):
         LOG.info("DRY RUN -- nothing will be written")
 
