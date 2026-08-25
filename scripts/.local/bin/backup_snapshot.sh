@@ -60,15 +60,22 @@ DEST_SPEC=""
 
 # Parsed source side
 SRC_IS_REMOTE=false
-SRC_HOST="" # [user@]host, without port
+SRC_HOST="" # [user@]host
 SRC_PORT=""
 SRC_PATH=""
+SRC_PATH_GIVEN="" # Before resolution, for messages
 
 # Parsed destination side
 DST_IS_REMOTE=false
 DST_HOST=""
 DST_PORT=""
 DST_PATH=""
+DST_PATH_GIVEN=""
+
+# ssh port options (the path spec never carries a port, same as rsync)
+SSH_PORT=""     # --port
+SRC_SSH_PORT="" # --src-port
+DST_SSH_PORT="" # --dst-port
 
 # ssh transport (command plus options, never the target host)
 SSH_COMMAND="ssh"
@@ -245,11 +252,21 @@ configured timeout ($((SNAPSHOT_TIMEOUT / 3600)) hour(s)).
 
 PATHS:
     Local:   /mnt/tank/photo
-    Remote:  [user@]host:/absolute/path
-             [user@]host:port:/absolute/path
+             ./relative/path   a leading ./ forces local, which is how to
+                               name a local directory containing a colon
 
-    A remote path must be absolute. The host may be any name your ssh client
-    understands, including a ~/.ssh/config alias.
+    Remote:  [user@]host:/absolute/path
+             [user@]host:relative/path   relative to the ssh login directory
+             [user@]host:~/path          relative to the remote home
+
+    This is rsync's own single-colon syntax. The ssh port is never part of
+    the spec, which is what keeps host:relative unambiguous: give it with
+    --port, inside --ssh-command, or in ~/.ssh/config. The host may be any
+    name your ssh client understands, including a ~/.ssh/config alias.
+
+    Remote relative and ~ paths are resolved to an absolute path during
+    preflight, before anything is created or deleted, so no later operation
+    depends on the ssh login directory. ~user paths are rejected.
 
     Both sides may be remote only if they are on the same host; in that case
     rsync is executed on that host and no data crosses this machine.
@@ -302,6 +319,14 @@ OPTIONS:
     --src-ssh-command=CMD    Override --ssh-command for the source side only
     --dst-ssh-command=CMD    Override --ssh-command for the destination side
 
+    --port=N                 ssh port used for every remote side
+
+    --src-port=N             ssh port for the source side only
+    --dst-port=N             ssh port for the destination side only
+                             A port written into --ssh-command wins over
+                             these, because ssh keeps the first -p it is
+                             given.
+
     --no-multiplex           Do not add ssh connection multiplexing options.
                              Multiplexing is on by default so that the several
                              short ssh calls of one run share a single
@@ -332,8 +357,13 @@ EXAMPLES:
         -d truenas:/mnt/tank/backups/photo -k 12
 
     # Pull from a NAS to a local disk, custom key and port
-    $(basename "$0") -s user@192.168.50.185:22:/mnt/tank/photo \\
-        -d /media/user/bckp/photo --ssh-command='ssh -i ~/.ssh/homenet'
+    $(basename "$0") -s andrei@192.168.50.185:/mnt/tank/photo \\
+        -d /media/user/bckp/photo --port=2222 \\
+        --ssh-command='ssh -i ~/.ssh/homenet'
+
+    # Remote paths relative to the login directory and to the remote home
+    $(basename "$0") -s truenas:photo -d truenas:backups/photo
+    $(basename "$0") -s 'truenas:~/photo' -d truenas:/mnt/tank/backups/photo
 
     # Consistent source: read from a ZFS snapshot instead of the live dataset
     $(basename "$0") \\
@@ -352,6 +382,7 @@ NOTES:
     - A lock directory in DEST prevents two runs from overlapping
     - If the parent name changes between runs, hard linking still works: the
       previous parent name is read back from the marker file
+    - Remote relative and ~ paths are resolved to absolute at startup
     - .zfs directories are skipped unless --include-zfs-snapdir is given
     - rsync splits --ssh-command on whitespace, so paths inside it cannot
       contain spaces
@@ -377,6 +408,12 @@ process_cmd_options() {
     __validate_positive_integer() {
         if ! __is_positive_integer "$1"; then
             __show_error_and_usage "Invalid value '$1': must be a positive integer" 10
+        fi
+    }
+
+    __validate_port() {
+        if ! __is_positive_integer "$1" || [[ "$1" -gt 65535 ]]; then
+            __show_error_and_usage "Invalid port '$1': must be between 1 and 65535" 10
         fi
     }
 
@@ -537,6 +574,21 @@ process_cmd_options() {
             DST_SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
             shift 2
             ;;
+        --port)
+            SSH_PORT="$(__get_option_value "$1" "${2-}")"
+            __validate_port "$SSH_PORT"
+            shift 2
+            ;;
+        --src-port)
+            SRC_SSH_PORT="$(__get_option_value "$1" "${2-}")"
+            __validate_port "$SRC_SSH_PORT"
+            shift 2
+            ;;
+        --dst-port)
+            DST_SSH_PORT="$(__get_option_value "$1" "${2-}")"
+            __validate_port "$DST_SSH_PORT"
+            shift 2
+            ;;
         --no-multiplex)
             SSH_MULTIPLEX=false
             shift
@@ -579,6 +631,18 @@ shquote() {
     printf "'%s'" "$s"
 }
 
+# Emit a shell word for a path. A leading ~/ has to survive as an unquoted
+# expansion, so it becomes "$HOME"/rest; everything else is quoted verbatim.
+path_expr() {
+    local path="$1"
+
+    case "$path" in
+    "~") printf '"$HOME"' ;;
+    "~/"*) printf '"$HOME"/%s' "$(shquote "${path#\~/}")" ;;
+    *) shquote "$path" ;;
+    esac
+}
+
 # Drop trailing slashes, keeping a bare "/" intact.
 strip_trailing_slashes() {
     local path="$1"
@@ -588,31 +652,57 @@ strip_trailing_slashes() {
     printf '%s' "$path"
 }
 
-# Parse a path spec into _PS_REMOTE / _PS_HOST / _PS_PORT / _PS_PATH.
+# Reject ~user paths on either side: expanding them would mean handing an
+# unquoted path to the remote shell, which is not worth the risk.
+reject_user_tilde() {
+    local path="$1" label="$2"
+
+    case "$path" in
+    "~" | "~/"*) return 0 ;;
+    "~"*) exit_err "$label: ~user paths are not supported, use an absolute path: $path" 16 ;;
+    esac
+    return 0
+}
+
+# Parse a path spec into _PS_REMOTE / _PS_HOST / _PS_PATH.
+#
+# This is rsync's single-colon syntax and nothing more: [user@]host:path,
+# where path may be absolute, relative to the login directory, or ~/relative.
+# The ssh port is never part of the spec, which is exactly what keeps
+# host:relative unambiguous; use --port for it.
 parse_path_spec() {
     local spec="$1" label="$2"
 
     _PS_REMOTE=false
     _PS_HOST=""
-    _PS_PORT=""
     _PS_PATH=""
 
     case "$spec" in
+    \[*)
+        # Checked before the daemon syntax below, which [::1]:/path would
+        # otherwise match on its double colon
+        exit_err "$label: IPv6 literals are not supported, use a ~/.ssh/config host alias: $spec" 16
+        ;;
     rsync://* | *::*)
         exit_err "$label: rsync daemon syntax is not supported: $spec" 16
         ;;
-    /*)
+    /* | ./* | ../*)
+        # A leading ./ is the escape hatch for a local path holding a colon
         _PS_PATH="$spec"
         ;;
+    "~" | "~/"*)
+        _PS_PATH="${HOME}${spec#\~}"
+        ;;
+    "~"*)
+        reject_user_tilde "$spec" "$label"
+        ;;
     *)
-        if [[ "$spec" =~ ^(([A-Za-z0-9._+-]+)@)?([A-Za-z0-9._-]+)(:([0-9]+))?:(/.*)$ ]]; then
+        if [[ "$spec" =~ ^(([A-Za-z0-9._+-]+)@)?([A-Za-z0-9._-]+):(.*)$ ]]; then
             _PS_REMOTE=true
             _PS_HOST="${BASH_REMATCH[3]}"
             [[ -n "${BASH_REMATCH[2]}" ]] && _PS_HOST="${BASH_REMATCH[2]}@${_PS_HOST}"
-            _PS_PORT="${BASH_REMATCH[5]}"
-            _PS_PATH="${BASH_REMATCH[6]}"
-        elif [[ "$spec" == *:* ]]; then
-            exit_err "$label: cannot parse remote path '$spec'. Expected [user@]host[:port]:/absolute/path" 16
+            _PS_PATH="${BASH_REMATCH[4]}"
+            reject_user_tilde "$_PS_PATH" "$label"
         else
             _PS_PATH="$spec"
         fi
@@ -638,6 +728,8 @@ build_ssh_argv() {
         exit_err "$label: empty ssh command" 17
     fi
 
+    # Appended, not prepended: ssh keeps the first -p it is given, so a port
+    # written into --ssh-command deliberately wins over --port.
     if [[ -n "$port" ]]; then
         parts+=(-p "$port")
     fi
@@ -703,14 +795,22 @@ setup_sides() {
     parse_path_spec "$SOURCE_SPEC" "Source"
     SRC_IS_REMOTE="$_PS_REMOTE"
     SRC_HOST="$_PS_HOST"
-    SRC_PORT="$_PS_PORT"
     SRC_PATH="$_PS_PATH"
+    SRC_PATH_GIVEN="$_PS_PATH"
 
     parse_path_spec "$DEST_SPEC" "Destination"
     DST_IS_REMOTE="$_PS_REMOTE"
     DST_HOST="$_PS_HOST"
-    DST_PORT="$_PS_PORT"
     DST_PATH="$_PS_PATH"
+    DST_PATH_GIVEN="$_PS_PATH"
+
+    SRC_PORT="${SRC_SSH_PORT:-$SSH_PORT}"
+    DST_PORT="${DST_SSH_PORT:-$SSH_PORT}"
+
+    if [[ -n "${SSH_PORT}${SRC_SSH_PORT}${DST_SSH_PORT}" ]] &&
+        ! "$SRC_IS_REMOTE" && ! "$DST_IS_REMOTE"; then
+        log_warn "A port was given but neither side is remote; it will be ignored"
+    fi
 
     setup_ssh_control_dir
 
@@ -748,7 +848,22 @@ setup_sides() {
         MODE_DESCRIPTION="local -> local"
     fi
 
-    # Default parent directory name is the basename of the source path
+    readonly SRC_IS_REMOTE SRC_HOST SRC_PORT
+    readonly DST_IS_REMOTE DST_HOST DST_PORT
+    readonly RSYNC_SIDE RSYNC_RSH MODE_DESCRIPTION
+    return 0
+}
+
+# Called once both paths have been resolved to absolute paths.
+finalize_paths() {
+    if [[ "$SRC_PATH" != "$SRC_PATH_GIVEN" ]]; then
+        log_info "Source path resolved to: $SRC_PATH"
+    fi
+    if [[ "$DST_PATH" != "$DST_PATH_GIVEN" ]]; then
+        log_info "Destination path resolved to: $DST_PATH"
+    fi
+
+    # Default parent directory name is the basename of the resolved source
     [[ -z "$PARENT_DIR_NAME" ]] && PARENT_DIR_NAME="$(basename "$SRC_PATH")"
 
     case "$PARENT_DIR_NAME" in
@@ -761,10 +876,21 @@ setup_sides() {
         exit_err "Parent directory name cannot contain tabs: $PARENT_DIR_NAME" 4
     fi
 
-    readonly SRC_IS_REMOTE SRC_HOST SRC_PORT SRC_PATH
-    readonly DST_IS_REMOTE DST_HOST DST_PORT DST_PATH
-    readonly RSYNC_SIDE RSYNC_RSH PARENT_DIR_NAME MODE_DESCRIPTION
+    log_info "Parent name: $PARENT_DIR_NAME"
+
+    readonly SRC_PATH DST_PATH PARENT_DIR_NAME
     return 0
+}
+
+# host:path for a remote side, plain path for a local one
+location_of() {
+    local is_remote="$1" host="$2" path="$3"
+
+    if "$is_remote"; then
+        printf '%s:%s' "$host" "$path"
+    else
+        printf '%s' "$path"
+    fi
 }
 
 describe_side() {
@@ -785,7 +911,6 @@ show_configuration() {
     log_info "Source:      $(describe_side "$SRC_IS_REMOTE" "$SRC_HOST" "$SRC_PORT" "$SRC_PATH")"
     log_info "Destination: $(describe_side "$DST_IS_REMOTE" "$DST_HOST" "$DST_PORT" "$DST_PATH")"
     log_info "Mode:        $MODE_DESCRIPTION"
-    log_info "Parent name: $PARENT_DIR_NAME"
     if [[ -n "$RSYNC_RSH" ]]; then
         log_info "Transport:   $RSYNC_RSH"
     elif "$DST_IS_REMOTE"; then
@@ -884,6 +1009,23 @@ create_local_tmp_file() {
 # PREFLIGHT AND VALIDATION
 # ============================================================================
 
+# ssh exits 255 when it could not establish the connection at all, which is a
+# different problem from the command failing on the far side.
+readonly SSH_CONNECT_FAILURE=255
+
+fail_if_ssh_error() {
+    local rc="$1" side="$2"
+    local host
+
+    [[ "$rc" -ne "$SSH_CONNECT_FAILURE" ]] && return 0
+    if [[ "$side" == "src" ]]; then
+        host="$SRC_HOST"
+    else
+        host="$DST_HOST"
+    fi
+    exit_err "Cannot connect to $host over ssh; see the ssh error above" 42
+}
+
 # Run a command on whichever machine executes rsync.
 run_on_rsync_host() {
     if [[ "$RSYNC_SIDE" == "dst" ]]; then
@@ -904,50 +1046,77 @@ check_rsync_available() {
 
     cmd='command -v rsync >/dev/null 2>&1 || exit 41; rsync --version 2>/dev/null | head -n 1'
 
-    if ! RSYNC_VERSION=$(run_on_rsync_host "$cmd"); then
+    local out rc=0
+    out=$(run_on_rsync_host "$cmd") || rc=$?
+    if [[ "$rc" -ne 0 ]]; then
+        [[ "$RSYNC_SIDE" == "dst" ]] && fail_if_ssh_error "$rc" dst
         if [[ "$RSYNC_SIDE" == "dst" ]]; then
-            exit_err "rsync is not available on $DST_HOST (or the connection failed)" 41
+            exit_err "rsync is not available on $DST_HOST" 41
         fi
         exit_err "rsync is not available on this machine" 41
     fi
+
+    RSYNC_VERSION="$out"
     log_info "Rsync:       $RSYNC_VERSION"
     return 0
 }
 
+# Check the source and resolve it to an absolute path in the same round trip.
 validate_source() {
-    local cmd rc=0
-    cmd="p=$(shquote "$SRC_PATH")
+    local cmd out rc=0
+    cmd="p=$(path_expr "$SRC_PATH")
 [ -e \"\$p\" ] || exit 21
 [ -d \"\$p\" ] || exit 22
 [ -r \"\$p\" ] || exit 23
-exit 0"
+cd -- \"\$p\" 2>/dev/null || exit 24
+pwd"
 
-    run_on src "$cmd" || rc=$?
+    out=$(run_on src "$cmd") || rc=$?
+    fail_if_ssh_error "$rc" src
     case "$rc" in
     0) ;;
     21) exit_err "Source directory does not exist: $SOURCE_SPEC" 2 ;;
     22) exit_err "Source path is not a directory: $SOURCE_SPEC" 2 ;;
     23) exit_err "Source directory is not readable: $SOURCE_SPEC" 2 ;;
+    24) exit_err "Source directory cannot be entered: $SOURCE_SPEC" 2 ;;
     *) exit_err "Failed to inspect the source: $SOURCE_SPEC (exit code $rc)" 2 ;;
+    esac
+
+    # Everything after this point works with the absolute path, so no later
+    # operation depends on the login directory of the ssh session.
+    case "$out" in
+    /*) SRC_PATH="$(strip_trailing_slashes "$out")" ;;
+    *) exit_err "Source did not resolve to an absolute path: $SOURCE_SPEC" 2 ;;
     esac
     return 0
 }
 
+# Create the destination if needed, check it, and resolve it to an absolute
+# path. Resolution happens here, before the lock and before anything can be
+# deleted, so every destructive command later runs against an absolute path.
 validate_destination() {
-    local cmd rc=0
-    cmd="d=$(shquote "$DST_PATH")
+    local cmd out rc=0
+    cmd="d=$(path_expr "$DST_PATH")
 if [ ! -d \"\$d\" ]; then
   mkdir -p \"\$d\" || exit 31
 fi
 [ -w \"\$d\" ] || exit 32
-exit 0"
+cd -- \"\$d\" 2>/dev/null || exit 33
+pwd"
 
-    run_on dst "$cmd" || rc=$?
+    out=$(run_on dst "$cmd") || rc=$?
+    fail_if_ssh_error "$rc" dst
     case "$rc" in
     0) ;;
     31) exit_err "Failed to create the destination directory: $DEST_SPEC" 3 ;;
     32) exit_err "Destination directory is not writable: $DEST_SPEC" 3 ;;
+    33) exit_err "Destination directory cannot be entered: $DEST_SPEC" 3 ;;
     *) exit_err "Failed to inspect the destination: $DEST_SPEC (exit code $rc)" 3 ;;
+    esac
+
+    case "$out" in
+    /*) DST_PATH="$(strip_trailing_slashes "$out")" ;;
+    *) exit_err "Destination did not resolve to an absolute path: $DEST_SPEC" 3 ;;
     esac
     return 0
 }
@@ -1162,8 +1331,11 @@ remove_old_snapshots() {
 
     [[ ${#to_delete[@]} -eq 0 ]] && return 0
 
-    log_info "The following snapshots will be deleted:"
-    printf '  %s\n' "${to_delete[@]}"
+    # Always shown when a prompt follows, otherwise it would ask blind
+    if ! "$QUIET" || ! "$AUTO_CONFIRM"; then
+        log_warn "The following snapshots will be deleted:"
+        printf '  %s\n' "${to_delete[@]}"
+    fi
 
     if ! "$AUTO_CONFIRM" && ! "$DRY_RUN" && ! confirmation_dialog "Proceed with deletion?"; then
         log_info "Snapshot deletion canceled."
@@ -1412,8 +1584,8 @@ write_success_marker() {
 Snapshot: ${SNAPSHOT_NAME}
 Epoch: ${SNAPSHOT_START_EPOCH}
 Parent: ${PARENT_DIR_NAME}
-Source: ${SOURCE_SPEC}
-Destination: ${DEST_SPEC}
+Source: $(location_of "$SRC_IS_REMOTE" "$SRC_HOST" "$SRC_PATH")
+Destination: $(location_of "$DST_IS_REMOTE" "$DST_HOST" "$DST_PATH")
 Mode: ${MODE_DESCRIPTION}
 Rsync: ${RSYNC_VERSION}
 Started: ${started_date} ${started_time}
@@ -1550,6 +1722,7 @@ main() {
 
     validate_source
     validate_destination
+    finalize_paths
     acquire_lock
 
     load_inventory
