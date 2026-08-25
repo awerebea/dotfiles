@@ -28,15 +28,16 @@ named '<full filename>.xmp', which is digiKam's default and Immich's preferred
 form. File modification times are preserved exactly.
 
 Frames are linked back to their source video two independent ways, so the link
-survives even if digiKam rewrites a frame sidecar and drops unknown fields:
+survives even if digiKam rewrites a frame sidecar and drops fields it does not
+recognise:
 
-    1. The frame filename embeds a short hash of the video's archive-relative
-       path. Phase 3 rebuilds the hash -> video map by re-walking the archive,
-       so this needs no stored state and cannot go stale.
-    2. Each frame sidecar carries XMP-xmpMM:DerivedFromFilePath and
-       XMP-vidfaces:SourceVideo holding the video's absolute path. Used as a
-       fallback when the hash is unknown (video moved or renamed since
-       extraction) and as a cross-check otherwise.
+    1. Each frame sidecar carries XMP-xmpMM:DerivedFromFilePath and
+       XMP-vidfaces:SourceVideo holding the video's absolute path. This is the
+       normal route and needs no archive scan at all.
+    2. The frame filename embeds a short hash of that same absolute path. A
+       metadata tool cannot alter a filename, so when route 1 is missing phase
+       3 recovers the link by hashing the videos it finds under --path. This
+       map is only built when something actually needs it.
 
 Defaults can be set in ~/.config/video_face_tagger/config.toml (see the
 'config' subcommand, which also writes a starter template). Command-line
@@ -126,7 +127,7 @@ FACE_MODEL_SHA256 = (
     "8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4"
 )
 
-DEFAULT_ROOT = Path("~/Photo").expanduser()
+DEFAULT_PATH = Path("~/Photo").expanduser()
 DEFAULT_WORK = Path("~/video_face_tagger_work").expanduser()
 CONFIG_DIR = Path("~/.config/video_face_tagger").expanduser()
 EXIFTOOL_CONFIG = CONFIG_DIR / "ExifTool_config"
@@ -707,8 +708,8 @@ def sidecar_for(media: Path) -> Path:
     return media.with_name(media.name + ".xmp")
 
 
-def iter_candidate_files(scan_root: Path) -> Iterator[Path]:
-    for dirpath, dirnames, filenames in os.walk(scan_root):
+def iter_candidate_files(scan_path: Path) -> Iterator[Path]:
+    for dirpath, dirnames, filenames in os.walk(scan_path):
         dirnames[:] = sorted(d for d in dirnames if not d.startswith("."))
         for name in sorted(filenames):
             if name.startswith("."):
@@ -717,7 +718,7 @@ def iter_candidate_files(scan_root: Path) -> Iterator[Path]:
 
 
 def discover_videos(
-    scan_root: Path,
+    scan_path: Path,
     probe_all: bool,
     jobs: int,
     stats: Stats,
@@ -726,7 +727,7 @@ def discover_videos(
     fast_hits: list[Path] = []
     to_probe: list[Path] = []
 
-    for path in iter_candidate_files(scan_root):
+    for path in iter_candidate_files(scan_path):
         ext = path.suffix.lower()
         if probe_all:
             if ext in {".xmp", ".ds_store"}:
@@ -774,18 +775,15 @@ def read_markers(videos: Sequence[Path]) -> dict[Path, str]:
 # ---------------------------------------------------------------------------
 
 
-def frame_stem(video: Path, root: Path) -> tuple[str, str]:
+def frame_stem(video: Path) -> tuple[str, str]:
     """Return (hash, filename prefix) for a video's frames.
 
-    The hash is taken over the archive-relative path so it is stable across
-    machines and reproducible without any stored state, which is what lets
-    phase 3 rebuild the frame -> video map by re-walking the archive.
+    The hash covers the video's absolute path. Hashing a path relative to some
+    archive root would make the digest depend on which root was passed, so
+    narrowing --path between phases would change every hash; an absolute path
+    is the same string no matter how the run was scoped.
     """
-    try:
-        rel = video.relative_to(root).as_posix()
-    except ValueError:
-        rel = video.as_posix()
-    digest = path_hash(rel)
+    digest = path_hash(str(video.resolve()))
     return digest, f"{ascii_slug(video.stem)}__{digest}"
 
 
@@ -847,7 +845,6 @@ class ExtractResult:
 
 def extract_video(
     video: Path,
-    root: Path,
     work: Path,
     args: argparse.Namespace,
     face_filter: bool,
@@ -856,7 +853,7 @@ def extract_video(
     if info is None:
         return ExtractResult(video, error="no usable video stream")
 
-    digest, prefix = frame_stem(video, root)
+    digest, prefix = frame_stem(video)
     existing = sorted(work.glob(f"*__{digest}_*{FRAME_EXT}"))
     if existing and not args.force:
         return ExtractResult(video, frames=len(existing), skipped="frames present")
@@ -921,7 +918,7 @@ def extract_video(
 
 
 def cmd_extract(args: argparse.Namespace) -> int:
-    root, scan_root = resolve_scope(args)
+    scan_path = resolve_scope(args)
     work: Path = args.work
     stats = Stats()
 
@@ -952,8 +949,8 @@ def cmd_extract(args: argparse.Namespace) -> int:
             LOG.warning("Pass --face-filter off to silence this.")
             LOG.warning("")
 
-    LOG.info("scanning %s", scan_root)
-    videos = discover_videos(scan_root, args.probe_all, args.jobs, stats)
+    LOG.info("scanning %s", scan_path)
+    videos = discover_videos(scan_path, args.probe_all, args.jobs, stats)
     LOG.info("found %d video file(s)", len(videos))
     if not videos:
         stats.report("Phase 1 (extract) summary")
@@ -984,7 +981,7 @@ def cmd_extract(args: argparse.Namespace) -> int:
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.jobs) as pool:
         futures = {
-            pool.submit(extract_video, video, root, work, args, face_filter): video
+            pool.submit(extract_video, video, work, args, face_filter): video
             for video in pending
         }
         for future in concurrent.futures.as_completed(futures):
@@ -1075,23 +1072,23 @@ def person_names_from_record(record: dict, people_root: str) -> set[str]:
     return {n for n in cleaned if n and n.lower() not in NON_PERSON_NAMES}
 
 
-def build_hash_map(root: Path, jobs: int) -> dict[str, Path]:
-    """Rebuild the frame-hash -> video map by walking the archive.
+def build_hash_map(scan_path: Path, jobs: int) -> dict[str, Path]:
+    """Build a frame-hash -> video map by walking the archive.
 
-    This is what makes the frame/video association stateless: nothing is
-    persisted between phases, so there is no manifest to lose or invalidate.
+    Only needed to recover frames whose sidecar no longer names its source
+    video, so it is built lazily rather than on every run.
     """
     mapping: dict[str, Path] = {}
     stats = Stats()
-    for video in discover_videos(root, False, jobs, stats):
-        digest, _ = frame_stem(video, root)
+    for video in discover_videos(scan_path, False, jobs, stats):
+        digest, _ = frame_stem(video)
         mapping[digest] = video
     return mapping
 
 
 def group_frames_by_video(
     work: Path,
-    root: Path,
+    root_for_map: Path,
     jobs: int,
     people_root: str,
     stats: Stats,
@@ -1113,29 +1110,38 @@ def group_frames_by_video(
         ],
     )
 
-    LOG.info("rebuilding frame -> video map from the archive...")
-    hash_map = build_hash_map(root, jobs)
-    LOG.info("mapped %d video(s)", len(hash_map))
-
     grouped: dict[Path, set[str]] = {}
+    hash_map: dict[str, Path] | None = None
 
     for sidecar in frame_sidecars:
         record = records.get(sidecar, {})
         video: Path | None = None
 
-        digest = frame_hash_from_name(sidecar.name)
-        if digest:
-            video = hash_map.get(digest)
+        # The sidecar names its source video outright, so no archive walk is
+        # needed in the normal case.
+        recorded = record.get(SOURCE_VIDEO_TAG) or record.get(DERIVED_FROM_TAG)
+        if recorded:
+            candidate = Path(str(recorded))
+            if candidate.exists():
+                video = candidate
 
         if video is None:
-            # Fall back to the path recorded inside the sidecar. Reached when a
-            # video was moved or renamed after its frames were extracted.
-            recorded = record.get(SOURCE_VIDEO_TAG) or record.get(DERIVED_FROM_TAG)
-            if recorded:
-                candidate = Path(str(recorded))
-                if candidate.exists():
-                    video = candidate
-                    stats.bump("frames linked via sidecar fallback")
+            # Either digiKam dropped the field when it rewrote the sidecar, or
+            # the video moved. The hash embedded in the frame filename cannot
+            # be destroyed by a metadata tool, so fall back to matching that
+            # against the archive. Built once, only if actually needed.
+            digest = frame_hash_from_name(sidecar.name)
+            if digest:
+                if hash_map is None:
+                    LOG.info(
+                        "some frames do not name their source video; "
+                        "rebuilding the map from %s...", root_for_map
+                    )
+                    hash_map = build_hash_map(root_for_map, jobs)
+                    LOG.info("mapped %d video(s)", len(hash_map))
+                video = hash_map.get(digest)
+                if video is not None:
+                    stats.bump("frames recovered via filename hash")
 
         if video is None:
             stats.bump("frames with unresolvable source video")
@@ -1230,7 +1236,7 @@ def merge_person_tags(
 
 
 def cmd_collect(args: argparse.Namespace) -> int:
-    root, scan_root = resolve_scope(args)
+    scan_path = resolve_scope(args)
     work: Path = args.work
     stats = Stats()
 
@@ -1239,7 +1245,7 @@ def cmd_collect(args: argparse.Namespace) -> int:
         return 1
 
     grouped = group_frames_by_video(
-        work, root, args.jobs, args.people_root, stats
+        work, scan_path, args.jobs, args.people_root, stats
     )
     if not grouped:
         LOG.warning("no frame sidecars found in %s", work)
@@ -1247,11 +1253,10 @@ def cmd_collect(args: argparse.Namespace) -> int:
         return 0
 
     # Honour --path by restricting to videos under the requested subtree.
-    if scan_root != root:
-        grouped = {
-            v: n for v, n in grouped.items()
-            if scan_root == v or scan_root in v.parents
-        }
+    grouped = {
+        v: n for v, n in grouped.items()
+        if scan_path == v or scan_path in v.parents
+    }
 
     LOG.info("")
     LOG.info("merging names into %d video sidecar(s)", len(grouped))
@@ -1276,7 +1281,7 @@ def cmd_collect(args: argparse.Namespace) -> int:
 
 
 def cmd_clean(args: argparse.Namespace) -> int:
-    root, scan_root = resolve_scope(args)
+    scan_path = resolve_scope(args)
     work: Path = args.work
     stats = Stats()
 
@@ -1294,7 +1299,7 @@ def cmd_clean(args: argparse.Namespace) -> int:
         LOG.info("--all: removing every frame in %s", work)
     else:
         LOG.info("determining which videos have been processed...")
-        hash_map = build_hash_map(root, args.jobs)
+        hash_map = build_hash_map(scan_path, args.jobs)
         videos = sorted(set(hash_map.values()))
         markers = read_markers(videos)
         processed_hashes = {
@@ -1333,12 +1338,12 @@ def cmd_clean(args: argparse.Namespace) -> int:
 
 
 def cmd_status(args: argparse.Namespace) -> int:
-    root, scan_root = resolve_scope(args)
+    scan_path = resolve_scope(args)
     work: Path = args.work
     stats = Stats()
 
-    videos = discover_videos(scan_root, args.probe_all, args.jobs, stats)
-    LOG.info("videos under %s: %d", scan_root, len(videos))
+    videos = discover_videos(scan_path, args.probe_all, args.jobs, stats)
+    LOG.info("videos under %s: %d", scan_path, len(videos))
 
     markers = read_markers(videos)
     stats.bump("videos total", len(videos))
@@ -1377,7 +1382,7 @@ def cmd_status(args: argparse.Namespace) -> int:
 
 # Settings that name a filesystem location. argparse's type= conversion does
 # not run on values injected as defaults, so these are converted by hand.
-PATH_SETTINGS = frozenset({"root", "work", "log"})
+PATH_SETTINGS = frozenset({"path", "work", "log"})
 
 CONFIG_TEMPLATE = """\
 # Configuration for video_face_tagger.py
@@ -1389,7 +1394,7 @@ CONFIG_TEMPLATE = """\
 
 # Applied to every subcommand.
 [defaults]
-# root = "~/Photo"
+# path = "~/Photo"
 # work = "~/video_face_tagger_work"
 # jobs = 6
 # people_root = "People"
@@ -1519,21 +1524,12 @@ def cmd_config(args: argparse.Namespace) -> int:
     return 0
 
 
-def resolve_scope(args: argparse.Namespace) -> tuple[Path, Path]:
-    """Return (archive root, directory to scan) honouring --path."""
-    root: Path = args.root.expanduser().resolve()
-    if not root.is_dir():
-        raise SystemExit(f"archive root not found: {root}")
-    if not args.path:
-        return root, root
-    candidate = Path(args.path).expanduser()
-    scan_root = candidate if candidate.is_absolute() else root / candidate
-    scan_root = scan_root.resolve()
-    if not scan_root.is_dir():
-        raise SystemExit(f"--path not found: {scan_root}")
-    if root != scan_root and root not in scan_root.parents:
-        raise SystemExit(f"--path {scan_root} is outside the archive root {root}")
-    return root, scan_root
+def resolve_scope(args: argparse.Namespace) -> Path:
+    """Return the directory to process, honouring --path."""
+    scan_path = Path(args.path).expanduser().resolve()
+    if not scan_path.is_dir():
+        raise SystemExit(f"--path not found: {scan_path}")
+    return scan_path
 
 
 def setup_logging(logfile: Path | None, verbose: bool) -> None:
@@ -1575,12 +1571,9 @@ def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParse
 
     common = argparse.ArgumentParser(add_help=False)
     common.add_argument(
-        "--root", type=Path, default=DEFAULT_ROOT,
-        help=f"archive root (default: {DEFAULT_ROOT})",
-    )
-    common.add_argument(
-        "--path", default=None,
-        help="limit the run to this subdirectory of the archive root",
+        "--path", type=Path, default=DEFAULT_PATH,
+        help=f"directory to process, searched recursively "
+             f"(default: {DEFAULT_PATH})",
     )
     common.add_argument(
         "--work", type=Path, default=DEFAULT_WORK,
