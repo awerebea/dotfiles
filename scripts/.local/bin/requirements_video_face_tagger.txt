@@ -7,14 +7,21 @@
 #
 # The tool runs fine without these; the filter simply stays off.
 #
-# Recommended install:
-#   python3 -m venv ~/.local/share/video_face_tagger/venv
-#   ~/.local/share/video_face_tagger/venv/bin/pip install \
-#       -r requirements-video_face_tagger.txt
+# Recommended install -- a venv beside the script, which is where
+# video_face_tagger.py looks first:
+#
+#   cd "$(dirname "$(command -v video_face_tagger.py)")"
+#   python3 -m venv .venv
+#   .venv/bin/pip install -r requirements_video_face_tagger.txt
 #   video_face_tagger.py fetch-model
 #
-# video_face_tagger.py picks that venv up automatically; no shebang change
-# and no need to activate anything.
+# Note that fetch-model is a separate step: OpenCV 5 ships no bundled face
+# detector, so the 233 KB YuNet model is downloaded (checksum-verified) into
+# ~/.config/video_face_tagger/ on first use.
+#
+# The script adds that venv to sys.path itself, so there is no shebang change
+# and nothing to activate. A venv at ~/.local/share/video_face_tagger/venv is
+# also honoured, for installs outside the dotfiles checkout.
 
 opencv-python-headless>=4.8
 numpy>=1.24

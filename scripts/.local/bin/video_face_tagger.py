@@ -39,7 +39,7 @@ survives even if digiKam rewrites a frame sidecar and drops unknown fields:
        extraction) and as a cross-check otherwise.
 
 Optional face pre-filter: with opencv installed and the YuNet model fetched
-(see requirements-video_face_tagger.txt and the 'fetch-model' subcommand),
+(see requirements_video_face_tagger.txt and the 'fetch-model' subcommand),
 phase 1 discards frames containing no detectable face before digiKam ever
 indexes them. Measured on this archive that removes about 55% of frames at a
 score threshold of 0.6, which gave 100% recall against digiKam's own confirmed
@@ -72,22 +72,39 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
-VENV_DIR = Path("~/.local/share/video_face_tagger/venv").expanduser()
+REQUIREMENTS_NAME = "requirements_video_face_tagger.txt"
+SCRIPT_DIR = Path(__file__).resolve().parent
+
+# Where the optional face-filter dependencies may live, in preference order. A
+# venv beside the script is checked first so it travels with the dotfiles
+# checkout; the XDG-style path is a fallback for installs outside the repo.
+VENV_CANDIDATES = (
+    SCRIPT_DIR / ".venv",
+    SCRIPT_DIR / "venv",
+    Path("~/.local/share/video_face_tagger/venv").expanduser(),
+)
+VENV_DIR = VENV_CANDIDATES[0]
 
 
 def _bootstrap_venv() -> None:
     """Make an opt-in venv importable without changing the shebang.
 
     The optional face-filter dependencies (opencv, numpy) are deliberately kept
-    out of the system interpreter. If the conventional venv exists, its
+    out of the system interpreter. If one of the conventional venvs exists, its
     site-packages are added to sys.path so the script keeps working when run
-    straight off PATH.
+    straight off PATH. The first venv that has a site-packages directory wins.
     """
-    if not VENV_DIR.is_dir():
-        return
-    for candidate in sorted(VENV_DIR.glob("lib/python*/site-packages")):
-        if candidate.is_dir() and str(candidate) not in sys.path:
-            sys.path.append(str(candidate))
+    for venv in VENV_CANDIDATES:
+        if not venv.is_dir():
+            continue
+        found = False
+        for candidate in sorted(venv.glob("lib/python*/site-packages")):
+            if candidate.is_dir():
+                found = True
+                if str(candidate) not in sys.path:
+                    sys.path.append(str(candidate))
+        if found:
+            return
 
 
 _bootstrap_venv()
@@ -566,13 +583,35 @@ def face_filter_available() -> tuple[bool, str]:
         import cv2  # noqa: F401
     except ImportError:
         return False, (
-            "opencv is not installed (see requirements-video_face_tagger.txt)"
+            f"opencv is not installed (see {REQUIREMENTS_NAME})"
         )
     if not hasattr(cv2, "FaceDetectorYN_create"):
         return False, "this opencv build has no FaceDetectorYN"
     if not FACE_MODEL_PATH.exists():
         return False, f"model not downloaded (run: {Path(sys.argv[0]).name} fetch-model)"
     return True, ""
+
+
+def face_filter_setup_hint() -> list[str]:
+    """The exact commands still needed to enable the face pre-filter."""
+    steps: list[str] = []
+    try:
+        import cv2  # noqa: F401
+
+        have_cv2 = hasattr(cv2, "FaceDetectorYN_create")
+    except ImportError:
+        have_cv2 = False
+
+    if not have_cv2:
+        # The requirements file ships beside the script; give its real path so
+        # the suggested command is copy-pasteable from any directory.
+        requirements = SCRIPT_DIR / REQUIREMENTS_NAME
+        target = requirements if requirements.exists() else REQUIREMENTS_NAME
+        steps.append(f"python3 -m venv {VENV_DIR}")
+        steps.append(f"{VENV_DIR}/bin/pip install -r {target}")
+    if not FACE_MODEL_PATH.exists():
+        steps.append(f"{Path(sys.argv[0]).name} fetch-model")
+    return steps
 
 
 def get_face_detector(threshold: float):
@@ -894,7 +933,19 @@ def cmd_extract(args: argparse.Namespace) -> int:
             LOG.error("--face-filter on, but it is unavailable: %s", reason)
             return 1
         else:
-            LOG.info("face pre-filter: off (%s)", reason)
+            LOG.warning("")
+            LOG.warning("face pre-filter is OFF: %s", reason)
+            LOG.warning(
+                "Extraction will still work, but expect roughly twice as many "
+                "frames for digiKam to index."
+            )
+            hint = face_filter_setup_hint()
+            if hint:
+                LOG.warning("To enable it:")
+                for step in hint:
+                    LOG.warning("    %s", step)
+            LOG.warning("Pass --face-filter off to silence this.")
+            LOG.warning("")
 
     LOG.info("scanning %s", scan_root)
     videos = discover_videos(scan_root, args.probe_all, args.jobs, stats)
@@ -912,6 +963,12 @@ def cmd_extract(args: argparse.Namespace) -> int:
         pending = [v for v in videos if v not in markers]
         stats.bump("skipped (already scanned)", len(markers))
         LOG.info("%d already marked, %d to process", len(markers), len(pending))
+
+    if args.dry_run and face_filter:
+        LOG.info(
+            "note: dry-run frame counts are BEFORE face filtering; the real "
+            "run will keep roughly half of them"
+        )
 
     if not args.dry_run:
         work.mkdir(parents=True, exist_ok=True)
