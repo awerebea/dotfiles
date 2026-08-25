@@ -1563,6 +1563,7 @@ def check_dependencies() -> None:
 
 
 def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParser:
+    config = config or {}
     parser = argparse.ArgumentParser(
         prog="video_face_tagger.py",
         description=__doc__,
