@@ -3,7 +3,7 @@
 !.project
 *.log
 *.pyc
-.DS_store
+.DS_Store
 .ignore
 ranger/.config/ranger/bookmarks
 ranger/.config/ranger/copy_buffer
@@ -13,3 +13,29 @@ ranger/.config/ranger/**/__init__.py
 !ranger/.config/ranger/plugins/ranger_devicons/__init__.py
 /__/*
 nvim/.config/nvim/path_aliases.json
+
+# macOS
+._*
+.AppleDouble
+.DocumentRevisions-V100
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.fseventsd
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Editors
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+.venv/
