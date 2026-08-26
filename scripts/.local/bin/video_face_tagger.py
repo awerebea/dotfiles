@@ -896,15 +896,24 @@ def extract_video(
         return ExtractResult(video, error="no usable video stream")
 
     digest, prefix = frame_stem(video)
-    existing = sorted(work.glob(f"*__{digest}_*{FRAME_EXT}"))
-    if existing and not args.force:
-        return ExtractResult(video, frames=len(existing), skipped="frames present")
+    frames_present = sorted(work.glob(f"*__{digest}_*{FRAME_EXT}"))
+    # Sidecars are written only once a video's frames are all extracted and
+    # filtered, so their presence is what marks the video complete. Judging by
+    # the JPEGs alone would treat a run interrupted mid-video as finished, and
+    # those frames would never gain sidecars, never reach phase 3, and never be
+    # retried.
+    done = any(work.glob(f"*__{digest}_*{FRAME_EXT}.xmp"))
 
-    if existing and args.force:
-        if not args.dry_run:
-            for stale in existing:
-                stale.unlink(missing_ok=True)
-                sidecar_for(stale).unlink(missing_ok=True)
+    if done and not args.force:
+        return ExtractResult(
+            video, frames=len(frames_present), skipped="frames present"
+        )
+
+    if frames_present and not args.dry_run:
+        # Either --force, or a partial extraction to discard and redo.
+        for stale in frames_present:
+            stale.unlink(missing_ok=True)
+            sidecar_for(stale).unlink(missing_ok=True)
 
     timestamps = sample_timestamps(info.duration, args.interval, args.max_frames)
 
