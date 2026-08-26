@@ -160,8 +160,10 @@ Nothing under the archive is touched in this phase.
 4. In the People view, run face detection scoped to the new collection only, so
    the existing library is not rescanned.
 5. Recognition proposes names using the model already trained on your photos.
-6. Confirm the proposals. Only confirmed faces are written out; anything left
-   unconfirmed stays `Unknown` and is discarded in phase 3.
+6. Confirm the proposals. This step is load-bearing: digiKam writes a face to
+   the sidecar only once it is confirmed, so an unconfirmed suggestion lives in
+   the digiKam database alone and is invisible to phase 3. Faces you explicitly
+   ignore are written out as the name `Ignored`, which phase 3 discards.
 7. Apply any pending metadata changes so everything is flushed to the sidecars.
 8. Remove the collection from digiKam once you are done.
 
@@ -186,7 +188,8 @@ video_face_tagger.py collect \
 
 Names are read from both `XMP-mwg-rs:RegionName` and tag entries under the
 people root, because which of the two digiKam writes depends on its metadata
-settings. Placeholders such as `Unknown` and `Ignored` are filtered out, and a
+settings. Placeholders are filtered out, `Ignored` being the one this archive
+actually contains, and a
 nested face tag such as `People/Family/Ivan Petrov` contributes only the leaf
 name.
 
