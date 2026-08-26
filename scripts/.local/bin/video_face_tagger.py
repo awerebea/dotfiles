@@ -153,7 +153,10 @@ def _reexec_into_venv() -> None:
         )
 
 
-_reexec_into_venv()
+if __name__ == "__main__":
+    # Only when run as a program: importing this module should never replace
+    # the importing process.
+    _reexec_into_venv()
 
 LOG = logging.getLogger("video_face_tagger.py")
 
