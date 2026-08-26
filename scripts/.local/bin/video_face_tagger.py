@@ -1039,8 +1039,10 @@ def person_names_from_record(record: dict, people_root: str) -> set[str]:
       - mwg-rs region names (what face tagging produces directly)
       - tag list entries under the People root
 
-    Detected-but-unidentified faces are dropped, otherwise every video with a
-    stranger in it would gain an 'Unknown' person tag.
+    Placeholder names are dropped. digiKam does not write unconfirmed
+    suggestions to XMP at all, but a face explicitly marked as ignored is
+    written out under the name 'Ignored' (676 sidecars in this archive carry
+    one), and without filtering that would become a person tag.
     """
     names: set[str] = set()
 
