@@ -80,9 +80,11 @@ from typing import Any, Iterator, Sequence
 REQUIREMENTS_NAME = "requirements_video_face_tagger.txt"
 SCRIPT_DIR = Path(__file__).resolve().parent
 
-# Where the optional face-filter dependencies may live, in preference order. A
-# venv beside the script is checked first so it travels with the dotfiles
-# checkout; the XDG-style path is a fallback for installs outside the repo.
+REEXEC_GUARD = "VIDEO_FACE_TAGGER_REEXEC"
+PYTHON_OVERRIDE = "VIDEO_FACE_TAGGER_PYTHON"
+
+# Fallback venv locations, used only when nothing else identifies one. These
+# are a convenience, not a requirement: an activated virtualenv always wins.
 VENV_CANDIDATES = (
     SCRIPT_DIR / ".venv",
     SCRIPT_DIR / "venv",
@@ -90,45 +92,68 @@ VENV_CANDIDATES = (
 )
 VENV_DIR = VENV_CANDIDATES[0]
 
-# Set when a venv exists but was built for a different Python than the one
-# running now: (venv path, its python version, the version we need).
-VENV_VERSION_MISMATCH: tuple[Path, str, str] | None = None
 
+def _venv_python() -> Path | None:
+    """Find a virtualenv interpreter to run under, or None to stay put."""
+    override = os.environ.get(PYTHON_OVERRIDE)
+    if override:
+        candidate = Path(override).expanduser()
+        return candidate if candidate.is_file() else None
 
-def _bootstrap_venv() -> None:
-    """Make an opt-in venv importable without changing the shebang.
+    # An activated virtualenv that somehow is not the running interpreter.
+    active = os.environ.get("VIRTUAL_ENV")
+    if active:
+        candidate = Path(active) / "bin" / "python"
+        if candidate.is_file():
+            return candidate
 
-    The optional face-filter dependencies (opencv, numpy) are deliberately kept
-    out of the system interpreter. If one of the conventional venvs exists, its
-    site-packages are added to sys.path so the script keeps working when run
-    straight off PATH. The first venv that has a site-packages directory wins.
-    """
-    global VENV_VERSION_MISMATCH
-
-    want = f"python{sys.version_info.major}.{sys.version_info.minor}"
     for venv in VENV_CANDIDATES:
-        if not venv.is_dir():
-            continue
-        present = sorted(
-            p for p in venv.glob("lib/python*/site-packages") if p.is_dir()
-        )
-        if not present:
-            continue
-        # Only a site-packages built for the running interpreter is usable.
-        # Injecting another version's would put compiled extensions such as
-        # cv2 on the path that cannot possibly import, which surfaces as a
-        # baffling "opencv is not installed" despite a populated venv.
-        match = [p for p in present if p.parent.name == want]
-        if not match:
-            VENV_VERSION_MISMATCH = (venv, present[0].parent.name, want)
-            continue
-        for candidate in match:
-            if str(candidate) not in sys.path:
-                sys.path.append(str(candidate))
+        candidate = venv / "bin" / "python"
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def _reexec_into_venv() -> None:
+    """Re-run this script under a virtualenv interpreter when one applies.
+
+    The dependencies for the optional face filter are installed into a
+    virtualenv, but the shebang runs whatever `python3` resolves to. Rather
+    than graft that virtualenv's site-packages onto sys.path, which only works
+    when it was built for the very same Python, hand the script to the
+    virtualenv's own interpreter so every import resolves natively.
+
+    Deliberately does nothing when already inside a virtualenv, so an activated
+    environment is always respected and no particular layout is imposed.
+    """
+    if os.environ.get(REEXEC_GUARD):
+        return
+    if sys.prefix != sys.base_prefix:
+        return  # already running inside a virtualenv; use it as-is
+
+    target = _venv_python()
+    if target is None:
+        return
+    # Deliberately compared unresolved: a virtualenv's bin/python is a symlink
+    # to the base interpreter, so resolving both sides makes any venv look
+    # identical to the Python already running and the re-exec never happens.
+    # Loop protection is the guard variable above, not this check.
+    if target == Path(sys.executable):
         return
 
+    os.environ[REEXEC_GUARD] = "1"
+    script = str(Path(__file__).resolve())
+    try:
+        os.execv(str(target), [str(target), script, *sys.argv[1:]])
+    except OSError as exc:  # pragma: no cover - execv essentially never fails
+        del os.environ[REEXEC_GUARD]
+        print(
+            f"warning: could not run under {target}: {exc}",
+            file=sys.stderr,
+        )
 
-_bootstrap_venv()
+
+_reexec_into_venv()
 
 LOG = logging.getLogger("video_face_tagger.py")
 
@@ -604,12 +629,6 @@ def face_filter_available() -> tuple[bool, str]:
     try:
         import cv2  # noqa: F401
     except ImportError:
-        if VENV_VERSION_MISMATCH:
-            venv, have, want = VENV_VERSION_MISMATCH
-            return False, (
-                f"{venv} was built for {have} but this is {want}; "
-                "recreate the venv"
-            )
         return False, (
             f"opencv is not installed (see {REQUIREMENTS_NAME})"
         )
@@ -635,9 +654,7 @@ def face_filter_setup_hint() -> list[str]:
         # the suggested command is copy-pasteable from any directory.
         requirements = SCRIPT_DIR / REQUIREMENTS_NAME
         target = requirements if requirements.exists() else REQUIREMENTS_NAME
-        venv = VENV_VERSION_MISMATCH[0] if VENV_VERSION_MISMATCH else VENV_DIR
-        if VENV_VERSION_MISMATCH:
-            steps.append(f"rm -rf {venv}")
+        venv = VENV_DIR
         steps.append(f"python3 -m venv {venv}")
         steps.append(f"{venv}/bin/pip install -r {target}")
     if not FACE_MODEL_PATH.exists():
@@ -1775,6 +1792,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     args.work = args.work.expanduser()
     logfile = args.log or (args.work / "logs" / f"{args.command}.log")
     setup_logging(logfile, args.verbose)
+
+    LOG.debug(
+        "interpreter: %s (virtualenv: %s)",
+        sys.executable,
+        sys.prefix if sys.prefix != sys.base_prefix else "none",
+    )
 
     check_dependencies()
     ensure_exiftool_config()

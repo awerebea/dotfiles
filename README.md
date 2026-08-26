@@ -55,9 +55,16 @@ python3 -m venv .venv
 video_face_tagger.py fetch-model
 ```
 
-The script adds that venv to `sys.path` itself, so there is no shebang to edit
-and nothing to activate. A venv at `~/.local/share/video_face_tagger/venv` is
-also honoured, for installs outside this checkout.
+The script re-executes itself under a virtualenv interpreter when it finds
+one, so there is no shebang to edit and nothing to activate.
+
+It never imposes a particular location. If a virtualenv is already active, that
+one is used and nothing is overridden. Otherwise it looks for `.venv` or `venv`
+beside the script, then `~/.local/share/video_face_tagger/venv`. Setting
+`VIDEO_FACE_TAGGER_PYTHON` to an interpreter overrides all of it.
+
+To confirm which interpreter is in use, pass `--verbose` and look for the
+`interpreter:` line.
 
 Without the optional dependencies the tool works normally, just with a larger
 working set. It warns when the filter is off but could be enabled, and prints
