@@ -19,9 +19,12 @@
 # detector, so the 233 KB YuNet model is downloaded (checksum-verified) into
 # ~/.config/video_face_tagger/ on first use.
 #
-# The script adds that venv to sys.path itself, so there is no shebang change
-# and nothing to activate. A venv at ~/.local/share/video_face_tagger/venv is
-# also honoured, for installs outside the dotfiles checkout.
+# The script re-executes itself under a virtualenv interpreter when it finds
+# one, so there is no shebang change and nothing to activate. An already
+# active virtualenv always wins; otherwise .venv or venv beside the script is
+# used, then ~/.local/share/video_face_tagger/venv. Set
+# VIDEO_FACE_TAGGER_PYTHON to override. Use --verbose to see which
+# interpreter is running.
 
 opencv-python-headless>=4.8
 numpy>=1.24
