@@ -90,6 +90,10 @@ VENV_CANDIDATES = (
 )
 VENV_DIR = VENV_CANDIDATES[0]
 
+# Set when a venv exists but was built for a different Python than the one
+# running now: (venv path, its python version, the version we need).
+VENV_VERSION_MISMATCH: tuple[Path, str, str] | None = None
+
 
 def _bootstrap_venv() -> None:
     """Make an opt-in venv importable without changing the shebang.
@@ -99,17 +103,29 @@ def _bootstrap_venv() -> None:
     site-packages are added to sys.path so the script keeps working when run
     straight off PATH. The first venv that has a site-packages directory wins.
     """
+    global VENV_VERSION_MISMATCH
+
+    want = f"python{sys.version_info.major}.{sys.version_info.minor}"
     for venv in VENV_CANDIDATES:
         if not venv.is_dir():
             continue
-        found = False
-        for candidate in sorted(venv.glob("lib/python*/site-packages")):
-            if candidate.is_dir():
-                found = True
-                if str(candidate) not in sys.path:
-                    sys.path.append(str(candidate))
-        if found:
-            return
+        present = sorted(
+            p for p in venv.glob("lib/python*/site-packages") if p.is_dir()
+        )
+        if not present:
+            continue
+        # Only a site-packages built for the running interpreter is usable.
+        # Injecting another version's would put compiled extensions such as
+        # cv2 on the path that cannot possibly import, which surfaces as a
+        # baffling "opencv is not installed" despite a populated venv.
+        match = [p for p in present if p.parent.name == want]
+        if not match:
+            VENV_VERSION_MISMATCH = (venv, present[0].parent.name, want)
+            continue
+        for candidate in match:
+            if str(candidate) not in sys.path:
+                sys.path.append(str(candidate))
+        return
 
 
 _bootstrap_venv()
@@ -588,6 +604,12 @@ def face_filter_available() -> tuple[bool, str]:
     try:
         import cv2  # noqa: F401
     except ImportError:
+        if VENV_VERSION_MISMATCH:
+            venv, have, want = VENV_VERSION_MISMATCH
+            return False, (
+                f"{venv} was built for {have} but this is {want}; "
+                "recreate the venv"
+            )
         return False, (
             f"opencv is not installed (see {REQUIREMENTS_NAME})"
         )
@@ -613,8 +635,11 @@ def face_filter_setup_hint() -> list[str]:
         # the suggested command is copy-pasteable from any directory.
         requirements = SCRIPT_DIR / REQUIREMENTS_NAME
         target = requirements if requirements.exists() else REQUIREMENTS_NAME
-        steps.append(f"python3 -m venv {VENV_DIR}")
-        steps.append(f"{VENV_DIR}/bin/pip install -r {target}")
+        venv = VENV_VERSION_MISMATCH[0] if VENV_VERSION_MISMATCH else VENV_DIR
+        if VENV_VERSION_MISMATCH:
+            steps.append(f"rm -rf {venv}")
+        steps.append(f"python3 -m venv {venv}")
+        steps.append(f"{venv}/bin/pip install -r {target}")
     if not FACE_MODEL_PATH.exists():
         steps.append(f"{Path(sys.argv[0]).name} fetch-model")
     return steps
