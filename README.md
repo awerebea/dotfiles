@@ -78,6 +78,7 @@ Four phases, three of them scripted:
 | --- | --- | --- |
 | 1 | `extract` | Sample frames from videos into the work directory |
 | 2 | *manual* | In digiKam: detect, recognise, and confirm faces |
+| - | `propagate` | *(optional)* Spread each video's confirmed names to all of its frames |
 | 3 | `collect` | Merge confirmed names into the video sidecars |
 | 4 | `clean` | Drop work frames for processed videos |
 
@@ -176,6 +177,37 @@ Nothing under the archive is touched in this phase.
 
 Result: frame sidecars gain `XMP-mwg-rs:RegionName` entries and `People/<Name>`
 tag entries.
+
+#### Optional: propagate
+
+digiKam confirms faces one frame at a time, so a person recognised in a few
+frames of a video stays unrecognised in the rest and keeps being offered for
+confirmation. This spreads the names sideways instead.
+
+```sh
+video_face_tagger.py propagate \
+  --work ~/video_face_tagger_work \
+  --people-root People \
+  --dry-run
+```
+
+Every frame of a video receives the union of the names confirmed on any of its
+frames. A video whose 100 frames had two people confirmed across nine of them
+ends with all 100 frames carrying both names.
+
+Only already-confirmed identities are copied. No face region is invented and
+`XMP-mwg-rs` regions are left untouched, so this is not a substitute for
+recognition. What it buys is a filter: once it has run, frames with no person
+tag are exactly those from videos where nobody has been identified yet, which
+is where the remaining manual effort belongs.
+
+Frames are grouped by the hash in their filename, so this needs no access to
+the archive at all and is safe to run with the archive unmounted or read-only.
+It is idempotent, and re-running reports videos that are already consistent.
+
+Note that frames keep any unconfirmed face regions they had, so digiKam will
+still offer those regions for confirmation. Propagating tags makes the
+redundant ones easy to identify and skip, rather than removing them.
 
 #### Phase 3: collect
 
