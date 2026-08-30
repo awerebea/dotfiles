@@ -21,6 +21,12 @@ The workflow has four phases, three of them scripted:
                         into each source video's sidecar
     clean     phase 4   drop work-directory frames for processed videos
 
+'propagate' sits between phases 2 and 3, and is optional. It gives every frame
+of a video the union of the names confirmed on any of them, so a video only
+has to be worked through once in digiKam: afterwards the frames still carrying
+no person tag are exactly those from videos where nobody has been identified
+yet. It copies confirmed identities only, and never touches face regions.
+
 There is also a 'status' subcommand that reports where things stand.
 
 Original media files are NEVER modified. Every write goes to a .xmp sidecar
@@ -1215,6 +1221,93 @@ def group_frames_by_video(
     return grouped
 
 
+def tag_fields_for(extra: bool) -> list[str]:
+    """The tag list fields to keep in sync."""
+    fields = [TAGSLIST_TAG, HIERARCHICAL_TAG, SUBJECT_TAG]
+    if extra:
+        fields += [LASTKEYWORD_TAG, CATALOGSETS_TAG]
+    return fields
+
+
+def wanted_tag_values(name: str, people_root: str) -> dict[str, str]:
+    """The value each tag field should carry for one person."""
+    return {
+        TAGSLIST_TAG: f"{people_root}/{name}",
+        HIERARCHICAL_TAG: f"{people_root}|{name}",
+        SUBJECT_TAG: name,
+        LASTKEYWORD_TAG: f"{people_root}/{name}",
+        CATALOGSETS_TAG: f"{people_root}|{name}",
+    }
+
+
+def record_missing_names(
+    record: dict,
+    names: set[str],
+    fields: Sequence[str],
+    people_root: str,
+) -> bool:
+    """True if this sidecar lacks any wanted value in any field."""
+    for name in names:
+        wanted = wanted_tag_values(name, people_root)
+        for field_name in fields:
+            if wanted[field_name] not in as_list(record.get(field_name)):
+                return True
+    return False
+
+
+def write_names_to_frames(
+    frames: Sequence[Path],
+    names: set[str],
+    fields: Sequence[str],
+    people_root: str,
+    dry_run: bool,
+) -> bool:
+    """Set the given person tags on many frame sidecars in one exiftool call.
+
+    Each value is removed then re-added, which yields exactly one occurrence
+    whatever the file started with. That makes a single batched call correct
+    for a mix of already-tagged and untagged frames, instead of needing one
+    call per distinct starting state.
+
+    Modification times are deliberately NOT preserved here. These are scratch
+    frames, and digiKam decides whether to re-read a sidecar by looking at its
+    timestamp, so freezing it would risk the new tags going unnoticed.
+    """
+    if not frames or not names:
+        return True
+
+    assignments: list[str] = []
+    for name in sorted(names):
+        wanted = wanted_tag_values(name, people_root)
+        for field_name in fields:
+            assignments.append(f"-{field_name}-={wanted[field_name]}")
+            assignments.append(f"-{field_name}+={wanted[field_name]}")
+
+    if dry_run:
+        LOG.info(
+            "    [dry-run] would set %s on %d frame(s)",
+            ", ".join(sorted(names)), len(frames),
+        )
+        return True
+
+    with tempfile.NamedTemporaryFile(
+        "w", suffix=".args", delete=False, encoding="utf-8"
+    ) as handle:
+        for frame in frames:
+            handle.write(f"{frame}\n")
+        argfile = handle.name
+    try:
+        proc = run_exiftool(
+            ["-overwrite_original", "-m", *assignments, "-@", argfile]
+        )
+        if proc.returncode != 0:
+            LOG.error("exiftool failed: %s", proc.stderr.strip())
+            return False
+        return True
+    finally:
+        os.unlink(argfile)
+
+
 def merge_person_tags(
     video: Path,
     names: set[str],
@@ -1231,9 +1324,7 @@ def merge_person_tags(
     sidecar = sidecar_for(video)
     people_root = args.people_root
 
-    fields = [TAGSLIST_TAG, HIERARCHICAL_TAG, SUBJECT_TAG]
-    if args.extra_tag_fields:
-        fields += [LASTKEYWORD_TAG, CATALOGSETS_TAG]
+    fields = tag_fields_for(args.extra_tag_fields)
 
     current: dict[str, list[str]] = {f: [] for f in fields}
     if sidecar.exists():
@@ -1246,13 +1337,7 @@ def merge_person_tags(
     added = 0
 
     for name in sorted(names):
-        wanted = {
-            TAGSLIST_TAG: f"{people_root}/{name}",
-            HIERARCHICAL_TAG: f"{people_root}|{name}",
-            SUBJECT_TAG: name,
-            LASTKEYWORD_TAG: f"{people_root}/{name}",
-            CATALOGSETS_TAG: f"{people_root}|{name}",
-        }
+        wanted = wanted_tag_values(name, people_root)
         new_for_name = False
         for f in fields:
             value = wanted[f]
@@ -1328,6 +1413,104 @@ def cmd_collect(args: argparse.Namespace) -> int:
         LOG.info("Per-video face counts (top 20):")
         for count, video in face_totals[:20]:
             LOG.info("  %2d  %s", count, video.name)
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# propagate -- spread confirmed names across a video's other frames
+# ---------------------------------------------------------------------------
+
+
+def cmd_propagate(args: argparse.Namespace) -> int:
+    """Give every frame of a video the union of names confirmed on any of them.
+
+    digiKam confirms faces per frame, so the same person recognised in a few
+    frames of a video stays unrecognised in the rest, and keeps being offered
+    for confirmation. Propagating the names sideways means a video only has to
+    be worked once: afterwards, frames still carrying no person tag are exactly
+    the ones belonging to videos where nobody has been identified yet.
+
+    This only copies identities that were already confirmed. It never invents a
+    face region, and mwg-rs regions are left untouched.
+    """
+    work: Path = args.work
+    stats = Stats()
+
+    if not work.exists():
+        LOG.error("work directory does not exist: %s", work)
+        return 1
+
+    sidecars = sorted(work.glob(f"*{FRAME_EXT}.xmp"))
+    if not sidecars:
+        LOG.warning("no frame sidecars found in %s", work)
+        stats.report("Propagate summary")
+        return 0
+
+    fields = tag_fields_for(args.extra_tag_fields)
+    LOG.info("reading %d frame sidecar(s)...", len(sidecars))
+    records = exiftool_read(sidecars, ["XMP-mwg-rs:RegionName", *fields])
+
+    # Frames of one video all share the hash in their filename, so grouping
+    # needs no archive access at all -- useful when the archive is mounted
+    # read-only, or not mounted.
+    groups: dict[str, list[Path]] = {}
+    for sidecar in sidecars:
+        digest = frame_hash_from_name(sidecar.name)
+        if digest is None:
+            stats.bump("frames with an unrecognised name")
+            continue
+        groups.setdefault(digest, []).append(sidecar)
+
+    LOG.info("%d frame(s) across %d video(s)", len(sidecars), len(groups))
+    LOG.info("")
+
+    done = 0
+    for digest, frames in sorted(groups.items()):
+        done += 1
+        names: set[str] = set()
+        for frame in frames:
+            names |= person_names_from_record(records.get(frame, {}), args.people_root)
+
+        label = frames[0].name.split("__")[0]
+        if not names:
+            stats.bump("videos with nothing confirmed yet")
+            stats.bump("frames still untagged", len(frames))
+            continue
+
+        todo = [
+            f for f in frames
+            if record_missing_names(
+                records.get(f, {}), names, fields, args.people_root
+            )
+        ]
+        stats.bump("videos with confirmed people")
+        if not todo:
+            stats.bump("videos already consistent")
+            continue
+
+        LOG.info(
+            "  %s: %d name(s) [%s] -> %d of %d frame(s)",
+            label, len(names), ", ".join(sorted(names)), len(todo), len(frames),
+        )
+        if write_names_to_frames(
+            todo, names, fields, args.people_root, args.dry_run
+        ):
+            stats.bump("frames updated", len(todo))
+        else:
+            stats.bump("failed")
+
+        if done % args.progress_every == 0:
+            LOG.info("  [%d/%d videos]", done, len(groups))
+
+    stats.report("Propagate summary")
+    left = stats.get("frames still untagged")
+    if left:
+        LOG.info("")
+        LOG.info(
+            "%d frame(s) from %d video(s) still carry no person tag; those are",
+            left, stats.get("videos with nothing confirmed yet"),
+        )
+        LOG.info("the ones still worth working on in digiKam.")
     return 0
 
 
@@ -1735,6 +1918,18 @@ def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParse
              "XMP-mediapro:CatalogSets, which digiKam maintains too",
     )
     collect.set_defaults(func=cmd_collect)
+
+    propagate = subparsers.add_parser(
+        "propagate", parents=[common, writing],
+        help="spread each video's confirmed names across all of its frames "
+             "(works on --work; the archive is not touched)",
+    )
+    propagate.add_argument(
+        "--extra-tag-fields", action="store_true",
+        help="also update XMP-microsoft:LastKeywordXMP and "
+             "XMP-mediapro:CatalogSets",
+    )
+    propagate.set_defaults(func=cmd_propagate)
 
     clean = subparsers.add_parser(
         "clean", parents=[common, writing],
