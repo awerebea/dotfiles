@@ -27,6 +27,13 @@ has to be worked through once in digiKam: afterwards the frames still carrying
 no person tag are exactly those from videos where nobody has been identified
 yet. It copies confirmed identities only, and never touches face regions.
 
+'prune' is also optional, and follows 'propagate'. It moves the frames of
+videos where somebody has already been identified out of the collection, so
+digiKam stops offering the same faces for confirmation. Frames holding the
+confirmations are kept, videos nobody has been identified in are left alone,
+and frames are parked in a sibling directory rather than deleted unless
+--delete is given.
+
 There is also a 'status' subcommand that reports where things stand.
 
 Original media files are NEVER modified. Every write goes to a .xmp sidecar
@@ -1518,6 +1525,163 @@ def cmd_propagate(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# prune -- take worked-out frames out of digiKam's way
+# ---------------------------------------------------------------------------
+
+
+def region_names(record: dict) -> set[str]:
+    """Confirmed face names on this frame, from its regions alone.
+
+    digiKam never writes an unconfirmed suggestion to XMP, so a region name is
+    proof the face was confirmed here. Tags are not evidence of that: after
+    'propagate' every frame of a video carries the names, whoever they were
+    confirmed on.
+    """
+    names = set()
+    for value in as_list(record.get("XMP-mwg-rs:RegionName")):
+        cleaned = nfc(value.strip())
+        if cleaned and cleaned.lower() not in NON_PERSON_NAMES:
+            names.add(cleaned)
+    return names
+
+
+def cmd_prune(args: argparse.Namespace) -> int:
+    """Move frames of already-identified videos out of the collection.
+
+    Once a video has someone confirmed, its remaining frames keep offering
+    unconfirmed faces for the same people. Parking them shrinks what digiKam
+    asks about, while videos nobody has been identified in are left completely
+    alone -- those are the ones still worth the attention.
+    """
+    work: Path = args.work
+    stats = Stats()
+
+    if not work.exists():
+        LOG.error("work directory does not exist: %s", work)
+        return 1
+
+    park_dir: Path = args.park_dir or work.parent / f"{work.name}-parked"
+    if not args.delete and park_dir.resolve() == work.resolve():
+        LOG.error("--park-dir must differ from --work")
+        return 1
+    if not args.delete and work.resolve() in park_dir.resolve().parents:
+        # digiKam scans recursively, so a subdirectory would stay in the
+        # collection and nothing would be gained.
+        LOG.error("--park-dir must not be inside --work (%s)", park_dir)
+        return 1
+
+    sidecars = sorted(work.glob(f"*{FRAME_EXT}.xmp"))
+    if not sidecars:
+        LOG.warning("no frame sidecars found in %s", work)
+        stats.report("Prune summary")
+        return 0
+
+    fields = tag_fields_for(False)
+    LOG.info("reading %d frame sidecar(s)...", len(sidecars))
+    records = exiftool_read(sidecars, ["XMP-mwg-rs:RegionName", *fields])
+
+    groups: dict[str, list[Path]] = {}
+    for sidecar in sidecars:
+        digest = frame_hash_from_name(sidecar.name)
+        if digest:
+            groups.setdefault(digest, []).append(sidecar)
+
+    LOG.info("%d frame(s) across %d video(s)", len(sidecars), len(groups))
+    if not args.delete:
+        LOG.info("parking into %s", park_dir)
+    else:
+        LOG.info("--delete: removing frames outright")
+    LOG.info("")
+
+    for digest, frames in sorted(groups.items()):
+        full: set[str] = set()
+        for frame in frames:
+            full |= person_names_from_record(
+                records.get(frame, {}), args.people_root
+            )
+        if not full:
+            stats.bump("videos nobody identified yet (untouched)")
+            stats.bump("frames left for digiKam", len(frames))
+            continue
+
+        stats.bump("videos with someone identified")
+
+        # Frames holding the actual confirmations are worth keeping: they cost
+        # nothing in digiKam, since a confirmed face is not queued again.
+        keep = [f for f in frames if region_names(records.get(f, {}))]
+
+        # A name confirmed nowhere as a region -- tagged by hand, say -- would
+        # be lost if its only frame were parked, so keep that frame too.
+        covered: set[str] = set()
+        for f in keep:
+            covered |= person_names_from_record(
+                records.get(f, {}), args.people_root
+            )
+        for missing in sorted(full - covered):
+            for f in frames:
+                if f in keep:
+                    continue
+                if missing in person_names_from_record(
+                    records.get(f, {}), args.people_root
+                ):
+                    keep.append(f)
+                    break
+
+        # Never empty a video: phase 3 finds videos through their frames, so
+        # one with none left would never be marked.
+        for f in frames:
+            if len(keep) >= max(1, args.keep):
+                break
+            if f not in keep:
+                keep.append(f)
+
+        move = [f for f in frames if f not in keep]
+        if not move:
+            stats.bump("videos already minimal")
+            continue
+
+        label = frames[0].name.split("__")[0]
+        LOG.info(
+            "  %s: keeping %d of %d frame(s), %s %d",
+            label, len(keep), len(frames),
+            "deleting" if args.delete else "parking", len(move),
+        )
+
+        for sidecar in move:
+            image = Path(str(sidecar)[: -len(".xmp")])
+            if args.dry_run:
+                stats.bump("frames parked" if not args.delete else "frames deleted")
+                continue
+            try:
+                if args.delete:
+                    sidecar.unlink(missing_ok=True)
+                    image.unlink(missing_ok=True)
+                else:
+                    park_dir.mkdir(parents=True, exist_ok=True)
+                    for src in (image, sidecar):
+                        if not src.exists():
+                            continue
+                        dest = park_dir / src.name
+                        if dest.exists():
+                            dest.unlink()
+                        shutil.move(str(src), str(dest))
+            except OSError as exc:
+                LOG.error("  could not move %s: %s", sidecar.name, exc)
+                stats.bump("failed")
+                continue
+            stats.bump("frames parked" if not args.delete else "frames deleted")
+        stats.bump("frames kept", len(keep))
+
+    stats.report("Prune summary")
+    if not args.delete and stats.get("frames parked"):
+        LOG.info("")
+        LOG.info("Parked frames are in %s", park_dir)
+        LOG.info("Move them back into %s to reconsider a video.", work)
+    LOG.info("Have digiKam rescan the collection to drop them from its queue.")
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # phase 4 -- clean
 # ---------------------------------------------------------------------------
 
@@ -1933,6 +2097,27 @@ def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParse
              "XMP-mediapro:CatalogSets",
     )
     propagate.set_defaults(func=cmd_propagate)
+
+    prune = subparsers.add_parser(
+        "prune", parents=[common, writing],
+        help="park frames of videos where someone is already identified, so "
+             "digiKam stops asking about them",
+    )
+    prune.add_argument(
+        "--park-dir", type=Path, default=None,
+        help="where parked frames go (default: a '<work>-parked' sibling of "
+             "--work; must be outside --work, which digiKam scans recursively)",
+    )
+    prune.add_argument(
+        "--keep", type=int, default=1,
+        help="minimum frames to leave per video (default: 1). Frames holding "
+             "confirmed faces are always kept on top of this",
+    )
+    prune.add_argument(
+        "--delete", action="store_true",
+        help="delete instead of parking; irreversible",
+    )
+    prune.set_defaults(func=cmd_prune)
 
     clean = subparsers.add_parser(
         "clean", parents=[common, writing],

@@ -79,6 +79,7 @@ Four phases, three of them scripted:
 | 1 | `extract` | Sample frames from videos into the work directory |
 | 2 | *manual* | In digiKam: detect, recognise, and confirm faces |
 | - | `propagate` | *(optional)* Spread each video's confirmed names to all of its frames |
+| - | `prune` | *(optional)* Park frames of already-identified videos out of digiKam's way |
 | 3 | `collect` | Merge confirmed names into the video sidecars |
 | 4 | `clean` | Drop work frames for processed videos |
 
@@ -208,6 +209,38 @@ It is idempotent, and re-running reports videos that are already consistent.
 Note that frames keep any unconfirmed face regions they had, so digiKam will
 still offer those regions for confirmation. Propagating tags makes the
 redundant ones easy to identify and skip, rather than removing them.
+
+#### Optional: prune
+
+`propagate` adds tags but deliberately leaves face regions alone, so digiKam
+still offers those frames for confirmation. `prune` shrinks what it asks about.
+
+```sh
+video_face_tagger.py prune --work ~/video_face_tagger_work --dry-run
+video_face_tagger.py prune --work ~/video_face_tagger_work
+```
+
+For every video where at least one person is identified, frames are moved to a
+`<work>-parked` sibling directory. Videos nobody has been identified in are
+left completely alone, since those are where the remaining attention belongs.
+
+Frames carrying a confirmed face region are always kept: a confirmed face is
+not queued again, so they cost nothing. `--keep N` (default 1) sets a floor on
+how many frames survive per video, which also guarantees a video is never
+emptied -- phase 3 finds videos through their frames, so one with none left
+would never be marked.
+
+A name that exists only as a tag, with no face region anywhere, keeps the frame
+that carries it, so pruning never loses a person even when run without
+`propagate` first.
+
+Parking is reversible: move the files back into the work directory to
+reconsider a video. `--park-dir` chooses the destination, which must lie
+outside `--work` because digiKam scans recursively. `--delete` removes frames
+outright instead, which is not reversible.
+
+Have digiKam rescan the collection afterwards to drop the parked frames from
+its queue.
 
 #### Phase 3: collect
 
