@@ -1284,10 +1284,7 @@ def write_names_to_frames(
             assignments.append(f"-{field_name}+={wanted[field_name]}")
 
     if dry_run:
-        LOG.info(
-            "    [dry-run] would set %s on %d frame(s)",
-            ", ".join(sorted(names)), len(frames),
-        )
+        LOG.info("    [dry-run] no changes written")
         return True
 
     with tempfile.NamedTemporaryFile(
@@ -1488,9 +1485,15 @@ def cmd_propagate(args: argparse.Namespace) -> int:
             stats.bump("videos already consistent")
             continue
 
+        already = len(frames) - len(todo)
         LOG.info(
-            "  %s: %d name(s) [%s] -> %d of %d frame(s)",
-            label, len(names), ", ".join(sorted(names)), len(todo), len(frames),
+            "  %s: %d name(s) [%s] -> writing %d frame(s)%s; all %d will carry them",
+            label,
+            len(names),
+            ", ".join(sorted(names)),
+            len(todo),
+            f", {already} already tagged" if already else "",
+            len(frames),
         )
         if write_names_to_frames(
             todo, names, fields, args.people_root, args.dry_run
