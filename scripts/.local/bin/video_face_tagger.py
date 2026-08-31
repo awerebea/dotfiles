@@ -1700,6 +1700,7 @@ def cmd_clean(args: argparse.Namespace) -> int:
         LOG.info("no frames in %s", work)
         return 0
 
+    hash_map: dict[str, Path] = {}
     if args.all:
         targets = frames
         LOG.info("--all: removing every frame in %s", work)
@@ -1731,7 +1732,18 @@ def cmd_clean(args: argparse.Namespace) -> int:
         by_video.setdefault(frame_hash_from_name(frame.name) or "?", []).append(frame)
 
     for digest, group in sorted(by_video.items()):
-        label = group[0].name.split("__")[0]
+        # The archive walk already resolved every hash to a real video, so name
+        # the actual file rather than the ASCII slug baked into frame names,
+        # which drops non-ASCII characters and cannot tell apart two videos
+        # sharing a basename in different folders.
+        video = hash_map.get(digest)
+        if video is not None:
+            try:
+                label = str(video.relative_to(scan_path))
+            except ValueError:
+                label = video.name
+        else:
+            label = group[0].name.split("__")[0]
         LOG.info(
             "  %s%s: %d frame(s)",
             "[dry-run] " if args.dry_run else "",
