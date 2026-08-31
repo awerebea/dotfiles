@@ -1719,14 +1719,32 @@ def cmd_clean(args: argparse.Namespace) -> int:
             else:
                 stats.bump("frames kept (video not yet processed)")
         LOG.info("%d of %d video(s) carry the marker", len(markers), len(videos))
+        stats.bump("videos in the archive", len(videos))
+        stats.bump("videos carrying the marker", len(markers))
+        stats.bump("videos not yet processed", len(videos) - len(markers))
 
+    # Report per video rather than per frame: a full run removes tens of
+    # thousands of frames, and one line each buries the counts that matter
+    # above anything the terminal still holds.
+    by_video: dict[str, list[Path]] = {}
     for frame in targets:
-        if args.dry_run:
-            LOG.info("  [dry-run] rm %s", frame.name)
-        else:
-            frame.unlink(missing_ok=True)
-            sidecar_for(frame).unlink(missing_ok=True)
-        stats.bump("frames removed")
+        by_video.setdefault(frame_hash_from_name(frame.name) or "?", []).append(frame)
+
+    for digest, group in sorted(by_video.items()):
+        label = group[0].name.split("__")[0]
+        LOG.info(
+            "  %s%s: %d frame(s)",
+            "[dry-run] " if args.dry_run else "",
+            label,
+            len(group),
+        )
+        for frame in group:
+            LOG.debug("    rm %s", frame.name)
+            if not args.dry_run:
+                frame.unlink(missing_ok=True)
+                sidecar_for(frame).unlink(missing_ok=True)
+            stats.bump("frames removed")
+    stats.bump("videos cleaned", len(by_video))
 
     if not args.dry_run:
         try:
