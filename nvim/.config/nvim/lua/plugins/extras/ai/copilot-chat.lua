@@ -20,7 +20,7 @@ return {
   },
   opts = {
     debug = false, -- Enable debug logging
-    model = "claude-sonnet-4.6",
+    model = "claude-sonnet-5",
     -- default mappings
     mappings = {
       complete = {
