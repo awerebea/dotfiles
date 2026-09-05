@@ -6,7 +6,7 @@ so `stow <package>` from the repository root symlinks it into place.
 
 ## Scripts
 
-Most scripts in `scripts/.local/bin/` stand alone. The two that maintain the
+Most scripts in `scripts/.local/bin/` stand alone. The three that maintain the
 photo archive share a package, `scripts/.local/bin/photo_archive/`, and reach
 `$PATH` through symlinks beside it:
 
@@ -14,6 +14,7 @@ photo archive share a package, `scripts/.local/bin/photo_archive/`, and reach
 scripts/.local/bin/
     normalize_names_nfc.py -> photo_archive/normalize_names_nfc.py
     video_face_tagger.py   -> photo_archive/video_face_tagger.py
+    video_geo_tagger.py    -> photo_archive/video_geo_tagger.py
     photo_archive/
         bootstrap.py     virtualenv detection and re-exec
         util.py          NFC, logging, counters, formatting
@@ -26,7 +27,7 @@ scripts/.local/bin/
 The symlinks matter: stow folds a bare directory into a single link, which
 would leave the entry points off `$PATH`. Each of them is executable on its
 own and can also be run by full path or as `python3 -m
-photo_archive.video_face_tagger`.
+photo_archive.video_geo_tagger`.
 
 Every tool writes only to `.xmp` sidecars named `<full filename>.xmp`, which is
 digiKam's default and Immich's preferred form. Original media files are never
@@ -404,6 +405,203 @@ reported and ignored rather than aborting a long run.
   nanosecond precision.
 - Person names are normalised to Unicode NFC before comparison, so the
   decomposed forms macOS tends to produce do not create duplicate tags.
+
+### [video_geo_tagger.py](scripts/.local/bin/photo_archive/video_geo_tagger.py)
+
+Infer GPS coordinates for videos by correlating them, in time, with geotagged
+photos taken nearby in the archive.
+
+About 8% of the videos here carry no coordinates. Those were usually shot
+alongside photos that do, minutes apart and in the same place, so the
+surrounding photos can supply a position good enough to put the video on a map.
+
+#### Which timestamp is trusted
+
+`FileModifyDate` is the authoritative capture time for videos, and QuickTime
+`CreateDate` is ignored outright. `CreateDate` is stored in UTC per spec, files
+re-encoded through Tdarr had local time written into that UTC field, and GoPro
+footage carries a 2016 date because the camera clock was never set. mtime has
+been curated across the whole archive instead, and the same timestamp is
+encoded in every filename.
+
+That makes mtime load-bearing, with two consequences. Every write preserves it
+at nanosecond precision. And each video's mtime is cross-checked against the
+timestamp in its own filename: a disagreement means something touched the file,
+and the video is held back for review rather than geotagged.
+
+The cross-check is also a timezone guard. mtime is stored as an epoch, so it
+only renders back to the curated wall-clock time in the timezone the archive
+was curated in. Run this somewhere else and essentially every video reports a
+mismatch, which is loud and obvious rather than silently wrong.
+
+For photos, `exif:DateTimeOriginal` is used: local time, and reliable.
+
+#### The algorithm
+
+For each video lacking coordinates:
+
+1. Take its mtime as the capture time.
+2. Collect geotagged photos within `--window` of that time, from the directory
+   chosen by `--scope`.
+3. Take the median latitude and the median longitude independently. A mean
+   would put two photos on opposite sides of a bay into the water; a median
+   picks a real place. Candidates further than `--radius` from that median are
+   discarded as outliers and the median is recomputed.
+4. Measure the spread: the furthest any candidate sits from the median. Beyond
+   `--radius` the subject was moving, so no position is claimed.
+5. Measure the implied speed between the nearest photo before and the nearest
+   photo after. Walking pace means stationary and safe.
+6. Emit coordinates rounded to `--precision` decimals, about 10 m at the
+   default of 4, so the result cannot be mistaken for a measured fix.
+
+Devices are deliberately not filtered on. Phones sync their clocks over the
+network, and requiring the same camera would throw away every case where one
+person shoots video while another shoots photos. The matched photos' devices
+are reported as context instead. The clearest confirmation of that choice in
+this archive is a pair of Disney World videos matched from a Pixel 6 and an
+iPhone 16 Pro at once.
+
+#### Result categories
+
+Every video lands in exactly one bucket.
+
+| category | meaning |
+| --- | --- |
+| `confident` | both sides, tight, slow, enough candidates. Safe to apply |
+| `review: one-sided` | candidates only before, or only after |
+| `review: scattered` | spread exceeds `--radius` |
+| `review: moving` | implied speed exceeds `--max-speed` |
+| `review: below-minimum` | fewer candidates than `--min-candidates` |
+| `review: single-candidate` | exactly one geotagged photo in the window |
+| `review: filename-time-mismatch` | mtime disagrees with the filename |
+| `review: no-filename-time` | filename carries no timestamp to check |
+| `skipped: no candidates` | nothing geotagged in the window |
+| `skipped: already geotagged` | the video already has coordinates |
+| `skipped: already inferred` | carries this tool's marker; use `--force` |
+
+Only `confident` is ever applied automatically, and only when `--apply` is
+given. Everything else is reported for a human to approve.
+
+#### Defaults, and where they came from
+
+The defaults were chosen by running `validate` over the 2881 videos in this
+archive that already have coordinates, and measuring the error between the real
+and inferred positions:
+
+| category | n | median | p90 | p99 | within 1 km |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `confident` | 251 | 11 m | 198 m | 7.1 km | 97.2% |
+| `review: one-sided` | 346 | 20 m | 5.6 km | 204 km | 84.4% |
+| `review: below-minimum` | 138 | 14 m | 7.1 km | 109 km | 79.7% |
+| `review: single-candidate` | 318 | 20 m | 11.4 km | 42.4 km | 78.0% |
+| `review: scattered` | 831 | 412 m | 16.0 km | 1804 km | 61.3% |
+
+Two things that measurement settled:
+
+- `--radius`, not `--window`, is what protects the result. Widening the window
+  does not degrade the confident bucket, because extra candidates that
+  disagree push a video into `scattered` rather than into a wrong answer.
+- `--min-candidates` defaults to 3 rather than 2. Split by candidate count,
+  every gross error in the confident bucket came from a two-photo match, whose
+  p90 error was 49.9 km against 267 m for three or more. Two photos that happen
+  to agree with each other prove very little.
+
+`--max-speed` is close to inert at the default radius, where the candidates
+cannot be far apart by construction: it fired once in 2881 videos. It earns its
+keep only when two photos sit seconds apart but hundreds of metres apart, and
+it is reported as a column regardless.
+
+#### Usage
+
+```sh
+# analyse; writes the CSV report, touches no sidecar
+video_geo_tagger.py analyze --path ~/Photo --csv ~/geo.csv
+
+# review the CSV, then apply the rows whose 'apply' column says yes
+video_geo_tagger.py apply --path ~/Photo --from-csv ~/geo.csv --dry-run
+video_geo_tagger.py apply --path ~/Photo --from-csv ~/geo.csv
+
+# or apply the confident rows straight away
+video_geo_tagger.py analyze --path ~/Photo --apply
+
+# calibrate: infer for videos that already have coordinates, worst error first
+video_geo_tagger.py validate --path ~/Photo --csv ~/validate.csv
+
+# routine run over new imports
+video_geo_tagger.py analyze --path ~/Photo/_Inbox
+```
+
+Every threshold is a flag:
+
+```sh
+video_geo_tagger.py analyze \
+  --path ~/Photo \
+  --scope dir \
+  --window 4 \
+  --radius 300 \
+  --min-candidates 3 \
+  --max-speed 10 \
+  --precision 4 \
+  --time-tolerance 1 \
+  --csv ~/geo.csv \
+  --max-rows 60 \
+  --config ~/.config/video_geo_tagger/config.toml
+```
+
+`--scope` decides where candidate photos come from: `dir` (default) is the
+video's own directory, `dir+siblings` is everything under its parent, `tree` is
+the whole `--path`. `dir+siblings` is what reaches videos filed in video-only
+folders such as `Video_GoPro/` or `_Inbox/Video/iPhone/`, which no
+same-directory search can ever match. Measured over this archive it takes the
+confident count from 3 to 8 and cuts the no-candidate count from 92 to 78, at
+the cost of more `scattered` results to review.
+
+#### What gets written
+
+Only the video's XMP sidecar, and only when it has no coordinates already. A
+video that already has a position is never overwritten; the disagreement is
+reported instead.
+
+```
+XMP-exif:GPSLatitude      27.8526
+XMP-exif:GPSLongitude     -82.8465
+XMP-vidgeo:GeoInferred    geo-inferred:2026-08-31
+XMP-vidgeo:GeoConfidence  confident
+XMP-vidgeo:GeoCandidates  4
+XMP-vidgeo:GeoSpread      13
+```
+
+`XMP-exif:GPSLatitude` and `GPSLongitude` are what Immich reads. The `vidgeo`
+fields are a private namespace, declared by a generated
+`~/.config/video_geo_tagger/ExifTool_config`, and are chosen so that nothing
+else in the pipeline has any reason to touch them.
+
+Recording the spread separately is what makes a low-precision inference
+revocable later without recomputing anything:
+
+```sh
+exiftool -config ~/.config/video_geo_tagger/ExifTool_config \
+  -if '$GeoSpread > 100' -p '$FilePath' -r ~/Photo
+```
+
+The `-config` option is only honoured when it is the very first argument;
+elsewhere on the command line exiftool ignores it silently.
+
+#### The CSV
+
+One row per video, all categories included, sorted by category. Columns:
+`video`, `category`, `apply`, `latitude`, `longitude`, `candidates`,
+`inliers`, `spread_m`, `speed_kmh`, `capture_time`, `filename_time`,
+`before_gap_s`, `after_gap_s`, `nearest_gap_s`, `devices`, `photos`,
+`existing_latitude`, `existing_longitude`, `error_m`, `note`.
+
+The `apply` column is the review mechanism: `analyze` pre-fills `yes` for
+confident rows and `no` for everything else, and `apply --from-csv` honours
+whatever is in it. Editing `latitude` and `longitude` by hand works too, so a
+borderline case can be corrected rather than merely approved or rejected.
+
+`nearest_gap_s` is filled in for videos that found nothing, so a run tells you
+how much wider a window would have to be before it helped.
 
 ### [normalize_names_nfc.py](scripts/.local/bin/photo_archive/normalize_names_nfc.py)
 
