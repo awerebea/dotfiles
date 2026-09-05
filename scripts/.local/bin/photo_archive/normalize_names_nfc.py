@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-normalize-names-nfc
+normalize_names_nfc.py
 
 Recursively normalize file and directory names to Unicode NFC.
 
@@ -35,13 +35,13 @@ By default the script performs a dry run. Use --apply to actually rename.
 
 Examples:
 
-    normalize-names-nfc /mnt/tank/photo
+    normalize_names_nfc.py /mnt/tank/photo
 
-    normalize-names-nfc --apply /mnt/tank/photo
+    normalize_names_nfc.py --apply /mnt/tank/photo
 
-    normalize-names-nfc --resolve-duplicates --apply /mnt/tank/photo
+    normalize_names_nfc.py --resolve-duplicates --apply /mnt/tank/photo
 
-    normalize-names-nfc --help
+    normalize_names_nfc.py --help
 """
 
 import argparse
@@ -50,13 +50,19 @@ import os
 import shutil
 import stat
 import sys
-import unicodedata
 from pathlib import Path
+
+# Run from a source checkout as well as through the symlink on PATH: the
+# package lives one directory up from this entry point either way, and
+# resolve() follows the symlink to get there.
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from photo_archive.util import nfc
 
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        prog="normalize-names-nfc",
+        prog="normalize_names_nfc.py",
         description=(
             "Recursively normalize file and directory names to Unicode NFC. "
             "Useful for eliminating macOS/Linux filename normalization "
@@ -118,7 +124,7 @@ def find_changes(root):
 
         seen.add(str(path))
 
-        normalized_name = unicodedata.normalize("NFC", path.name)
+        normalized_name = nfc(path.name)
 
         if normalized_name != path.name:
             target = path.with_name(normalized_name)
@@ -201,7 +207,7 @@ def tree_summary(root):
             except OSError:
                 size = -1
 
-            key = unicodedata.normalize("NFC", relative)
+            key = nfc(relative)
             entries[key] = (kind, size, relative)
 
     return entries
