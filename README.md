@@ -6,7 +6,33 @@ so `stow <package>` from the repository root symlinks it into place.
 
 ## Scripts
 
-### [video_face_tagger.py](scripts/.local/bin/video_face_tagger.py)
+Most scripts in `scripts/.local/bin/` stand alone. The two that maintain the
+photo archive share a package, `scripts/.local/bin/photo_archive/`, and reach
+`$PATH` through symlinks beside it:
+
+```
+scripts/.local/bin/
+    normalize_names_nfc.py -> photo_archive/normalize_names_nfc.py
+    video_face_tagger.py   -> photo_archive/video_face_tagger.py
+    photo_archive/
+        bootstrap.py     virtualenv detection and re-exec
+        util.py          NFC, logging, counters, formatting
+        exif.py          exiftool wrapper, private XMP namespaces, mtime
+        media.py         archive walking, sidecar naming, video probing
+        settings.py      TOML config and dependency checks
+        requirements.txt
+```
+
+The symlinks matter: stow folds a bare directory into a single link, which
+would leave the entry points off `$PATH`. Each of them is executable on its
+own and can also be run by full path or as `python3 -m
+photo_archive.video_face_tagger`.
+
+Every tool writes only to `.xmp` sidecars named `<full filename>.xmp`, which is
+digiKam's default and Immich's preferred form. Original media files are never
+modified, and file modification times are preserved exactly, to the nanosecond.
+
+### [video_face_tagger.py](scripts/.local/bin/photo_archive/video_face_tagger.py)
 
 Tag video files with people's names by running digiKam's face recognition on
 frames extracted from those videos.
@@ -38,18 +64,18 @@ brew install exiftool ffmpeg
 
 Optional, and only for the face pre-filter described below: `opencv-python-headless`
 and `numpy`, listed in
-[requirements_video_face_tagger.txt](scripts/.local/bin/requirements_video_face_tagger.txt).
+[requirements.txt](scripts/.local/bin/photo_archive/requirements.txt).
 
 #### Install
 
 ```sh
-# from the repository root, symlink the script into ~/.local/bin
+# from the repository root, symlink the scripts into ~/.local/bin
 stow scripts
 
-# optional: face pre-filter dependencies, in a venv beside the script
+# optional: face pre-filter dependencies, in a venv beside the package
 cd scripts/.local/bin
 python3 -m venv .venv
-.venv/bin/pip install -r requirements_video_face_tagger.txt
+.venv/bin/pip install -r photo_archive/requirements.txt
 
 # optional: the face detection model (a separate step)
 video_face_tagger.py fetch-model
@@ -60,8 +86,9 @@ one, so there is no shebang to edit and nothing to activate.
 
 It never imposes a particular location. If a virtualenv is already active, that
 one is used and nothing is overridden. Otherwise it looks for `.venv` or `venv`
-beside the script, then `~/.local/share/video_face_tagger/venv`. Setting
-`VIDEO_FACE_TAGGER_PYTHON` to an interpreter overrides all of it.
+inside `photo_archive/` or beside it, then
+`~/.local/share/photo_archive/venv`. Setting `PHOTO_ARCHIVE_PYTHON`, or
+`VIDEO_FACE_TAGGER_PYTHON` for just that tool, overrides all of it.
 
 To confirm which interpreter is in use, pass `--verbose` and look for the
 `interpreter:` line.
@@ -377,3 +404,26 @@ reported and ignored rather than aborting a long run.
   nanosecond precision.
 - Person names are normalised to Unicode NFC before comparison, so the
   decomposed forms macOS tends to produce do not create duplicate tags.
+
+### [normalize_names_nfc.py](scripts/.local/bin/photo_archive/normalize_names_nfc.py)
+
+Recursively normalise file and directory names to Unicode NFC.
+
+macOS represents filenames in a decomposed form while Linux filesystems
+preserve whatever bytes they are given, so the same name can exist in two
+spellings that look identical. rsync then treats them as different files and
+recreates them endlessly.
+
+Run it on the machine that owns the storage. The macOS SMB and AFP clients
+convert names to NFD on the wire, so names can never be normalised through such
+a mount; the script detects this and refuses to continue.
+
+```sh
+normalize_names_nfc.py /mnt/tank/photo                  # dry run, the default
+normalize_names_nfc.py --apply /mnt/tank/photo
+normalize_names_nfc.py --resolve-duplicates --apply /mnt/tank/photo
+```
+
+Where both spellings of one name exist side by side, the collision is reported
+with a comparison of the two objects. `--resolve-duplicates` deletes a non-NFC
+object only when its contents are already present in full under the NFC name.

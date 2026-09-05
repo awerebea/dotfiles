@@ -1,0 +1,33 @@
+# Optional dependencies for the photo_archive tools.
+#
+# Only video_face_tagger.py needs anything at all, and only for its face
+# pre-filter (--face-filter), which discards extracted frames containing no
+# detectable face before digiKam ever sees them. On a sample of this archive
+# it cut the frame count by 55% with no loss of recognisable faces.
+#
+# video_geo_tagger.py and normalize_names_nfc.py are pure standard library and
+# need nothing from this file.
+#
+# The face tagger runs fine without these too; the filter simply stays off.
+#
+# Recommended install -- a venv beside the package, which is where the tools
+# look first:
+#
+#   cd "$(dirname "$(dirname "$(readlink -f "$(command -v video_face_tagger.py)")")")"
+#   python3 -m venv .venv
+#   .venv/bin/pip install -r photo_archive/requirements.txt
+#   video_face_tagger.py fetch-model
+#
+# Note that fetch-model is a separate step: OpenCV 5 ships no bundled face
+# detector, so the 233 KB YuNet model is downloaded (checksum-verified) into
+# ~/.config/video_face_tagger/ on first use.
+#
+# The entry points re-execute themselves under a virtualenv interpreter when
+# they find one, so there is no shebang change and nothing to activate. An
+# already active virtualenv always wins; otherwise .venv or venv inside the
+# package or beside it is used, then ~/.local/share/photo_archive/venv. Set
+# PHOTO_ARCHIVE_PYTHON (or VIDEO_FACE_TAGGER_PYTHON for just that tool) to
+# override. Use --verbose to see which interpreter is running.
+
+opencv-python-headless>=4.8
+numpy>=1.24
