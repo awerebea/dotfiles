@@ -75,6 +75,15 @@ def human_duration(seconds: float) -> str:
     return f"{s}s"
 
 
+def human_distance(metres: float) -> str:
+    """Format a distance for reports, keeping the units obvious."""
+    if metres < 1000:
+        return f"{metres:.0f}m"
+    if metres < 100000:
+        return f"{metres / 1000:.1f}km"
+    return f"{metres / 1000:.0f}km"
+
+
 class Stats:
     """Ordered counter used for the end-of-phase summaries."""
 

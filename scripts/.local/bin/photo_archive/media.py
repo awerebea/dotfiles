@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import datetime as dt
 import json
 import os
+import re
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
@@ -32,6 +34,13 @@ KNOWN_NONVIDEO_EXTS = KNOWN_IMAGE_EXTS | {
     ".aae", ".thm", ".ini", ".db", ".json", ".uuid", ".nfo",
 }
 
+#: The archive names every file after its capture time. Anything that does not
+#: match simply has no filename timestamp to cross-check against.
+FILENAME_TIME_RE = re.compile(
+    r"^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})"
+)
+
+
 def sidecar_for(media: Path) -> Path:
     """digiKam-style sidecar name: '<full filename>.xmp'."""
     return media.with_name(media.name + ".xmp")
@@ -40,6 +49,17 @@ def sidecar_for(media: Path) -> Path:
 def media_for(sidecar: Path) -> Path:
     """Inverse of sidecar_for: strip the trailing '.xmp'."""
     return sidecar.with_name(sidecar.name[:-4])
+
+
+def filename_timestamp(path: Path) -> dt.datetime | None:
+    """Capture time encoded in the filename, or None if it carries none."""
+    match = FILENAME_TIME_RE.match(path.name)
+    if not match:
+        return None
+    try:
+        return dt.datetime(*(int(part) for part in match.groups()))
+    except ValueError:
+        return None  # e.g. a 2024-02-30 that only looks like a date
 
 
 def iter_candidate_files(scan_path: Path) -> Iterator[Path]:
@@ -151,6 +171,19 @@ def discover_videos(
                     stats.bump("videos found by probing")
 
     return sorted(set(videos))
+
+
+def discover_photos(scan_path: Path) -> list[Path]:
+    """Find still images by extension.
+
+    No probing here: unlike videos, a still that this misses simply becomes one
+    fewer geotagging candidate, which is not worth an ffprobe over 23k files.
+    """
+    return sorted(
+        path
+        for path in iter_candidate_files(scan_path)
+        if path.suffix.lower() in KNOWN_IMAGE_EXTS
+    )
 
 
 def read_markers(
