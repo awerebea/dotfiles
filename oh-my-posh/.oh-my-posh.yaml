@@ -43,11 +43,14 @@ blocks:
       mapped_shell_names:
         bash: ""
         cmd: ""
-        nu: "<p:bg-green-500>nu</>"
+        nu: "nu"
         pwsh: ""
-        zsh: "<i>zsh</>"
+        zsh: "zsh"
       cache_duration: none
-    template: "{{ .Name }} "
+    # Style tags are not parsed inside mapped_shell_names, so apply them here.
+    # Note: style tags need a matching closing tag; "</>" only closes colors.
+    template: '{{ if eq .Name "nu" }}<p:bg-green-500>{{ .Name }}</>{{ else if eq
+      .Name "zsh" }}<i>{{ .Name }}</i>{{ else }}{{ .Name }}{{ end }} '
 
   - type: root
     foreground: p:bg-yellow-200
