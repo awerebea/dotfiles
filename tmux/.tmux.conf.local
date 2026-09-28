@@ -946,6 +946,16 @@ is_fzf="ps -o state= -o comm= -t '#{pane_tty}' \
 # Jump to pane by index
 bind-key C-j command-prompt -p "Jump to pane index:" "select-pane -t '%%'"
 
+# Jump to window by index, the window-level companion to <prefix> C-j above.
+# <prefix> Shift-j is NOT available here: tmux cannot tell Shift-j from a
+# literal uppercase J, and Oh my tmux! already binds prefix H/J/K/L to
+# resize-pane (J == resize-pane -D 2), so taking J would shadow "resize pane
+# down". M-j is unbound in every key table on this setup and keeps a clean
+# pairing: C-j jumps panes, M-j jumps windows.
+# -T window-target hands the prompt tmux's window-target completion, so the
+# answer can be an index (14) or a window name, not just a number.
+bind-key M-j command-prompt -T window-target -p "Jump to window index:" "select-window -t ':%%'"
+
 bind -n C-h run "($is_vim && tmux send-keys C-h) || tmux select-pane -L"
 
 bind -n C-j run "($is_vim && tmux send-keys C-j)  || \
