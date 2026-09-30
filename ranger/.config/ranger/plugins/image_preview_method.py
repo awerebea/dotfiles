@@ -9,7 +9,14 @@ Everything here draws real pixels. Nothing renders images as text or ASCII art -
 in particular ueberzugpp's "chafa" output, which does exactly that, is never
 selected: the -o backend is always pinned explicitly.
 
-The awkward case is kitty inside tmux, and it drives the whole design:
+Two displayers cover every terminal that can draw an image itself, and both
+convert through ImageMagick and share PreviewCache, so a preview is converted
+once and reused across ranger sessions whatever protocol drew it:
+
+  kitty, ghostty, WezTerm     KittyGraphicsImageDisplayer
+  iTerm2, foot, contour, ...  SixelImageDisplayer
+
+The awkward case is kitty inside tmux, and it drives the design of the first:
 
   * kitty has no SIXEL support whatsoever (verified: zero occurrences of
     "sixel" anywhere in kitty.app, against 98 graphics-protocol strings). Its
@@ -21,18 +28,22 @@ The awkward case is kitty inside tmux, and it drives the whole design:
     in the binary), so it cannot bridge that gap either.
 
 The way out is tmux's `allow-passthrough`: wrap the kitty escape in a
-`DCS tmux; ... ST` envelope and tmux forwards the inner bytes untouched, as
-KittyGraphicsImageDisplayer below does, and it is used for kitty-protocol
-terminals inside tmux. Outside tmux, ueberzugpp handles the same terminals
-natively and is left in charge.
+`DCS tmux; ... ST` envelope and tmux forwards the inner bytes untouched. The
+SIXEL displayer needs none of that, because tmux decodes SIXEL itself and
+re-emits it to the attached client, placing and clipping it as a normal pane
+object.
 
-Resulting matrix:
+ueberzugpp is now only a fallback for terminals with no image protocol at all,
+where its X11/Wayland overlay is the only thing that can draw anything. On
+macOS that never applies, so it is effectively unused.
 
-  terminal speaks kitty graphics, in tmux    -> kitty  (this plugin's displayer)
-  terminal speaks kitty graphics, no tmux    -> ueberzug -o kitty
-  SIXEL-capable terminal, in or out of tmux  -> ueberzug -o sixel
-  iTerm2, outside tmux                       -> ueberzug -o iterm2
-  nothing usable                             -> image previews off
+Resulting order:
+
+  terminal speaks kitty graphics  -> kitty     (passthrough when in tmux)
+  terminal speaks SIXEL           -> sixel     (tmux renders it when in tmux)
+  X11/Wayland with ueberzugpp     -> ueberzug  (overlay, Linux only)
+  w3mimgdisplay present           -> w3m
+  otherwise                       -> image previews off
 """
 
 from __future__ import absolute_import, division, print_function
@@ -75,6 +86,114 @@ def _magick_cmd():
     return ["magick"] if which("magick") else ["convert"]
 
 
+class PreviewCache(object):
+    """On-disk cache of converted preview payloads.
+
+    Converting an image is the slow part of showing a preview - around 180ms
+    for a 2000x1333 photo against ~1ms to hash the source and read the result
+    back - and without a cache that cost is paid again on every revisit and in
+    every new ranger session.
+
+    Entries are keyed by the source file's contents rather than its path, so a
+    moved, renamed or duplicated image reuses its entry, and an edited one
+    never reads back a stale preview. Shared by every displayer here that does
+    its own conversion, whatever protocol it ends up speaking.
+    """
+
+    SUBDIR = "previews"
+    LIMIT = 256 * 1024 * 1024
+
+    @classmethod
+    def directory(cls):
+        base = getattr(getattr(ranger, "args", None), "cachedir", None)
+        if not base:
+            base = os.path.expanduser("~/.cache/ranger")
+        path = os.path.join(base, cls.SUBDIR)
+        os.makedirs(path, exist_ok=True)
+        return path
+
+    @staticmethod
+    def digest(path):
+        """SHA-256 of the file's contents."""
+        digest = hashlib.sha256()
+        with open(path, "rb") as handle:
+            for block in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(block)
+        return digest.hexdigest()
+
+    @classmethod
+    def prune(cls, directory, keep=None):
+        """Drop the least recently modified entries once over LIMIT."""
+        entries, total = [], 0
+        try:
+            names = os.listdir(directory)
+        except OSError:
+            return
+        for name in names:
+            full = os.path.join(directory, name)
+            try:
+                stat = os.stat(full)
+            except OSError:
+                continue
+            entries.append((stat.st_mtime, stat.st_size, full))
+            total += stat.st_size
+        if total <= cls.LIMIT:
+            return
+        for _, size, full in sorted(entries):
+            if full == keep:
+                continue
+            try:
+                os.unlink(full)
+            except OSError:
+                continue
+            total -= size
+            if total <= cls.LIMIT:
+                return
+
+    @classmethod
+    def get(cls, path, box, kind, produce):
+        """Payload bytes for `path` scaled into `box`, converting on a miss.
+
+        `kind` names the output format, which keeps the kitty and SIXEL
+        entries for one image apart. `produce` runs only on a miss.
+        """
+        entry = None
+        try:
+            entry = os.path.join(
+                cls.directory(),
+                "{0}-{1}x{2}.{3}".format(cls.digest(path), box[0], box[1], kind))
+        except (OSError, IOError):
+            entry = None  # unusable cache dir: just convert every time
+
+        if entry:
+            try:
+                with open(entry, "rb") as handle:
+                    payload = handle.read()
+                if payload:
+                    return payload
+            except (OSError, IOError):
+                pass
+
+        payload = produce()
+
+        if entry:
+            # Write under a temporary name and rename into place so a partial
+            # write is never read back as a valid entry by another ranger.
+            tmp = "{0}.{1}.tmp".format(entry, os.getpid())
+            try:
+                with open(tmp, "wb") as handle:
+                    handle.write(payload)
+                os.replace(tmp, entry)
+            except (OSError, IOError):
+                try:
+                    os.unlink(tmp)
+                except OSError:
+                    pass
+            else:
+                cls.prune(os.path.dirname(entry), keep=entry)
+        return payload
+
+
 class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
     """Kitty graphics protocol, with identical behaviour in and out of tmux.
 
@@ -108,9 +227,6 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
     DEFAULT_CELL = (8, 16)
     # How long a looked-up tmux pane offset stays good for.
     OFFSET_TTL = 1.0
-    # On-disk cache of converted PNGs, under ranger's cache dir.
-    CACHE_SUBDIR = "kitty_previews"
-    CACHE_LIMIT = 256 * 1024 * 1024
 
     def __init__(self):
         self.in_tmux = bool(os.environ.get("TMUX"))
@@ -201,29 +317,6 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
         stat = os.stat(path)
         return (path, stat.st_ino, stat.st_mtime, stat.st_size, box), box
 
-    def _cache_dir(self):
-        """Directory holding converted PNGs, under ranger's own cache dir."""
-        base = getattr(getattr(ranger, "args", None), "cachedir", None)
-        if not base:
-            base = os.path.expanduser("~/.cache/ranger")
-        path = os.path.join(base, self.CACHE_SUBDIR)
-        os.makedirs(path, exist_ok=True)
-        return path
-
-    @staticmethod
-    def _content_digest(path):
-        """SHA-256 of the file's contents.
-
-        Keyed on content rather than path and mtime so a moved, renamed or
-        duplicated image reuses the same entry, and so a file edited back to
-        a previous state does not resurrect a stale preview.
-        """
-        digest = hashlib.sha256()
-        with open(path, "rb") as handle:
-            for block in iter(lambda: handle.read(1 << 20), b""):
-                digest.update(block)
-        return digest.hexdigest()
-
     def _convert(self, path, box):
         """Run ImageMagick to produce a PNG scaled to fit inside `box`."""
         try:
@@ -251,77 +344,10 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
                 "ImageMagick could not render {0}".format(os.path.basename(path)))
         return png
 
-    def _prune_cache(self, directory, keep=None):
-        """Drop the least recently modified entries once over CACHE_LIMIT."""
-        entries, total = [], 0
-        try:
-            names = os.listdir(directory)
-        except OSError:
-            return
-        for name in names:
-            full = os.path.join(directory, name)
-            try:
-                stat = os.stat(full)
-            except OSError:
-                continue
-            entries.append((stat.st_mtime, stat.st_size, full))
-            total += stat.st_size
-        if total <= self.CACHE_LIMIT:
-            return
-        for _, size, full in sorted(entries):
-            if full == keep:
-                continue
-            try:
-                os.unlink(full)
-            except OSError:
-                continue
-            total -= size
-            if total <= self.CACHE_LIMIT:
-                return
-
     def _png(self, path, box):
-        """PNG bytes for `path`, scaled to fit inside `box` pixels.
-
-        Converted PNGs are cached on disk, because the conversion is the
-        expensive part of showing a preview - ~157ms for a 2000x1333 photo
-        against ~1ms to hash the source and read the result back. The cache
-        survives across ranger sessions and is capped at CACHE_LIMIT.
-        """
-        cached = None
-        try:
-            cached = os.path.join(
-                self._cache_dir(),
-                "{0}-{1}x{2}.png".format(self._content_digest(path), *box))
-        except (OSError, IOError):
-            cached = None  # unreadable cache dir: just convert every time
-
-        if cached:
-            try:
-                with open(cached, "rb") as handle:
-                    png = handle.read()
-                if png:
-                    return png
-            except (OSError, IOError):
-                pass
-
-        png = self._convert(path, box)
-
-        if cached:
-            # Write via a temporary name so a half-written file is never
-            # mistaken for a valid cache entry by a concurrent ranger.
-            tmp = "{0}.{1}.tmp".format(cached, os.getpid())
-            try:
-                with open(tmp, "wb") as handle:
-                    handle.write(png)
-                os.replace(tmp, cached)
-            except (OSError, IOError):
-                try:
-                    os.unlink(tmp)
-                except OSError:
-                    pass
-            else:
-                self._prune_cache(os.path.dirname(cached), keep=cached)
-        return png
+        """PNG bytes for `path`, scaled to fit inside `box` pixels."""
+        return PreviewCache.get(path, box, "png",
+                                lambda: self._convert(path, box))
 
     def _unplace(self):
         """Hide the image but leave its data loaded in the terminal.
@@ -404,6 +430,86 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
             pass
 
 
+class SixelImageDisplayer(img_display.SixelImageDisplayer):
+    """ranger's SIXEL displayer, backed by the shared on-disk cache.
+
+    tmux understands SIXEL natively - it decodes the image and re-emits it to
+    the attached client - so unlike the kitty protocol this needs neither
+    passthrough nor any coordinate arithmetic: tmux places the image at the
+    cursor and clips it to the pane, and the inherited draw() is already
+    correct. Only the conversion is replaced, so SIXEL terminals get the same
+    cross-session cache the kitty path has instead of ranger's in-memory one,
+    which lasts only for the current session.
+
+    SIXEL is a single DCS string rather than a chunked transfer, and tmux
+    silently discards one over roughly a megabyte. Measured against tmux 3.7c:
+    872KB decoded, 1.06MB vanished without a trace. That matters because the
+    box is the whole pane in pixels, so a photo smaller than the pane is not
+    scaled down at all and easily lands past the limit. MAX_BYTES keeps the
+    payload inside it, shrinking and re-encoding when a conversion overshoots.
+    """
+
+    # Comfortably under tmux's ~1MB ceiling, applied everywhere so a preview
+    # looks the same in and out of tmux.
+    MAX_BYTES = 900000
+    # Each retry aims at the budget and undershoots slightly, so in practice
+    # one extra conversion is enough.
+    MAX_ATTEMPTS = 4
+
+    def _encode(self, path, box, dithering):
+        try:
+            proc = subprocess.Popen(
+                _magick_cmd() + [
+                    path + "[0]",
+                    # ">" only ever shrinks, and keeps the aspect ratio.
+                    "-geometry", "{0}x{1}>".format(*box),
+                    "-dither", dithering,
+                    "sixel:-",
+                ],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            data, _ = proc.communicate()
+        except OSError:
+            raise img_display.ImageDisplayError(
+                "SIXEL previews require ImageMagick")
+        if proc.returncode != 0 or not data:
+            raise img_display.ImageDisplayError(
+                "ImageMagick could not render {0}".format(os.path.basename(path)))
+        return data
+
+    def _sixel_cache(self, path, width, height):
+        try:
+            cell_w, cell_h = img_display.get_font_dimensions()
+        except (OSError, IOError, ValueError, ZeroDivisionError):
+            cell_w, cell_h = (0, 0)
+        if not cell_w or not cell_h:
+            cell_w, cell_h = (8, 16)
+        box = (cell_w * width, cell_h * height)
+        dithering = getattr(self.fm.settings, "sixel_dithering", "FloydSteinberg")
+
+        def produce():
+            target = box
+            data = self._encode(path, target, dithering)
+            for _ in range(self.MAX_ATTEMPTS - 1):
+                if len(data) <= self.MAX_BYTES:
+                    break
+                # SIXEL size tracks pixel count, so scale both edges by the
+                # square root of how far over budget we are, with a margin.
+                shrink = (self.MAX_BYTES / float(len(data))) ** 0.5 * 0.9
+                target = (max(1, int(target[0] * shrink)),
+                          max(1, int(target[1] * shrink)))
+                data = self._encode(path, target, dithering)
+            if len(data) > self.MAX_BYTES:
+                LOG.warning("sixel payload still %d bytes after %d attempts; "
+                            "tmux may drop it", len(data), self.MAX_ATTEMPTS)
+            return data
+
+        # Keyed on the requested box, not the one that finally fitted, so the
+        # lookup on the next draw matches.
+        return PreviewCache.get(path, box, "six", produce)
+
+
 class UeberzugPPImageDisplayer(img_display.UeberzugImageDisplayer):
     """ueberzug displayer that pins ueberzugpp's output backend.
 
@@ -439,6 +545,7 @@ class UeberzugPPImageDisplayer(img_display.UeberzugImageDisplayer):
 # `preview_images_method` is validated against a fixed list, so these have to
 # reuse existing names rather than introduce new ones.
 img_display.IMAGE_DISPLAYER_REGISTRY["kitty"] = KittyGraphicsImageDisplayer
+img_display.IMAGE_DISPLAYER_REGISTRY["sixel"] = SixelImageDisplayer
 img_display.IMAGE_DISPLAYER_REGISTRY["ueberzug"] = UeberzugPPImageDisplayer
 
 
@@ -551,14 +658,21 @@ def detect_method():
                 " via tmux passthrough" if in_tmux else "", terminal)
         LOG.warning("kitty graphics need ImageMagick; it is missing")
 
-    if which("ueberzug"):
-        if sixel_capable:
-            return "ueberzug", "sixel", "ueberzugpp -o sixel (terminal: %s)" % terminal
-        if re.search(r"iterm", terminal, re.IGNORECASE) and not in_tmux:
-            return "ueberzug", "iterm2", "ueberzugpp -o iterm2"
+    if sixel_capable:
+        if has_magick:
+            return "sixel", None, "sixel%s (terminal: %s)" % (
+                " rendered by tmux" if in_tmux else "", terminal)
+        LOG.warning("sixel previews need ImageMagick; it is missing")
 
-    if sixel_capable and has_magick:
-        return "sixel", None, "built-in sixel via ImageMagick (terminal: %s)" % terminal
+    # Everything above draws through the terminal's own image protocol and
+    # shares one cache. ueberzugpp is kept only for what none of them can
+    # serve: on X11 or Wayland it overlays the image on top of the window,
+    # which is the sole option in a terminal with no image protocol at all.
+    if which("ueberzug"):
+        if os.environ.get("WAYLAND_DISPLAY"):
+            return "ueberzug", "wayland", "ueberzugpp Wayland overlay"
+        if os.environ.get("DISPLAY"):
+            return "ueberzug", "x11", "ueberzugpp X11 overlay"
 
     if which("w3mimgdisplay"):
         return "w3m", None, "falling back to w3mimgdisplay"
