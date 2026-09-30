@@ -500,10 +500,16 @@ def _outer_terminal():
     if os.environ.get("TMUX"):
         pane = os.environ.get("TMUX_PANE", "")
         try:
+            # client_termname is only $TERM as the client set it, which is a
+            # plain "xterm-256color" for several terminals - iTerm2 among them
+            # - and identifies nothing. client_termtype is what the terminal
+            # answered to tmux's XTVERSION query, e.g. "kitty(0.48.2)" or
+            # "iTerm2 3.5.0", so it is the one that actually names it. Older
+            # tmux versions render an unknown format as empty, which is fine.
             names.append(subprocess.check_output(
                 ["tmux", "display-message", "-p"]
                 + (["-t", pane] if pane else [])
-                + ["#{client_termname}"],
+                + ["#{client_termname} #{client_termtype}"],
                 stderr=subprocess.DEVNULL,
             ).decode("utf-8", "replace"))
         except (OSError, subprocess.CalledProcessError):
