@@ -111,8 +111,7 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
         self.in_tmux = bool(os.environ.get("TMUX"))
         self.stdbout = getattr(sys.stdout, "buffer", sys.stdout)
         self.image_id = 0
-        self._cache_key = None
-        self._cache_png = None
+        self._sent_key = None
         self._offset = (0, 0)
         self._offset_at = 0.0
 
@@ -190,15 +189,15 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
             cell_w, cell_h = self.DEFAULT_CELL
         return cell_w, cell_h
 
-    def _png(self, path, width, height):
-        """PNG bytes for `path`, scaled to fit inside the preview box."""
+    def _image_key(self, path, width, height):
+        """Identity of the scaled image for `path` in a width x height box."""
         cell_w, cell_h = self._cell_size()
         box = (cell_w * width, cell_h * height)
         stat = os.stat(path)
-        key = (path, stat.st_ino, stat.st_mtime, stat.st_size, box)
-        if key == self._cache_key:
-            return self._cache_png
+        return (path, stat.st_ino, stat.st_mtime, stat.st_size, box), box
 
+    def _png(self, path, box):
+        """PNG bytes for `path`, scaled to fit inside `box` pixels."""
         try:
             proc = subprocess.Popen(
                 _magick_cmd() + [
@@ -217,28 +216,47 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
         if proc.returncode != 0 or not png:
             raise img_display.ImageDisplayError(
                 "ImageMagick could not render {0}".format(os.path.basename(path)))
-
-        self._cache_key, self._cache_png = key, png
         return png
 
-    def _delete(self):
+    def _unplace(self):
+        """Hide the image but leave its data loaded in the terminal.
+
+        Lowercase d=i deletes only the placements; the pixels stay in kitty,
+        so showing it again is one short escape rather than a retransmission.
+        """
         if self.image_id:
             self._write(self._apc({"a": "d", "d": "i", "i": self.image_id, "q": 2}))
-            self.image_id = 0
+
+    def _free(self):
+        """Drop the image from the terminal entirely (uppercase D frees data)."""
+        if self.image_id:
+            self._write(self._apc({"a": "d", "d": "I", "i": self.image_id, "q": 2}))
+        self.image_id = 0
+        self._sent_key = None
 
     # pylint: disable=too-many-positional-arguments
     def draw(self, path, start_x, start_y, width, height):
-        png = self._png(path, width, height)
-        self._delete()
-        self.image_id = (self.image_id % 4294967290) + 1
+        key, box = self._image_key(path, width, height)
 
-        # Phase 1: store the image in the terminal without displaying it.
-        # a=t transmits only, so this can span however many chunks a large
-        # photo needs without the cursor mattering at all.
-        self._transmit(
-            {"a": "t", "f": 100, "t": "d", "i": self.image_id, "q": 2},
-            base64.standard_b64encode(png),
-        )
+        sent = 0
+        if key != self._sent_key or not self.image_id:
+            # Phase 1: store the image in the terminal without displaying it.
+            # a=t transmits only, so this can span however many chunks a large
+            # photo needs without the cursor mattering at all.
+            #
+            # Only done when the image actually changed. ranger redraws on a
+            # timer - directory polling, VCS status - and re-sending a
+            # multi-megabyte PNG each time is slow enough to show up as the
+            # preview blanking out and coming back.
+            png = self._png(path, box)
+            self._free()
+            self.image_id = (self.image_id % 4294967290) + 1
+            self._transmit(
+                {"a": "t", "f": 100, "t": "d", "i": self.image_id, "q": 2},
+                base64.standard_b64encode(png),
+            )
+            self._sent_key = key
+            sent = len(png)
 
         offset_row, offset_col = self._pane_offset()
         row = offset_row + start_y + 1  # CUP is 1-based
@@ -263,17 +281,22 @@ class KittyGraphicsImageDisplayer(img_display.ImageDisplayer, FileManagerAware):
             + b"\x1b8"
         )
         self.stdbout.flush()
-        LOG.debug("drew %d png bytes at row=%d col=%d", len(png), row, col)
+        LOG.debug("placed image %d at row=%d col=%d (%s)", self.image_id, row, col,
+                  "sent %d png bytes" % sent if sent else "already loaded")
 
     def clear(self, start_x, start_y, width, height):
-        self._delete()
+        self._unplace()
         try:
             self.stdbout.flush()
         except (OSError, IOError, ValueError):
             pass
 
     def quit(self):
-        self.clear(0, 0, 0, 0)
+        self._free()
+        try:
+            self.stdbout.flush()
+        except (OSError, IOError, ValueError):
+            pass
 
 
 class UeberzugPPImageDisplayer(img_display.UeberzugImageDisplayer):
