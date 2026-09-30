@@ -123,7 +123,11 @@ class PreviewCache(object):
 
     @classmethod
     def prune(cls, directory, keep=None):
-        """Drop the least recently modified entries once over LIMIT."""
+        """Drop the least recently used entries once over LIMIT.
+
+        get() refreshes an entry's mtime whenever it is read, so ordering by
+        mtime here is ordering by last use.
+        """
         entries, total = [], 0
         try:
             names = os.listdir(directory)
@@ -170,6 +174,20 @@ class PreviewCache(object):
                 with open(entry, "rb") as handle:
                     payload = handle.read()
                 if payload:
+                    # Stamp the entry as used so prune() evicts by last use
+                    # rather than by age. This writes the timestamp outright
+                    # instead of relying on the filesystem to track access
+                    # times, which relatime and noatime mounts make useless;
+                    # mtime is universally maintained. It rewrites the inode
+                    # only - never the payload's data blocks - so the cost is
+                    # a metadata write against the megabytes a miss would
+                    # cost. A filesystem that refuses it just leaves this
+                    # entry ageing by write time, i.e. the previous FIFO
+                    # behaviour.
+                    try:
+                        os.utime(entry, None)
+                    except (OSError, IOError):
+                        pass
                     return payload
             except (OSError, IOError):
                 pass
