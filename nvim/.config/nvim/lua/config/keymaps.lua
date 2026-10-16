@@ -1,6 +1,11 @@
--- Remap for dealing with word wrap
-vim.keymap.set({ "n", "v" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true })
-vim.keymap.set({ "n", "v" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true })
+-- Remap for dealing with word wrap; while j/k is held the moves are batched
+-- (see config/scroll-burst.lua)
+vim.keymap.set({ "n", "v" }, "k", function()
+  return require("config.scroll-burst").motion("k")
+end, { expr = true })
+vim.keymap.set({ "n", "v" }, "j", function()
+  return require("config.scroll-burst").motion("j")
+end, { expr = true })
 
 -- Better viewing
 vim.keymap.set("n", "n", "nzzzv")
