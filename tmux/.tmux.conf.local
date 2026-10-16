@@ -920,7 +920,7 @@ bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/n
   else tmux set-option -p -t '#{pane_id}' @zoomed_from '#{window_id}';\
   tmux set-option -p -t '#{pane_id}' @zoomed_index '#{pane_index}';\
   tmux set-option -p -t '#{pane_id}' @zoomed_layout '#{window_layout}';\
-  tmux break-pane -s '#{pane_id}'; fi"
+  tmux break-pane -n '[Z->#{window_index}:#{pane_index}] #{window_name}' -s '#{pane_id}'; fi"
 
 # Show pane details.
 set -g pane-border-status top
