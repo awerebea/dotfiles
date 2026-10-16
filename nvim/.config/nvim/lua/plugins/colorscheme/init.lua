@@ -84,6 +84,12 @@ return {
           types = {},
           operators = {},
         },
+        custom_highlights = function(colors)
+          return {
+            -- Brighter non-current line numbers (default is surface1)
+            LineNr = { fg = colors.overlay1 },
+          }
+        end,
         integrations = {
           notify = true,
           aerial = true,
