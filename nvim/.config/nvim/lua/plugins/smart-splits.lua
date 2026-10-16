@@ -1,5 +1,13 @@
 return {
-  "mrjones2014/smart-splits.nvim",
+  "smart-splits-nvim/smart-splits.nvim",
+  dependencies = {
+    {
+      -- since v3 multiplexer backends live in separate plugins
+      "smart-splits-nvim/backend-tmux",
+      main = "smart-splits-backend-tmux",
+      opts = { disable_nav_when_zoomed = true },
+    },
+  },
   -- stylua: ignore
   keys = {
     -- Move between splits
@@ -21,9 +29,9 @@ return {
     -- }}}
   },
   opts = {
-    at_edge = "wrap",
-    disable_multiplexer_nav_when_zoomed = true,
-    cursor_follows_swapped_bufs = true,
+    mux = { backend = "smart-splits-backend-tmux" },
+    move = { at_edge = "wrap" },
+    swap = { move_cursor = true },
     -- {{{ Use winresizer plugin instead
     -- resize_mode = {
     --   silent = true,
