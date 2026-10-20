@@ -2,7 +2,6 @@ local M = {}
 
 function M.on_attach(client, buffer)
   local self = M.new(client, buffer)
-  local telescope_builtin = require("telescope.builtin")
 
   self:map("<leader>rs", "LspRestart", { desc = "Restart LSP server" })
   self:map("gd", vim.lsp.buf.definition, { desc = "Goto Definition" })
@@ -11,10 +10,10 @@ function M.on_attach(client, buffer)
   self:map("gf", "Telescope lsp_references", { desc = "Telescope References" })
   self:map("gI", vim.lsp.buf.implementation, { desc = "Implementations" })
   self:map("gy", function()
-    telescope_builtin.lsp_type_definitions({ reuse_win = true })
+    require("telescope.builtin").lsp_type_definitions({ reuse_win = true })
   end, { desc = "Goto Type Definition" })
   self:map("gY", function()
-    telescope_builtin.lsp_implementations({ reuse_win = true })
+    require("telescope.builtin").lsp_implementations({ reuse_win = true })
   end, { desc = "Goto Implementation" })
   -- self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
@@ -46,12 +45,12 @@ function M.on_attach(client, buffer)
     return ":IncRename " .. vim.fn.expand("<cword>")
   end, { expr = true, desc = "Rename", has = "rename" })
 
-  self:map("<leader>cs", telescope_builtin.lsp_document_symbols, { desc = "Document Symbols" })
-  self:map(
-    "<leader>cS",
-    telescope_builtin.lsp_dynamic_workspace_symbols,
-    { desc = "Workspace Symbols" }
-  )
+  self:map("<leader>cs", function()
+    require("telescope.builtin").lsp_document_symbols()
+  end, { desc = "Document Symbols" })
+  self:map("<leader>cS", function()
+    require("telescope.builtin").lsp_dynamic_workspace_symbols()
+  end, { desc = "Workspace Symbols" })
   self:map("<leader>wla", vim.lsp.buf.add_workspace_folder, { desc = "Add Workspace folder" })
   self:map(
     "<leader>wlr",
