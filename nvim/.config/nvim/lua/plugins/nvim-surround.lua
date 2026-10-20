@@ -9,7 +9,7 @@ return {
   end,
   config = function()
     require("nvim-surround").setup()
-    -- Restore visual surround on S; move visual-line off gS so mini.splitjoin owns it
+    -- Restore visual surround on S; move visual-line off gS (normal gS is treesj split/join)
     vim.keymap.set("x", "S", "<Plug>(nvim-surround-visual)", {
       desc = "Add a surrounding pair around a visual selection",
     })

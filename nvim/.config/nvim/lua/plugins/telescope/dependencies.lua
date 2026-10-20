@@ -1,20 +1,5 @@
 return {
   {
-    "stevearc/aerial.nvim",
-    keys = {
-      {
-        "<leader>vo",
-        function()
-          require("telescope").extensions.aerial.aerial()
-        end,
-        desc = "Code Outline",
-      },
-    },
-    -- the telescope extension is loaded on demand by telescope.extensions
-    config = true,
-  },
-
-  {
     "johmsalas/text-case.nvim",
     dependencies = { "nvim-telescope/telescope.nvim" },
     -- Author's Note: If default keymappings fail to register (possible config issue in my local setup),

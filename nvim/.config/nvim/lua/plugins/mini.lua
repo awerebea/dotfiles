@@ -77,10 +77,4 @@ return {
       sort = { prefix = "" },
     },
   },
-  {
-    "echasnovski/mini.splitjoin",
-    keys = { { "gS", mode = { "n", "x" }, desc = "Split/join arguments" } },
-    version = "*",
-    config = true,
-  },
 }
