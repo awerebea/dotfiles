@@ -203,12 +203,10 @@ vim.keymap.set(
   { desc = "Toggle visual wrapping of long lines." }
 )
 -- Toggle wrap at textwidth column
-vim.keymap.set(
-  "n",
-  "<leader>aw",
-  "<Cmd>call AutoWrapToggle()<CR> <bar> <Cmd>echo 'autowrap!'<CR>",
-  { desc = "Toggle automatic wrapping of long lines." }
-)
+vim.keymap.set("n", "<leader>aw", function()
+  AutoWrapToggle()
+  print("autowrap!")
+end, { desc = "Toggle automatic wrapping of long lines." })
 
 -- Auto Indent the Current Empty Line
 vim.keymap.set("n", "i", function()
