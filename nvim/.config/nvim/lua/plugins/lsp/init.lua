@@ -13,8 +13,6 @@ return {
       { "smjonas/inc-rename.nvim", config = true },
       { "mason-org/mason.nvim", version = "^1.0.0" },
       { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
-      -- only default_capabilities() is used here; it does not load nvim-cmp
-      "hrsh7th/cmp-nvim-lsp",
       {
         "ray-x/lsp_signature.nvim",
         opts = {

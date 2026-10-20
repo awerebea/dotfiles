@@ -32,12 +32,42 @@ end
 
 function M.capabilities()
   local capabilities = vim.lsp.protocol.make_client_capabilities()
-  capabilities.textDocument.completion.completionItem.snippetSupport = true
   capabilities.textDocument.foldingRange = {
     dynamicRegistration = false,
     lineFoldingOnly = true,
   }
-  return require("cmp_nvim_lsp").default_capabilities(capabilities)
+  -- What blink.cmp's get_lsp_capabilities() adds, written out: requiring
+  -- blink.cmp here would load it (and its fuzzy matcher) on every file open
+  -- instead of on InsertEnter
+  capabilities.textDocument.completion =
+    vim.tbl_deep_extend("force", capabilities.textDocument.completion or {}, {
+      completionItem = {
+        snippetSupport = true,
+        commitCharactersSupport = false,
+        documentationFormat = { "markdown", "plaintext" },
+        deprecatedSupport = true,
+        preselectSupport = false,
+        tagSupport = { valueSet = { 1 } },
+        insertReplaceSupport = true,
+        resolveSupport = {
+          properties = { "documentation", "detail", "additionalTextEdits", "command", "data" },
+        },
+        insertTextModeSupport = { valueSet = { 1 } },
+        labelDetailsSupport = true,
+      },
+      completionList = {
+        itemDefaults = {
+          "commitCharacters",
+          "editRange",
+          "insertTextFormat",
+          "insertTextMode",
+          "data",
+        },
+      },
+      contextSupport = true,
+      insertTextMode = 1,
+    })
+  return capabilities
 end
 
 function M.on_attach(on_attach)
