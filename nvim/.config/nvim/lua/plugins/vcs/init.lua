@@ -93,6 +93,7 @@ return {
         map("n", "ghb", function()
           gs.blame_line({ full = true })
         end, { desc = "Blame Line" })
+        map("n", "ghB", "<Cmd>Gitsigns blame<CR>", { desc = "Blame File" })
         map("n", "ghtb", gs.toggle_current_line_blame, { desc = "Toggle Line Blame" })
         map("n", "ghd", gs.diffthis, { desc = "Diff This" })
         map("n", "ghD", function()
@@ -143,8 +144,9 @@ return {
     },
   },
   {
+    -- only used for the file history preview below; its live features are
+    -- disabled (gitsigns covers them), so it does not load with every file
     "tanvirtin/vgit.nvim",
-    event = "BufReadPost",
     dependencies = { "nvim-lua/plenary.nvim" },
     keys = {
       {
