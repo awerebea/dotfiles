@@ -1,5 +1,12 @@
--- Cache keyed by buffer number; nil = uncached, false = not a git repo, table = { repo, branch }
+-- Cache keyed by buffer number; nil = uncached, false = not a git repo,
+-- table = { repo, branch }. Filled once per buffer: the git calls are
+-- synchronous, so they must not run on every render or buffer switch.
 local _git_cache = {}
+
+local function git(dir, args)
+  local out = vim.fn.system("git -C " .. dir .. " " .. args .. " 2>/dev/null"):gsub("\n$", "")
+  return vim.v.shell_error == 0 and out or ""
+end
 
 local function get_git_context(buf)
   if _git_cache[buf] ~= nil then
@@ -15,10 +22,8 @@ local function get_git_context(buf)
   local dir = vim.fn.shellescape(vim.fn.fnamemodify(bufname, ":h"))
 
   -- Resolve the git common dir (shared across all worktrees of the same repo)
-  local git_common_dir = vim.fn
-    .system("git -C " .. dir .. " rev-parse --path-format=absolute --git-common-dir 2>/dev/null")
-    :gsub("\n$", "")
-  if vim.v.shell_error ~= 0 or git_common_dir == "" then
+  local git_common_dir = git(dir, "rev-parse --path-format=absolute --git-common-dir")
+  if git_common_dir == "" then
     _git_cache[buf] = false
     return nil
   end
@@ -33,17 +38,23 @@ local function get_git_context(buf)
     repo_name = vim.fn.fnamemodify(git_common_dir, ":t")
   end
 
-  -- Branch name; detached HEAD shows short commit hash instead
-  local branch =
-    vim.fn.system("git -C " .. dir .. " rev-parse --abbrev-ref HEAD 2>/dev/null"):gsub("\n$", "")
+  -- Branch name; detached HEAD shows short commit hash instead. Only used
+  -- until gitsigns attaches, see branch_of()
+  local branch = git(dir, "rev-parse --abbrev-ref HEAD")
   if branch == "" or branch == "HEAD" then
-    branch =
-      vim.fn.system("git -C " .. dir .. " rev-parse --short HEAD 2>/dev/null"):gsub("\n$", "")
+    branch = git(dir, "rev-parse --short HEAD")
   end
 
   local context = { repo = repo_name, branch = branch ~= "" and branch or "?" }
   _git_cache[buf] = context
   return context
+end
+
+-- gitsigns keeps b:gitsigns_head up to date (it watches the git dir), so a
+-- branch switch is shown without running git here
+local function branch_of(buf, context)
+  local head = vim.b[buf].gitsigns_head
+  return (head and head ~= "") and head or context.branch
 end
 
 return {
@@ -63,7 +74,7 @@ return {
       if context then
         table.insert(result, { context.repo, guifg = "#89b4fa" })
         table.insert(result, { "/", guifg = nil })
-        table.insert(result, { context.branch, guifg = "#74c7ec" })
+        table.insert(result, { branch_of(props.buf, context), guifg = "#74c7ec" })
         table.insert(result, "  ")
       end
       table.insert(result, filename)
@@ -78,11 +89,27 @@ return {
     require("incline").setup(opts)
     vim.api.nvim_set_hl(0, "InclineNormal", { bg = "#292e42" })
     vim.api.nvim_set_hl(0, "InclineNormalNC", { bg = "#292e42" })
-    -- Clear per-buffer cache on BufEnter so branch changes are reflected
-    -- when you switch back to a buffer after an external git operation.
-    vim.api.nvim_create_autocmd("BufEnter", {
+    local group = vim.api.nvim_create_augroup("InclineGit", { clear = true })
+    -- Redraw incline when gitsigns reports a new branch
+    local shown_head = {}
+    vim.api.nvim_create_autocmd("User", {
+      group = group,
+      pattern = "GitSignsUpdate",
+      callback = function(ev)
+        local buf = ev.data and ev.data.buffer
+        local head = buf and vim.b[buf].gitsigns_head
+        if head and head ~= shown_head[buf] then
+          shown_head[buf] = head
+          require("incline").refresh()
+        end
+      end,
+    })
+    -- Re-resolve the repo after a buffer is renamed or reloaded
+    vim.api.nvim_create_autocmd({ "BufFilePost", "BufWipeout" }, {
+      group = group,
       callback = function(ev)
         _git_cache[ev.buf] = nil
+        shown_head[ev.buf] = nil
       end,
     })
   end,

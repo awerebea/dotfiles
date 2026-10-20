@@ -135,7 +135,11 @@ do
     callback = function(ev)
       local cwd = buf_cwd[ev.buf]
       if cwd then
-        pcall(vim.cmd.lcd, cwd)
+        -- lcd fires DirChanged, which makes several plugins refresh; skip it
+        -- when the window is already there
+        if cwd ~= vim.fn.getcwd(0) then
+          pcall(vim.cmd.lcd, cwd)
+        end
       else
         buf_cwd[ev.buf] = vim.fn.getcwd(0)
       end
