@@ -2,9 +2,9 @@ return {
   "folke/snacks.nvim",
   priority = 1000,
   lazy = false,
-  -- fzf-lua is needed for <leader>gcl in visual mode: snacks has no multi-line
-  -- range support for git log, so git_bcommits() (with -L range) is used instead
-  dependencies = { "ibhagwan/fzf-lua" },
+  -- <leader>gcl in visual mode uses fzf-lua (snacks has no multi-line range
+  -- support for git log, so git_bcommits() with -L range is used instead);
+  -- require("fzf-lua") there loads it on demand, so it is not a dependency
   opts = {
     dashboard = {
       enabled = true,
