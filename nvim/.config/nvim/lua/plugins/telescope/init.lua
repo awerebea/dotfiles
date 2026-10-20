@@ -297,7 +297,7 @@ return {
           project = {
             order_by = "asc",
             search_by = "title",
-            sync_with_nvim_tree = true, -- default false
+            sync_with_nvim_tree = false, -- nvim-tree was replaced by the snacks explorer
             hidden_files = true, -- default: false
             theme = "dropdown",
           },
