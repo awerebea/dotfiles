@@ -63,7 +63,12 @@ return {
   },
   {
     "echasnovski/mini.operators",
-    event = "VeryLazy",
+    -- the operator prefixes from opts below; their line variants (g==, gxx)
+    -- work too, since the rest of the typed keys follows the replayed prefix
+    keys = {
+      { "g=", mode = { "n", "x" }, desc = "Evaluate" },
+      { "gx", mode = { "n", "x" }, desc = "Exchange" },
+    },
     opts = {
       evaluate = { prefix = "g=" },
       exchange = { prefix = "gx", reindent_linewise = true },
@@ -74,7 +79,7 @@ return {
   },
   {
     "echasnovski/mini.splitjoin",
-    event = "VeryLazy",
+    keys = { { "gS", mode = { "n", "x" }, desc = "Split/join arguments" } },
     version = "*",
     config = true,
   },

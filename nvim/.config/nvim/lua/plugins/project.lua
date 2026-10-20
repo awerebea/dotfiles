@@ -1,6 +1,6 @@
 return {
   "DrKJeff16/project.nvim",
-  event = "VeryLazy",
+  -- manual_mode: no autocmds to set up, so load only on use
   cmd = "Project",
   keys = {
     {

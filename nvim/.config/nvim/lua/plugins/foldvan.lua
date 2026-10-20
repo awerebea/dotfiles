@@ -1,8 +1,8 @@
 return {
   "domharries/foldnav.nvim",
-  event = "VeryLazy",
   version = "*",
-  config = function()
+  -- init: the setting must exist before the plugin is loaded
+  init = function()
     vim.g.foldnav = { flash = { enabled = true } }
   end,
   -- stylua: ignore

@@ -3,7 +3,7 @@ return {
   { "tpope/vim-eunuch", event = "VeryLazy" },
   {
     "tpope/vim-abolish",
-    event = "VeryLazy",
+    cmd = { "Abolish", "Subvert", "S" },
     config = function()
       vim.keymap.del("n", "cr")
     end,

@@ -1,5 +1,5 @@
 return {
   "folke/twilight.nvim",
-  event = "VeryLazy",
+  cmd = { "Twilight", "TwilightEnable", "TwilightDisable" },
   opts = {},
 }
