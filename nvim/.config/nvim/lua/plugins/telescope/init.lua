@@ -1,21 +1,24 @@
 return {
   require("plugins.telescope.dependencies"),
+  -- Telescope extensions, loaded on first use: `telescope.extensions.<name>`
+  -- loads the extension module, and lazy.nvim loads the plugin that has it.
+  -- Nothing in this config runs `:Telescope <extension>` commands, which would
+  -- not trigger the load.
+  "nvim-telescope/telescope-project.nvim",
+  "cljoly/telescope-repo.nvim",
+  "kiyoon/telescope-insert-path.nvim",
+  "nvim-telescope/telescope-hop.nvim",
+  "nvim-telescope/telescope-live-grep-args.nvim",
+  "debugloop/telescope-undo.nvim",
+  { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
   {
     "nvim-telescope/telescope.nvim",
     dependencies = {
       "nvim-lua/plenary.nvim",
+      -- needed at setup: fzf replaces the sorter, menufacture wraps the
+      -- builtin pickers
       { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-      "nvim-telescope/telescope-project.nvim",
-      "cljoly/telescope-repo.nvim",
-      "folke/trouble.nvim",
-      "kiyoon/telescope-insert-path.nvim",
-      "nvim-telescope/telescope-hop.nvim",
-      "nvim-telescope/telescope-live-grep-args.nvim",
       "molecule-man/telescope-menufacture",
-      "kdheepak/lazygit.nvim",
-      "debugloop/telescope-undo.nvim",
-      "ANGkeith/telescope-terraform-doc.nvim",
-      { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
     },
     cmd = "Telescope",
     init = function()
@@ -127,9 +130,19 @@ return {
       end
       local telescope_builtin = require("telescope.builtin")
       local actions_layout = require("telescope.actions.layout")
-      local path_actions = require("telescope_insert_path")
-      local lga_actions = require("telescope-live-grep-args.actions")
-      local trouble_telescope = require("trouble.sources.telescope")
+      -- Actions of other plugins, required on first use so that those plugins
+      -- do not load with telescope
+      local function lazy_action(mod, name)
+        return function(prompt_bufnr)
+          return require(mod)[name](prompt_bufnr)
+        end
+      end
+      local trouble_open = lazy_action("trouble.sources.telescope", "open")
+      local function quote_prompt(opts)
+        return function(prompt_bufnr)
+          return require("telescope-live-grep-args.actions").quote_prompt(opts)(prompt_bufnr)
+        end
+      end
 
       local mappings = {
         i = {
@@ -146,7 +159,7 @@ return {
           ["<M-q>"] = telescope_actions.send_selected_to_qflist + telescope_actions.open_qflist, -- send selected to quickfixlist
           ["<C-c"] = telescope_actions.close,
           ["<Esc><Esc>"] = telescope_actions.close,
-          ["<C-t>"] = trouble_telescope.open,
+          ["<C-t>"] = trouble_open,
           ["<C-h>"] = function(prompt_bufnr)
             telescope.extensions.hop.hop(prompt_bufnr)
           end, -- hop.hop or hop.hop_toggle_selection
@@ -165,9 +178,9 @@ return {
             }
             telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
           end,
-          ["<M-a>"] = lga_actions.quote_prompt(),
-          ["<M-g>"] = lga_actions.quote_prompt({ postfix = " --iglob " }),
-          ["<M-i>"] = lga_actions.quote_prompt({ postfix = " --no-ignore " }),
+          ["<M-a>"] = quote_prompt(),
+          ["<M-g>"] = quote_prompt({ postfix = " --iglob " }),
+          ["<M-i>"] = quote_prompt({ postfix = " --no-ignore " }),
           ["<C-o>"] = function(prompt_bufnr)
             telescope_actions.select_default(prompt_bufnr)
             telescope_builtin.resume()
@@ -188,9 +201,9 @@ return {
         n = {
           ["<C-p>"] = actions_layout.toggle_preview,
           ["dd"] = telescope_actions.delete_buffer,
-          ["<C-t>"] = trouble_telescope.open,
-          ["[i"] = path_actions.insert_relpath_i_visual,
-          ["]i"] = path_actions.insert_abspath_i_visual,
+          ["<C-t>"] = trouble_open,
+          ["[i"] = lazy_action("telescope_insert_path", "insert_relpath_i_visual"),
+          ["]i"] = lazy_action("telescope_insert_path", "insert_abspath_i_visual"),
           ["<C-M-d>"] = copy_dirpath_of_selected_item,
           ["<C-M-f>"] = copy_path_of_selected_item,
           ["<C-f>"] = telescope_actions.results_scrolling_down,
@@ -332,7 +345,9 @@ return {
             reset_selection = true,
           },
           undo = (function()
-            local undo_actions = require("telescope-undo.actions")
+            local function undo_action(name)
+              return lazy_action("telescope-undo.actions", name)
+            end
             return {
               layout_strategy = "vertical",
               layout_config = {
@@ -348,14 +363,14 @@ return {
               time_format = "",
               mappings = {
                 i = {
-                  ["<C-a>"] = undo_actions.yank_additions,
-                  ["<C-d>"] = undo_actions.yank_deletions,
-                  ["<cr>"] = undo_actions.restore,
+                  ["<C-a>"] = undo_action("yank_additions"),
+                  ["<C-d>"] = undo_action("yank_deletions"),
+                  ["<cr>"] = undo_action("restore"),
                 },
                 n = {
-                  ["<C-a>"] = undo_actions.yank_additions,
-                  ["<C-d>"] = undo_actions.yank_deletions,
-                  ["<cr>"] = undo_actions.restore,
+                  ["<C-a>"] = undo_action("yank_additions"),
+                  ["<C-d>"] = undo_action("yank_deletions"),
+                  ["<cr>"] = undo_action("restore"),
                 },
               },
             }
@@ -371,12 +386,6 @@ return {
             -- <C-r>  Run macro
             -- <C-s>  Save a macro/register
             -- <C-x>  Edit register (<C-c> can be used to copy the register as printable)
-          },
-          terraform_doc = {
-            url_open_command = "xdg-open",
-            latest_provider_symbol = "  ",
-            wincmd = "botright vnew",
-            wrap = "nowrap",
           },
         },
       }
@@ -409,15 +418,9 @@ return {
       -- }}} flash.nvim integration
 
       telescope.setup(opts)
+      -- the other extensions load on first use through telescope.extensions
       telescope.load_extension("fzf")
-      telescope.load_extension("project")
-      telescope.load_extension("hop")
-      telescope.load_extension("live_grep_args")
-      telescope.load_extension("lazygit")
-      telescope.load_extension("undo")
       telescope.load_extension("menufacture")
-      telescope.load_extension("terraform_doc")
-      telescope.load_extension("advanced_git_search")
 
       -- this is a hack to add menufacture items to all the builtin pickers
       local menufacture = telescope.extensions.menufacture
