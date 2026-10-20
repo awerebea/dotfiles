@@ -1,156 +1,27 @@
+-- Commenting uses the built-in gc/gcc (:h commenting); the extra keymaps
+-- (gco, gb, <C-/>, ...) are in config/comment.lua.
 return {
   {
-    "numToStr/Comment.nvim",
-    enabled = true,
-    event = "VeryLazy",
-    dependencies = { "JoosepAlviste/nvim-ts-context-commentstring" },
-    keys = {
-      "gc",
-      "gC",
-      "gcc",
-      "gbc",
-      { mode = { "n", "x" }, "<C-_>" },
-      { mode = { "n", "x" }, "<C-\\>" },
-    },
-    config = function(_, _)
-      -- Filetypes without a Tree-sitter parser fall back to vim.bo.commentstring,
-      -- which is unset for these types. Return the comment string early so
-      -- ts_context_commentstring is never consulted for them.
-      local no_ts_comment = {
-        confini = "#%s",
-        kitty = "#%s",
-        tmux = "#%s",
-        gitconfig = ";%s",
-        sshconfig = "#%s",
-      }
-      local ts_pre_hook =
-        require("ts_context_commentstring.integrations.comment_nvim").create_pre_hook()
-
-      local opts = {
-        ignore = "^$",
-        pre_hook = function(ctx)
-          local override = no_ts_comment[vim.bo.filetype]
-          if override then
-            return override
+    -- Loaded at startup as an nvim-treesitter dependency. Gives the built-in
+    -- commenting the 'commentstring' of the tree-sitter node at the cursor
+    -- (JSX in TSX, <script> in HTML, code blocks in markdown, ...).
+    "JoosepAlviste/nvim-ts-context-commentstring",
+    -- computed on demand below instead of on every CursorHold
+    opts = { enable_autocmd = false },
+    config = function(_, opts)
+      require("ts_context_commentstring").setup(opts)
+      local get_option = vim.filetype.get_option
+      ---@diagnostic disable-next-line: duplicate-set-field
+      vim.filetype.get_option = function(filetype, option)
+        if option == "commentstring" then
+          local ok, cs =
+            pcall(require("ts_context_commentstring.internal").calculate_commentstring)
+          if ok and cs then
+            return cs
           end
-          return ts_pre_hook(ctx)
-        end,
-        toggler = {
-          ---Line-comment toggle keymap
-          line = "gcc",
-          ---Block-comment toggle keymap
-          block = "gbc",
-        },
-        mappings = {
-          basic = true,
-          extra = true,
-        },
-      }
-      require("Comment").setup(opts)
-
-      local api = require("Comment.api")
-      -- Toggle current line (linewise) using C-/
-      vim.keymap.set("n", "<C-_>", api.toggle.linewise.current)
-      -- Toggle current line (blockwise) using C-\
-      vim.keymap.set("n", "<C-\\>", api.toggle.blockwise.current)
-
-      local esc = vim.api.nvim_replace_termcodes("<ESC>", true, false, true)
-
-      -- Toggle selection (linewise)
-      vim.keymap.set("x", "<C-_>", function()
-        vim.api.nvim_feedkeys(esc, "nx", false)
-        api.toggle.linewise(vim.fn.visualmode())
-      end)
-
-      -- Toggle selection (blockwise)
-      vim.keymap.set("x", "<C-\\>", function()
-        vim.api.nvim_feedkeys(esc, "nx", false)
-        api.toggle.blockwise(vim.fn.visualmode())
-      end)
-
-      ---Operator function to invert comments on each line
-      function _G.__flip_flop_comment()
-        local U = require("Comment.utils")
-        local s = vim.api.nvim_buf_get_mark(0, "[")
-        local e = vim.api.nvim_buf_get_mark(0, "]")
-        local range = { srow = s[1], scol = s[2], erow = e[1], ecol = e[2] }
-        local ctx = {
-          ctype = U.ctype.linewise,
-          range = range,
-        }
-        local cstr = require("Comment.ft").calculate(ctx) or vim.bo.commentstring
-        local ll, rr = U.unwrap_cstr(cstr)
-        local padding = true
-        local is_commented = U.is_commented(ll, rr, padding)
-
-        local rcom = {} -- ranges of commented lines
-        local cl = s[1] -- current line
-        local rs, re = nil, nil -- range start and end
-        local lines = U.get_lines(range)
-        for _, line in ipairs(lines) do
-          if #line == 0 or not is_commented(line) then -- empty or uncommented line
-            if rs ~= nil then
-              table.insert(rcom, { rs, re })
-              rs, re = nil, nil
-            end
-          else
-            rs = rs or cl -- set range start if not set
-            re = cl -- update range end
-          end
-          cl = cl + 1
         end
-        if rs ~= nil then
-          table.insert(rcom, { rs, re })
-        end
-
-        local cursor_position = vim.api.nvim_win_get_cursor(0)
-        local vmark_start = vim.api.nvim_buf_get_mark(0, "<")
-        local vmark_end = vim.api.nvim_buf_get_mark(0, ">")
-
-        ---Toggle comments on a range of lines
-        ---@param sl integer: starting line
-        ---@param el integer: ending line
-        local toggle_lines = function(sl, el)
-          vim.api.nvim_win_set_cursor(0, { sl, 0 }) -- idk why it's needed to prevent one-line ranges from being substituted with line under cursor
-          vim.api.nvim_buf_set_mark(0, "[", sl, 0, {})
-          vim.api.nvim_buf_set_mark(0, "]", el, 0, {})
-          require("Comment.api").locked("toggle.linewise")("")
-        end
-
-        toggle_lines(s[1], e[1])
-        for _, r in ipairs(rcom) do
-          toggle_lines(r[1], r[2]) -- uncomment lines twice to remove previous comment
-          toggle_lines(r[1], r[2])
-        end
-
-        vim.api.nvim_win_set_cursor(0, cursor_position)
-        vim.api.nvim_buf_set_mark(0, "<", vmark_start[1], vmark_start[2], {})
-        vim.api.nvim_buf_set_mark(0, ">", vmark_end[1], vmark_end[2], {})
-        vim.o.operatorfunc = "v:lua.__flip_flop_comment" -- make it dot-repeatable
+        return get_option(filetype, option)
       end
-
-      -- Invert (flip flop) comments with gC, in normal and visual mode
-      vim.keymap.set(
-        { "n", "x" },
-        -- "gC",
-        "<leader>ci",
-        "<cmd>set operatorfunc=v:lua.__flip_flop_comment<cr>g@",
-        { silent = true, desc = "Invert comments" }
-      )
-
-      -- Duplicate commented line
-      vim.keymap.set(
-        "n",
-        "<leader>gy",
-        "yy<Plug>(comment_toggle_linewise_current)p",
-        { desc = "Duplicate commented line" }
-      )
-      vim.keymap.set(
-        "x",
-        "<leader>gy",
-        "ygv<Plug>(comment_toggle_linewise_visual)`>p",
-        { desc = "Duplicate commented line" }
-      )
     end,
   },
 }
