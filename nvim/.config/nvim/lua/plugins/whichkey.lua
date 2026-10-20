@@ -35,7 +35,6 @@ return {
         {
           mode = { "n", "v" },
           { "<leader><space>", group = "Harpoon" },
-          { "<leader>M", group = "Multiple Renamer (muren)" },
           { "<leader>S", group = "Spectre" },
           { "<leader>T", group = "Test" },
           { "<leader>Tn", group = "Neotest" },
@@ -83,7 +82,7 @@ return {
           { "<leader>k", group = "Open from quickfix, Macrothis" },
           { "<leader>kk", group = "Macrothis" },
           { "<leader>l", group = "Toggle non-printable symbols, Inline Diagnostics" },
-          { "<leader>n", group = "Navbuddy" },
+          { "<leader>n", group = "Navigate (dropbar)" },
           { "<leader>p", group = "Project & Portal" },
           { "<leader>pc", group = "Portal changelist" },
           { "<leader>q", group = "Session manager" },

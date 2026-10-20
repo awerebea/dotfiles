@@ -232,6 +232,15 @@ return {
   {
     "Bekaboo/dropbar.nvim",
     event = "BufReadPost",
+    keys = {
+      {
+        "<leader>nb",
+        function()
+          require("dropbar.api").pick()
+        end,
+        desc = "Pick symbol in breadcrumbs (dropbar)",
+      },
+    },
     enabled = function()
       return vim.fn.has("nvim-0.10.0") == 1
     end,

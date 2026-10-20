@@ -6,6 +6,7 @@ return {
     max_join_length = 120,
   },
   keys = {
+    { "gS", "<Cmd>TSJToggle<CR>", desc = "Split/join (TreeSJ)" },
     { "<leader>gS", "<Cmd>TSJSplit<CR>", desc = "TreeSJ Split" },
     { "<leader>gJ", "<Cmd>TSJJoin<CR>", desc = "TreeSJ Join" },
     { "<leader>gT", "<Cmd>TSJToggle<CR>", desc = "TreeSJ Toggle" },
