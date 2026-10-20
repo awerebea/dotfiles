@@ -34,7 +34,7 @@ return {
         -- stylua: ignore
         {
           mode = { "n", "v" },
-          { "<leader><space>", group = "Hop, Harpoon" },
+          { "<leader><space>", group = "Harpoon" },
           { "<leader>M", group = "Multiple Renamer (muren)" },
           { "<leader>S", group = "Spectre" },
           { "<leader>T", group = "Test" },

@@ -7,7 +7,6 @@ return {
   "nvim-telescope/telescope-project.nvim",
   "cljoly/telescope-repo.nvim",
   "kiyoon/telescope-insert-path.nvim",
-  "nvim-telescope/telescope-hop.nvim",
   "nvim-telescope/telescope-live-grep-args.nvim",
   "debugloop/telescope-undo.nvim",
   { "aaronhallaert/advanced-git-search.nvim", dependencies = { "tpope/vim-fugitive" } },
@@ -160,24 +159,6 @@ return {
           ["<C-c"] = telescope_actions.close,
           ["<Esc><Esc>"] = telescope_actions.close,
           ["<C-t>"] = trouble_open,
-          ["<C-h>"] = function(prompt_bufnr)
-            telescope.extensions.hop.hop(prompt_bufnr)
-          end, -- hop.hop or hop.hop_toggle_selection
-          ["<C-M-h>"] = function(prompt_bufnr)
-            telescope.extensions.hop._hop(
-              prompt_bufnr,
-              { callback = telescope_actions.toggle_selection }
-            )
-          end,
-          -- custom hop loop to multi selects and sending selected entries to quickfix list
-          ["<C-l>"] = function(prompt_bufnr)
-            local opts = {
-              callback = telescope_actions.toggle_selection,
-              loop_callback = telescope_actions.send_selected_to_qflist
-                + telescope_actions.open_qflist,
-            }
-            telescope.extensions.hop._hop_loop(prompt_bufnr, opts)
-          end,
           ["<M-a>"] = quote_prompt(),
           ["<M-g>"] = quote_prompt({ postfix = " --iglob " }),
           ["<M-i>"] = quote_prompt({ postfix = " --no-ignore " }),
@@ -319,30 +300,6 @@ return {
             sync_with_nvim_tree = true, -- default false
             hidden_files = true, -- default: false
             theme = "dropdown",
-          },
-          hop = {
-          -- stylua: ignore
-            keys = {
-              "a", "s", "d", "f", "g", "h", "j", "k", "l", ";",
-              "q", "w", "e", "r", "t", "y", "u", "i", "o", "p",
-              "z", "x", "c", "v", "b", "n", "m",
-              "A", "S", "D", "F", "G", "H", "J", "K", "L", ":",
-              "Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P",
-              "Z", "X", "C", "V", "B", "N", "M",
-            },
-            -- Highlight groups to link to signs and lines; the below configuration refers to demo
-            -- sign_hl typically only defines foreground to possibly be combined with line_hl
-            sign_hl = { "WarningMsg", "Title" },
-            -- optional, typically a table of two highlight groups that are alternated between
-            line_hl = { "CursorLine", "Normal" },
-            -- options specific to `hop_loop`
-            -- true temporarily disables Telescope selection highlighting
-            clear_selection_hl = false,
-            -- highlight hopped to entry with telescope selection highlight
-            -- note: mutually exclusive with `clear_selection_hl`
-            trace_entry = true,
-            -- jump to entry where hoop loop was started from
-            reset_selection = true,
           },
           undo = (function()
             local function undo_action(name)
