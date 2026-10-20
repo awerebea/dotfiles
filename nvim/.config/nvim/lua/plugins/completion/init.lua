@@ -4,6 +4,10 @@ return {
     event = "InsertEnter",
     dependencies = {
       "hrsh7th/cmp-nvim-lsp",
+      -- a cmp source that registers itself with require("cmp") when loaded, so
+      -- it must load with nvim-cmp (as an lspconfig dependency it loaded
+      -- nvim-cmp, LuaSnip and friendly-snippets on every file open)
+      "hrsh7th/cmp-nvim-lsp-signature-help",
       "saadparwaiz1/cmp_luasnip",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
