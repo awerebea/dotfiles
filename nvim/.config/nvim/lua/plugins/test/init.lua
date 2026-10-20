@@ -37,7 +37,7 @@ return {
       "nvim-neotest/neotest-python",
       "nvim-neotest/neotest-plenary",
       "nvim-neotest/neotest-vim-test",
-      "rouge8/neotest-rust",
+      "mrcjkb/rustaceanvim", -- its neotest adapter replaces the archived neotest-rust
     },
     config = function()
       local opts = {
@@ -50,7 +50,7 @@ return {
           require("neotest-vim-test")({
             ignore_file_types = { "python", "vim", "lua" },
           }),
-          require("neotest-rust"),
+          require("rustaceanvim.neotest"),
         },
         -- overseer.nvim
         consumers = {
