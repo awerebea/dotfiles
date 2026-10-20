@@ -1,3 +1,13 @@
+-- Colors for words that failed spell check, shared by the colorschemes below.
+-- Set through each colorscheme's own highlight hook, so they are applied
+-- every time that colorscheme is loaded
+local spell_colors = {
+  SpellBad = "#00bfff", -- Word not recognized
+  SpellCap = "#ff4500", -- Word not capitalized
+  SpellRare = "#32cd32", -- Word is rare
+  SpellLocal = "#ffb90f", -- Wrong spelling for selected region
+}
+
 return {
   {
     "folke/styler.nvim",
@@ -13,9 +23,8 @@ return {
     end,
   },
   {
+    -- not loaded at startup: lazy.nvim loads it on `:colorscheme tokyonight`
     "folke/tokyonight.nvim",
-    lazy = false,
-    priority = 1000,
     config = function()
       local tokyonight = require("tokyonight")
       tokyonight.setup({
@@ -36,29 +45,18 @@ return {
           highlights.Folded = {
             bg = "#15161e",
           }
+          for group, fg in pairs(spell_colors) do
+            highlights[group] = { undercurl = true, fg = fg }
+          end
         end,
       })
-      tokyonight.load()
-
-      -- {{{ Colors for words that failed spell check
-      -- Word not recognized
-      vim.api.nvim_set_hl(0, "SpellBad", {})
-      vim.api.nvim_set_hl(0, "SpellBad", { undercurl = true, fg = "#00bfff" })
-      -- Word not capitalized
-      vim.api.nvim_set_hl(0, "SpellCap", {})
-      vim.api.nvim_set_hl(0, "SpellCap", { undercurl = true, fg = "#ff4500" })
-      -- Word is rare
-      vim.api.nvim_set_hl(0, "SpellRare", {})
-      vim.api.nvim_set_hl(0, "SpellRare", { undercurl = true, fg = "#32cd32" })
-      -- Wrong spelling for selected region
-      vim.api.nvim_set_hl(0, "SpellLocal", {})
-      vim.api.nvim_set_hl(0, "SpellLocal", { undercurl = true, fg = "#ffb90f" })
-      -- }}}
     end,
   },
   {
+    -- the default colorscheme, the only one loaded at startup
     "catppuccin/nvim",
     lazy = false,
+    priority = 1000,
     name = "catppuccin",
     version = "1.11.0", -- pin to this version as in later releases colors were changed
     config = function()
@@ -85,10 +83,16 @@ return {
           operators = {},
         },
         custom_highlights = function(colors)
-          return {
+          local hl = {
             -- Brighter non-current line numbers (default is surface1)
             LineNr = { fg = colors.overlay1 },
+            -- Set the CursorColumn bg color the same as the CursorLine
+            CursorColumn = { bg = "#2a2b3c" },
           }
+          for group, fg in pairs(spell_colors) do
+            hl[group] = { fg = fg, style = { "undercurl" } }
+          end
+          return hl
         end,
         integrations = {
           notify = true,
@@ -97,29 +101,12 @@ return {
           which_key = true,
         },
       })
-      catppuccin.load()
-
-      -- Set the CursorColumn bg color the same sa the CursorLine
-      vim.api.nvim_set_hl(0, "CursorColumn", { bg = "#2a2b3c" })
-      -- {{{ Colors for words that failed spell check
-      -- Word not recognized
-      vim.api.nvim_set_hl(0, "SpellBad", {})
-      vim.api.nvim_set_hl(0, "SpellBad", { undercurl = true, fg = "#00bfff" })
-      -- Word not capitalized
-      vim.api.nvim_set_hl(0, "SpellCap", {})
-      vim.api.nvim_set_hl(0, "SpellCap", { undercurl = true, fg = "#ff4500" })
-      -- Word is rare
-      vim.api.nvim_set_hl(0, "SpellRare", {})
-      vim.api.nvim_set_hl(0, "SpellRare", { undercurl = true, fg = "#32cd32" })
-      -- Wrong spelling for selected region
-      vim.api.nvim_set_hl(0, "SpellLocal", {})
-      vim.api.nvim_set_hl(0, "SpellLocal", { undercurl = true, fg = "#ffb90f" })
-      -- }}}
+      vim.cmd.colorscheme("catppuccin")
     end,
   },
   {
+    -- not loaded at startup: lazy.nvim loads it on `:colorscheme gruvbox`
     "ellisonleao/gruvbox.nvim",
-    lazy = false,
     config = function()
       require("gruvbox").setup()
     end,
