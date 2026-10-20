@@ -7,5 +7,6 @@ vim.api.nvim_create_autocmd("User", {
     require("config.autocmds")
     require("config.keymaps")
     require("config.scroll-burst").setup()
+    require("config.comment").setup()
   end,
 })
