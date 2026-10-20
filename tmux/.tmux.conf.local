@@ -909,14 +909,31 @@ bind -r C-n next-window
 # and then uses `swap-pane` to swap it back into index 0 -- confirmed via
 # a real layout-string diff that this combination, unlike plain `-b`,
 # reproduces the original layout exactly.
-bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/null); if [ -n \"\$zf\" ];\
-  then idx=\$(tmux display -pt '#{pane_id}' '#{@zoomed_index}' 2>/dev/null);\
+#
+# The "first pane" check compares against the window's pane-base-index, not
+# a literal 0: Oh my tmux! sets pane-base-index to 1, so a hardcoded 0 sent
+# the first pane down the `idx - 1` path, targeting a nonexistent pane .0.
+# That join-pane failed, yet the state was cleared regardless, so the next
+# press broke the (now single-pane) window out again, which only renamed it.
+# Now the saved state is cleared only once the restore succeeds; if the
+# original window is gone, the state is dropped with a message instead of
+# leaving the pane stuck; and breaking out a pane that is already alone in
+# its window is refused, since break-pane would only rename that window.
+bind Z run-shell "zf=\$(tmux display -pt '#{pane_id}' '#{@zoomed_from}' 2>/dev/null);\
+  unset_zoom() { tmux set-option -pu -t '#{pane_id}' @zoomed_from;\
+  tmux set-option -pu -t '#{pane_id}' @zoomed_index; tmux set-option -pu -t '#{pane_id}' @zoomed_layout; };\
+  if [ -n \"\$zf\" ]; then\
+  if ! tmux list-windows -a -F '##{window_id}' | grep -qx \"\$zf\"; then unset_zoom;\
+  tmux display-message 'Zoom: original window is gone, pane stays here';\
+  else idx=\$(tmux display -pt '#{pane_id}' '#{@zoomed_index}' 2>/dev/null);\
   lo=\$(tmux display -pt '#{pane_id}' '#{@zoomed_layout}' 2>/dev/null);\
-  if [ \"\$idx\" = 0 ]; then tmux join-pane -s '#{pane_id}' -t \"\$zf.0\";\
-  tmux swap-pane -s '#{pane_id}' -t \"\$zf.0\";\
-  else tmux join-pane -s '#{pane_id}' -t \"\$zf.\$((idx - 1))\"; fi;\
-  tmux select-layout -t \"\$zf\" \"\$lo\"; tmux set-option -pu -t '#{pane_id}' @zoomed_from;\
-  tmux set-option -pu -t '#{pane_id}' @zoomed_index; tmux set-option -pu -t '#{pane_id}' @zoomed_layout;\
+  base=\$(tmux display -pt \"\$zf\" '##{pane-base-index}');\
+  if [ \"\$idx\" = \"\$base\" ]; then tmux join-pane -s '#{pane_id}' -t \"\$zf.\$base\" &&\
+  tmux swap-pane -s '#{pane_id}' -t \"\$zf.\$base\";\
+  else tmux join-pane -s '#{pane_id}' -t \"\$zf.\$((idx - 1))\"; fi &&\
+  { tmux select-layout -t \"\$zf\" \"\$lo\"; unset_zoom; } ||\
+  tmux display-message 'Zoom: failed to restore pane, press Z to retry'; fi;\
+  elif [ '#{window_panes}' = 1 ]; then tmux display-message 'Zoom: pane is already alone in its window';\
   else tmux set-option -p -t '#{pane_id}' @zoomed_from '#{window_id}';\
   tmux set-option -p -t '#{pane_id}' @zoomed_index '#{pane_index}';\
   tmux set-option -p -t '#{pane_id}' @zoomed_layout '#{window_layout}';\
