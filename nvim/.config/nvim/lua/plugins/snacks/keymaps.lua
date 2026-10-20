@@ -64,6 +64,21 @@ function M.setup_always()
     Snacks.explorer()
   end, { desc = "Explorer" })
 
+  -- Explorer sidebar (replaced nvim-tree): open, focus or close it
+  vim.keymap.set("n", "<leader>e", function()
+    local explorer = Snacks.picker.get({ source = "explorer" })[1]
+    if not explorer then
+      Snacks.explorer()
+    elseif explorer:is_focused() then
+      explorer:close()
+    else
+      explorer:focus()
+    end
+  end, { desc = "Toggle explorer" })
+  vim.keymap.set("n", "<leader><leader>e", function()
+    Snacks.explorer.reveal()
+  end, { desc = "Reveal file in explorer" })
+
   vim.keymap.set("n", "gz", function()
     Snacks.bufdelete.delete()
   end, { desc = "Delete buffer" })

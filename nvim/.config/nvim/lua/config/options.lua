@@ -432,7 +432,9 @@ _G.ToggleDiffViewMode = function()
     diff_view_active = false
     print("Diff view deactivated")
   else
-    vim.cmd.NvimTreeClose()
+    for _, explorer in ipairs(Snacks.picker.get({ source = "explorer" })) do
+      explorer:close()
+    end
     vim.cmd.windo("diffthis")
     diff_view_active = true
     print("Diff view activated")

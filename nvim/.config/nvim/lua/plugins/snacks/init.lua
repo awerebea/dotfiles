@@ -106,6 +106,51 @@ return {
           watch = true, -- auto-refresh tree on filesystem changes
           follow_file = true, -- reveal current buffer's file in tree on buffer switch
           git_untracked = true, -- show '?' marker for files not yet added to git
+          -- the look of the nvim-tree sidebar this explorer replaced: on the
+          -- right, 50 columns, dotfiles shown except .git
+          layout = { layout = { position = "right", width = 50, min_width = 50 } },
+          hidden = true,
+          exclude = { ".git" },
+          actions = {
+            -- Y: pick which form of the item's path to copy to the clipboard
+            copy_path_menu = function(_, item)
+              if not item then
+                return
+              end
+              local filepath = Snacks.picker.util.path(item)
+              local dirpath = vim.fs.dirname(filepath)
+              local filename = vim.fs.basename(filepath)
+              local modify = vim.fn.fnamemodify
+              local choices = {
+                { "File path absolute         ", filepath },
+                { "File path relative to CWD  ", modify(filepath, ":.") },
+                { "File path relative to HOME ", modify(filepath, ":~") },
+                { "Dir path absolute          ", dirpath },
+                { "Dir path relative to CWD   ", modify(dirpath, ":.") },
+                { "Dir path relative to HOME  ", modify(dirpath, ":~") },
+                { "Filename                   ", filename },
+                { "File basename              ", modify(filename, ":r") },
+                { "Extension of the file      ", modify(filename, ":e") },
+              }
+              vim.ui.select(choices, {
+                prompt = "Copy to clipboard:",
+                format_item = function(choice)
+                  return choice[1] .. ": " .. choice[2]
+                end,
+              }, function(choice)
+                if choice then
+                  vim.fn.setreg("+", choice[2])
+                  vim.notify(("Copied: `%s`"):format(choice[2]))
+                end
+              end)
+            end,
+          },
+          win = {
+            list = {
+              keys = { ["Y"] = "copy_path_menu" },
+              wo = { number = true, relativenumber = true },
+            },
+          },
         },
         projects = {
           dev = { "~/GitHub" },

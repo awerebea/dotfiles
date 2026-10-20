@@ -156,7 +156,7 @@ return {
           lualine_y = {},
           lualine_z = {},
         },
-        extensions = { "nvim-tree", "quickfix" },
+        extensions = { "quickfix" },
       })
     end,
   },
