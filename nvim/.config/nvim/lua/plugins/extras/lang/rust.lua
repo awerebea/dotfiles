@@ -1,8 +1,3 @@
-local install_root_dir = vim.fn.stdpath("data") .. "/mason"
-local extension_path = install_root_dir .. "/packages/codelldb/extension/"
-local codelldb_path = extension_path .. "adapter/codelldb"
-local liblldb_path = extension_path .. "lldb/lib/liblldb.so"
-
 return {
   {
     "nvim-treesitter/nvim-treesitter",
@@ -11,57 +6,50 @@ return {
     end,
   },
   {
-    "neovim/nvim-lspconfig",
-    dependencies = { "simrat39/rust-tools.nvim", "rust-lang/rust.vim" },
-    opts = {
-      servers = {
-        rust_analyzer = {
-          settings = {
-            ["rust-analyzer"] = {
-              cargo = { allFeatures = true },
-              checkOnSave = {
-                command = "cargo clippy",
-                extraArgs = { "--no-deps" },
+    -- Starts and configures rust-analyzer itself for Rust buffers (lazy by
+    -- design, so it must not be lazy-loaded). Debugging uses codelldb from
+    -- Mason automatically once nvim-dap is installed.
+    "mrcjkb/rustaceanvim",
+    version = "^9",
+    lazy = false,
+    init = function()
+      vim.g.rustaceanvim = function()
+        return {
+          server = {
+            capabilities = require("plugins.lsp.utils").capabilities(),
+            on_attach = function(_, buffer)
+              -- stylua: ignore start
+              vim.keymap.set("n", "<leader>cR", function() vim.cmd.RustLsp("runnables") end, { buffer = buffer, desc = "Runnables" })
+              vim.keymap.set("n", "<leader>cl", vim.lsp.codelens.run, { buffer = buffer, desc = "Code Lens" })
+              -- stylua: ignore end
+              -- refreshed by Neovim when the buffer changes
+              vim.lsp.codelens.enable(true, { bufnr = buffer })
+            end,
+            default_settings = {
+              ["rust-analyzer"] = {
+                cargo = { allFeatures = true },
+                checkOnSave = true,
+                check = {
+                  command = "clippy",
+                  extraArgs = { "--no-deps" },
+                },
               },
             },
           },
-        },
+        }
+      end
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    opts = {
+      setup = {
+        -- rust_analyzer stays in the server list so that Mason installs it,
+        -- but rustaceanvim starts it
+        rust_analyzer = function()
+          return true
+        end,
       },
-    },
-    setup = {
-      rust_analyzer = function(_, opts)
-        local lsp_utils = require("plugins.lsp.utils")
-        lsp_utils.on_attach(function(client, buffer)
-          -- stylua: ignore
-          if client.name == "rust_analyzer" then
-            vim.keymap.set("n", "<leader>cR", "<cmd>RustRunnables<cr>", { buffer = buffer, desc = "Runnables" })
-            vim.keymap.set("n", "<leader>cl", function() vim.lsp.codelens.run() end,
-              { buffer = buffer, desc = "Code Lens" })
-          end
-        end)
-
-        require("rust-tools").setup({
-          tools = {
-            hover_actions = { border = "solid" },
-            on_initialized = function()
-              vim.api.nvim_create_autocmd(
-                { "BufWritePost", "BufEnter", "CursorHold", "InsertLeave" },
-                {
-                  pattern = { "*.rs" },
-                  callback = function()
-                    vim.lsp.codelens.refresh()
-                  end,
-                }
-              )
-            end,
-          },
-          server = opts,
-          dap = {
-            adapter = require("rust-tools.dap").get_codelldb_adapter(codelldb_path, liblldb_path),
-          },
-        })
-        return true
-      end,
     },
   },
 }
