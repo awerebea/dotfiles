@@ -67,11 +67,6 @@ local aucmd_dict = {
         vim.opt.formatoptions:remove({ "c", "r", "o" })
       end,
     },
-    -- Fix using Treesitter based folds with sessions
-    {
-      pattern = { "*" },
-      command = "normal zx",
-    },
   },
   BufWritePost = {
     -- make file with shebang executable
