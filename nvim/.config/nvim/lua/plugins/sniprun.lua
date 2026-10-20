@@ -2,7 +2,7 @@ return {
   "michaelb/sniprun",
   enabled = string.sub(string.lower(vim.uv.os_uname().sysname), 1, string.len("windows"))
     ~= "windows",
-  event = "VeryLazy",
+  cmd = { "SnipRun", "SnipInfo", "SnipClose", "SnipReset", "SnipLive", "SnipReplMemoryClean" },
   branch = "master",
   build = "sh install.sh",
   opts = {},

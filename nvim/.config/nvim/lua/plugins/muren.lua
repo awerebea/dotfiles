@@ -1,6 +1,5 @@
 return {
   "AckslD/muren.nvim",
-  event = "VeryLazy",
   keys = {
     { "<leader>Mt", "<Cmd>MurenToggle<CR>" },
     { "<leader>Mo", "<Cmd>MurenOpen<CR>" },

@@ -1,6 +1,6 @@
 return {
   "FabijanZulj/blame.nvim",
-  event = "VeryLazy",
+  cmd = "BlameToggle",
   config = function()
     require("blame").setup()
   end,

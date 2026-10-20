@@ -1,6 +1,7 @@
 return {
   "cappyzawa/trim.nvim",
-  event = "VeryLazy",
+  -- trim_on_write is off, so the plugin is only used through its commands
+  cmd = { "Trim", "TrimToggle" },
   opts = {
     ft_blocklist = {
       -- "markdown",
