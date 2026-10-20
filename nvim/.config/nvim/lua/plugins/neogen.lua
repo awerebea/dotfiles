@@ -1,7 +1,7 @@
 return {
   "danymat/neogen",
   opts = {
-    snippet_engine = "luasnip",
+    snippet_engine = "nvim", -- vim.snippet, which blink.cmp also uses
     enabled = true,
     languages = {
       lua = {

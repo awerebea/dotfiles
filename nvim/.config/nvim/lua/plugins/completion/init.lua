@@ -1,163 +1,90 @@
 return {
   {
-    "hrsh7th/nvim-cmp",
+    "saghen/blink.cmp",
+    -- release builds download a prebuilt binary of the Rust fuzzy matcher
+    version = "1.*",
     event = "InsertEnter",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      -- a cmp source that registers itself with require("cmp") when loaded, so
-      -- it must load with nvim-cmp (as an lspconfig dependency it loaded
-      -- nvim-cmp, LuaSnip and friendly-snippets on every file open)
-      "hrsh7th/cmp-nvim-lsp-signature-help",
-      "saadparwaiz1/cmp_luasnip",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      -- "hrsh7th/cmp-cmdline",
-      -- "f3fora/cmp-spell",
-      "danymat/neogen",
-    },
-    config = function()
-      local cmp = require("cmp")
-      local luasnip = require("luasnip")
+    opts = function()
       local icons = require("config.icons")
-      local neogen = require("neogen")
 
-      local has_words_before = function()
-        local line, col = table.unpack(vim.api.nvim_win_get_cursor(0))
+      local function has_words_before()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
         return col ~= 0
           and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match("%s")
             == nil
       end
 
-      cmp.setup({
-        completion = {
-          completeopt = "menu,menuone,noinsert,noselect",
-        },
-        snippet = {
-          expand = function(args)
-            luasnip.lsp_expand(args.body)
-          end,
-        },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-          ["<C-f>"] = cmp.mapping.scroll_docs(4),
-          ["<C-Space>"] = cmp.mapping.confirm({ select = true }),
-          ["<C-e>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-          ["<Esc><Esc>"] = cmp.mapping({ i = cmp.mapping.abort(), c = cmp.mapping.close() }),
-          ["<CR>"] = cmp.mapping.confirm({ select = false }),
-          ["<C-j>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
-            elseif neogen.jumpable() then
-              neogen.jump_next()
-            elseif has_words_before() then
-              cmp.complete()
-            else
-              fallback()
-            end
-          end, {
-            "i",
-            "s",
-            "c",
-          }),
-          ["<C-k>"] = cmp.mapping(function(fallback)
-            if cmp.visible() then
-              cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
-              luasnip.jump(-1)
-            elseif neogen.jumpable(true) then
-              neogen.jump_prev()
-            else
-              fallback()
-            end
-          end, {
-            "i",
-            "s",
-            "c",
-          }),
-        }),
-        window = {
-          completion = cmp.config.window.bordered(),
-          documentation = cmp.config.window.bordered(),
-        },
-        sources = cmp.config.sources({
-          { name = "nvim_lsp_signature_help" },
-          { name = "nvim_lsp" },
-          -- { name = "luasnip" },
-          { name = "buffer" },
-          { name = "path" },
-          -- { name = "cmdline" },
-          -- {
-          --   name = "spell",
-          --   option = {
-          --     keep_all_entries = false,
-          --     enable_in_context = function()
-          --       return true
-          --     end,
-          --   },
-          -- }, -- spell dictionary
-        }),
-        formatting = {
-          fields = { "kind", "abbr", "menu" },
-          format = function(entry, item)
-            local max_width = 0
-            local source_names = {
-              nvim_lsp = "(LSP)",
-              path = "(Path)",
-              luasnip = "(Snippet)",
-              buffer = "(Buffer)",
-            }
-            local duplicates = {
-              buffer = 1,
-              path = 1,
-              nvim_lsp = 0,
-              luasnip = 1,
-            }
-            local duplicates_default = 0
-            if max_width ~= 0 and #item.abbr > max_width then
-              item.abbr = string.sub(item.abbr, 1, max_width - 1) .. icons.ui.Ellipsis
-            end
-            item.kind = icons.kind[item.kind]
-            item.menu = source_names[entry.source.name]
-            item.dup = duplicates[entry.source.name] or duplicates_default
-            return item
-          end,
-        },
-      })
+      -- neogen jumps between its own placeholders when it is loaded and has any
+      local function neogen_jump(prev)
+        return function()
+          local neogen = package.loaded.neogen
+          if neogen and neogen.jumpable(prev) then
+            vim.schedule(function()
+              if prev then
+                neogen.jump_prev()
+              else
+                neogen.jump_next()
+              end
+            end)
+            return true
+          end
+        end
+      end
 
-      -- -- Hide Copilot suggestion when popupmenu-completion is open.
-      -- cmp.event:on("menu_opened", function()
-      --   vim.b.copilot_suggestion_hidden = true
-      -- end)
-      -- cmp.event:on("menu_closed", function()
-      --   vim.b.copilot_suggestion_hidden = false
-      -- end)
+      ---@module 'blink.cmp'
+      ---@type blink.cmp.Config
+      return {
+        keymap = {
+          preset = "none",
+          ["<C-Space>"] = { "select_and_accept", "fallback" },
+          ["<CR>"] = { "accept", "fallback" },
+          ["<C-e>"] = { "cancel", "fallback" },
+          ["<Esc><Esc>"] = { "cancel", "fallback" },
+          ["<C-b>"] = { "scroll_documentation_up", "fallback" },
+          ["<C-f>"] = { "scroll_documentation_down", "fallback" },
+          ["<C-j>"] = {
+            "select_next",
+            "snippet_forward",
+            neogen_jump(false),
+            function(cmp)
+              if has_words_before() then
+                return cmp.show()
+              end
+            end,
+            "fallback",
+          },
+          ["<C-k>"] = { "select_prev", "snippet_backward", neogen_jump(true), "fallback" },
+        },
+        completion = {
+          -- nothing selected or inserted until <C-j>/<C-k> (noinsert, noselect)
+          list = { selection = { preselect = false, auto_insert = false } },
+          menu = {
+            border = "rounded",
+            draw = {
+              columns = {
+                { "kind_icon" },
+                { "label", "label_description", gap = 1 },
+                { "source_name" },
+              },
+            },
+          },
+          documentation = { auto_show = true, window = { border = "rounded" } },
+        },
+        appearance = { kind_icons = icons.kind },
+        sources = {
+          default = { "lsp", "buffer", "path" },
+          providers = {
+            -- show buffer words next to LSP items, not only when LSP has none
+            lsp = { name = "(LSP)", fallbacks = {} },
+            buffer = { name = "(Buffer)" },
+            path = { name = "(Path)" },
+          },
+        },
+        -- signature help comes from noice and lsp_signature already
+        signature = { enabled = false },
+        -- the command line keeps the built-in completion
+        cmdline = { enabled = false },
+      }
     end,
-  },
-  {
-    "L3MON4D3/LuaSnip",
-    dependencies = {
-      "rafamadriz/friendly-snippets",
-      config = function()
-        require("luasnip.loaders.from_vscode").lazy_load()
-      end,
-    },
-    opts = {
-      history = true,
-      delete_check_events = "TextChanged",
-    },
-    -- stylua: ignore
-    keys = {
-      {
-        "<C-j>",
-        function()
-          return require("luasnip").jumpable(1) and "<Plug>luasnip-jump-next" or "<tab>"
-        end,
-        expr = true, remap = true, mode = "i",
-      },
-      { "<C-j>", function() require("luasnip").jump(1) end, mode = "s" },
-      { "<C-k>", function() require("luasnip").jump(-1) end, mode = { "i", "s" } },
-    },
   },
 }
