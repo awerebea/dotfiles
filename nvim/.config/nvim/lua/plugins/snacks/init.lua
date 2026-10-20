@@ -112,6 +112,16 @@ return {
           hidden = true,
           exclude = { ".git" },
           actions = {
+            -- <C-h> / <C-l>: leave the explorer like smart-splits does. The
+            -- list is a float inside the explorer's split window, so look for
+            -- the neighbor from that split; at the screen edge let
+            -- smart-splits handle it (tmux pane or wrap)
+            nav_left = function(picker)
+              require("plugins.snacks.nav").leave(picker, "h")
+            end,
+            nav_right = function(picker)
+              require("plugins.snacks.nav").leave(picker, "l")
+            end,
             -- Y: pick which form of the item's path to copy to the clipboard
             copy_path_menu = function(_, item)
               if not item then
@@ -147,7 +157,11 @@ return {
           },
           win = {
             list = {
-              keys = { ["Y"] = "copy_path_menu" },
+              keys = {
+                ["Y"] = "copy_path_menu",
+                ["<C-h>"] = "nav_left",
+                ["<C-l>"] = "nav_right",
+              },
               wo = { number = true, relativenumber = true },
             },
           },
