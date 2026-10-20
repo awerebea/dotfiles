@@ -10,10 +10,8 @@ return {
         desc = "Code Outline",
       },
     },
+    -- the telescope extension is loaded on demand by telescope.extensions
     config = true,
-    init = function()
-      require("telescope").load_extension("aerial")
-    end,
   },
 
   {
@@ -115,8 +113,6 @@ return {
         desc = "Macrothis",
       },
     },
-    init = function()
-      require("telescope").load_extension("macrothis")
-    end,
+    -- the telescope extension is loaded on demand by telescope.extensions
   },
 }
