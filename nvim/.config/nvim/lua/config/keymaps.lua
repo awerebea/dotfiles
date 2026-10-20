@@ -359,3 +359,22 @@ vim.keymap.set("n", "<leader>cdr", function()
   end
   do_lcd(vim.trim(out))
 end, { desc = "lcd to git root" })
+
+-- Cycle how diagnostics are shown: lines under the code (built-in
+-- virtual_lines) -> none -> errors as virtual text (the default)
+do
+  local diagnostics_mode = 0
+  vim.keymap.set("n", "<leader>td", function()
+    if diagnostics_mode == 0 then
+      vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
+    elseif diagnostics_mode == 1 then
+      vim.diagnostic.config({ virtual_text = false, virtual_lines = false })
+    else
+      vim.diagnostic.config({
+        virtual_text = { severity = { min = vim.diagnostic.severity.ERROR } },
+        virtual_lines = false,
+      })
+    end
+    diagnostics_mode = (diagnostics_mode + 1) % 3
+  end, { desc = "Toggle Diagnostics Mode" })
+end
