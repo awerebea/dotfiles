@@ -58,27 +58,11 @@ return {
       require("nvim-ts-autotag").setup()
 
       -- nvim-treesitter-textobjects v1.0 (main branch) uses explicit keymaps instead of declarative config.
+      -- Only its moves and swaps are used here; the a/i textobjects come from mini.ai
+      -- (see plugins/mini.lua), which reads the same tree-sitter queries.
       require("nvim-treesitter-textobjects").setup({
-        select = { lookahead = true },
         move = { set_jumps = true },
       })
-
-      local select = require("nvim-treesitter-textobjects.select")
-      for key, query in pairs({
-        ["aa"] = "@parameter.outer",
-        ["ia"] = "@parameter.inner",
-        ["af"] = "@function.outer",
-        ["if"] = "@function.inner",
-        ["ac"] = "@class.outer",
-        ["ic"] = "@class.inner",
-        ["il"] = "@loop.inner",
-        ["al"] = "@loop.outer",
-        ["at"] = "@comment.outer",
-      }) do
-        vim.keymap.set({ "x", "o" }, key, function()
-          select.select_textobject(query, "textobjects")
-        end)
-      end
 
       local move = require("nvim-treesitter-textobjects.move")
       -- stylua: ignore start
