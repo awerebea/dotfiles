@@ -3,6 +3,10 @@ return {
   event = "VeryLazy",
   dependencies = { "MunifTanjim/nui.nvim" },
   opts = {
+    -- vim.notify is left to snacks.notifier (one notification history:
+    -- Snacks.notifier.show_history); noice still handles the cmdline,
+    -- messages and LSP docs
+    notify = { enabled = false },
     lsp = {
       override = {
         ["vim.lsp.util.convert_input_to_markdown_lines"] = true,
