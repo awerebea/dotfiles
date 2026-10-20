@@ -142,37 +142,6 @@ return {
     end,
   },
   {
-    "ErichDonGubler/lsp_lines.nvim",
-    event = "VeryLazy",
-    config = function()
-      require("lsp_lines").setup()
-      -- toggle diagnostic lines
-      local diagnostics_mode = 0
-      function ToggleDiagnosticsMode()
-        if diagnostics_mode == 0 then
-          vim.diagnostic.config({ virtual_text = false, virtual_lines = true })
-          diagnostics_mode = 1
-        elseif diagnostics_mode == 1 then
-          vim.diagnostic.config({ virtual_text = false, virtual_lines = false })
-          diagnostics_mode = 2
-        elseif diagnostics_mode == 2 then
-          vim.diagnostic.config({
-            virtual_text = { severity = { min = vim.diagnostic.severity.ERROR } },
-            virtual_lines = false,
-          })
-          diagnostics_mode = 0
-        end
-      end
-
-      vim.keymap.set(
-        "n",
-        "<leader>td",
-        "<Cmd>lua ToggleDiagnosticsMode()<CR>",
-        { desc = "Toggle Diagnostics Mode" }
-      )
-    end,
-  },
-  {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
     opts = { use_diagnostic_signs = true },
