@@ -33,9 +33,6 @@ vim.opt.wildignore:append("*.pyc") -- Python byte code
 vim.opt.wildignore:append("*.orig") -- Merge resolution files
 -- }}} end of Wildmenu completion
 
--- line wrapping
-vim.opt.wrap = false -- disable line wrapping
-
 -- search settings
 vim.opt.ignorecase = true -- ignore case when searching
 vim.opt.smartcase = true -- if you include mixed case in your search, assumes you want case-sensitive
@@ -76,102 +73,125 @@ vim.opt.listchars:append("eol:¬,tab:▸—,trail:~,extends:»,precedes:«,space
 vim.opt.backup = true
 vim.opt.backupdir = { vim.fn.expand("~/.local/state/nvim/backup"), "." }
 -- Try to create a backup directory in the default location if it doesn't exist
-vim.cmd([[
-  if !isdirectory($HOME."/.local/state/nvim/backup")
-    try
-      silent call mkdir ($HOME."/.local/state/nvim/backup", "p")
-    catch
-    endtry
-  endif
-]])
+if vim.fn.isdirectory(vim.opt.backupdir:get()[1]) == 0 then
+  pcall(vim.fn.mkdir, vim.opt.backupdir:get()[1], "p")
+end
 
 -- Default location of swap files (echo &directory) is ~/.local/state/nvim/swap
 vim.opt.swapfile = false
 vim.opt.updatecount = 100
 
--- Viminfo stores the state of your previous editing session
-vim.opt.viminfo = { "!,'1000,<1000,s200,h" } -- Increasing the buffer size
-vim.opt.viminfo:append("n" .. vim.fn.stdpath("data") .. "/nviminfo")
+-- ShaDa stores the state of your previous editing session
+vim.opt.shada = { "!", "'1000", "<1000", "s200", "h" } -- Increasing the buffer size
+vim.opt.shada:append("n" .. vim.fn.stdpath("data") .. "/nviminfo")
 
 -- Save undo history of edited files.
 -- Default files location: ~/.local/state/nvim/undo
 vim.opt.undofile = true
 vim.opt.undolevels = 2048
 -- Default location of viewdir is ~/.local/state/nvim/view
-vim.opt.viewoptions:remove({ "folds" })
+-- "curdir" is left out: loadview would run :lcd and override the per-buffer
+-- cwd restored in config/autocmds.lua
+-- (one item per call: a list becomes "-=folds,curdir", which matches nothing)
+vim.opt.viewoptions:remove("folds")
+vim.opt.viewoptions:remove("curdir")
 -- }}} end of Backup, Undo and Swap files settings
 
 -- {{{ spell check
 
 -- re-create spl files for additional vocabularies
-vim.cmd([[
-for d in glob('~/.config/nvim/spell/*.add', 1, 1)
-  if filereadable(d) && (!filereadable(d . '.spl') || getftime(d) >
-  \ getftime(d . '.spl'))
-    exec 'mkspell! ' . fnameescape(d)
-  endif
-endfor
-]])
+for _, add in ipairs(vim.fn.glob(vim.fn.stdpath("config") .. "/spell/*.add", true, true)) do
+  local spl = add .. ".spl"
+  if vim.fn.filereadable(spl) == 0 or vim.fn.getftime(add) > vim.fn.getftime(spl) then
+    vim.cmd.mkspell({ add, bang = true })
+  end
+end
 -- }}} end of spell check
 
 -- {{{ tabs (indentation) settings
 -- tabs & indentation
 vim.opt.tabstop = 2 -- 2 spaces for tabs (prettier default)
 vim.opt.shiftwidth = 2 -- 2 spaces for indent width
-vim.opt.expandtab = true -- expand tab to spaces
+vim.opt.expandtab = true -- expand tab to spaces, unless a FileType rule below says otherwise
 vim.opt.autoindent = true -- copy indent from current line when starting new one
 
-vim.cmd([[
-function! TabsNoExpandByFourSpaces()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-  setlocal softtabstop=4
-  setlocal noexpandtab
-endfunction
-command! TabsNoExpandByFourSpaces call TabsNoExpandByFourSpaces()
+---Set the indentation of the current buffer.
+---@param width integer
+---@param expand boolean
+local function set_indent(width, expand)
+  vim.bo.tabstop = width
+  vim.bo.shiftwidth = width
+  vim.bo.softtabstop = width
+  vim.bo.expandtab = expand
+end
 
-function! TabsNoExpandByTwoSpaces()
-  setlocal tabstop=2
-  setlocal shiftwidth=2
-  setlocal softtabstop=2
-  setlocal noexpandtab
-endfunction
-command! TabsNoExpandByTwoSpaces call TabsNoExpandByTwoSpaces()
+for name, args in pairs({
+  TabsNoExpandByFourSpaces = { 4, false },
+  TabsNoExpandByTwoSpaces = { 2, false },
+  TabsExpandByFourSpaces = { 4, true },
+  TabsExpandByTwoSpaces = { 2, true },
+}) do
+  vim.api.nvim_create_user_command(name, function()
+    set_indent(args[1], args[2])
+  end, {})
+end
 
-function! TabsExpandByFourSpaces()
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-  setlocal softtabstop=4
-  setlocal expandtab
-endfunction
-command! TabsExpandByFourSpaces call TabsExpandByFourSpaces()
+vim.filetype.add({
+  extension = {
+    tf = "terraform",
+    hcl = "terraform",
+    tfvars = "terraform",
+    tfstate = "json",
+  },
+  filename = {
+    ["Chart.yaml"] = "helm",
+    [".yamllint"] = "yaml",
+    [".yamlfmt"] = "yaml",
+    [".terraformrc"] = "terraform",
+    ["terraform.rc"] = "terraform",
+  },
+  pattern = {
+    [".*%.json%.tpl.*"] = "json",
+  },
+})
 
-function! TabsExpandByTwoSpaces()
-  setlocal tabstop=2
-  setlocal shiftwidth=2
-  setlocal softtabstop=2
-  setlocal expandtab
-endfunction
-command! TabsExpandByTwoSpaces call TabsExpandByTwoSpaces()
-
-set noexpandtab
-augroup filetypeRelatedSettings
-  autocmd!
-  autocmd BufRead,BufNewFile Chart.yaml set ft=helm
-  autocmd BufRead,BufNewFile .yamllint,.yamlfmt set ft=yaml
-  autocmd BufRead,BufNewFile *.tf,*.hcl,*.tfvars,.terraformrc,terraform.rc set ft=terraform
-  autocmd BufRead,BufNewFile *.tfstate,*.json.tpl* set ft=json
-  autocmd FileType bash,sh,json*,dockerfile,python,cmake
-    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab
-  autocmd FileType c,make,cpp,**/cpp.snippets,gitignore,gitconfig
-    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 noexpandtab
-  autocmd FileType vim,zsh,tmux,conf,nginx,ruby,gitcommit,yaml,yaml.ansible,helm,lua,hcl,terraform,
-    \toml,javascript
-    \ setlocal tabstop=2 softtabstop=2 shiftwidth=2 expandtab
-  autocmd FileType ps1,psm1,psd1,ps1xml
-    \ setlocal tabstop=4 softtabstop=4 shiftwidth=4 expandtab textwidth=99
-augroup END
-]])
+local indent_group = vim.api.nvim_create_augroup("filetypeRelatedSettings", { clear = true })
+for _, rule in ipairs({
+  {
+    { "bash", "sh", "json*", "dockerfile", "python", "cmake" },
+    function()
+      set_indent(4, true)
+    end,
+  },
+  {
+    { "c", "make", "cpp", "gitignore", "gitconfig" },
+    function()
+      set_indent(4, false)
+    end,
+  },
+  {
+    -- stylua: ignore
+    {
+      "vim", "zsh", "tmux", "conf", "nginx", "ruby", "gitcommit", "yaml", "yaml.ansible", "helm",
+      "lua", "hcl", "terraform", "toml", "javascript",
+    },
+    function()
+      set_indent(2, true)
+    end,
+  },
+  {
+    { "ps1", "psm1", "psd1", "ps1xml" },
+    function()
+      set_indent(4, true)
+      vim.bo.textwidth = 99
+    end,
+  },
+}) do
+  vim.api.nvim_create_autocmd(
+    "FileType",
+    { group = indent_group, pattern = rule[1], callback = rule[2] }
+  )
+end
 -- }}} end of tabs (indentation) settings
 
 -- {{{ Tabs navigation
@@ -200,21 +220,27 @@ local SmartRelativenumbers_group_name = "SmartRelativenumbers"
 local SmartRelativenumbers_group =
   vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = false })
 
+-- Events after which Neovim does not redraw by itself, so the absolute
+-- numbers would not show up (e.g. while typing a :{lnum} command)
+local redraw_on = { CmdlineEnter = true, FocusLost = true }
+
 local function SetRelativeNumberAutocmd(events, mode)
   vim.api.nvim_create_autocmd(events, {
     group = SmartRelativenumbers_group,
     pattern = "*",
-    callback = function()
+    callback = function(ev)
       local blacklist = { "snacks_terminal" }
       if not vim.tbl_contains(blacklist, vim.bo.filetype) then
         if mode then
-          if vim.o.number and vim.api.nvim_get_mode().mode ~= "i" then
-            vim.opt.relativenumber = true
+          if vim.wo.number and vim.api.nvim_get_mode().mode ~= "i" then
+            vim.wo.relativenumber = true
           end
         else
-          if vim.o.number then
-            vim.opt.relativenumber = false
-            vim.cmd("redraw")
+          if vim.wo.number and vim.wo.relativenumber then
+            vim.wo.relativenumber = false
+            if redraw_on[ev.event] then
+              vim.cmd.redraw()
+            end
           end
         end
       end
@@ -242,15 +268,15 @@ function _G.ToggleSmartRelativenumbers()
       { "BufEnter", "FocusGained", "InsertLeave", "CmdlineLeave", "WinEnter" },
       true
     )
-    if vim.o.number and vim.api.nvim_get_mode().mode ~= "i" then
-      vim.opt.relativenumber = true
+    if vim.wo.number and vim.api.nvim_get_mode().mode ~= "i" then
+      vim.wo.relativenumber = true
     end
     vim.g.SmartRelativenumbersEnabled = true
   else
     vim.api.nvim_create_augroup(SmartRelativenumbers_group_name, { clear = true })
-    if vim.o.number then
-      vim.opt.relativenumber = false
-      vim.cmd("redraw")
+    if vim.wo.number then
+      vim.wo.relativenumber = false
+      vim.cmd.redraw()
     end
     vim.g.SmartRelativenumbersEnabled = false
   end
@@ -287,19 +313,17 @@ vim.opt.wrapmargin = 0
 vim.opt.colorcolumn = "+1"
 vim.opt.wrap = true
 vim.opt.linebreak = false
-vim.cmd([[
-function! AutoWrapToggle()
-  if &formatoptions =~ 't'
-    setlocal textwidth=0
-    setlocal fo-=t
-    setlocal colorcolumn=
+function _G.AutoWrapToggle()
+  if vim.bo.formatoptions:find("t", 1, true) then
+    vim.bo.textwidth = 0
+    vim.opt_local.formatoptions:remove("t")
+    vim.wo.colorcolumn = ""
   else
-    setlocal textwidth=99
-    setlocal fo+=t
-    setlocal colorcolumn=+1
-  endif
-endfunction
-]])
+    vim.bo.textwidth = 99
+    vim.opt_local.formatoptions:append("t")
+    vim.wo.colorcolumn = "+1"
+  end
+end
 -- the related keymaps are defined in config/keymaps.lua
 -- }}} end of Word wrap
 
@@ -307,37 +331,47 @@ endfunction
 -- List of filenames to skip mkview
 vim.g.skipview_files =
   { "EXAMPLE", "PLUGIN", "BUFFER", "COMMIT_EDITMSG", "git-rebase-todo", "DiffviewFilePanel" }
-vim.cmd([[
-function! MakeViewCheck()
-    if has('quickfix') && &buftype =~ 'nofile'
-        " Buffer is marked as not a file
-        return 0
-    endif
-    if empty(glob(expand('%:p')))
-        " File does not exist on disk
-        return 0
-    endif
-    if expand('%:p:h') == "/tmp"
-        " We're in a temp dir
-        return 0
-    endif
-    if expand('%:p:h') == "/var/tmp"
-        " Also in temp dir
-        return 0
-    endif
-    if index(g:skipview_files, expand("%:t")) >= 0
-        " File is in skip list
-        return 0
-    endif
-    return 1
-endfunction
-augroup vimrcAutoView
-    autocmd!
-    " Autosave & Load Views.
-    autocmd BufWritePost,BufLeave,WinLeave ?* if MakeViewCheck() | mkview | endif
-    autocmd BufWinEnter ?* if MakeViewCheck() | silent! loadview | endif
-augroup end
-]])
+local function make_view_check(buf)
+  if vim.bo[buf].buftype:find("nofile", 1, true) then
+    -- Buffer is marked as not a file
+    return false
+  end
+  local path = vim.api.nvim_buf_get_name(buf)
+  if path == "" or not vim.uv.fs_stat(path) then
+    -- File does not exist on disk
+    return false
+  end
+  local dir = vim.fn.fnamemodify(path, ":h")
+  if dir == "/tmp" or dir == "/var/tmp" then
+    -- We're in a temp dir
+    return false
+  end
+  -- Skip files from the skip list
+  return not vim.tbl_contains(vim.g.skipview_files, vim.fn.fnamemodify(path, ":t"))
+end
+
+local view_group = vim.api.nvim_create_augroup("vimrcAutoView", { clear = true })
+-- Autosave & Load Views. Saved when the buffer leaves its window, not on
+-- every BufLeave/WinLeave: each save writes a file
+vim.api.nvim_create_autocmd({ "BufWritePost", "BufWinLeave" }, {
+  group = view_group,
+  pattern = "?*",
+  callback = function(ev)
+    -- mkview saves the current window, which must show this buffer
+    if ev.buf == vim.api.nvim_get_current_buf() and make_view_check(ev.buf) then
+      pcall(vim.cmd.mkview)
+    end
+  end,
+})
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  group = view_group,
+  pattern = "?*",
+  callback = function(ev)
+    if make_view_check(ev.buf) then
+      pcall(vim.cmd, "silent! loadview")
+    end
+  end,
+})
 -- }}} end of Auto save/load view
 
 -- Change cursor view:
@@ -362,63 +396,57 @@ vim.opt.foldlevel = 99 -- fold levels opened at file opens
 vim.opt.foldlevelstart = 4
 vim.opt.foldnestmax = 4 -- max level of fold
 
+---Replace a command-line abbreviation with a user command, only when it is
+---the whole command typed so far (e.g. "delview" -> "Delview").
+---@param lhs string
+---@param cmd string
+local function cmd_alias(lhs, cmd)
+  vim.keymap.set("ca", lhs, function()
+    return (vim.fn.getcmdtype() == ":" and vim.fn.getcmdline() == lhs) and cmd or lhs
+  end, { expr = true })
+end
+
 -- A way to delete 'mkview' for current file
-vim.cmd([[
-function! MyDeleteView()
-  let path = fnamemodify(bufname('%'),':p')
-  " vim's odd =~ escaping for /
-  let path = substitute(path, '=', '==', 'g')
-  if empty($HOME)
-  else
-    let path = substitute(path, '^'.$HOME, '\~', '')
-  endif
-  let path = substitute(path, '/', '=+', 'g') . '='
-  " view directory
-  let path = &viewdir.'/'.path
-  call delete(path)
-  echo "Deleted: ".path
-  " re-open current file
-  edit %
-endfunction
-command! Delview call MyDeleteView()
-" Lower-case user commands: http://vim.wikia.com/wiki/Replace_a_builtin_command_using_cabbrev
-cabbrev delview <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'Delview' : 'delview')<CR>
-]])
+vim.api.nvim_create_user_command("Delview", function()
+  local path = vim.fn.fnamemodify(vim.api.nvim_buf_get_name(0), ":p")
+  -- the view file name is the path with "=" doubled, $HOME replaced with "~"
+  -- and "/" replaced with "=+"
+  path = path:gsub("=", "==")
+  local home = vim.env.HOME
+  if home and home ~= "" and vim.startswith(path, home) then
+    path = "~" .. path:sub(#home + 1)
+  end
+  path = vim.o.viewdir .. "/" .. path:gsub("/", "=+") .. "="
+  vim.fn.delete(path)
+  print("Deleted: " .. path)
+  -- re-open current file
+  vim.cmd.edit("%")
+end, {})
+cmd_alias("delview", "Delview")
 
 -- Toggle diff view for all visible windows
 local diff_view_active = false
 _G.ToggleDiffViewMode = function()
   if diff_view_active then
-    vim.cmd(":diffoff!")
+    vim.cmd.diffoff({ bang = true })
     diff_view_active = false
     print("Diff view deactivated")
   else
-    vim.cmd([[
-    :NvimTreeClose
-    :windo diffthis
-    ]])
+    vim.cmd.NvimTreeClose()
+    vim.cmd.windo("diffthis")
     diff_view_active = true
     print("Diff view activated")
   end
 end
-vim.keymap.set(
-  "n",
-  "<localleader><F9>",
-  "<Cmd>lua ToggleDiffViewMode()<CR>",
-  { desc = "Toggle Diff view" }
-)
-vim.keymap.set(
-  "n",
-  "<localleader>dg",
-  "<Cmd>diffget<CR> <bar> :echo 'Get chunk'<CR>",
-  { desc = "Pull a chunk from another version" }
-)
-vim.keymap.set(
-  "n",
-  "<localleader>dp",
-  "<Cmd>diffput<CR> <bar> :echo 'Put chunk'<CR>",
-  { desc = "Push a chunk to another version" }
-)
+vim.keymap.set("n", "<localleader><F9>", ToggleDiffViewMode, { desc = "Toggle Diff view" })
+vim.keymap.set("n", "<localleader>dg", function()
+  vim.cmd.diffget()
+  print("Get chunk")
+end, { desc = "Pull a chunk from another version" })
+vim.keymap.set("n", "<localleader>dp", function()
+  vim.cmd.diffput()
+  print("Put chunk")
+end, { desc = "Push a chunk to another version" })
 -- }}}
 
 -- {{{ Toggle QuickFix window
@@ -430,11 +458,11 @@ _G.QFToggle = function()
     end
   end
   if qf_exists == true then
-    vim.cmd("cclose")
+    vim.cmd.cclose()
     return
   end
   if not vim.tbl_isempty(vim.fn.getqflist()) then
-    vim.cmd("copen")
+    vim.cmd.copen()
   end
 end
 vim.keymap.set("n", "<leader>qf", function()
@@ -443,40 +471,39 @@ end, { desc = "Toggle QuickFix" })
 -- }}} end of Toggle QuickFix window
 
 -- Easily search and replace using quickfix window
-vim.cmd([[
-  function! QuickfixMapping()
-    " Make the quickfix list modifiable and set errorformat
-    setlocal errorformat+=%f\|%l\ col\ %c\|%m, modifiable
-    " Go to the previous location and stay in the quickfix window
-    nnoremap <buffer> K :cprev<CR>zz:cclose<CR>:botright copen<CR>
-    " Go to the next location and stay in the quickfix window
-    nnoremap <buffer> J :cnext<CR>zz:cclose<CR>:botright copen<CR>
-    " Save the changes in the quickfix window
-    cnoremap <buffer> w :cgetbuffer<CR>:cclose<CR>:botright copen<CR>
-    " Begin the search and replace for each item in QF
-    nnoremap <buffer> <leader>r :cdo s/// \| update<C-Left><C-Left><Left><Left><Left>
-    " Begin the search and replace for each filie in QF
-    nnoremap <buffer> <leader>R :cfdo s/// \| update<C-Left><C-Left><Left><Left><Left>
-    " Open location and re-open quickfix window
-    nnoremap <buffer> <CR> <CR>zz:cclose<CR>:botright copen<CR>
-  endfunction
-
-  augroup quickfix_group
-      autocmd!
-      autocmd BufWinEnter quickfix call QuickfixMapping()
-  augroup END
-]])
+vim.api.nvim_create_autocmd("BufWinEnter", {
+  group = vim.api.nvim_create_augroup("quickfix_group", { clear = true }),
+  pattern = "quickfix",
+  callback = function(ev)
+    -- Make the quickfix list modifiable and set errorformat
+    vim.opt_local.errorformat:append("%f|%l col %c|%m")
+    vim.bo[ev.buf].modifiable = true
+    local function map(mode, lhs, rhs)
+      vim.keymap.set(mode, lhs, rhs, { buffer = ev.buf })
+    end
+    -- Go to the previous location and stay in the quickfix window
+    map("n", "K", ":cprev<CR>zz:cclose<CR>:botright copen<CR>")
+    -- Go to the next location and stay in the quickfix window
+    map("n", "J", ":cnext<CR>zz:cclose<CR>:botright copen<CR>")
+    -- Save the changes in the quickfix window
+    map("c", "w", ":cgetbuffer<CR>:cclose<CR>:botright copen<CR>")
+    -- Begin the search and replace for each item in QF
+    map("n", "<leader>r", ":cdo s/// | update<C-Left><C-Left><Left><Left><Left>")
+    -- Begin the search and replace for each filie in QF
+    map("n", "<leader>R", ":cfdo s/// | update<C-Left><C-Left><Left><Left><Left>")
+    -- Open location and re-open quickfix window
+    map("n", "<CR>", "<CR>zz:cclose<CR>:botright copen<CR>")
+  end,
+})
 
 -- Disable formatting when saving file (disable autocommands)
-vim.cmd([[
-  command! WriteNoFormat noautocmd write
-  cabbrev wnf <c-r>=(getcmdtype()==':' && getcmdpos()==1 ? 'WriteNoFormat' : 'wnf')<CR>
-]])
+vim.api.nvim_create_user_command("WriteNoFormat", "noautocmd write", {})
+cmd_alias("wnf", "WriteNoFormat")
 
 -- Delete current file
-vim.cmd([[
-  command! DeleteCurrentFile lua require"utils".delete_current_file()
-]])
+vim.api.nvim_create_user_command("DeleteCurrentFile", function()
+  require("utils").delete_current_file()
+end, {})
 
 -- misc
 vim.opt.showcmd = true
