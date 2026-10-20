@@ -1,15 +1,22 @@
 return {
   "monaqa/dial.nvim",
+  -- stylua: ignore
   keys = {
-    "<C-a>",
-    "<C-x>",
-    { "<C-a>", "v" },
-    { "<C-x>", "v" },
-    { "g<C-a>", "v" },
-    { "g<C-x>", "v" },
+    { "<C-a>", function() require("dial.map").manipulate("increment", "normal") end, desc = "Increment" },
+    { "<C-x>", function() require("dial.map").manipulate("decrement", "normal") end, desc = "Decrement" },
+    -- like <C-a>/<C-x>, but dot repeat adds [count] more each time (1, 2, 3, ...)
+    { "g<C-a>", function() require("dial.map").manipulate("increment", "gnormal") end, desc = "Increment (cumulative repeat)" },
+    { "g<C-x>", function() require("dial.map").manipulate("decrement", "gnormal") end, desc = "Decrement (cumulative repeat)" },
+    -- every match in the selection changes by [count]
+    { "<C-a>", function() require("dial.map").manipulate("increment", "visual") end, mode = "x", desc = "Increment" },
+    { "<C-x>", function() require("dial.map").manipulate("decrement", "visual") end, mode = "x", desc = "Decrement" },
+    -- line N of the selection changes by N * [count]: numbered lists, sequences
+    { "g<C-a>", function() require("dial.map").manipulate("increment", "gvisual") end, mode = "x", desc = "Increment progressively" },
+    { "g<C-x>", function() require("dial.map").manipulate("decrement", "gvisual") end, mode = "x", desc = "Decrement progressively" },
   },
+    -- runs when one of the keys above is first pressed
     -- stylua: ignore
-    init = function()
+    config = function()
       local augend = require("dial.augend")
       require("dial.config").augends:register_group{
         default = {
@@ -90,12 +97,5 @@ return {
           },
         },
       }
-      local dial_map = require("dial.map")
-      vim.keymap.set("n", "<C-a>", dial_map.inc_normal(), { desc = "Increment", noremap = true })
-      vim.keymap.set("n", "<C-x>", dial_map.dec_normal(), { desc = "Decrement", noremap = true })
-      vim.keymap.set("v", "<C-a>", dial_map.inc_visual(), { desc = "Increment", noremap = true })
-      vim.keymap.set("v", "<C-x>", dial_map.dec_visual(), { desc = "Decrement", noremap = true })
-      vim.keymap.set("v", "g<C-a>", dial_map.inc_gvisual(), { desc = "Increment", noremap = true })
-      vim.keymap.set("v", "g<C-x>", dial_map.dec_gvisual(), { desc = "Decrement", noremap = true })
     end,
 }
