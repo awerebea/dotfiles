@@ -4,12 +4,6 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       { "folke/neoconf.nvim", cmd = "Neoconf", config = true },
-      {
-        "folke/neodev.nvim",
-        opts = {
-          library = { plugins = { "neotest", "nvim-dap-ui" }, types = true },
-        },
-      },
       { "smjonas/inc-rename.nvim", config = true },
       { "mason-org/mason.nvim", version = "^1.0.0" },
       { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
@@ -224,6 +218,19 @@ return {
           require("trouble").toggle("lsp_references")
         end,
         desc = "Trouble LSP references",
+      },
+    },
+  },
+  {
+    -- Neovim API and plugin types for lua_ls, added to the workspace only
+    -- for the modules a file actually requires (replaces neodev)
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+        { path = "snacks.nvim", words = { "Snacks" } },
+        "neotest",
       },
     },
   },

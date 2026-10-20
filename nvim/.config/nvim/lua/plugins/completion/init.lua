@@ -73,7 +73,14 @@ return {
         appearance = { kind_icons = icons.kind },
         sources = {
           default = { "lsp", "buffer", "path" },
+          -- module names in require("...") for Neovim's Lua (lazydev.nvim)
+          per_filetype = { lua = { inherit_defaults = true, "lazydev" } },
           providers = {
+            lazydev = {
+              name = "(LazyDev)",
+              module = "lazydev.integrations.blink",
+              score_offset = 100,
+            },
             -- show buffer words next to LSP items, not only when LSP has none
             lsp = { name = "(LSP)", fallbacks = {} },
             buffer = { name = "(Buffer)" },
