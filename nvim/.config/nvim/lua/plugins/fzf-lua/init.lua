@@ -1,7 +1,8 @@
 return {
   "ibhagwan/fzf-lua",
   enabled = true,
-  event = "VeryLazy",
+  -- loaded on demand by :FzfLua or require("fzf-lua") (keymaps, utils)
+  cmd = "FzfLua",
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()
     local sep = package.config:sub(1, 1) -- Returns "\\" on Windows, "/" on Unix-like systems
