@@ -1,7 +1,7 @@
 -- leader keys
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
-vim.keymap.set({ "n", "v" }, "<Space>", "<Nop>")
+vim.keymap.set({ "n", "x" }, "<Space>", "<Nop>") -- not Select mode, where Space must insert
 
 -- line numbers
 vim.opt.relativenumber = true -- show relative line numbers
