@@ -1,9 +1,9 @@
 -- Remap for dealing with word wrap; while j/k is held the moves are batched
 -- (see config/scroll-burst.lua)
-vim.keymap.set({ "n", "v" }, "k", function()
+vim.keymap.set({ "n", "x" }, "k", function()
   return require("config.scroll-burst").motion("k")
 end, { expr = true })
-vim.keymap.set({ "n", "v" }, "j", function()
+vim.keymap.set({ "n", "x" }, "j", function()
   return require("config.scroll-burst").motion("j")
 end, { expr = true })
 
@@ -50,8 +50,10 @@ vim.keymap.set("x", "p", function()
 end, { expr = true })
 
 -- send changed text segment to black hole
-vim.keymap.set({ "n", "v" }, "c", '"_c')
-vim.keymap.set({ "n", "v" }, "C", '"_C')
+-- "x", not "v": "v" also covers Select mode, where these keys must insert
+-- themselves (e.g. typing into a snippet placeholder)
+vim.keymap.set({ "n", "x" }, "c", '"_c')
+vim.keymap.set({ "n", "x" }, "C", '"_C')
 
 -- window management
 vim.keymap.set("n", "<leader>\\", "<C-w>v") -- split window vertically
