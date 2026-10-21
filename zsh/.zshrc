@@ -1589,3 +1589,7 @@ EOF
 
 alias cdf="cdf --depth 5"
 unalias gwt # Resolve conflict between built-in git plugin and fzf-git-branches
+
+if [[ "${commands[mise]}" ]]; then
+  eval "$(mise activate zsh)"
+fi
