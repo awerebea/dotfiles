@@ -1147,18 +1147,19 @@ bindkey -M emacs " " magic-space
 bindkey -M viins " " magic-space
 
 timezsh() {
+    # Use the zsh builtin `time` (BSD /usr/bin/time on macOS has no -f)
+    local n=${1:-10} i t
+    local -F total=0
+    local TIMEFMT='%E'
     echo "Real zsh startup time in seconds:"
-    local VAR i
-    VAR=${1:-10};
-    for ((i = 1; i <= VAR; i++)); do
-        (/usr/bin/time -f "%e" zsh -i -c exit) &>> zsh_startup_time.tmp;
-        printf '%2s) ' $i
-        tail -n 1 zsh_startup_time.tmp;
+    for ((i = 1; i <= n; i++)); do
+        t=$( { time zsh -i -c exit >/dev/null 2>&1 } 2>&1 )
+        t=${t%s}
+        printf '%2d) %s\n' $i $t
+        (( total += t ))
     done
-    VAR=$(awk 'BEGIN{s=0;}{s+=$1;}END{print s/NR;}' zsh_startup_time.tmp)
-    printf '-----------------------------------
-    Average startup time: %.3f seconds\n' "$VAR"
-    rm -f zsh_startup_time.tmp
+    printf -- '-----------------------------------\n'
+    printf '    Average startup time: %.3f seconds\n' $(( total / n ))
 }
 
 # Alt+rightarrow to move to the next word
