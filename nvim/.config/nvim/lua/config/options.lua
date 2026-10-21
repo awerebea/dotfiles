@@ -57,7 +57,11 @@ vim.opt.fileencodings = { "ucs-bom", "utf-8", "default", "latin1" }
 vim.opt.backspace = "indent,eol,start" -- allow backspace on indent, end of line or insert mode start position
 
 -- clipboard
-vim.opt.clipboard:append("unnamedplus") -- use system clipboard as default register
+-- use system clipboard as default register; set after startup, since setting it
+-- loads the clipboard provider (which probes for pbcopy/xclip/...)
+vim.schedule(function()
+  vim.opt.clipboard:append("unnamedplus")
+end)
 
 -- split windows
 vim.opt.splitright = true -- split vertical window to the right
