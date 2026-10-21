@@ -246,27 +246,45 @@ New-Alias -Name 'gcudn!' -Value 'Invoke-GitCommitAmendNoeditDateNowVerbose' -Sco
 
 function Invoke-GitDiff
 {
-    git diff $args
+    git diff --ext-diff $args
 }
 New-Alias -Name 'gd' -Value 'Invoke-GitDiff' -Scope Global -Force
 
+function Invoke-GitDiffNoExtDiff
+{
+    git diff --no-ext-diff $args
+}
+New-Alias -Name 'gddd' -Value 'Invoke-GitDiffNoExtDiff' -Scope Global -Force
+
 function Invoke-GitDiffCached
 {
-    git diff --cached $args
+    git diff --ext-diff --cached $args
 }
 New-Alias -Name 'gdca' -Value 'Invoke-GitDiffCached' -Scope Global -Force
 
+function Invoke-GitDiffCachedNoExtDiff
+{
+    git diff --no-ext-diff --cached $args
+}
+New-Alias -Name 'gdcadd' -Value 'Invoke-GitDiffCachedNoExtDiff' -Scope Global -Force
+
 function Invoke-GitDiffCachedWorddiff
 {
-    git diff --cached --word-diff $args
+    git diff --no-ext-diff --cached --word-diff $args
 }
 New-Alias -Name 'gdcw' -Value 'Invoke-GitDiffCachedWorddiff' -Scope Global -Force
 
 function Invoke-GitDiffStaged
 {
-    git diff --staged $args
+    git diff --ext-diff --staged $args
 }
 New-Alias -Name 'gds' -Value 'Invoke-GitDiffStaged' -Scope Global -Force
+
+function Invoke-GitDiffStagedNoExtDiff
+{
+    git diff --no-ext-diff --staged $args
+}
+New-Alias -Name 'gdsdd' -Value 'Invoke-GitDiffStagedNoExtDiff' -Scope Global -Force
 
 function Invoke-GitBranchSetupstreamtoOrigin
 {
@@ -305,9 +323,15 @@ New-Alias -Name 'glg' -Value 'Invoke-GitLogStat' -Scope Global -Force
 
 function Invoke-GitLogStatPatch
 {
-    git log --stat --patch $args
+    git log --stat --patch --ext-diff $args
 }
 New-Alias -Name 'glgp' -Value 'Invoke-GitLogStatPatch' -Scope Global -Force
+
+function Invoke-GitLogStatPatchNoExtDiff
+{
+    git log --stat --patch --no-ext-diff $args
+}
+New-Alias -Name 'glgpdd' -Value 'Invoke-GitLogStatPatchNoExtDiff' -Scope Global -Force
 
 function Invoke-GitLogOnelineDecorate
 {
@@ -539,9 +563,15 @@ New-Alias -Name 'gstp' -Value 'Invoke-GitStashPop' -Scope Global -Force
 
 function Invoke-GitStashShowText
 {
-    git stash show --text $args
+    git stash show --text --ext-diff $args
 }
 New-Alias -Name 'gsts' -Value 'Invoke-GitStashShowText' -Scope Global -Force
+
+function Invoke-GitStashShowTextNoExtDiff
+{
+    git stash show --text --no-ext-diff $args
+}
+New-Alias -Name 'gstsdd' -Value 'Invoke-GitStashShowTextNoExtDiff' -Scope Global -Force
 
 function Invoke-GitSubmoduleUpdate
 {
@@ -659,7 +689,7 @@ New-Alias -Name 'grefs' -Value 'Invoke-GitConfigRemoteOriginFetchRefs' -Scope Gl
 
 function Invoke-GitDeltaSideBySideTrueDiff
 {
-    git -c delta.side-by-side=true diff $args
+    git -c delta.side-by-side=true diff --no-ext-diff $args
 }
 New-Alias -Name 'gdh' -Value 'Invoke-GitDeltaSideBySideTrueDiff' -Scope Global -Force
 
