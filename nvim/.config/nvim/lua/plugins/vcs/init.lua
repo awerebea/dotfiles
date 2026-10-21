@@ -85,7 +85,7 @@ return {
         map("n", "ghS", gs.stage_buffer, { desc = "Stage Buffer" })
         map("n", "ghu", gs.undo_stage_hunk, { desc = "Undo Stage Hunk" })
         map("n", "ghR", gs.reset_buffer, { desc = "Reset Buffer" })
-        map("n", "ghp", function()
+        map("n", "ghP", function()
           require("gitsigns.config").config.preview_config.width = math.floor(vim.o.columns * 0.99)
           gs.preview_hunk()
         end, { desc = "Preview Hunk" })
@@ -109,6 +109,31 @@ return {
       require("gitsigns").setup(opts)
       require("scrollbar.handlers.gitsigns").setup()
     end,
+  },
+  {
+    -- dims gitsigns gutter cells that difftastic considers formatting-only noise
+    -- requires difftastic (difft) 0.70/0.71 on PATH
+    "janbuchar/difftsigns.nvim",
+    dependencies = { "lewis6991/gitsigns.nvim" },
+    event = "BufReadPre",
+    cmd = { "DifftSigns" },
+    keys = {
+      {
+        "ghp",
+        function()
+          require("difftsigns").preview()
+        end,
+        desc = "Preview Hunk (difftastic)",
+      },
+      { "ghtn", "<Cmd>DifftSigns toggle<CR>", desc = "Toggle Difft Noise Dimming" },
+      { "ghn", "<Cmd>DifftSigns status<CR>", desc = "Difft Noise Status" },
+      { "ghf", "<Cmd>DifftSigns refresh<CR>", desc = "Difft Refresh" },
+    },
+    opts = {
+      -- difft's default (3M) often gives up on heavily changed files after
+      -- the same time a 5M run needs to succeed; costs more peak memory
+      graph_limit = 5000000,
+    },
   },
   {
     "mattn/vim-gist",
