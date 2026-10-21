@@ -1,13 +1,23 @@
 [tools]
 terraform = "latest"
-python = "latest"
-awscli = "latest"
-pipx = "latest"
-node = "lts"
-go = "latest"
-kubectl = "latest"
+python    = "latest"
+awscli    = "latest"
+pipx      = "latest"
+node      = "lts"
+go        = "latest"
+kubectl   = "latest"
+rust      = "latest"
+dotnet    = "latest"
+lua       = "latest"
 
 [settings]
-# Honor .terraform-version, .python-version, .nvmrc/.node-version and
-# .go-version files
-idiomatic_version_file_enable_tools = ["terraform", "python", "node", "go"]
+# Honor .terraform-version, .python-version, .nvmrc/.node-version,
+# .go-version, rust-toolchain.toml and global.json files
+idiomatic_version_file_enable_tools = [
+  "terraform",
+  "python",
+  "node",
+  "go",
+  "rust",
+  "dotnet",
+]
