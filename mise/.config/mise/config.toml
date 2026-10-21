@@ -5,6 +5,7 @@ awscli = "latest"
 pipx = "latest"
 node = "lts"
 go = "latest"
+kubectl = "latest"
 
 [settings]
 # Honor .terraform-version, .python-version, .nvmrc/.node-version and
