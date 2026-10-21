@@ -270,15 +270,6 @@ if command -v "eza" &>/dev/null; then
     --group-directories-first --color-scale --tree"
 fi
 
-# Load nvm if exists
-if [ -d "$HOME/.nvm" ]; then
-    [ "$NVM_DIR" = "" ] && export NVM_DIR="$HOME/.nvm"
-    # shellcheck disable=SC1091
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    # shellcheck disable=SC1091
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-fi
-
 # Load rbenv if exists
 if [ -d "$HOME/.rbenv/bin" ]; then
     if [[ ":$PATH:" != *":$HOME/.rbenv/bin:"* ]]; then

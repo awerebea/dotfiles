@@ -92,11 +92,6 @@ if [[ ! -f "$ZSH_PLUGINS/git-it-on/git-it-on.plugin.zsh" ]]; then
     git clone https://github.com/peterhurford/git-it-on.zsh "$ZSH_PLUGINS/git-it-on"
 fi
 
-# # Lazy loading nvm  # use custom lazy loading function instead
-# if [[ ! -f "$ZSH_PLUGINS/zsh-nvm/zsh-nvm.plugin.zsh" ]]; then
-#     git clone https://github.com/lukechilds/zsh-nvm "$ZSH_PLUGINS/zsh-nvm"
-# fi
-
 if [[ ! -f "$ZSH_PLUGINS/zsh-bash-completions-fallback/zsh-bash-completions-fallback.plugin.zsh" ]]; then
     git clone https://github.com/3v1n0/zsh-bash-completions-fallback \
         "$ZSH_PLUGINS/zsh-bash-completions-fallback"
@@ -242,10 +237,6 @@ export FORGIT_FZF_DEFAULT_OPTS="--height=100% --preview \
 # shellcheck disable=2034
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
-# # Setup zsh-nvm plugin              # use custom lazy loading function instead
-# export NVM_LAZY_LOAD=true
-# export NVM_COMPLETION=true
-
 # Which plugins to load?
 plugins=(
     aws
@@ -286,7 +277,6 @@ plugins=(
     zsh-autosuggestions
     zsh-completions
     zsh-interactive-cd
-    # zsh-nvm                   # use custom lazy loading function instead
     zsh-sed-sub
     zsh-vi-mode
     history-substring-search
@@ -743,39 +733,6 @@ fi
 if [ "${commands[googler]}" ] && [ -f "$ZSH/completions/googler_at" ]; then
     # shellcheck disable=1091
     source "$ZSH/completions/googler_at"
-fi
-
-# Lazy loading nvm if exists
-if [ -d "$HOME/.nvm" ]; then
-    lazy_nvm() {
-        unset -f nvm npm node vim nvim ranger cdk # unset -f == unfunction
-        [ -z "$NVM_DIR" ] && export NVM_DIR="$HOME/.nvm"
-        # shellcheck disable=1091
-        [ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
-        # shellcheck disable=1091
-        [ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
-    }
-    nvm() {
-        lazy_nvm; $0 "$@"
-    }
-    npm() {
-        lazy_nvm; $0 "$@"
-    }
-    node() {
-        lazy_nvm; $0 "$@"
-    }
-    vim() {
-        lazy_nvm; $0 "$@"
-    } # for node-dependent plugins to work in (n)vim
-    nvim() {
-        lazy_nvm; $0 "$@"
-    } # for node-dependent plugins to work in (n)vim
-    ranger() {
-        lazy_nvm; $0 "$@"
-    }
-    cdk() {
-        lazy_nvm; $0 "$@"
-    }
 fi
 
 # Lazy loading rbenv if exists
