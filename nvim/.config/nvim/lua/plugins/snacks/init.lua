@@ -112,7 +112,7 @@ return {
           hidden = true,
           exclude = { ".git" },
           actions = {
-            -- <C-h> / <C-l>: leave the explorer like smart-splits does. The
+            -- <C-h>/<C-j>/<C-k>/<C-l>: leave the explorer like smart-splits does. The
             -- list is a float inside the explorer's split window, so look for
             -- the neighbor from that split; at the screen edge let
             -- smart-splits handle it (tmux pane or wrap)
@@ -121,6 +121,12 @@ return {
             end,
             nav_right = function(picker)
               require("plugins.snacks.nav").leave(picker, "l")
+            end,
+            nav_down = function(picker)
+              require("plugins.snacks.nav").leave(picker, "j")
+            end,
+            nav_up = function(picker)
+              require("plugins.snacks.nav").leave(picker, "k")
             end,
             -- Y: pick which form of the item's path to copy to the clipboard
             copy_path_menu = function(_, item)
@@ -161,6 +167,9 @@ return {
                 ["Y"] = "copy_path_menu",
                 ["<C-h>"] = "nav_left",
                 ["<C-l>"] = "nav_right",
+                -- replaces the list's own <C-j>/<C-k> (down/up); j/k still move
+                ["<C-j>"] = "nav_down",
+                ["<C-k>"] = "nav_up",
               },
               wo = { number = true, relativenumber = true },
             },
