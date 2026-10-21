@@ -4,7 +4,9 @@ python = "latest"
 awscli = "latest"
 pipx = "latest"
 node = "lts"
+go = "latest"
 
 [settings]
-# Honor .terraform-version, .python-version and .nvmrc/.node-version files
-idiomatic_version_file_enable_tools = ["terraform", "python", "node"]
+# Honor .terraform-version, .python-version, .nvmrc/.node-version and
+# .go-version files
+idiomatic_version_file_enable_tools = ["terraform", "python", "node", "go"]
