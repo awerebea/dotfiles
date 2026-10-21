@@ -7,18 +7,6 @@ return {
       { "smjonas/inc-rename.nvim", config = true },
       { "mason-org/mason.nvim", version = "^1.0.0" },
       { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
-      {
-        "ray-x/lsp_signature.nvim",
-        opts = {
-          floating_window = false,
-          hint_enable = true,
-          toggle_key = "<M-x>",
-          toggle_key_flip_floatwin_setting = true,
-        },
-        config = function(_, opts)
-          require("lsp_signature").setup(opts)
-        end,
-      },
     },
     opts = {
       servers = {
@@ -51,10 +39,12 @@ return {
             python = {
               analysis = {
                 -- ignore = { "*" }, -- Ignore all files to exclusively use Ruff for linting
-                typeCheckingMode = "on", -- "on", "basic", "off" (off to use mypy)
+                -- "off" | "basic" | "standard" | "strict" ("off" to leave type checks to mypy)
+                typeCheckingMode = "standard",
                 autoSearchPaths = true,
                 useLibraryCodeForTypes = true,
-                diagnosticMode = "workspace",
+                -- check open files only; "workspace" type-checks the whole repo in the background
+                diagnosticMode = "openFilesOnly",
               },
             },
           },

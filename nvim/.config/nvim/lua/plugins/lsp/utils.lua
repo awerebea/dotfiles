@@ -11,8 +11,10 @@ function M.list_formatters(_)
 end
 
 function M.list_linters(ft)
-  local ok, lint = pcall(require, "lint")
-  if not ok then
+  -- not require(): that would load nvim-lint, which loads only for filetypes
+  -- that have linters
+  local lint = package.loaded.lint
+  if not lint then
     return {}
   end
   return lint.linters_by_ft[ft] or {}

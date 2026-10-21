@@ -87,7 +87,7 @@ return {
             path = { name = "(Path)" },
           },
         },
-        -- signature help comes from noice and lsp_signature already
+        -- signature help comes from noice already
         signature = { enabled = false },
         -- the command line keeps the built-in completion
         cmdline = { enabled = false },

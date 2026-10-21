@@ -3,10 +3,11 @@ return {
     "RRethy/vim-illuminate",
     event = "BufReadPost",
     opts = {
+      -- the first available provider wins, and regex is always available
       providers = {
-        "regex",
         "lsp",
         "treesitter",
+        "regex",
       },
       filetypes_denylist = {
         "dirvish",
