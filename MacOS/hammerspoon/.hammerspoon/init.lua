@@ -24,16 +24,29 @@ end)
 -- App hotkeys
 local home = os.getenv("HOME")
 
+-- Per-machine overrides, keyed by LocalHostName (scutil --get LocalHostName)
+local hostName = (hs.execute("scutil --get LocalHostName"):gsub("%s+$", ""))
+local workHosts = { ["BULGAKA-ML01"] = true }
+local isWorkMac = workHosts[hostName:upper()] == true
+
+-- stylua: ignore
+local browsers = {
+  brave  = { app = "Brave Browser", path = "/Applications/Brave Browser.app", bundleID = "com.brave.Browser" },
+  chrome = { app = "Google Chrome", path = "/Applications/Google Chrome.app", bundleID = "com.google.Chrome" },
+}
+local primaryBrowser = isWorkMac and browsers.chrome or browsers.brave
+local backupBrowser = isWorkMac and browsers.brave or browsers.chrome
+
 -- stylua: ignore
 local appHotkeys = {
   { mods = { "cmd", "alt" }, key = "x", app = "kitty",             path = "/Applications/kitty.app",              bundleID = "net.kovidgoyal.kitty" },
-  { mods = { "cmd", "alt" }, key = "c", app = "Google Chrome",     path = "/Applications/Google Chrome.app",      bundleID = "com.google.Chrome" },
+  { mods = { "cmd", "alt" }, key = "c", app = primaryBrowser.app,  path = primaryBrowser.path,                    bundleID = primaryBrowser.bundleID },
+  { mods = { "cmd", "alt" }, key = "b", app = backupBrowser.app,   path = backupBrowser.path,                     bundleID = backupBrowser.bundleID },
   { mods = { "cmd", "alt" }, key = "f", app = "Firefox",           path = "/Applications/Firefox.app",            bundleID = "org.mozilla.firefox" },
   { mods = { "cmd", "alt" }, key = "v", app = "Code",              path = "/Applications/Visual Studio Code.app", bundleID = "com.microsoft.VSCode" },
   { mods = { "cmd", "alt" }, key = "q", app = "qalculate-qt",      path = "/opt/homebrew/opt/qalculate-qt/qalculate-qt.app", bundleID = "com.yourcompany.qalculate-qt" },
   { mods = { "cmd", "alt" }, key = "s", app = "Slack",             path = "/Applications/Slack.app",              bundleID = "com.tinyspeck.slackmacgap" },
   { mods = { "cmd", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
-  { mods = { "cmd", "alt" }, key = "b", app = "Bitwarden",         path = "/Applications/Bitwarden.app",          bundleID = "com.bitwarden.desktop" },
   { mods = { "cmd", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
   { mods = { "cmd", "alt" }, key = "e", app = "Microsoft Excel",   path = "/Applications/Microsoft Excel.app",    bundleID = "com.microsoft.Excel" },
   { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app" },
