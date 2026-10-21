@@ -83,7 +83,14 @@ return {
     },
     notifier = { enabled = true },
     quickfile = { enabled = true },
-    statuscolumn = { enabled = true },
+    statuscolumn = {
+      enabled = true,
+      git = {
+        -- DifftSigns: difftsigns.nvim draws its dimmed overlay into the same
+        -- cell as gitsigns, so it must be classified as a git sign too
+        patterns = { "GitSign", "MiniDiffSign", "DifftSigns" },
+      },
+    },
     terminal = {
       win = {
         height = 0.4,
