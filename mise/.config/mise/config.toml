@@ -6,7 +6,7 @@ pipx      = "latest"
 node      = "lts"
 go        = "latest"
 kubectl   = "latest"
-rust      = "latest"
+rust      = { version = "latest", components = "rust-analyzer" }
 dotnet    = "latest"
 lua       = "latest"
 

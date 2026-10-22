@@ -48,15 +48,6 @@ local function diagnostics_init()
   vim.diagnostic.config(config.diagnostic)
 end
 
-local mason_root = vim.fn.stdpath("data") .. "/mason"
-
-local function add_mason_to_path()
-  local bin = mason_root .. "/bin"
-  if not vim.env.PATH:find(bin, 1, true) then
-    vim.env.PATH = bin .. ":" .. vim.env.PATH
-  end
-end
-
 function M.setup(_, opts)
   lsp_utils.on_attach(function(client, bufnr)
     require("plugins.lsp.format").on_attach(client, bufnr)
@@ -68,13 +59,11 @@ function M.setup(_, opts)
   -- merged under every server's own config
   vim.lsp.config("*", { capabilities = lsp_utils.capabilities() })
 
-  -- servers whose binary is not installed yet are enabled too; vim.lsp skips
-  -- them until the binary exists
-  local servers = opts.servers
-  for server, server_opts in pairs(servers) do
+  -- servers whose binary is not installed are enabled too; vim.lsp skips them
+  -- until the binary is on PATH (`:checkhealth vim.lsp` lists missing ones)
+  for server, server_opts in pairs(opts.servers) do
     if server_opts then
-      server_opts = server_opts == true and {} or vim.deepcopy(server_opts)
-      server_opts.mason = nil -- our own key, see the mason spec
+      server_opts = server_opts == true and {} or server_opts
       local handler = opts.setup[server] or opts.setup["*"]
       -- a setup handler returning true takes over starting the server
       if not (handler and handler(server, server_opts)) then
@@ -83,33 +72,6 @@ function M.setup(_, opts)
       end
     end
   end
-
-  -- loading mason costs ~20ms per file open and servers only need its bin dir
-  -- on PATH, so load it (to install) only when something is missing
-  add_mason_to_path()
-  vim.schedule(function()
-    if M.has_missing(servers) then
-      require("lazy").load({ plugins = { "mason.nvim" } })
-    end
-  end)
-end
-
----whether a mason tool or the binary of a configured server is not installed
----@param servers table<string, table|boolean>
-function M.has_missing(servers)
-  for _, tool in ipairs(lsp_utils.opts("mason.nvim").ensure_installed or {}) do
-    if not vim.uv.fs_stat(mason_root .. "/packages/" .. tool) then
-      return true
-    end
-  end
-  for server, server_opts in pairs(servers) do
-    local cmd = type(server_opts) == "table" and server_opts.mason and (vim.lsp.config[server] or {}).cmd
-    -- cmd can also be a function (e.g. an RPC client); assume those are fine
-    if type(cmd) == "table" and vim.fn.executable(cmd[1]) == 0 then
-      return true
-    end
-  end
-  return false
 end
 
 return M

@@ -7,8 +7,8 @@ return {
   },
   {
     -- Starts and configures rust-analyzer itself for Rust buffers (lazy by
-    -- design, so it must not be lazy-loaded). Debugging uses codelldb from
-    -- Mason automatically once nvim-dap is installed.
+    -- design, so it must not be lazy-loaded). rust-analyzer comes from the
+    -- rustup component installed through mise.
     "mrcjkb/rustaceanvim",
     version = "^9",
     lazy = false,
@@ -39,17 +39,5 @@ return {
         }
       end
     end,
-  },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      setup = {
-        -- rust_analyzer stays in the server list so that Mason installs it,
-        -- but rustaceanvim starts it
-        rust_analyzer = function()
-          return true
-        end,
-      },
-    },
   },
 }

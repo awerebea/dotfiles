@@ -1,0 +1,36 @@
+# Language servers, formatters and linters used by Neovim (they replace
+# mason.nvim). Neovim finds them on PATH; lua/config/options.lua adds the mise
+# shims for instances not started from an activated shell.
+# rust-analyzer comes from the rust toolchain in ../config.toml.
+
+[tools]
+# language servers
+lua-language-server = "latest"
+marksman = "latest"
+ruff = "latest"
+taplo = "latest"
+terraform-ls = "latest"
+"go:golang.org/x/tools/gopls" = "latest"
+"npm:bash-language-server" = "latest"
+"npm:dockerfile-language-server-nodejs" = "latest"
+"npm:@olrtg/emmet-language-server" = "latest"
+"npm:pyright" = "latest"
+"npm:@tailwindcss/language-server" = "latest"
+# TypeScript 7+ ships its own language server (`tsc --lsp`)
+"npm:typescript" = "latest"
+# html, css and json servers
+"npm:vscode-langservers-extracted" = "latest"
+"npm:yaml-language-server" = "latest"
+
+# formatters (conform.nvim)
+shfmt = "latest"
+stylua = "latest"
+yamlfmt = "latest"
+"npm:@fsouza/prettierd" = "latest"
+"pipx:black" = "latest"
+"pipx:isort" = "latest"
+
+# linters (nvim-lint, bashls)
+shellcheck = "latest"
+"pipx:mypy" = "latest"
+"pipx:refurb" = "latest"
