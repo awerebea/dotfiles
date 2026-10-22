@@ -117,7 +117,7 @@ return {
     -- icon = icons.ui.Code,
     colored = true,
     on_click = function()
-      vim.cmd([[LspInfo]])
+      vim.cmd.checkhealth("vim.lsp")
     end,
   },
   noice_mode = {

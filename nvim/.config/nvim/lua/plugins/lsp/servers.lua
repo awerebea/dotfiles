@@ -3,15 +3,10 @@ local M = {}
 local lsp_utils = require("plugins.lsp.utils")
 local icons = require("config.icons")
 
-local function lsp_init()
-  -- LSP handlers configuration
+-- hover and signature help floats (and their borders) come from noice.nvim;
+-- since nvim 0.11 vim.lsp.buf.hover() no longer goes through vim.lsp.handlers
+local function diagnostics_init()
   local config = {
-    float = {
-      focusable = true,
-      style = "minimal",
-      border = "rounded",
-    },
-
     diagnostic = {
       -- virtual_text = false,
       -- virtual_text = { spacing = 4, prefix = "●" },
@@ -50,22 +45,15 @@ local function lsp_init()
     },
   }
 
-  -- Diagnostic configuration
   vim.diagnostic.config(config.diagnostic)
+end
 
-  -- Hover configuration
-  vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, opts)
-    vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", opts or {}, config.float))
-  end
+local mason_root = vim.fn.stdpath("data") .. "/mason"
 
-  -- Signature help configuration
-  vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, opts)
-    vim.lsp.handlers.signature_help(
-      err,
-      result,
-      ctx,
-      vim.tbl_extend("force", opts or {}, config.float)
-    )
+local function add_mason_to_path()
+  local bin = mason_root .. "/bin"
+  if not vim.env.PATH:find(bin, 1, true) then
+    vim.env.PATH = bin .. ":" .. vim.env.PATH
   end
 end
 
@@ -75,56 +63,53 @@ function M.setup(_, opts)
     require("plugins.lsp.keymaps").on_attach(client, bufnr)
   end)
 
-  lsp_init() -- diagnostics, handlers
+  diagnostics_init()
 
+  -- merged under every server's own config
+  vim.lsp.config("*", { capabilities = lsp_utils.capabilities() })
+
+  -- servers whose binary is not installed yet are enabled too; vim.lsp skips
+  -- them until the binary exists
   local servers = opts.servers
-  local capabilities = lsp_utils.capabilities()
-
-  local function setup(server)
-    local server_opts = vim.tbl_deep_extend("force", {
-      capabilities = capabilities,
-    }, servers[server] or {})
-
-    if opts.setup[server] then
-      if opts.setup[server](server, server_opts) then
-        return
-      end
-    elseif opts.setup["*"] then
-      if opts.setup["*"](server, server_opts) then
-        return
-      end
-    end
-    vim.lsp.config(server, server_opts)
-    vim.lsp.enable({ server })
-  end
-
-  -- get all the servers that are available thourgh mason-lspconfig
-  local has_mason, mlsp = pcall(require, "mason-lspconfig")
-  local all_mslp_servers = {}
-  if has_mason then
-    all_mslp_servers =
-      vim.tbl_keys(require("mason-lspconfig.mappings.server").lspconfig_to_package)
-  end
-
-  local ensure_installed = {} ---@type string[]
   for server, server_opts in pairs(servers) do
     if server_opts then
-      server_opts = server_opts == true and {} or server_opts
-      -- remove @version from server name
-      local server_name = (server:find("@") and server:sub(1, server:find("@") - 1)) or server
-      -- run manual setup if mason=false or if this is a server that cannot be installed with mason-lspconfig
-      if server_opts.mason == false or not vim.tbl_contains(all_mslp_servers, server_name) then
-        setup(server)
-      else
-        ensure_installed[#ensure_installed + 1] = server
+      server_opts = server_opts == true and {} or vim.deepcopy(server_opts)
+      server_opts.mason = nil -- our own key, see the mason spec
+      local handler = opts.setup[server] or opts.setup["*"]
+      -- a setup handler returning true takes over starting the server
+      if not (handler and handler(server, server_opts)) then
+        vim.lsp.config(server, server_opts)
+        vim.lsp.enable(server)
       end
     end
   end
 
-  if has_mason then
-    mlsp.setup({ ensure_installed = ensure_installed })
-    mlsp.setup_handlers({ setup })
+  -- loading mason costs ~20ms per file open and servers only need its bin dir
+  -- on PATH, so load it (to install) only when something is missing
+  add_mason_to_path()
+  vim.schedule(function()
+    if M.has_missing(servers) then
+      require("lazy").load({ plugins = { "mason.nvim" } })
+    end
+  end)
+end
+
+---whether a mason tool or the binary of a configured server is not installed
+---@param servers table<string, table|boolean>
+function M.has_missing(servers)
+  for _, tool in ipairs(lsp_utils.opts("mason.nvim").ensure_installed or {}) do
+    if not vim.uv.fs_stat(mason_root .. "/packages/" .. tool) then
+      return true
+    end
   end
+  for server, server_opts in pairs(servers) do
+    local cmd = type(server_opts) == "table" and server_opts.mason and (vim.lsp.config[server] or {}).cmd
+    -- cmd can also be a function (e.g. an RPC client); assume those are fine
+    if type(cmd) == "table" and vim.fn.executable(cmd[1]) == 0 then
+      return true
+    end
+  end
+  return false
 end
 
 return M

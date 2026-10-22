@@ -3,14 +3,14 @@ return {
     "neovim/nvim-lspconfig",
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
-      { "folke/neoconf.nvim", cmd = "Neoconf", config = true },
       { "smjonas/inc-rename.nvim", config = true },
-      { "mason-org/mason.nvim", version = "^1.0.0" },
-      { "mason-org/mason-lspconfig.nvim", version = "^1.0.0" },
     },
     opts = {
+      -- `mason` is the mason package that provides the server (stripped before
+      -- vim.lsp.config); servers without it are not installed by mason
       servers = {
         lua_ls = {
+          mason = "lua-language-server",
           settings = {
             Lua = {
               workspace = {
@@ -25,13 +25,14 @@ return {
             },
           },
         },
-        dockerls = {},
-        cssls = {},
-        emmet_ls = {},
-        html = {},
-        tailwindcss = {},
-        ts_ls = {},
+        dockerls = { mason = "dockerfile-language-server" },
+        cssls = { mason = "css-lsp" },
+        emmet_ls = { mason = "emmet-ls" },
+        html = { mason = "html-lsp" },
+        tailwindcss = { mason = "tailwindcss-language-server" },
+        ts_ls = { mason = "typescript-language-server" },
         pyright = {
+          mason = "pyright",
           settings = {
             pyright = {
               disableOrganizeImports = true, -- Use Ruff's import organizer
@@ -49,14 +50,14 @@ return {
             },
           },
         },
-        terraformls = {},
-        bashls = { filetypes = { "sh", "zsh" } },
-        rust_analyzer = {},
-        gopls = {},
-        ruff = {},
-        marksman = {},
-        yamlls = {},
-        taplo = {},
+        terraformls = { mason = "terraform-ls" },
+        bashls = { mason = "bash-language-server", filetypes = { "sh", "zsh" } },
+        rust_analyzer = { mason = "rust-analyzer" },
+        gopls = { mason = "gopls" },
+        ruff = { mason = "ruff" },
+        marksman = { mason = "marksman" },
+        yamlls = { mason = "yaml-language-server" },
+        taplo = { mason = "taplo" },
       },
       setup = {
         lua_ls = function(_, _)
@@ -92,7 +93,10 @@ return {
     end,
   },
   {
-    "williamboman/mason.nvim",
+    -- not loaded on file open: servers.lua puts mason/bin on PATH and loads
+    -- mason only when a server binary or a tool below is missing
+    "mason-org/mason.nvim",
+    version = "^1.0.0",
     build = ":MasonUpdate",
     cmd = "Mason",
     keys = { { "<leader><leader>M", "<Cmd>Mason<CR>", desc = "Mason" } },
@@ -116,9 +120,17 @@ return {
     config = function(_, opts)
       require("mason").setup()
       local mr = require("mason-registry")
+      -- the tools above plus the package of every configured server
+      local packages = vim.list_extend({}, opts.ensure_installed)
+      local servers = require("plugins.lsp.utils").opts("nvim-lspconfig").servers or {}
+      for _, server_opts in pairs(servers) do
+        if type(server_opts) == "table" and server_opts.mason then
+          packages[#packages + 1] = server_opts.mason
+        end
+      end
       local function ensure_installed()
-        for _, tool in ipairs(opts.ensure_installed) do
-          local p = mr.get_package(tool)
+        for _, name in ipairs(packages) do
+          local p = mr.get_package(name)
           if not p:is_installed() then
             p:install()
           end
