@@ -24,7 +24,6 @@ return {
       ["terraform-vars"] = { "terraform_fmt" },
       sh = { "shfmt" },
       bash = { "shfmt" },
-      zsh = { "beautysh" },
     },
     formatters = {
       shfmt = { prepend_args = { "-i", "4" } },

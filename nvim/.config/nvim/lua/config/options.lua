@@ -3,6 +3,13 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 vim.keymap.set({ "n", "x" }, "<Space>", "<Nop>") -- not Select mode, where Space must insert
 
+-- language servers, formatters and linters are mise tools: an activated shell
+-- already has them on PATH, the shims cover Neovim started from elsewhere
+local mise_shims = (vim.env.MISE_DATA_DIR or vim.fn.expand("~/.local/share/mise")) .. "/shims"
+if not vim.env.PATH:find(mise_shims, 1, true) then
+  vim.env.PATH = vim.env.PATH .. ":" .. mise_shims
+end
+
 -- line numbers
 vim.opt.relativenumber = true -- show relative line numbers
 vim.opt.number = true -- shows absolute line number on cursor line (when relative number is on)
