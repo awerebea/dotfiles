@@ -30,54 +30,80 @@ local workHosts = { ["BULGAKA-ML01"] = true }
 local isWorkMac = workHosts[hostName:upper()] == true
 
 -- stylua: ignore
-local browsers = {
-  brave  = { app = "Brave Browser", path = "/Applications/Brave Browser.app", bundleID = "com.brave.Browser" },
-  chrome = { app = "Google Chrome", path = "/Applications/Google Chrome.app", bundleID = "com.google.Chrome" },
+local apps = {
+  kitty     = { name = "kitty",           path = "/Applications/kitty.app",                         bundleID = "net.kovidgoyal.kitty" },
+  brave     = { name = "Brave Browser",   path = "/Applications/Brave Browser.app",                 bundleID = "com.brave.Browser" },
+  chrome    = { name = "Google Chrome",   path = "/Applications/Google Chrome.app",                 bundleID = "com.google.Chrome" },
+  firefox   = { name = "Firefox",         path = "/Applications/Firefox.app",                       bundleID = "org.mozilla.firefox" },
+  vscode    = { name = "Code",            path = "/Applications/Visual Studio Code.app",            bundleID = "com.microsoft.VSCode" },
+  qalculate = { name = "qalculate-qt",    path = "/opt/homebrew/opt/qalculate-qt/qalculate-qt.app", bundleID = "com.yourcompany.qalculate-qt" },
+  slack     = { name = "Slack",           path = "/Applications/Slack.app",                         bundleID = "com.tinyspeck.slackmacgap" },
+  obsidian  = { name = "Obsidian",        path = "/Applications/Obsidian.app",                      bundleID = "md.obsidian" },
+  keepassxc = { name = "KeePassXC",       path = "/Applications/KeePassXC.app",                     bundleID = "org.keepassx.keepassxc" },
+  excel     = { name = "Microsoft Excel", path = "/Applications/Microsoft Excel.app",               bundleID = "com.microsoft.Excel" },
+  zoom      = { name = "zoom.us",         path = "/Applications/zoom.us.app",                       bundleID = "us.zoom.xos" },
+  claude    = { name = "Claude",          path = "/Applications/Claude.app",                        bundleID = "com.anthropic.claudefordesktop" },
+  telegram  = { name = "Telegram",        path = "/Applications/Telegram.app",                      bundleID = "ru.keepcoder.Telegram" },
+  chatgpt   = { name = "ChatGPT",         path = "/Applications/ChatGPT.app",                       bundleID = "com.openai.codex" },
+  gmail     = { name = "Gmail",           path = home .. "/Applications/Brave Browser Apps.localized/Gmail.app" },
 }
-local primaryBrowser = isWorkMac and browsers.chrome or browsers.brave
-local backupBrowser = isWorkMac and browsers.brave or browsers.chrome
+
+-- Per-environment apps sharing the same hotkey
+local envApps = {
+  personal = {
+    primaryBrowser = apps.brave,
+    backupBrowser = apps.chrome,
+  },
+  work = {
+    primaryBrowser = apps.brave,
+    backupBrowser = apps.chrome,
+  },
+}
+local env = isWorkMac and "work" or "personal"
 
 -- stylua: ignore
 local appHotkeys = {
-  { mods = { "cmd", "alt" }, key = "x", app = "kitty",             path = "/Applications/kitty.app",              bundleID = "net.kovidgoyal.kitty" },
-  { mods = { "cmd", "alt" }, key = "c", app = primaryBrowser.app,  path = primaryBrowser.path,                    bundleID = primaryBrowser.bundleID },
-  { mods = { "cmd", "alt" }, key = "b", app = backupBrowser.app,   path = backupBrowser.path,                     bundleID = backupBrowser.bundleID },
-  { mods = { "cmd", "alt" }, key = "f", app = "Firefox",           path = "/Applications/Firefox.app",            bundleID = "org.mozilla.firefox" },
-  { mods = { "cmd", "alt" }, key = "v", app = "Code",              path = "/Applications/Visual Studio Code.app", bundleID = "com.microsoft.VSCode" },
-  { mods = { "cmd", "alt" }, key = "q", app = "qalculate-qt",      path = "/opt/homebrew/opt/qalculate-qt/qalculate-qt.app", bundleID = "com.yourcompany.qalculate-qt" },
-  { mods = { "cmd", "alt" }, key = "s", app = "Slack",             path = "/Applications/Slack.app",              bundleID = "com.tinyspeck.slackmacgap" },
-  { mods = { "cmd", "alt" }, key = "o", app = "Obsidian",          path = "/Applications/Obsidian.app",           bundleID = "md.obsidian" },
-  { mods = { "cmd", "alt" }, key = "k", app = "KeePassXC",         path = "/Applications/KeePassXC.app",          bundleID = "org.keepassx.keepassxc" },
-  { mods = { "cmd", "alt" }, key = "e", app = "Microsoft Excel",   path = "/Applications/Microsoft Excel.app",    bundleID = "com.microsoft.Excel" },
-  { mods = { "cmd", "alt" }, key = "z", app = "zoom.us",           path = "/Applications/zoom.us.app",            bundleID = "us.zoom.xos" },
-  { mods = { "cmd", "alt" }, key = "i", app = "Claude",            path = "/Applications/Claude.app",             bundleID = "com.anthropic.claudefordesktop" },
-  { mods = { "cmd", "alt" }, key = "t", app = "Telegram",          path = "/Applications/Telegram.app",           bundleID = "ru.keepcoder.Telegram" },
-  { mods = { "cmd", "alt" }, key = "g", app = "ChatGPT",           path = "/Applications/ChatGPT.app",            bundleID = "com.openai.codex" },
-  { mods = { "cmd", "alt" }, key = "m", app = "Gmail",             path = home .. "/Applications/Chrome Apps.localized/Gmail.app" },
+  { mods = { "cmd", "alt" }, key = "x", app = apps.kitty },
+  { mods = { "cmd", "alt" }, key = "c", app = envApps[env].primaryBrowser },
+  { mods = { "cmd", "alt" }, key = "b", app = envApps[env].backupBrowser },
+  { mods = { "cmd", "alt" }, key = "f", app = apps.firefox },
+  { mods = { "cmd", "alt" }, key = "v", app = apps.vscode },
+  { mods = { "cmd", "alt" }, key = "q", app = apps.qalculate },
+  { mods = { "cmd", "alt" }, key = "s", app = apps.slack },
+  { mods = { "cmd", "alt" }, key = "o", app = apps.obsidian },
+  { mods = { "cmd", "alt" }, key = "k", app = apps.keepassxc },
+  { mods = { "cmd", "alt" }, key = "e", app = apps.excel },
+  { mods = { "cmd", "alt" }, key = "z", app = apps.zoom },
+  { mods = { "cmd", "alt" }, key = "i", app = apps.claude },
+  { mods = { "cmd", "alt" }, key = "t", app = apps.telegram },
+  { mods = { "cmd", "alt" }, key = "g", app = apps.chatgpt },
+  { mods = { "cmd", "alt" }, key = "m", app = apps.gmail },
 }
 
 for _, item in ipairs(appHotkeys) do
+  local app = item.app
   hs.hotkey.bind(item.mods, item.key, function()
-    -- Prefer bundle ID: the localized app name may differ from item.app
+    -- Prefer bundle ID: the localized app name may differ from app.name
     -- (e.g. zoom.us reports itself as "Zoom")
-    local app = (item.bundleID and hs.application.get(item.bundleID)) or hs.application.get(item.app)
+    local runningApp = (app.bundleID and hs.application.get(app.bundleID))
+      or hs.application.get(app.name)
 
     local function launchApp()
-      if item.path and hs.fs.attributes(item.path) then
-        hs.task.new("/usr/bin/open", nil, { "-a", item.path }):start()
-      elseif item.bundleID then
-        hs.application.launchOrFocusByBundleID(item.bundleID)
+      if app.path and hs.fs.attributes(app.path) then
+        hs.task.new("/usr/bin/open", nil, { "-a", app.path }):start()
+      elseif app.bundleID then
+        hs.application.launchOrFocusByBundleID(app.bundleID)
       else
-        hs.application.launchOrFocus(item.app)
+        hs.application.launchOrFocus(app.name)
       end
     end
 
-    if not app then
+    if not runningApp then
       launchApp()
       return
     end
 
-    local windows = app:allWindows()
+    local windows = runningApp:allWindows()
     local targetWindow = nil
 
     for _, win in ipairs(windows) do
@@ -91,23 +117,23 @@ for _, item in ipairs(appHotkeys) do
       if targetWindow:isMinimized() then
         targetWindow:unminimize()
         hs.timer.doAfter(0.1, function()
-          app:activate()
-          app:unhide()
+          runningApp:activate()
+          runningApp:unhide()
           targetWindow:focus()
         end)
-      elseif app:isFrontmost() then
+      elseif runningApp:isFrontmost() then
         if minimizeOnRepeat then
           targetWindow:minimize()
         end
         -- else do nothing
       else
-        app:activate()
-        app:unhide()
+        runningApp:activate()
+        runningApp:unhide()
         targetWindow:focus()
       end
     else
-      app:activate()
-      app:unhide()
+      runningApp:activate()
+      runningApp:unhide()
     end
   end)
 end
