@@ -35,7 +35,8 @@ return {
         {
           mode = { "n", "v" },
           { "<leader><space>", group = "Harpoon" },
-          { "<leader>S", group = "Spectre" },
+          { "<leader>S", group = "Spectre, Grug-far" },
+          { "<leader>Sg", group = "Grug-far" },
           { "<leader>T", group = "Test" },
           { "<leader>Tn", group = "Neotest" },
           { "<leader>To", group = "Overseer" },
