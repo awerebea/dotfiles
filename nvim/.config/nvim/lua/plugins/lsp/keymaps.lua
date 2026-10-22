@@ -3,7 +3,7 @@ local M = {}
 function M.on_attach(client, buffer)
   local self = M.new(client, buffer)
 
-  self:map("<leader>rs", "LspRestart", { desc = "Restart LSP server" })
+  self:map("<leader>rs", "lsp restart", { desc = "Restart LSP server" })
   self:map("gd", vim.lsp.buf.definition, { desc = "Goto Definition" })
   self:map("gD", vim.lsp.buf.declaration, { desc = "Peek Definition" })
   self:map("gr", vim.lsp.buf.references, { desc = "References" })
@@ -17,20 +17,21 @@ function M.on_attach(client, buffer)
   end, { desc = "Goto Implementation" })
   -- self:map("K", vim.lsp.buf.hover, { desc = "Hover" })
   self:map("gK", vim.lsp.buf.signature_help, { desc = "Signature Help", has = "signatureHelp" })
-  self:map("]d", vim.diagnostic.goto_next, { desc = "Next Diagnostic" })
-  self:map("[d", vim.diagnostic.goto_prev, { desc = "Prev Diagnostic" })
-  self:map("]e", function()
-    vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR })
-  end, { desc = "Next Error" })
-  self:map("[e", function()
-    vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR })
-  end, { desc = "Prev Error" })
-  self:map("]w", function()
-    vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.WARN })
-  end, { desc = "Next Warning" })
-  self:map("[w", function()
-    vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.WARN })
-  end, { desc = "Prev Warning" })
+  -- show the diagnostic float after the jump, like the old goto_next/goto_prev
+  local function on_jump(_, bufnr)
+    vim.diagnostic.open_float({ bufnr = bufnr, scope = "cursor", focus = false })
+  end
+  local function jump(count, severity)
+    return function()
+      vim.diagnostic.jump({ count = count, severity = severity, on_jump = on_jump })
+    end
+  end
+  self:map("]d", jump(1), { desc = "Next Diagnostic" })
+  self:map("[d", jump(-1), { desc = "Prev Diagnostic" })
+  self:map("]e", jump(1, vim.diagnostic.severity.ERROR), { desc = "Next Error" })
+  self:map("[e", jump(-1, vim.diagnostic.severity.ERROR), { desc = "Prev Error" })
+  self:map("]w", jump(1, vim.diagnostic.severity.WARN), { desc = "Next Warning" })
+  self:map("[w", jump(-1, vim.diagnostic.severity.WARN), { desc = "Prev Warning" })
   self:map(
     "<leader>ca",
     vim.lsp.buf.code_action,
