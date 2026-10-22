@@ -8,5 +8,6 @@ vim.api.nvim_create_autocmd("User", {
     require("config.keymaps")
     require("config.scroll-burst").setup()
     require("config.comment").setup()
+    require("config.ft-tools").setup()
   end,
 })
