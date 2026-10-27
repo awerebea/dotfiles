@@ -22,6 +22,7 @@ scripts/.local/bin/
         media.py         archive walking, sidecar naming, video probing
         settings.py      TOML config and dependency checks
         requirements.txt
+        Dockerfile       container image for video_face_tagger.py
 ```
 
 The symlinks matter: stow folds a bare directory into a single link, which
@@ -102,14 +103,14 @@ the exact commands still missing. Pass `--face-filter off` to silence that.
 
 Four phases, three of them scripted:
 
-| Phase | Command | What happens |
-| --- | --- | --- |
-| 1 | `extract` | Sample frames from videos into the work directory |
-| 2 | *manual* | In digiKam: detect, recognise, and confirm faces |
-| - | `propagate` | *(optional)* Spread each video's confirmed names to all of its frames |
-| - | `prune` | *(optional)* Park frames of already-identified videos out of digiKam's way |
-| 3 | `collect` | Merge confirmed names into the video sidecars |
-| 4 | `clean` | Drop work frames for processed videos |
+| Phase | Command     | What happens                                                               |
+| ----- | ----------- | -------------------------------------------------------------------------- |
+| 1     | `extract`   | Sample frames from videos into the work directory                          |
+| 2     | _manual_    | In digiKam: detect, recognise, and confirm faces                           |
+| -     | `propagate` | _(optional)_ Spread each video's confirmed names to all of its frames      |
+| -     | `prune`     | _(optional)_ Park frames of already-identified videos out of digiKam's way |
+| 3     | `collect`   | Merge confirmed names into the video sidecars                              |
+| 4     | `clean`     | Drop work frames for processed videos                                      |
 
 There is also `status` to report where things stand, `config` to manage
 defaults, and `fetch-model` to download the face model.
@@ -301,13 +302,13 @@ cannot alter a filename, so the two routes fail independently.
 
 Result, appended to the video's existing sidecar:
 
-| Field | Example value |
-| --- | --- |
-| `XMP-digiKam:TagsList` | `People/Иван Петров` |
-| `XMP-lr:HierarchicalSubject` | `People\|Иван Петров` |
-| `XMP-dc:Subject` | `Иван Петров` |
-| `XMP-vidfaces:FacesScanned` | `faces-scanned:2026-08-25` |
-| `XMP-vidfaces:FacesFound` | `1` |
+| Field                        | Example value              |
+| ---------------------------- | -------------------------- |
+| `XMP-digiKam:TagsList`       | `People/Иван Петров`       |
+| `XMP-lr:HierarchicalSubject` | `People\|Иван Петров`      |
+| `XMP-dc:Subject`             | `Иван Петров`              |
+| `XMP-vidfaces:FacesScanned`  | `faces-scanned:2026-08-25` |
+| `XMP-vidfaces:FacesFound`    | `1`                        |
 
 `--extra-tag-fields` additionally updates `XMP-microsoft:LastKeywordXMP` and
 `XMP-mediapro:CatalogSets`, which digiKam also maintains.
@@ -345,17 +346,101 @@ video_face_tagger.py clean   --path ~/Photo/_Inbox
 Run a small subdirectory end to end before turning it loose on the whole
 archive.
 
+#### Running in Docker on the NAS
+
+Extracting frames and rewriting sidecars over SMB is slow, so the scripted
+phases can run in a container on the server that holds the archive, while
+phase 2 stays in digiKam on the desktop.
+[Dockerfile](scripts/.local/bin/photo_archive/Dockerfile) builds an image with
+ffmpeg, exiftool, the face pre-filter dependencies and the face model baked in,
+and with the tool as its entry point. The package directory is the build
+context.
+
+```sh
+# from the repository root: copy the package to the server
+rsync -av --exclude __pycache__ --exclude .venv --exclude '*.csv' \
+  scripts/.local/bin/photo_archive/ truenas:tools/video_face_tagger/photo_archive/
+
+# on the server
+cd ~/tools/video_face_tagger
+sudo docker build -t video-face-tagger photo_archive
+```
+
+Two bind mounts are needed:
+
+| Host                                          | Container       | Contents                                                  |
+| --------------------------------------------- | --------------- | --------------------------------------------------------- |
+| `/mnt/tank/photo/_Inbox`                      | `/photo/_Inbox` | The videos to process. Mount only what is to be processed |
+| `/mnt/tank/data/Share/video_face_tagger_work` | `/work`         | Frames and logs. Must be reachable from digiKam over SMB  |
+
+Create the work directory on the host before the first run. A bind mount
+source that does not exist is created by Docker owned by root, and the
+container cannot write to it.
+
+```sh
+mkdir -p /mnt/tank/data/Share/video_face_tagger_work
+```
+
+Every phase is then the same command with a different subcommand:
+
+```sh
+sudo docker run --rm -it --user 3000:3000 \
+  -v /mnt/tank/photo/_Inbox:/photo/_Inbox \
+  -v /mnt/tank/data/Share/video_face_tagger_work:/work \
+  video-face-tagger extract --path /photo/_Inbox --work /work --jobs "$(nproc)"
+```
+
+| Phase | Subcommand and options                                        | Mounts                    |
+| ----- | ------------------------------------------------------------- | ------------------------- |
+| -     | `status --path /photo/_Inbox --work /work`                    | archive, work             |
+| 1     | `extract --path /photo/_Inbox --work /work --jobs "$(nproc)"` | archive, work             |
+| -     | `propagate --work /work`                                      | work                      |
+| -     | `prune --work /work`                                          | work, plus `/work-parked` |
+| 3     | `collect --path /photo/_Inbox --work /work --jobs "$(nproc)"` | archive, work             |
+| 4     | `clean --path /photo/_Inbox --work /work`                     | archive, work             |
+
+Add `--dry-run` to any of them first. `prune` parks frames in `/work-parked`,
+which only survives the container if it is mounted too, from a host directory
+created in advance:
+`-v /mnt/tank/data/Share/video_face_tagger_work-parked:/work-parked`.
+
+Things that matter:
+
+- **Run as the owner of the archive** (`--user 3000:3000` here). exiftool
+  replaces a sidecar rather than editing it in place, so a container running
+  as root leaves every sidecar it touches owned by root.
+- **Keep the archive's container path identical across phases.** Each frame
+  records its video by absolute path as the container sees it, and the
+  fallback hash in the frame filename is derived from that same path, so a
+  different mount point in phase 3 matches nothing.
+- **Do not move or rename videos between `extract` and `collect`**, for the
+  same reason. Rename files only after `collect` has run.
+- **Always pass `--path`.** Its default, `~/Photo`, does not exist in the
+  container.
+- **digiKam works on the work directory itself, not a copy.** Phase 3 reads the
+  confirmations digiKam writes into the frame sidecars, so a copy would leave
+  it with nothing to collect. On the Mac, add
+  `/Volumes/data/Share/video_face_tagger_work` as a collection via Settings ->
+  Configure digiKam -> Collections -> Add network share. Keep it outside the
+  share digiKam's main collection lives in, or the frames get indexed into the
+  library. Files edited over SMB are written as the share user, so ownership
+  stays consistent with the container's.
+- **Run inside tmux** (`tmux new -s vft`, later `tmux attach -t vft`), so that
+  an SSH disconnect does not kill a long `extract`.
+
+Logs land in `logs/` under the work directory on the host.
+
 #### Where things are stored
 
-| Path | Contents |
-| --- | --- |
-| `~/Photo/**/*.xmp` | The real output: person tags and processing markers |
-| `~/video_face_tagger_work/` | Extracted frames and their sidecars (disposable) |
-| `~/video_face_tagger_work/logs/<phase>.log` | Per-phase logs |
-| `~/.config/video_face_tagger/config.toml` | Defaults |
-| `~/.config/video_face_tagger/ExifTool_config` | Private XMP namespace, generated automatically |
-| `~/.config/video_face_tagger/face_detection_yunet.onnx` | Face detection model |
-| `scripts/.local/bin/.venv/` | Optional dependencies (git-ignored) |
+| Path                                                    | Contents                                            |
+| ------------------------------------------------------- | --------------------------------------------------- |
+| `~/Photo/**/*.xmp`                                      | The real output: person tags and processing markers |
+| `~/video_face_tagger_work/`                             | Extracted frames and their sidecars (disposable)    |
+| `~/video_face_tagger_work/logs/<phase>.log`             | Per-phase logs                                      |
+| `~/.config/video_face_tagger/config.toml`               | Defaults                                            |
+| `~/.config/video_face_tagger/ExifTool_config`           | Private XMP namespace, generated automatically      |
+| `~/.config/video_face_tagger/face_detection_yunet.onnx` | Face detection model                                |
+| `scripts/.local/bin/.venv/`                             | Optional dependencies (git-ignored)                 |
 
 #### Configuration
 
@@ -465,19 +550,19 @@ iPhone 16 Pro at once.
 
 Every video lands in exactly one bucket.
 
-| category | meaning |
-| --- | --- |
-| `confident` | both sides, tight, slow, enough candidates. Safe to apply |
-| `review: one-sided` | candidates only before, or only after |
-| `review: scattered` | spread exceeds `--radius` |
-| `review: moving` | implied speed exceeds `--max-speed` |
-| `review: below-minimum` | fewer candidates than `--min-candidates` |
-| `review: single-candidate` | exactly one geotagged photo in the window |
-| `review: filename-time-mismatch` | mtime disagrees with the filename |
-| `review: no-filename-time` | filename carries no timestamp to check |
-| `skipped: no candidates` | nothing geotagged in the window |
-| `skipped: already geotagged` | the video already has coordinates |
-| `skipped: already inferred` | carries this tool's marker; use `--force` |
+| category                         | meaning                                                   |
+| -------------------------------- | --------------------------------------------------------- |
+| `confident`                      | both sides, tight, slow, enough candidates. Safe to apply |
+| `review: one-sided`              | candidates only before, or only after                     |
+| `review: scattered`              | spread exceeds `--radius`                                 |
+| `review: moving`                 | implied speed exceeds `--max-speed`                       |
+| `review: below-minimum`          | fewer candidates than `--min-candidates`                  |
+| `review: single-candidate`       | exactly one geotagged photo in the window                 |
+| `review: filename-time-mismatch` | mtime disagrees with the filename                         |
+| `review: no-filename-time`       | filename carries no timestamp to check                    |
+| `skipped: no candidates`         | nothing geotagged in the window                           |
+| `skipped: already geotagged`     | the video already has coordinates                         |
+| `skipped: already inferred`      | carries this tool's marker; use `--force`                 |
 
 Only `confident` is ever applied automatically, and only when `--apply` is
 given. Everything else is reported for a human to approve.
@@ -488,13 +573,13 @@ The defaults were chosen by running `validate` over the 2881 videos in this
 archive that already have coordinates, and measuring the error between the real
 and inferred positions:
 
-| category | n | median | p90 | p99 | within 1 km |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `confident` | 251 | 11 m | 198 m | 7.1 km | 97.2% |
-| `review: one-sided` | 346 | 20 m | 5.6 km | 204 km | 84.4% |
-| `review: below-minimum` | 138 | 14 m | 7.1 km | 109 km | 79.7% |
-| `review: single-candidate` | 318 | 20 m | 11.4 km | 42.4 km | 78.0% |
-| `review: scattered` | 831 | 412 m | 16.0 km | 1804 km | 61.3% |
+| category                   |   n | median |     p90 |     p99 | within 1 km |
+| -------------------------- | --: | -----: | ------: | ------: | ----------: |
+| `confident`                | 251 |   11 m |   198 m |  7.1 km |       97.2% |
+| `review: one-sided`        | 346 |   20 m |  5.6 km |  204 km |       84.4% |
+| `review: below-minimum`    | 138 |   14 m |  7.1 km |  109 km |       79.7% |
+| `review: single-candidate` | 318 |   20 m | 11.4 km | 42.4 km |       78.0% |
+| `review: scattered`        | 831 |  412 m | 16.0 km | 1804 km |       61.3% |
 
 Two things that measurement settled:
 
