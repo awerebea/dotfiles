@@ -14,13 +14,21 @@ recursively in the given path.
 
 COMMANDS:
   write           Write the media file name to the tag of every sidecar that
-                  does not have it yet. Existing values are never overwritten.
+                  does not have it yet. Existing values are kept unless
+                  --overwrite is given.
 
   read            Print the path, the current media file name and the name
                   preserved in the tag for every sidecar.
 
 OPTIONS:
   -p, --path      Directory to process (Default value: .).
+
+  -o, --overwrite With 'write', also replace existing values that differ from
+                  the current media file name. Each one is shown with its old
+                  and new value and needs confirmation: [y]es, [N]o or [a]ll.
+
+  -y, --yes       With --overwrite, replace without asking. Old and new values
+                  are still printed, so they can be restored.
 
   -d, --dry-run   Show what 'write' would change without modifying any file.
 
@@ -124,79 +132,145 @@ function relative_dir() {
 
 # Show the current and the preserved name of every sidecar
 function cmd_read() {
-    local DIR XMP VALUE MEDIA TOTAL=0 UNSET=0
+    local DIR XMP VALUE MEDIA
+    local ROWS=()
+    local TOTAL=0 UNSET=0
+
+    while IFS=$'\t' read -r DIR XMP VALUE; do
+        TOTAL=$((TOTAL + 1))
+        MEDIA=$(resolve_media "${DIR}/${XMP}")
+        case "$?" in
+        0) ;;
+        1) MEDIA="${XMP%.*} (no media file)" ;;
+        *) MEDIA="${XMP%.*} (ambiguous media file)" ;;
+        esac
+        if [ "${VALUE}" = "${MISSING}" ]; then
+            VALUE="-"
+            UNSET=$((UNSET + 1))
+        fi
+        ROWS+=("$(relative_dir "${DIR}")"$'\t'"${MEDIA}"$'\t'"${VALUE}")
+    done < <(scan_sidecars)
 
     {
         printf 'PATH\tCURRENT NAME\tPRESERVED NAME\n'
-        while IFS=$'\t' read -r DIR XMP VALUE; do
-            TOTAL=$((TOTAL + 1))
-            MEDIA=$(resolve_media "${DIR}/${XMP}")
-            case "$?" in
-            0) ;;
-            1) MEDIA="${XMP%.*} (no media file)" ;;
-            *) MEDIA="${XMP%.*} (ambiguous media file)" ;;
-            esac
-            if [ "${VALUE}" = "${MISSING}" ]; then
-                VALUE="-"
-                UNSET=$((UNSET + 1))
-            fi
-            printf '%s\t%s\t%s\n' "$(relative_dir "${DIR}")" "${MEDIA}" "${VALUE}"
-        done < <(scan_sidecars)
-        echo "${TOTAL} ${UNSET}" >"${COUNTS}"
+        [ "${#ROWS[@]}" -gt 0 ] && printf '%s\n' "${ROWS[@]}"
     } | print_table
-    read -r TOTAL UNSET <"${COUNTS}"
     echo
     echo -e "Sidecars: ${TOTAL}, with tag: $((TOTAL - UNSET)), ${YEL}without tag: ${UNSET}${END}"
     return
 }
 
-# Write the media file name to every sidecar that does not have the tag yet
+# Ask on the terminal whether to overwrite one existing value. Returns 0 for
+# yes; "all" also sets OVERWRITE_ALL so the remaining values are replaced
+# without asking. Without a terminal the answer is no.
+function confirm_overwrite() {
+    local ANSWER=
+
+    if [ "${OVERWRITE_ALL}" = true ]; then
+        return 0
+    fi
+    if ! (: </dev/tty) 2>/dev/null; then
+        echo -e "${YEL}WRN:${END} no terminal to confirm, keeping the value (use --yes)" >&2
+        return 1
+    fi
+    printf 'Overwrite? [y]es/[N]o/[a]ll: ' >/dev/tty
+    read -r ANSWER </dev/tty
+    case "${ANSWER,,}" in
+    y | yes)
+        return 0
+        ;;
+    a | all)
+        OVERWRITE_ALL=true
+        return 0
+        ;;
+    esac
+    return 1
+}
+
+# Write the media file name to every sidecar that does not have the tag yet,
+# and with --overwrite replace values that differ from the current name
 function cmd_write() {
-    local DIR XMP VALUE MEDIA STATUS
-    local TODO=0 SKIPPED=0 KEPT=0 RC=0
+    local DIR XMP VALUE MEDIA STATUS i
+    local ROWS=() C_FILE=() C_SHOW=() C_OLD=() C_NEW=()
+    local TODO=0 SKIPPED=0 KEPT=0 DIFFER=0 REPLACED=0 RC=0
 
     : >"${ARGFILE}"
-    {
-        printf 'PATH\tSIDECAR\tNAME TO PRESERVE\n'
-        while IFS=$'\t' read -r DIR XMP VALUE; do
-            if [ "${VALUE}" != "${MISSING}" ]; then
-                KEPT=$((KEPT + 1))
-                continue
+    while IFS=$'\t' read -r DIR XMP VALUE; do
+        MEDIA=$(resolve_media "${DIR}/${XMP}")
+        STATUS=$?
+        if [ "${VALUE}" != "${MISSING}" ]; then
+            if [ "${STATUS}" -eq 0 ] && [ "${MEDIA}" != "${VALUE}" ]; then
+                DIFFER=$((DIFFER + 1))
+                if [ "${OVERWRITE}" = true ]; then
+                    C_FILE+=("${DIR}/${XMP}")
+                    C_SHOW+=("${DIR#"${ROOT}"}/${XMP}")
+                    C_SHOW[-1]="${C_SHOW[-1]#/}"
+                    C_OLD+=("${VALUE}")
+                    C_NEW+=("${MEDIA}")
+                    continue
+                fi
             fi
-            MEDIA=$(resolve_media "${DIR}/${XMP}")
-            STATUS=$?
-            case "${STATUS}" in
-            0)
-                TODO=$((TODO + 1))
-                printf -- '-%s=%s\n%s\n-execute\n' "${TAG}" "${MEDIA}" "${DIR}/${XMP}" >>"${ARGFILE}"
-                ;;
-            1) MEDIA="- (skipped: no media file)" ;;
-            *) MEDIA="- (skipped: ambiguous media file)" ;;
-            esac
-            [ "${STATUS}" -ne 0 ] && SKIPPED=$((SKIPPED + 1))
-            printf '%s\t%s\t%s\n' "$(relative_dir "${DIR}")" "${XMP}" "${MEDIA}"
-        done < <(scan_sidecars)
-        echo "${TODO} ${SKIPPED} ${KEPT}" >"${COUNTS}"
-    } | print_table
-    read -r TODO SKIPPED KEPT <"${COUNTS}"
-    echo
+            KEPT=$((KEPT + 1))
+            continue
+        fi
+        case "${STATUS}" in
+        0)
+            TODO=$((TODO + 1))
+            # -if guards against overwriting a value set since the scan.
+            # "length" is used instead of "defined" because -m turns missing
+            # tags into empty strings
+            printf -- '-if\nnot length $%s\n-%s=%s\n%s\n-execute\n' \
+                "${TAG}" "${TAG}" "${MEDIA}" "${DIR}/${XMP}" >>"${ARGFILE}"
+            ;;
+        1) MEDIA="- (skipped: no media file)" ;;
+        *) MEDIA="- (skipped: ambiguous media file)" ;;
+        esac
+        [ "${STATUS}" -ne 0 ] && SKIPPED=$((SKIPPED + 1))
+        ROWS+=("$(relative_dir "${DIR}")"$'\t'"${XMP}"$'\t'"${MEDIA}")
+    done < <(scan_sidecars)
+
+    if [ "${#ROWS[@]}" -gt 0 ]; then
+        {
+            printf 'PATH\tSIDECAR\tNAME TO PRESERVE\n'
+            printf '%s\n' "${ROWS[@]}"
+        } | print_table
+        echo
+    fi
+
+    # Existing values that differ: always shown with old and new value, so
+    # a replaced value can be restored from the output
+    for ((i = 0; i < ${#C_FILE[@]}; i++)); do
+        echo -e "${YEL}WRN:${END} ${C_SHOW[i]}: tag is '${C_OLD[i]}', current name is '${C_NEW[i]}'" >&2
+        if [ "${DRY_RUN}" = true ]; then
+            REPLACED=$((REPLACED + 1))
+        elif [ "${ASSUME_YES}" = true ] || confirm_overwrite; then
+            echo "  overwriting '${C_OLD[i]}' -> '${C_NEW[i]}'" >&2
+            printf -- '-%s=%s\n%s\n-execute\n' \
+                "${TAG}" "${C_NEW[i]}" "${C_FILE[i]}" >>"${ARGFILE}"
+            REPLACED=$((REPLACED + 1))
+        else
+            echo "  kept '${C_OLD[i]}'" >&2
+            KEPT=$((KEPT + 1))
+        fi
+    done
+    [ "${#C_FILE[@]}" -gt 0 ] && echo >&2
 
     if [ "${DRY_RUN}" = true ]; then
-        echo -e "${YEL}Dry run:${END} ${TODO} to write, ${SKIPPED} skipped, ${KEPT} already set"
-        return
-    fi
-    if [ "${TODO}" -gt 0 ]; then
-        # -if guards against overwriting a value set since the scan; exit code 2
-        # only means some files did not pass that condition. "length" is used
-        # instead of "defined" because -m turns missing tags into empty strings
-        exiftool -@ "${ARGFILE}" -common_args -q -q -m -P -overwrite_original \
-            -if "not length \$${TAG}" || RC=$?
-        if [ "${RC}" -ne 0 ] && [ "${RC}" -ne 2 ]; then
-            echo -e "${RED}exiftool failed with exit code ${RC}${END}" >&2
-            exit 1
+        echo -e "${YEL}Dry run:${END} ${TODO} to write, ${REPLACED} to overwrite, ${SKIPPED} skipped, ${KEPT} already set"
+    else
+        if [ -s "${ARGFILE}" ]; then
+            # Exit code 2 only means some files did not pass an -if condition
+            exiftool -@ "${ARGFILE}" -common_args -q -q -m -P -overwrite_original || RC=$?
+            if [ "${RC}" -ne 0 ] && [ "${RC}" -ne 2 ]; then
+                echo -e "${RED}exiftool failed with exit code ${RC}${END}" >&2
+                exit 1
+            fi
         fi
+        echo -e "${GRN}Written: ${TODO}${END}, overwritten: ${REPLACED}, skipped: ${SKIPPED}, already set: ${KEPT}"
     fi
-    echo -e "${GRN}Written: ${TODO}${END}, skipped: ${SKIPPED}, already set: ${KEPT}"
+    if [ "${OVERWRITE}" != true ] && [ "${DIFFER}" -gt 0 ]; then
+        echo -e "${YEL}WRN:${END} ${DIFFER} existing value(s) differ from the current name, use --overwrite to review them" >&2
+    fi
     return
 }
 
@@ -257,6 +331,12 @@ while [[ -n "$1" ]]; do
         fi
         validate_path_d "${ROOT}"
         ;;
+    -o | --overwrite)
+        OVERWRITE=true
+        ;;
+    -y | --yes)
+        ASSUME_YES=true
+        ;;
     -d | --dry-run)
         DRY_RUN=true
         ;;
@@ -288,9 +368,15 @@ ROOT=${ROOT:-.}
 # Strip trailing slashes so relative paths are computed consistently
 [ "${ROOT}" != "/" ] && ROOT="${ROOT%"${ROOT##*[!/]}"}"
 DRY_RUN=${DRY_RUN:-false}
+OVERWRITE=${OVERWRITE:-false}
+ASSUME_YES=${ASSUME_YES:-false}
+OVERWRITE_ALL=false
+if [ "${ASSUME_YES}" = true ] && [ "${OVERWRITE}" != true ]; then
+    echo -e "${RED}--yes${END} only makes sense together with --overwrite" >&2
+    exit 1
+fi
 ARGFILE=$(mktemp)
-COUNTS=$(mktemp)
-trap 'rm -f "${ARGFILE}" "${COUNTS}"' EXIT
+trap 'rm -f "${ARGFILE}"' EXIT
 
 case "${COMMAND}" in
 write) cmd_write ;;
