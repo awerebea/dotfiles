@@ -13,7 +13,7 @@ tag of its XMP sidecar, or read that tag back. XMP files are searched
 recursively in the given path.
 
 COMMANDS:
-  save            Write the media file name to the tag of every sidecar that
+  write           Write the media file name to the tag of every sidecar that
                   does not have it yet. Existing values are never overwritten.
 
   read            Print the path, the current media file name and the name
@@ -22,7 +22,7 @@ COMMANDS:
 OPTIONS:
   -p, --path      Directory to process (Default value: .).
 
-  -d, --dry-run   Show what 'save' would write without changing any file.
+  -d, --dry-run   Show what 'write' would change without modifying any file.
 
   -h, --help      Print this help message and exit
 __EOM__
@@ -151,7 +151,7 @@ function cmd_read() {
 }
 
 # Write the media file name to every sidecar that does not have the tag yet
-function cmd_save() {
+function cmd_write() {
     local DIR XMP VALUE MEDIA STATUS
     local TODO=0 SKIPPED=0 KEPT=0 RC=0
 
@@ -182,7 +182,7 @@ function cmd_save() {
     echo
 
     if [ "${DRY_RUN}" = true ]; then
-        echo -e "${YEL}Dry run:${END} ${TODO} to save, ${SKIPPED} skipped, ${KEPT} already set"
+        echo -e "${YEL}Dry run:${END} ${TODO} to write, ${SKIPPED} skipped, ${KEPT} already set"
         return
     fi
     if [ "${TODO}" -gt 0 ]; then
@@ -196,7 +196,7 @@ function cmd_save() {
             exit 1
         fi
     fi
-    echo -e "${GRN}Saved: ${TODO}${END}, skipped: ${SKIPPED}, already set: ${KEPT}"
+    echo -e "${GRN}Written: ${TODO}${END}, skipped: ${SKIPPED}, already set: ${KEPT}"
     return
 }
 
@@ -260,7 +260,7 @@ while [[ -n "$1" ]]; do
     -d | --dry-run)
         DRY_RUN=true
         ;;
-    save | read)
+    write | read)
         if [ -n "${COMMAND}" ]; then
             usage >&2
             exit 1
@@ -293,6 +293,6 @@ COUNTS=$(mktemp)
 trap 'rm -f "${ARGFILE}" "${COUNTS}"' EXIT
 
 case "${COMMAND}" in
-save) cmd_save ;;
+write) cmd_write ;;
 read) cmd_read ;;
 esac
