@@ -1,3 +1,6 @@
+-- Enable the `hs` command-line tool
+require("hs.ipc")
+
 -- Config toggle
 local minimizeOnRepeat = false -- Set to true to enable minimize-on-repeat
 
@@ -39,7 +42,7 @@ local apps = {
   qalculate = { name = "qalculate-qt",    path = "/opt/homebrew/opt/qalculate-qt/qalculate-qt.app", bundleID = "com.yourcompany.qalculate-qt" },
   slack     = { name = "Slack",           path = "/Applications/Slack.app",                         bundleID = "com.tinyspeck.slackmacgap" },
   obsidian  = { name = "Obsidian",        path = "/Applications/Obsidian.app",                      bundleID = "md.obsidian" },
-  keepassxc = { name = "KeePassXC",       path = "/Applications/KeePassXC.app",                     bundleID = "org.keepassx.keepassxc" },
+  keepassxc = { name = "KeePassXC",       path = "/Applications/KeePassXC.app",                     bundleID = "org.keepassxc.keepassxc" },
   excel     = { name = "Microsoft Excel", path = "/Applications/Microsoft Excel.app",               bundleID = "com.microsoft.Excel" },
   zoom      = { name = "zoom.us",         path = "/Applications/zoom.us.app",                       bundleID = "us.zoom.xos" },
   claude    = { name = "Claude",          path = "/Applications/Claude.app",                        bundleID = "com.anthropic.claudefordesktop" },
@@ -84,9 +87,21 @@ for _, item in ipairs(appHotkeys) do
   local app = item.app
   hs.hotkey.bind(item.mods, item.key, function()
     -- Prefer bundle ID: the localized app name may differ from app.name
-    -- (e.g. zoom.us reports itself as "Zoom")
-    local runningApp = (app.bundleID and hs.application.get(app.bundleID))
-      or hs.application.get(app.name)
+    -- (e.g. zoom.us reports itself as "Zoom").
+    -- Avoid hs.application.get(name): it falls back to matching window
+    -- titles and can return an hs.window (e.g. a browser tab mentioning the app)
+    local runningApp = nil
+    if app.bundleID then
+      runningApp = hs.application.applicationsForBundleID(app.bundleID)[1]
+    end
+    if not runningApp then
+      for _, a in ipairs(hs.application.runningApplications()) do
+        if a:name() == app.name then
+          runningApp = a
+          break
+        end
+      end
+    end
 
     local function launchApp()
       if app.path and hs.fs.attributes(app.path) then
@@ -132,8 +147,9 @@ for _, item in ipairs(appHotkeys) do
         targetWindow:focus()
       end
     else
-      runningApp:activate()
-      runningApp:unhide()
+      -- No standard window (e.g. hidden to tray): send a reopen event,
+      -- same as clicking the Dock icon
+      launchApp()
     end
   end)
 end
