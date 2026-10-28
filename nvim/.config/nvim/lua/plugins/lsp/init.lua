@@ -70,6 +70,70 @@ return {
     end,
   },
   {
+    -- Windows only: elsewhere the same tools come from mise
+    -- (mise/.config/mise/conf.d/nvim.toml), keep both lists in sync
+    "mason-org/mason.nvim",
+    version = "^2.0.0",
+    enabled = require("utils").is_windows(),
+    event = "VeryLazy",
+    cmd = "Mason",
+    build = ":MasonUpdate",
+    keys = { { "<leader><leader>M", "<Cmd>Mason<CR>", desc = "Mason" } },
+    -- servers for a file opened from the command line start before VeryLazy,
+    -- so put mason's bin dir on PATH right away; loading mason can wait
+    init = function()
+      local bin = vim.fn.stdpath("data") .. "\\mason\\bin"
+      if not vim.env.PATH:find(bin, 1, true) then
+        vim.env.PATH = bin .. ";" .. vim.env.PATH
+      end
+    end,
+    opts = {
+      ensure_installed = {
+        -- language servers
+        "lua-language-server",
+        "marksman",
+        "ruff",
+        "taplo",
+        "terraform-ls",
+        "gopls",
+        "rust-analyzer",
+        "bash-language-server",
+        "dockerfile-language-server",
+        "emmet-language-server",
+        "pyright",
+        "tailwindcss-language-server",
+        "tsc", -- TypeScript 7
+        "css-lsp",
+        "html-lsp",
+        "json-lsp",
+        "yaml-language-server",
+        -- formatters
+        "shfmt",
+        "stylua",
+        "yamlfmt",
+        "prettierd",
+        "black",
+        "isort",
+        -- linters
+        "shellcheck",
+        "mypy",
+        "refurb",
+      },
+    },
+    config = function(_, opts)
+      require("mason").setup({ PATH = "skip" }) -- init already did it
+      local mr = require("mason-registry")
+      mr.refresh(function()
+        for _, name in ipairs(opts.ensure_installed) do
+          local ok, p = pcall(mr.get_package, name)
+          if ok and not p:is_installed() then
+            p:install()
+          end
+        end
+      end)
+    end,
+  },
+  {
     "folke/trouble.nvim",
     cmd = { "TroubleToggle", "Trouble" },
     opts = { use_diagnostic_signs = true },
