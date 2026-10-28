@@ -2,6 +2,8 @@
 # mason.nvim). Neovim finds them on PATH; lua/config/options.lua adds the mise
 # shims for instances not started from an activated shell.
 # rust-analyzer comes from the rust toolchain in ../config.toml.
+# On Windows mason installs the same tools instead; keep its ensure_installed
+# list in nvim/.config/nvim/lua/plugins/lsp/init.lua in sync with this file.
 
 [tools]
 # language servers

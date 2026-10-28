@@ -4,10 +4,13 @@ vim.g.maplocalleader = "\\"
 vim.keymap.set({ "n", "x" }, "<Space>", "<Nop>") -- not Select mode, where Space must insert
 
 -- language servers, formatters and linters are mise tools: an activated shell
--- already has them on PATH, the shims cover Neovim started from elsewhere
-local mise_shims = (vim.env.MISE_DATA_DIR or vim.fn.expand("~/.local/share/mise")) .. "/shims"
-if not vim.env.PATH:find(mise_shims, 1, true) then
-  vim.env.PATH = vim.env.PATH .. ":" .. mise_shims
+-- already has them on PATH, the shims cover Neovim started from elsewhere.
+-- On Windows they come from mason (lua/plugins/lsp/init.lua) instead
+if not require("utils").is_windows() then
+  local mise_shims = (vim.env.MISE_DATA_DIR or vim.fn.expand("~/.local/share/mise")) .. "/shims"
+  if not vim.env.PATH:find(mise_shims, 1, true) then
+    vim.env.PATH = vim.env.PATH .. ":" .. mise_shims
+  end
 end
 
 -- line numbers
