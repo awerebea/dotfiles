@@ -102,11 +102,11 @@ EOF
         -?*)
             chars="${1#-}"
             for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
+                c="${chars:$i:1}"
                 expanded+=("-$c")
                 case "$value_opts" in
                 *"$c"*)
-                    rest="${chars:i+1}"
+                    rest="${chars:$((i + 1))}"
                     if [[ -n "$rest" ]]; then
                         expanded+=("$rest")
                     else
