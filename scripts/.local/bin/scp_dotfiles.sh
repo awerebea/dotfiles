@@ -54,7 +54,7 @@ RANGER=
 SSH_DATA=()
 
 # Process command line options
-while [[ -n "$1" ]]; do
+while [[ $# -gt 0 ]]; do
     case "$1" in
     all)
         VIM="${FILES_VIM}"
