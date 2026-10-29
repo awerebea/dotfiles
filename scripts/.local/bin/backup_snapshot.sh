@@ -18,6 +18,13 @@ set -euo pipefail
 # CONSTANTS
 # ============================================================================
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="backup_snapshot.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # Names of generated files
 readonly LOG_FILENAME="rsync-log"
 readonly SUCCESS_FILE="completed_successfully"
@@ -239,6 +246,7 @@ create_exclude_file() {
 
 usage() {
     cat <<EOF
+${PROG_NAME} ${VERSION}
 USAGE: $(basename "$0") -s SOURCE -d DEST [OPTIONS]
 
 Create a differential backup snapshot using rsync with hard links. Unchanged
@@ -344,6 +352,7 @@ OPTIONS:
                              (can be used multiple times)
 
     -h, --help               Show this help message and exit
+        --version            Show the version and exit
 
 EXAMPLES:
     # Local to local
@@ -511,6 +520,10 @@ process_cmd_options() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
         -h | --help)
             usage
             exit 0

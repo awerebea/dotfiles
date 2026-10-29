@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="clear-tf-cache"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # Colors used for output; edit these to change the look. Empty string means
 # "use the terminal's default color" (used for paths). -C/--no-color blanks
 # all of these out at runtime.
@@ -10,6 +17,7 @@ SIZE_COLOR=$'\033[0;36m'  # cyan
 COLOR_RESET=$'\033[0m'
 
 usage() {
+    printf '%s %s\n' "$PROG_NAME" "$VERSION"
     cat <<'EOF'
 Usage: clear-tf-cache [-f|--force] [-n|-d|--dry-run] [-C|--no-color]
                       [-w|--warnings] [-p|--path DIR]
@@ -32,6 +40,7 @@ Options:
   -w, --warnings     Print warnings for skipped paths (off by default)
   -p, --path DIR     Directory to search (default: .)
   -h, --help         Show this help message
+      --version      Show the version and exit
 EOF
 }
 
@@ -124,6 +133,10 @@ while [ $# -gt 0 ]; do
     --path=*)
         search_path="${1#--path=}"
         shift
+        ;;
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
         ;;
     -h | --help)
         usage

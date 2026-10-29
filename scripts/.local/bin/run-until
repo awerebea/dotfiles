@@ -7,17 +7,28 @@ run_until() {
         set -uo pipefail
     fi
 
+    # Canonical program name for the version output (GNU: a constant, never
+    # derived from $0). Locals, not readonly globals: this file is sourced
+    # into interactive shells, where re-sourcing would fail on readonly.
+    local prog_name="run-until"
+    # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for
+    # new features, PATCH for fixes. Bump it with every change to this script.
+    local version="1.0.0"
+
     # Usage function
     usage() {
         local script_name="${FUNCNAME[1]:-run_until}"
 
         cat >&2 <<EOF
+$prog_name $version
 Usage: $script_name <mode> [options] -c "<command>"
        $script_name <mode> [options] -- <command> [args...]
+       $script_name version | --version
 
 Modes:
   s, success   Continue executing the command until the first success
   f, fail      Continue executing the command until the first failure
+  version      Print the version and exit (also --version)
 
 Options:
   -t, --timeout SECONDS           Total timeout in seconds (positive float)
@@ -49,6 +60,14 @@ EOF
     pause_max=""
     cmd=()
     cmd_source=""
+
+    # `version` as the first argument prints the version and exits
+    case "${1:-}" in
+    version | --version)
+        printf '%s %s\n' "$prog_name" "$version"
+        return 0
+        ;;
+    esac
 
     # Validate first positional argument
     if [[ $# -lt 2 ]]; then
@@ -183,6 +202,10 @@ EOF
             fi
             cmd=("${1#*=}")
             cmd_source="-c"
+            ;;
+        --version)
+            printf '%s %s\n' "$prog_name" "$version"
+            return 0
             ;;
         --)
             if [[ "$cmd_source" == "-c" ]]; then

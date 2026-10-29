@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # Transfer dotfiles from local host to remote using scp utility
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="scp_dotfiles.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # define filenames to transfer
 FILES_VIM=".vimrc"
 FILES_ZSH=(".zshrc" ".p10k.zsh")
@@ -11,6 +18,7 @@ FILES_RANGER="ranger"
 usage () {
     local MESSAGE=
     read -r -d '' MESSAGE << __EOM__ || true
+${PROG_NAME} ${VERSION}
 usage: ${0} [OPTIONS] [SSH-OPTIONS] [USERNAME@]HOSTNAME
 Transfer dotfiles from local host to remote using scp utility
 
@@ -38,6 +46,9 @@ OPTIONS:
 
   -h, --help
             Print this help message and exit
+
+      --version
+            Print the version and exit
 
 Note: HOSTNAME and at least one OPTION are required
 __EOM__
@@ -78,6 +89,10 @@ while [[ $# -gt 0 ]]; do
         ;;
     ranger)
         RANGER="${FILES_RANGER}"
+        ;;
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
         ;;
     -h | --help)
         usage

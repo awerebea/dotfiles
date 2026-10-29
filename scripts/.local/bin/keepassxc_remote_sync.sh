@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="keepassxc_remote_sync.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 usage() {
     local MESSAGE
     read -r -d '' MESSAGE <<__EOM__ || true
+${PROG_NAME} ${VERSION}
 Usage:
   ${0} <download|upload> [OPTIONS]
+  ${0} version
 
 Options:
   -f, --temp-file FILE             Local file path (required)
@@ -14,6 +23,7 @@ Options:
   -b, --backup-destination DIR     Remote directory for timestamped backups (optional)
   -n, --db-name NAME               Database filename (required)
   -h, --help                       Print this help message and exit
+      --version                    Print the version and exit
 
 Short options can be combined. Options requiring values consume the remainder
 of the same token, if any, or the next argument.
@@ -52,6 +62,18 @@ if [[ $# -lt 1 ]]; then
     usage >&2
     exit 1
 fi
+
+# `version` and `help` as the first argument win over everything else
+case "$1" in
+version | --version)
+    printf '%s %s\n' "$PROG_NAME" "$VERSION"
+    exit 0
+    ;;
+help | -h | --help)
+    usage
+    exit 0
+    ;;
+esac
 
 COMMAND=$1
 shift
@@ -120,6 +142,10 @@ DB_NAME=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
+        ;;
     -h | --help)
         usage
         exit 0
