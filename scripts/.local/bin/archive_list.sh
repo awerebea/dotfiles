@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # Backup and restore files while syncyng the same OS between devices
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="archive_list.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 
 # Generate default file list
 TMP_FILE=$(mktemp)
@@ -45,6 +52,7 @@ error_quit() {
 usage () {
     local MESSAGE=
     read -r -d '' MESSAGE << __EOM__ || true
+${PROG_NAME} ${VERSION}
 usage: ${0} [list] src=root/of/filelist dst=target/path
 
 Archive files from the file list from the src root prefix to the dst path.
@@ -58,6 +66,7 @@ Archive files from the file list from the src root prefix to the dst path.
 
 
   -h, --help    Print this help message and exit
+      --version Print the version and exit
 __EOM__
     echo "${MESSAGE}"
     return
@@ -96,6 +105,10 @@ function validate_path_f() {
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        clean_and_exit 0
+        ;;
     -h | --help)
         usage
         clean_and_exit 0

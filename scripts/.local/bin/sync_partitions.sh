@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # Backup and restore device partitions to an image file using the dd utility.
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="sync_partitions.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # Define global variables
 ACTION=
 ANS=
@@ -80,6 +87,7 @@ function validate_path_b() {
 usage () {
     local MESSAGE=
     read -r -d '' MESSAGE << __EOM__ || true
+${PROG_NAME} ${VERSION}
 usage: ${0} [OPTIONS]
 
 Backup and restore device partitions to an image file using the dd utility.
@@ -94,6 +102,7 @@ OPTIONS:
 
 
   -h, --help        Print this help message and exit
+      --version     Print the version and exit
 __EOM__
     echo -e "${MESSAGE}"
     return
@@ -158,6 +167,10 @@ set -- "${expanded[@]}"
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        clean_and_exit 0
+        ;;
     -h | --help)
         usage
         clean_and_exit 0

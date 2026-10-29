@@ -1,5 +1,12 @@
 #! /usr/bin/env bash
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="show_results"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 g_envs_pattern=""
 g_positional_args+=("$1")
 g_output=false
@@ -88,6 +95,10 @@ _process_cmd_options() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
         "-p" | "--plan")
             g_plan=true
             ;;

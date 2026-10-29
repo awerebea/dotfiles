@@ -2,10 +2,18 @@
 # Save the current name of each media file into the XMP-xmpMM:PreservedFileName
 # tag of its XMP sidecar, or read that tag back from all sidecars in a path.
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="preserve_filename.sh"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # Usage message
 usage() {
     local MESSAGE=
     read -r -d '' MESSAGE <<__EOM__ || true
+${PROG_NAME} ${VERSION}
 usage: ${0##*/} <COMMAND> [OPTIONS]
 
 Save the current name of each media file into the XMP-xmpMM:PreservedFileName
@@ -20,6 +28,8 @@ COMMANDS:
   read            Print the path, the current media file name and the name
                   preserved in the tag for every sidecar.
 
+  version         Print the version and exit
+
 OPTIONS:
   -p, --path      Directory to process (Default value: .).
 
@@ -33,6 +43,7 @@ OPTIONS:
   -d, --dry-run   Show what 'write' would change without modifying any file.
 
   -h, --help      Print this help message and exit
+      --version   Print the version and exit
 __EOM__
     echo "${MESSAGE}"
     return
@@ -284,6 +295,12 @@ function cmd_write() {
     return
 }
 
+# `version` as the first argument prints the version and exits
+if [[ "${1:-}" == "version" ]]; then
+    printf '%s %s\n' "$PROG_NAME" "$VERSION"
+    exit 0
+fi
+
 # Short options that require a value. Used by the squash-expansion below to
 # stop mid-token once one of these is hit: a value-taking short option
 # consumes the rest of its token (or the next argv item, if nothing is
@@ -342,6 +359,10 @@ set -- "${expanded[@]}"
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
+        ;;
     -h | --help)
         usage
         exit 0

@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 # Transfer dotfiles from local host to remote using scp utility
 
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="git-conf-user"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
 # define users data
 USER_0="awerebea"
 EMAIL_0="awerebea.21@gmail.com"
@@ -31,6 +38,7 @@ UNSET=
 usage() {
     local MESSAGE=
     read -r -d '' MESSAGE <<__EOM__ || true
+${PROG_NAME} ${VERSION}
 usage: ${0} [OPTIONS] USERNAME [-h|--help]
 Configure the git username and email address for the current git repository (default)
 or globally for the current user.
@@ -60,6 +68,7 @@ OPTIONS:
 
 
   -h, --help            Print this help message and exit
+      --version         Print the version and exit
 __EOM__
     echo "$MESSAGE"
     return
@@ -170,6 +179,10 @@ while [[ $# -gt 0 ]]; do
         USERNAME="$USER_5"
         USEREMAIL="$EMAIL_5"
         SIGNING_KEY="$SIGNING_KEY_5"
+        ;;
+    --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
         ;;
     -h | --help)
         usage
