@@ -64,6 +64,16 @@ __EOM__
 }
 
 
+# Exit with an error if option $1 has no value ($2: number of arguments left)
+function require_value() {
+    if [ "$2" -lt 2 ]; then
+        echo "Option '$1' requires a value" >&2
+        usage >&2
+        clean_and_exit 1
+    fi
+    return
+}
+
 # Check if the specified path exists and is a directory
 function validate_path_d() {
     if [ ! -d "$1" ]; then
@@ -84,7 +94,7 @@ function validate_path_f() {
 
 
 # Process command line options
-while [[ -n "$1" ]]; do
+while [ $# -gt 0 ]; do
     case "$1" in
     -h | --help)
         usage
@@ -92,34 +102,34 @@ while [[ -n "$1" ]]; do
         ;;
     src | src=* | source | source=*)
         if [ "$1" = "src" ] || [ "$1" = "source" ]; then
+            require_value "$1" "$#"
             shift
             SRC_PATH="$1"
-            validate_path_d "${SRC_PATH}"
         else
-            SRC_PATH=$(echo "$1" | cut -d '=' -f 2-)
-            validate_path_d "${SRC_PATH}"
+            SRC_PATH="${1#*=}"
         fi
+        validate_path_d "${SRC_PATH}"
         ;;
     dst | dst=* | dest | dest=* | destination | destination=*)
         if [ "$1" = "dst" ] || [ "$1" = "dest" ] || [ "$1" = "destination" ]
         then
+            require_value "$1" "$#"
             shift
             DST_PATH="$1"
-            validate_path_d "${DST_PATH}"
         else
-            DST_PATH=$(echo "$1" | cut -d '=' -f 2-)
-            validate_path_d "${DST_PATH}"
+            DST_PATH="${1#*=}"
         fi
+        validate_path_d "${DST_PATH}"
         ;;
     list | list=*)
         if [ "$1" = "list" ]; then
+            require_value "$1" "$#"
             shift
             FILE_LIST="$1"
-            validate_path_f "${FILE_LIST}"
         else
-            FILE_LIST=$(echo "$1" | cut -d '=' -f 2-)
-            validate_path_f "${FILE_LIST}"
+            FILE_LIST="${1#*=}"
         fi
+        validate_path_f "${FILE_LIST}"
         ;;
     *)
         usage >&2

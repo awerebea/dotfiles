@@ -81,10 +81,13 @@ EOF
 
     # Expand squashed short options into separate tokens so the parsing
     # loop below can handle them one at a time, same as `ls -la`.
-    local expanded=() chars i c rest stop_expanding=0
+    local expanded=() chars i c rest stop_expanding=0 take_value=0
     while [[ $# -gt 0 ]]; do
-        if [[ "$stop_expanding" -eq 1 ]]; then
+        if [[ "$stop_expanding" -eq 1 || "$take_value" -eq 1 ]]; then
+            # After '--', or the value of the previous option: keep as-is,
+            # even if it starts with '-'
             expanded+=("$1")
+            take_value=0
             shift
             continue
         fi
@@ -97,22 +100,22 @@ EOF
             expanded+=("$1")
             ;;
         -?*)
-            if [[ ${#1} -gt 2 ]]; then
-                chars="${1#-}"
-                for ((i = 0; i < ${#chars}; i++)); do
-                    c="${chars:i:1}"
-                    expanded+=("-$c")
-                    case "$value_opts" in
-                    *"$c"*)
-                        rest="${chars:i+1}"
-                        [[ -n "$rest" ]] && expanded+=("$rest")
-                        break
-                        ;;
-                    esac
-                done
-            else
-                expanded+=("$1")
-            fi
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$value_opts" in
+                *"$c"*)
+                    rest="${chars:i+1}"
+                    if [[ -n "$rest" ]]; then
+                        expanded+=("$rest")
+                    else
+                        take_value=1
+                    fi
+                    break
+                    ;;
+                esac
+            done
             ;;
         *)
             expanded+=("$1")
@@ -124,6 +127,18 @@ EOF
 
     # Argument parsing
     while [[ $# -gt 0 ]]; do
+        # Options taking a separate value need one more argument
+        case "$1" in
+        -t | --timeout | -p | --pause | -i | --pause-increment | -m | --pause-multiplier | \
+            -M | --pause-max | -c | --command)
+            if [[ $# -lt 2 ]]; then
+                echo "Error: $1 requires a value" >&2
+                usage
+                return 1
+            fi
+            ;;
+        esac
+
         case "$1" in
         -t | --timeout)
             shift

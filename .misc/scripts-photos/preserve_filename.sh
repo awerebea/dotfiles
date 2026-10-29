@@ -48,6 +48,16 @@ TAG="XMP-xmpMM:PreservedFileName"
 # Placeholder exiftool prints for a missing tag in tabular output
 MISSING="<none>"
 
+# Exit with an error if option $1 has no value ($2: number of arguments left)
+function require_value() {
+    if [ "$2" -lt 2 ]; then
+        echo "Option '$1' requires a value" >&2
+        usage >&2
+        exit 1
+    fi
+    return
+}
+
 # Check if the specified path exists and is a directory
 function validate_path_d() {
     if [ ! -d "$1" ]; then
@@ -284,28 +294,42 @@ VALUE_OPTS="p"
 # Expand squashed short options into separate tokens so the parsing loop
 # below can handle them one at a time, same as `ls -la`.
 expanded=()
+take_value=0
 while [ $# -gt 0 ]; do
+    if [ "$take_value" -eq 1 ]; then
+        # Value of the previous option: keep it as-is, even if it starts
+        # with '-'
+        expanded+=("$1")
+        take_value=0
+        shift
+        continue
+    fi
     case "$1" in
+    --)
+        # End of options: keep everything after it untouched
+        expanded+=("$@")
+        break
+        ;;
     --*)
         expanded+=("$1")
         ;;
     -?*)
-        if [ "${#1}" -gt 2 ]; then
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
-                expanded+=("-$c")
-                case "$VALUE_OPTS" in
-                *"$c"*)
-                    rest="${chars:i+1}"
-                    [ -n "$rest" ] && expanded+=("$rest")
-                    break
-                    ;;
-                esac
-            done
-        else
-            expanded+=("$1")
-        fi
+        chars="${1#-}"
+        for ((i = 0; i < ${#chars}; i++)); do
+            c="${chars:i:1}"
+            expanded+=("-$c")
+            case "$VALUE_OPTS" in
+            *"$c"*)
+                rest="${chars:i+1}"
+                if [ -n "$rest" ]; then
+                    expanded+=("$rest")
+                else
+                    take_value=1
+                fi
+                break
+                ;;
+            esac
+        done
         ;;
     *)
         expanded+=("$1")
@@ -316,7 +340,7 @@ done
 set -- "${expanded[@]}"
 
 # Process command line options
-while [[ -n "$1" ]]; do
+while [ $# -gt 0 ]; do
     case "$1" in
     -h | --help)
         usage
@@ -324,10 +348,11 @@ while [[ -n "$1" ]]; do
         ;;
     -p | --path | --path=*)
         if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
+            require_value "$1" "$#"
             shift
             ROOT="$1"
         else
-            ROOT=$(echo "$1" | cut -d '=' -f 2-)
+            ROOT="${1#*=}"
         fi
         validate_path_d "${ROOT}"
         ;;
