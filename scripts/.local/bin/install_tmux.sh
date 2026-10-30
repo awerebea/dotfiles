@@ -8,31 +8,31 @@
 # the sudo command is used to install.
 
 # Cleanup and and exit
-clean-exit () {
+clean-exit() {
     rm -rf "$TMP_DIR"
     exit 1
 }
 
 # Check if dependencies are installed
-if ! command -v gcc &> /dev/null && ! command -v clang &> /dev/null; then
+if ! command -v gcc &>/dev/null && ! command -v clang &>/dev/null; then
     echo "Required C compiler is not installed" 1>&2
     exit 1
 fi
-if ! command -v make &> /dev/null; then
+if ! command -v make &>/dev/null; then
     echo "Required make package is not installed" 1>&2
     exit 1
 fi
 
 # Define versions
 TMUX_VER="3.3-rc"
-LIBEVENT_VER="2.1.12-stable"    # latest on 2021.10
-NCURSES_VER="6.3"               # latest on 2021.10
+LIBEVENT_VER="2.1.12-stable" # latest on 2021.10
+NCURSES_VER="6.3"            # latest on 2021.10
 
 # Define installation prefix
 PREFIX="${1:-$HOME/.local}"
 
 # Generate a random name for temp directory
-TMP_DIR=$HOME/tmux_$(tr -dc 'a-zA-Z0-9' < /dev/urandom |
+TMP_DIR=$HOME/tmux_$(tr -dc 'a-zA-Z0-9' </dev/urandom |
     fold -w 32 | head -n 1)
 
 # Check if PREFIX directory is writable for the current user
@@ -92,7 +92,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 cd ..
 
 if [[ ":$PATH:" != *":$PREFIX/bin:"* ]]; then
-    cat <<EOT >> "$HOME"/.bashrc >> "$HOME"/.zshrc
+    cat <<EOT >>"$HOME"/.bashrc >>"$HOME"/.zshrc
 if [[ ":\$PATH:" != *":$PREFIX/bin:"* ]]; then
     export PATH="$PREFIX/bin:\$PATH"
 fi

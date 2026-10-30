@@ -212,35 +212,35 @@ parse_args() {
             continue
         fi
         case "$1" in
-        --)
-            # End of options: keep everything after it untouched
-            expanded+=("$@")
-            break
-            ;;
-        --*)
-            expanded+=("$1")
-            ;;
-        -?*)
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
-                expanded+=("-$c")
-                case "$value_opts" in
-                *"$c"*)
-                    rest="${chars:i+1}"
-                    if [[ -n "$rest" ]]; then
-                        expanded+=("$rest")
-                    else
-                        take_value=1
-                    fi
-                    break
-                    ;;
-                esac
-            done
-            ;;
-        *)
-            expanded+=("$1")
-            ;;
+            --)
+                # End of options: keep everything after it untouched
+                expanded+=("$@")
+                break
+                ;;
+            --*)
+                expanded+=("$1")
+                ;;
+            -?*)
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                        *"$c"*)
+                            rest="${chars:i+1}"
+                            if [[ -n "$rest" ]]; then
+                                expanded+=("$rest")
+                            else
+                                take_value=1
+                            fi
+                            break
+                            ;;
+                    esac
+                done
+                ;;
+            *)
+                expanded+=("$1")
+                ;;
         esac
         shift
     done
@@ -248,92 +248,92 @@ parse_args() {
 
     while [[ $# -gt 0 ]]; do
         case $1 in
-        --version)
-            printf '%s %s\n' "$PROG_NAME" "$VERSION"
-            exit 0
-            ;;
-        -h | --help)
-            usage 0
-            ;;
-        -e | --exclude)
-            [[ -n "${2:-}" ]] || error_exit "Attribute name required for --exclude"
-            HIDDEN_ATTRIBUTES+=("$2")
-            shift 2
-            ;;
-        --exclude=*)
-            local exclude_attr="${1#*=}"
-            [[ -n "$exclude_attr" ]] || error_exit "Attribute name required for --exclude"
-            HIDDEN_ATTRIBUTES+=("$exclude_attr")
-            shift
-            ;;
-        -a | --attribute)
-            [[ -n "${2:-}" ]] || error_exit "Attribute name required for --attribute"
-            ALLOWED_ATTRIBUTES+=("$2")
-            shift 2
-            ;;
-        --attribute=*)
-            local allow_attr="${1#*=}"
-            [[ -n "$allow_attr" ]] || error_exit "Attribute name required for --attribute"
-            ALLOWED_ATTRIBUTES+=("$allow_attr")
-            shift
-            ;;
-        -d | --database)
-            [[ -n "${2:-}" ]] || error_exit "Database path required"
-            DATABASE="$2"
-            shift 2
-            ;;
-        --database=*)
-            DATABASE="${1#*=}"
-            [[ -n "$DATABASE" ]] || error_exit "Database path required"
-            shift
-            ;;
-        -k | --key-file)
-            [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
-            KEYFILE="$2"
-            shift 2
-            ;;
-        --key-file=*)
-            KEYFILE="${1#*=}"
-            [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
-            shift
-            ;;
-        -s | --secret-name)
-            [[ -n "${2:-}" ]] || error_exit "Secret name required"
-            SECRET_NAME="$2"
-            shift 2
-            ;;
-        --secret-name=*)
-            SECRET_NAME="${1#*=}"
-            [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
-            shift
-            ;;
-        --no-password)
-            NO_PASSWORD=true
-            shift
-            ;;
-        --yubikey)
-            YUBIKEY=true
-            shift
-            ;;
-        --debug)
-            DEBUG=true
-            shift
-            ;;
-        --show-all-attributes)
-            SHOW_ALL_ATTRIBUTES=true
-            shift
-            ;;
-        --)
-            parsing_group=true
-            shift
-            break
-            ;;
-        -*)
-            error_exit "Unknown option: $1"
-            ;;
-        *)
-            break
-            ;;
+            --version)
+                printf '%s %s\n' "$PROG_NAME" "$VERSION"
+                exit 0
+                ;;
+            -h | --help)
+                usage 0
+                ;;
+            -e | --exclude)
+                [[ -n "${2:-}" ]] || error_exit "Attribute name required for --exclude"
+                HIDDEN_ATTRIBUTES+=("$2")
+                shift 2
+                ;;
+            --exclude=*)
+                local exclude_attr="${1#*=}"
+                [[ -n "$exclude_attr" ]] || error_exit "Attribute name required for --exclude"
+                HIDDEN_ATTRIBUTES+=("$exclude_attr")
+                shift
+                ;;
+            -a | --attribute)
+                [[ -n "${2:-}" ]] || error_exit "Attribute name required for --attribute"
+                ALLOWED_ATTRIBUTES+=("$2")
+                shift 2
+                ;;
+            --attribute=*)
+                local allow_attr="${1#*=}"
+                [[ -n "$allow_attr" ]] || error_exit "Attribute name required for --attribute"
+                ALLOWED_ATTRIBUTES+=("$allow_attr")
+                shift
+                ;;
+            -d | --database)
+                [[ -n "${2:-}" ]] || error_exit "Database path required"
+                DATABASE="$2"
+                shift 2
+                ;;
+            --database=*)
+                DATABASE="${1#*=}"
+                [[ -n "$DATABASE" ]] || error_exit "Database path required"
+                shift
+                ;;
+            -k | --key-file)
+                [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
+                KEYFILE="$2"
+                shift 2
+                ;;
+            --key-file=*)
+                KEYFILE="${1#*=}"
+                [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
+                shift
+                ;;
+            -s | --secret-name)
+                [[ -n "${2:-}" ]] || error_exit "Secret name required"
+                SECRET_NAME="$2"
+                shift 2
+                ;;
+            --secret-name=*)
+                SECRET_NAME="${1#*=}"
+                [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
+                shift
+                ;;
+            --no-password)
+                NO_PASSWORD=true
+                shift
+                ;;
+            --yubikey)
+                YUBIKEY=true
+                shift
+                ;;
+            --debug)
+                DEBUG=true
+                shift
+                ;;
+            --show-all-attributes)
+                SHOW_ALL_ATTRIBUTES=true
+                shift
+                ;;
+            --)
+                parsing_group=true
+                shift
+                break
+                ;;
+            -*)
+                error_exit "Unknown option: $1"
+                ;;
+            *)
+                break
+                ;;
         esac
     done
 
@@ -739,13 +739,13 @@ select_entry() {
         selected_entry=$(tail -1 <<<"$lines")
 
         case "$key" in
-        ctrl-c | ctrl-q)
-            debug_echo "👋 Goodbye!"
-            exit 0
-            ;;
-        *)
-            # Regular selection or empty key (Enter pressed)
-            ;;
+            ctrl-c | ctrl-q)
+                debug_echo "👋 Goodbye!"
+                exit 0
+                ;;
+            *)
+                # Regular selection or empty key (Enter pressed)
+                ;;
         esac
 
         if [[ -n "$selected_entry" ]]; then
@@ -817,16 +817,16 @@ select_attribute() {
         selected_line=$(tail -1 <<<"$lines")
 
         case "$key" in
-        ctrl-c)
-            debug_echo "👋 Goodbye!"
-            exit 0
-            ;;
-        ctrl-q)
-            return 0 # Go back to entry selection
-            ;;
-        *)
-            # Regular selection or empty key (Enter pressed)
-            ;;
+            ctrl-c)
+                debug_echo "👋 Goodbye!"
+                exit 0
+                ;;
+            ctrl-q)
+                return 0 # Go back to entry selection
+                ;;
+            *)
+                # Regular selection or empty key (Enter pressed)
+                ;;
         esac
 
         if [[ -n "$selected_line" ]]; then

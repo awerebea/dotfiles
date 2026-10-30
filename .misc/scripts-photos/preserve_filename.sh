@@ -100,9 +100,9 @@ function resolve_media() {
     done
     shopt -u nullglob
     case "${#CANDIDATES[@]}" in
-    0) return 1 ;;
-    1) echo "${CANDIDATES[0]##*/}" ;;
-    *) return 2 ;;
+        0) return 1 ;;
+        1) echo "${CANDIDATES[0]##*/}" ;;
+        *) return 2 ;;
     esac
     return 0
 }
@@ -161,9 +161,9 @@ function cmd_read() {
         TOTAL=$((TOTAL + 1))
         MEDIA=$(resolve_media "${DIR}/${XMP}")
         case "$?" in
-        0) ;;
-        1) MEDIA="${XMP%.*} (no media file)" ;;
-        *) MEDIA="${XMP%.*} (ambiguous media file)" ;;
+            0) ;;
+            1) MEDIA="${XMP%.*} (no media file)" ;;
+            *) MEDIA="${XMP%.*} (ambiguous media file)" ;;
         esac
         if [ "${VALUE}" = "${MISSING}" ]; then
             VALUE="-"
@@ -197,13 +197,13 @@ function confirm_overwrite() {
     printf 'Overwrite? [y]es/[N]o/[a]ll: ' >/dev/tty
     read -r ANSWER </dev/tty
     case "${ANSWER,,}" in
-    y | yes)
-        return 0
-        ;;
-    a | all)
-        OVERWRITE_ALL=true
-        return 0
-        ;;
+        y | yes)
+            return 0
+            ;;
+        a | all)
+            OVERWRITE_ALL=true
+            return 0
+            ;;
     esac
     return 1
 }
@@ -235,16 +235,16 @@ function cmd_write() {
             continue
         fi
         case "${STATUS}" in
-        0)
-            TODO=$((TODO + 1))
-            # -if guards against overwriting a value set since the scan.
-            # "length" is used instead of "defined" because -m turns missing
-            # tags into empty strings
-            printf -- '-if\nnot length $%s\n-%s=%s\n%s\n-execute\n' \
-                "${TAG}" "${TAG}" "${MEDIA}" "${DIR}/${XMP}" >>"${ARGFILE}"
-            ;;
-        1) MEDIA="- (skipped: no media file)" ;;
-        *) MEDIA="- (skipped: ambiguous media file)" ;;
+            0)
+                TODO=$((TODO + 1))
+                # -if guards against overwriting a value set since the scan.
+                # "length" is used instead of "defined" because -m turns missing
+                # tags into empty strings
+                printf -- '-if\nnot length $%s\n-%s=%s\n%s\n-execute\n' \
+                    "${TAG}" "${TAG}" "${MEDIA}" "${DIR}/${XMP}" >>"${ARGFILE}"
+                ;;
+            1) MEDIA="- (skipped: no media file)" ;;
+            *) MEDIA="- (skipped: ambiguous media file)" ;;
         esac
         [ "${STATUS}" -ne 0 ] && SKIPPED=$((SKIPPED + 1))
         ROWS+=("$(relative_dir "${DIR}")"$'\t'"${XMP}"$'\t'"${MEDIA}")
@@ -322,35 +322,35 @@ while [ $# -gt 0 ]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [ -n "$rest" ]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [ -n "$rest" ]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -359,44 +359,44 @@ set -- "${expanded[@]}"
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit 0
-        ;;
-    -p | --path | --path=*)
-        if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
-            require_value "$1" "$#"
-            shift
-            ROOT="$1"
-        else
-            ROOT="${1#*=}"
-        fi
-        validate_path_d "${ROOT}"
-        ;;
-    -o | --overwrite)
-        OVERWRITE=true
-        ;;
-    -y | --yes)
-        ASSUME_YES=true
-        ;;
-    -d | --dry-run)
-        DRY_RUN=true
-        ;;
-    write | read)
-        if [ -n "${COMMAND}" ]; then
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -p | --path | --path=*)
+            if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
+                require_value "$1" "$#"
+                shift
+                ROOT="$1"
+            else
+                ROOT="${1#*=}"
+            fi
+            validate_path_d "${ROOT}"
+            ;;
+        -o | --overwrite)
+            OVERWRITE=true
+            ;;
+        -y | --yes)
+            ASSUME_YES=true
+            ;;
+        -d | --dry-run)
+            DRY_RUN=true
+            ;;
+        write | read)
+            if [ -n "${COMMAND}" ]; then
+                usage >&2
+                exit 1
+            fi
+            COMMAND="$1"
+            ;;
+        *)
             usage >&2
             exit 1
-        fi
-        COMMAND="$1"
-        ;;
-    *)
-        usage >&2
-        exit 1
-        ;;
+            ;;
     esac
     shift
 done
@@ -425,6 +425,6 @@ ARGFILE=$(mktemp)
 trap 'rm -f "${ARGFILE}"' EXIT
 
 case "${COMMAND}" in
-write) cmd_write ;;
-read) cmd_read ;;
+    write) cmd_write ;;
+    read) cmd_read ;;
 esac

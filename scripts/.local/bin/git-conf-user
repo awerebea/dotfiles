@@ -101,35 +101,35 @@ while [ $# -gt 0 ]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [ -n "$rest" ]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [ -n "$rest" ]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -138,60 +138,60 @@ set -- "${expanded[@]}"
 # Process command line options
 while [[ $# -gt 0 ]]; do
     case "$1" in
-    -g | --global)
-        GLOBAL='global'
-        ;;
-    -c | --sign-commits)
-        SIGN_COMMITS='true'
-        ;;
-    -t | --sign-tags)
-        SIGN_TAGS='true'
-        ;;
-    -u | --unset)
-        UNSET='--unset'
-        ;;
-    0 | awerebea)
-        USERNAME="$USER_0"
-        USEREMAIL="$EMAIL_0"
-        SIGNING_KEY="$SIGNING_KEY_0"
-        ;;
-    1 | personal)
-        USERNAME="$USER_1"
-        USEREMAIL="$EMAIL_1"
-        SIGNING_KEY="$SIGNING_KEY_1"
-        ;;
-    2 | work)
-        USERNAME="$USER_2"
-        USEREMAIL="$EMAIL_2"
-        SIGNING_KEY="$SIGNING_KEY_2"
-        ;;
-    3 | a.bulgakov.work)
-        USERNAME="$USER_3"
-        USEREMAIL="$EMAIL_3"
-        SIGNING_KEY="$SIGNING_KEY_3"
-        ;;
-    4 | opsfleet)
-        USERNAME="$USER_4"
-        USEREMAIL="$EMAIL_4"
-        SIGNING_KEY="$SIGNING_KEY_4"
-        ;;
-    5 | netdocuments)
-        USERNAME="$USER_5"
-        USEREMAIL="$EMAIL_5"
-        SIGNING_KEY="$SIGNING_KEY_5"
-        ;;
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit
-        ;;
-    *)
-        usage
-        exit 1
-        ;;
+        -g | --global)
+            GLOBAL='global'
+            ;;
+        -c | --sign-commits)
+            SIGN_COMMITS='true'
+            ;;
+        -t | --sign-tags)
+            SIGN_TAGS='true'
+            ;;
+        -u | --unset)
+            UNSET='--unset'
+            ;;
+        0 | awerebea)
+            USERNAME="$USER_0"
+            USEREMAIL="$EMAIL_0"
+            SIGNING_KEY="$SIGNING_KEY_0"
+            ;;
+        1 | personal)
+            USERNAME="$USER_1"
+            USEREMAIL="$EMAIL_1"
+            SIGNING_KEY="$SIGNING_KEY_1"
+            ;;
+        2 | work)
+            USERNAME="$USER_2"
+            USEREMAIL="$EMAIL_2"
+            SIGNING_KEY="$SIGNING_KEY_2"
+            ;;
+        3 | a.bulgakov.work)
+            USERNAME="$USER_3"
+            USEREMAIL="$EMAIL_3"
+            SIGNING_KEY="$SIGNING_KEY_3"
+            ;;
+        4 | opsfleet)
+            USERNAME="$USER_4"
+            USEREMAIL="$EMAIL_4"
+            SIGNING_KEY="$SIGNING_KEY_4"
+            ;;
+        5 | netdocuments)
+            USERNAME="$USER_5"
+            USEREMAIL="$EMAIL_5"
+            SIGNING_KEY="$SIGNING_KEY_5"
+            ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit
+            ;;
+        *)
+            usage
+            exit 1
+            ;;
     esac
     shift
 done

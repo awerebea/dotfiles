@@ -1,6 +1,6 @@
 #!/bin/sh
 
-cat <<EOT >> ~/.gitignore
+cat <<EOT >>~/.gitignore
 *.DS_Store
 *.[doa]
 *.dSYM/

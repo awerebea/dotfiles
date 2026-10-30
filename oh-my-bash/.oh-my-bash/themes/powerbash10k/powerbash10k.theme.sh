@@ -6,7 +6,7 @@
 # Helpers
 function __pb10k_remove_empty_elements {
     local origin_array new_array element trimmed
-    IFS="|" read -ra origin_array <<< "$1"
+    IFS="|" read -ra origin_array <<<"$1"
     new_array=()
     for element in "${origin_array[@]}"; do
         trimmed="${element#"${element%%[![:space:]]*}"}"
@@ -49,7 +49,7 @@ trap '__pb10k_timer_start' DEBUG
 # Parsers
 function __pb10k_top_left_parse {
     local args
-    IFS="|" read -ra args <<< "$1"
+    IFS="|" read -ra args <<<"$1"
     if [ "${args[3]}" != "" ]; then
         __TOP_LEFT+="${args[2]}${args[3]}"
     fi
@@ -62,7 +62,7 @@ function __pb10k_top_left_parse {
 
 function __pb10k_top_right_parse {
     local args
-    IFS="|" read -ra args <<< "$1"
+    IFS="|" read -ra args <<<"$1"
     __TOP_RIGHT+=" "
     if [ "${args[3]}" != "" ]; then
         __TOP_RIGHT+="${args[2]}${args[3]}"
@@ -71,13 +71,13 @@ function __pb10k_top_right_parse {
     if [ "${args[4]}" != "" ]; then
         __TOP_RIGHT+="${args[2]}${args[4]}"
     fi
-    __TOP_RIGHT_LEN=$(( __TOP_RIGHT_LEN + ${#args[1]} + ${#args[3]} + ${#args[4]} + 1 ))
-    (( __SEG_AT_RIGHT += 1 ))
+    __TOP_RIGHT_LEN=$((__TOP_RIGHT_LEN + ${#args[1]} + ${#args[3]} + ${#args[4]} + 1))
+    ((__SEG_AT_RIGHT += 1))
 }
 
 function __pb10k_bottom_parse {
     local args
-    IFS="|" read -ra args <<< "$1"
+    IFS="|" read -ra args <<<"$1"
     __BOTTOM+="${args[0]}${args[1]}"
     [ ${#args[1]} -gt 0 ] && __BOTTOM+=" "
 }
@@ -89,7 +89,7 @@ function __pb10k_top {
     local __TOP_RIGHT_LEN=0
     local __SEG_AT_RIGHT=0
 
-    IFS=" " read -ra segments <<< "$__PB10K_TOP_LEFT"
+    IFS=" " read -ra segments <<<"$__PB10K_TOP_LEFT"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
         [ "$info" != "" ] && __pb10k_top_left_parse "$info"
@@ -98,16 +98,16 @@ function __pb10k_top {
     terminal_width=$(tput cols)
     filler_character="·"
     __TOP_LEFT+="$_omb_prompt_black"
-    __TOP_LEFT+="$(for ((i=0; i<"$terminal_width"; i++)); do printf "%s" "$filler_character"; done)"
+    __TOP_LEFT+="$(for ((i = 0; i < "$terminal_width"; i++)); do printf "%s" "$filler_character"; done)"
     __TOP_LEFT+="\033[${terminal_width}G\033[1K\033[1A"
 
-    IFS=" " read -ra segments <<< "$__PB10K_TOP_RIGHT"
+    IFS=" " read -ra segments <<<"$__PB10K_TOP_RIGHT"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
         [ "$info" != "" ] && __pb10k_top_right_parse "$info"
     done
 
-    [ "$__TOP_RIGHT_LEN" -gt 0 ] && __TOP_RIGHT_LEN=$(( __TOP_RIGHT_LEN - 1 ))
+    [ "$__TOP_RIGHT_LEN" -gt 0 ] && __TOP_RIGHT_LEN=$((__TOP_RIGHT_LEN - 1))
     cursor_adjust="\033[${__TOP_RIGHT_LEN}D"
     __TOP_LEFT+="$cursor_adjust"
 
@@ -117,7 +117,7 @@ function __pb10k_top {
 function __pb10k_bottom {
     local seg segments info
     local __BOTTOM=""
-    IFS=" " read -ra segments <<< "$__PB10K_BOTTOM"
+    IFS=" " read -ra segments <<<"$__PB10K_BOTTOM"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
         [ "$info" != "" ] && __pb10k_bottom_parse "$info"
@@ -168,7 +168,7 @@ function __pb10k_prompt_python {
     [ "$THEME_SHOW_PYTHON" != "true" ] && return
     color=$_omb_prompt_bold_olive
     box=""
-    read -ra response_array <<< "$(__pb10k_remove_empty_elements "$(python_version_prompt)")"
+    read -ra response_array <<<"$(__pb10k_remove_empty_elements "$(python_version_prompt)")"
     info="${response_array[-1]}"
     if [ ${#response_array[@]} -gt 1 ]; then
         # Print all elements except the last one, separated by commas
@@ -197,7 +197,7 @@ function __pb10k_prompt_todo {
     _omb_util_binary_exists todo.sh || return
     color=$_omb_prompt_bold_white
     box="[|]"
-    info="t:$(todo.sh ls | command grep -E "TODO: [0-9]+ of ([0-9]+)" | awk '{ print $4 }' )"
+    info="t:$(todo.sh ls | command grep -E "TODO: [0-9]+ of ([0-9]+)" | awk '{ print $4 }')"
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_green" "$box"
 }
 
@@ -213,7 +213,7 @@ function __pb10k_prompt_clock {
 function __pb10k_prompt_battery {
     local color box info
     [ ! -e "$OSH/plugins/battery/battery.plugin.sh" ] ||
-    [ "$THEME_SHOW_BATTERY" != "true" ] && return
+        [ "$THEME_SHOW_BATTERY" != "true" ] && return
     info=$(battery_percentage)
     color=$_omb_prompt_bold_green
     if [ "$info" -lt 50 ]; then
@@ -237,9 +237,9 @@ function __pb10k_prompt_exitcode {
 function __pb10k_prompt_char {
     local color
     color=$(if [ "$exitcode" -ne 0 ]; then
-            echo "$_omb_prompt_bold_red"
-        else
-            echo "$_omb_prompt_bold_green"
+        echo "$_omb_prompt_bold_red"
+    else
+        echo "$_omb_prompt_bold_green"
     fi)
     printf "%s|%s" "$color" "$__PB10K_PROMPT_CHAR_PS1"
 }
@@ -279,16 +279,16 @@ function __pb10k_completion {
     segments="battery clock exitcode python ruby scm sudo todo"
     case "$action" in
         show)
-        COMPREPLY=( "$(compgen -W "$segments" -- "$cur")" )
-        return 0
-        ;;
+            COMPREPLY=("$(compgen -W "$segments" -- "$cur")")
+            return 0
+            ;;
         hide)
-        COMPREPLY=( "$(compgen -W "$segments" -- "$cur")" )
-        return 0
-        ;;
+            COMPREPLY=("$(compgen -W "$segments" -- "$cur")")
+            return 0
+            ;;
     esac
 
-    COMPREPLY=( "$(compgen -W "$actions" -- "$cur")" )
+    COMPREPLY=("$(compgen -W "$actions" -- "$cur")")
     return 0
 }
 
@@ -300,11 +300,13 @@ function pb10k {
     typeset func
     case "$action" in
         show)
-        func=__pb10k_show;;
+            func=__pb10k_show
+            ;;
         hide)
-        func=__pb10k_hide;;
+            func=__pb10k_hide
+            ;;
     esac
-    IFS=" " read -ra segments <<< "$segments"
+    IFS=" " read -ra segments <<<"$segments"
     for seg in "${segments[@]}"; do
         seg=$(printf "%s" "$seg" | tr '[:lower:]' '[:upper:]')
         "$func" "$seg"

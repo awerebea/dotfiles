@@ -17,17 +17,20 @@ START_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 
 # Create lists
 echo "Creating a list of files..."
-mapfile -d $'\0' file_list < <( find "$SOURCE_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -print0)
+mapfile -d $'\0' file_list < <(find "$SOURCE_DIR" -type f \( -iname "*.jpg" -o -iname "*.jpeg" \) -print0)
 
 i=0
 echo "Processing files..."
 while [ $i -lt "${#file_list[@]}" ]; do
     if [ ! -f "${file_list[$i]}.xmp" ]; then
-        progress-bar $(( i + 1 )) ${#file_list[@]} \
-            "$(echo -n "${file_list[$i]}: "; exiftool -tagsfromfile "${file_list[$i]}" "${file_list[$i]}.xmp")"
+        progress-bar $((i + 1)) ${#file_list[@]} \
+            "$(
+                echo -n "${file_list[$i]}: "
+                exiftool -tagsfromfile "${file_list[$i]}" "${file_list[$i]}.xmp"
+            )"
         touch -r "${file_list[$i]}" "${file_list[$i]}.xmp"
     fi
-    i=$(( i + 1 ))
+    i=$((i + 1))
 done
 printf '\nFinished!\n'
 
@@ -36,10 +39,10 @@ FINISH_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 START_SECONDS=$(date --date "$START_TIME" +%s)
 FINISH_SECONDS=$(date --date "$FINISH_TIME" +%s)
 
-SECONDS_ELEAPSED="$(( FINISH_SECONDS - START_SECONDS ))"
+SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
-echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >> "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
 echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 

@@ -6,7 +6,7 @@ set -euo pipefail
 mkdir -p .github
 
 # Create copilot-instructions.md file
-cat > .github/copilot-instructions.md << 'EOF'
+cat >.github/copilot-instructions.md <<'EOF'
 You are operating in a multi-repository DevOps environment.
 
 Follow these rules strictly.

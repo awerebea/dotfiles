@@ -4,22 +4,21 @@ suggestion=$(basename "$1")
 [ -d "$1" ] || suggestion="${suggestion%.*}"
 
 if [ -n "$1" ]; then
-  name=""
-  while [ -z "$name" ] || [ -e "$name" ]
-  do
-    read -p "Archive Name: " -e -i "${suggestion}.tar.bz2" name
-    if [ -e "$name" ]; then
-      printf "File already exists, overwrite (y|n): "
-      read -r ans
+    name=""
+    while [ -z "$name" ] || [ -e "$name" ]; do
+        read -p "Archive Name: " -e -i "${suggestion}.tar.bz2" name
+        if [ -e "$name" ]; then
+            printf "File already exists, overwrite (y|n): "
+            read -r ans
 
-      if [ "$ans" = "y" ]; then
-        break
-      fi
-    fi
-  done
+            if [ "$ans" = "y" ]; then
+                break
+            fi
+        fi
+    done
 
-  # Archive files
-  [ -n "$name" ] && tar cjvf "$name" "$@" || exit 1
+    # Archive files
+    [ -n "$name" ] && tar cjvf "$name" "$@" || exit 1
 else
-  exit 1
+    exit 1
 fi

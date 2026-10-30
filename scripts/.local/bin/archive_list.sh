@@ -8,10 +8,9 @@ readonly PROG_NAME="archive_list.sh"
 # features, PATCH for fixes. Bump it with every change to this script.
 readonly VERSION="1.0.0"
 
-
 # Generate default file list
 TMP_FILE=$(mktemp)
-cat <<- EOF > "${TMP_FILE}"
+cat <<-EOF >"${TMP_FILE}"
 /etc/autofs
 /etc/autofs.conf
 /etc/exports
@@ -21,18 +20,15 @@ cat <<- EOF > "${TMP_FILE}"
 /etc/samba/smb.conf
 EOF
 
-
 # Define global variables
 SRC_PATH=
 DST_PATH=
 FILE_LIST=
 
-
 # Define colors
 RED='\e[1;31m'
 GRN='\e[1;32m'
 END='\e[0m' # No Color
-
 
 # Clean up environment and exit
 function clean_and_exit() {
@@ -40,18 +36,16 @@ function clean_and_exit() {
     exit "${1}"
 }
 
-
 # Exit on error
 error_quit() {
     echo -e "Snapshot ${RED}failed${END}"
     clean_and_exit 1
 }
 
-
 # Usage message
-usage () {
+usage() {
     local MESSAGE=
-    read -r -d '' MESSAGE << __EOM__ || true
+    read -r -d '' MESSAGE <<__EOM__ || true
 ${PROG_NAME} ${VERSION}
 usage: ${0} [list] src=root/of/filelist dst=target/path
 
@@ -71,7 +65,6 @@ __EOM__
     echo "${MESSAGE}"
     return
 }
-
 
 # Exit with an error if option $1 has no value ($2: number of arguments left)
 function require_value() {
@@ -101,64 +94,60 @@ function validate_path_f() {
     return
 }
 
-
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        clean_and_exit 0
-        ;;
-    -h | --help)
-        usage
-        clean_and_exit 0
-        ;;
-    src | src=* | source | source=*)
-        if [ "$1" = "src" ] || [ "$1" = "source" ]; then
-            require_value "$1" "$#"
-            shift
-            SRC_PATH="$1"
-        else
-            SRC_PATH="${1#*=}"
-        fi
-        validate_path_d "${SRC_PATH}"
-        ;;
-    dst | dst=* | dest | dest=* | destination | destination=*)
-        if [ "$1" = "dst" ] || [ "$1" = "dest" ] || [ "$1" = "destination" ]
-        then
-            require_value "$1" "$#"
-            shift
-            DST_PATH="$1"
-        else
-            DST_PATH="${1#*=}"
-        fi
-        validate_path_d "${DST_PATH}"
-        ;;
-    list | list=*)
-        if [ "$1" = "list" ]; then
-            require_value "$1" "$#"
-            shift
-            FILE_LIST="$1"
-        else
-            FILE_LIST="${1#*=}"
-        fi
-        validate_path_f "${FILE_LIST}"
-        ;;
-    *)
-        usage >&2
-        clean_and_exit 1
-        ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            clean_and_exit 0
+            ;;
+        -h | --help)
+            usage
+            clean_and_exit 0
+            ;;
+        src | src=* | source | source=*)
+            if [ "$1" = "src" ] || [ "$1" = "source" ]; then
+                require_value "$1" "$#"
+                shift
+                SRC_PATH="$1"
+            else
+                SRC_PATH="${1#*=}"
+            fi
+            validate_path_d "${SRC_PATH}"
+            ;;
+        dst | dst=* | dest | dest=* | destination | destination=*)
+            if [ "$1" = "dst" ] || [ "$1" = "dest" ] || [ "$1" = "destination" ]; then
+                require_value "$1" "$#"
+                shift
+                DST_PATH="$1"
+            else
+                DST_PATH="${1#*=}"
+            fi
+            validate_path_d "${DST_PATH}"
+            ;;
+        list | list=*)
+            if [ "$1" = "list" ]; then
+                require_value "$1" "$#"
+                shift
+                FILE_LIST="$1"
+            else
+                FILE_LIST="${1#*=}"
+            fi
+            validate_path_f "${FILE_LIST}"
+            ;;
+        *)
+            usage >&2
+            clean_and_exit 1
+            ;;
     esac
     shift
 done
-
 
 # Check if paths are specified
 if [[ -z "${SRC_PATH}" ]] || [[ -z "${DST_PATH}" ]]; then
     usage >&2
     error_quit
 fi
-
 
 # The function requires 3 arguments: file list, source root, destination path.
 sync() {

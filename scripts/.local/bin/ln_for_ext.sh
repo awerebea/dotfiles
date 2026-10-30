@@ -80,35 +80,35 @@ while [ $# -gt 0 ]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [ -n "$rest" ]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [ -n "$rest" ]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -117,47 +117,47 @@ set -- "${expanded[@]}"
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit 0
-        ;;
-    -s | --src | --src=*)
-        if [ "$1" = "-s" ] || [ "$1" = "--src" ]; then
-            require_value "$1" "$#"
-            shift
-            SRC_DIR="$1"
-        else
-            SRC_DIR="${1#*=}"
-        fi
-        validate_path_d "${SRC_DIR}"
-        ;;
-    -d | --dst | --dst=*)
-        if [ "$1" = "-d" ] || [ "$1" = "--dst" ]; then
-            require_value "$1" "$#"
-            shift
-            DST_DIR="$1"
-        else
-            DST_DIR="${1#*=}"
-        fi
-        validate_path_d "${DST_DIR}"
-        ;;
-    -e | --ext | --ext=*)
-        if [ "$1" = "-e" ] || [ "$1" = "--ext" ]; then
-            require_value "$1" "$#"
-            shift
-            EXT="$1"
-        else
-            EXT="${1#*=}"
-        fi
-        ;;
-    *)
-        usage >&2
-        exit 1
-        ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        -s | --src | --src=*)
+            if [ "$1" = "-s" ] || [ "$1" = "--src" ]; then
+                require_value "$1" "$#"
+                shift
+                SRC_DIR="$1"
+            else
+                SRC_DIR="${1#*=}"
+            fi
+            validate_path_d "${SRC_DIR}"
+            ;;
+        -d | --dst | --dst=*)
+            if [ "$1" = "-d" ] || [ "$1" = "--dst" ]; then
+                require_value "$1" "$#"
+                shift
+                DST_DIR="$1"
+            else
+                DST_DIR="${1#*=}"
+            fi
+            validate_path_d "${DST_DIR}"
+            ;;
+        -e | --ext | --ext=*)
+            if [ "$1" = "-e" ] || [ "$1" = "--ext" ]; then
+                require_value "$1" "$#"
+                shift
+                EXT="$1"
+            else
+                EXT="${1#*=}"
+            fi
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
     esac
     shift
 done

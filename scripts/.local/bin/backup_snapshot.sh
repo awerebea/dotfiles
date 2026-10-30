@@ -113,9 +113,9 @@ QUIET=false        # -q, --quiet
 SNAPSHOT_TIMEOUT=$((60 * 60 * 6)) # -t MIN, --timeout=MIN
 
 # Exclude patterns and files (arrays to handle multiple values)
-EXCLUDE_PATTERNS=()   # -e/--exclude patterns
-EXCLUDE_FROM_FILES=() # --exclude-from files
-EXCLUDE_PRESET=""     # --exclude-preset=NAME
+EXCLUDE_PATTERNS=()      # -e/--exclude patterns
+EXCLUDE_FROM_FILES=()    # --exclude-from files
+EXCLUDE_PRESET=""        # --exclude-preset=NAME
 EXCLUDE_ZFS_SNAPDIR=true # --include-zfs-snapdir disables this
 
 # rsync passthrough options
@@ -474,43 +474,43 @@ process_cmd_options() {
             continue
         fi
         case "$1" in
-        --)
-            # End of options: keep everything after it untouched
-            expanded+=("$@")
-            break
-            ;;
-        --exclude | --rsync-arg)
-            # Long options whose value may start with '-'
-            expanded+=("$1")
-            take_value=1
-            ;;
-        --*=*)
-            expanded+=("${1%%=*}" "${1#*=}")
-            ;;
-        --*)
-            expanded+=("$1")
-            ;;
-        -?*)
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
-                expanded+=("-$c")
-                case "$value_opts" in
-                *"$c"*)
-                    rest="${chars:i+1}"
-                    if [[ -n "$rest" ]]; then
-                        expanded+=("$rest")
-                    else
-                        take_value=1
-                    fi
-                    break
-                    ;;
-                esac
-            done
-            ;;
-        *)
-            expanded+=("$1")
-            ;;
+            --)
+                # End of options: keep everything after it untouched
+                expanded+=("$@")
+                break
+                ;;
+            --exclude | --rsync-arg)
+                # Long options whose value may start with '-'
+                expanded+=("$1")
+                take_value=1
+                ;;
+            --*=*)
+                expanded+=("${1%%=*}" "${1#*=}")
+                ;;
+            --*)
+                expanded+=("$1")
+                ;;
+            -?*)
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                        *"$c"*)
+                            rest="${chars:i+1}"
+                            if [[ -n "$rest" ]]; then
+                                expanded+=("$rest")
+                            else
+                                take_value=1
+                            fi
+                            break
+                            ;;
+                    esac
+                done
+                ;;
+            *)
+                expanded+=("$1")
+                ;;
         esac
         shift
     done
@@ -520,126 +520,126 @@ process_cmd_options() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-        --version)
-            printf '%s %s\n' "$PROG_NAME" "$VERSION"
-            exit 0
-            ;;
-        -h | --help)
-            usage
-            exit 0
-            ;;
-        -s | --source)
-            SOURCE_SPEC=$(__get_option_value "$1" "${2-}")
-            shift 2
-            ;;
-        -d | --dest)
-            DEST_SPEC=$(__get_option_value "$1" "${2-}")
-            shift 2
-            ;;
-        -p | --parent-name)
-            PARENT_DIR_NAME=$(__get_option_value "$1" "${2-}")
-            shift 2
-            ;;
-        -f | --force)
-            IS_FORCE=true
-            shift
-            ;;
-        -n | --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        -q | --quiet)
-            QUIET=true
-            shift
-            ;;
-        -y | --yes)
-            AUTO_CONFIRM=true
-            shift
-            ;;
-        -t | --timeout)
-            SNAPSHOT_TIMEOUT=$(__get_option_value "$1" "${2-}")
-            __validate_positive_integer "$SNAPSHOT_TIMEOUT"
-            SNAPSHOT_TIMEOUT="$((SNAPSHOT_TIMEOUT * 60))"
-            shift 2
-            ;;
-        -k | --keep)
-            SNAPSHOTS_TO_KEEP=$(__get_option_value "$1" "${2-}")
-            __validate_positive_integer "$SNAPSHOTS_TO_KEEP"
-            shift 2
-            ;;
-        -e | --exclude)
-            EXCLUDE_PATTERNS+=("$(__get_verbatim_value "$1" "$#" "${2-}")")
-            shift 2
-            ;;
-        --exclude-from)
-            local exclude_file
-            exclude_file="$(__get_option_value "$1" "${2-}")"
-            if [[ ! -f "$exclude_file" ]]; then
-                __show_error_and_usage "Exclude file does not exist: $exclude_file" 13
-            fi
-            if [[ ! -r "$exclude_file" ]]; then
-                __show_error_and_usage "Exclude file is not readable: $exclude_file" 14
-            fi
-            EXCLUDE_FROM_FILES+=("$exclude_file")
-            shift 2
-            ;;
-        --exclude-preset)
-            EXCLUDE_PRESET="$(__get_option_value "$1" "${2-}")"
-            case "$EXCLUDE_PRESET" in
-            home | none) ;;
-            *) __show_error_and_usage "Unknown exclude preset: $EXCLUDE_PRESET (supported: home, none)" 15 ;;
-            esac
-            shift 2
-            ;;
-        --ssh-command)
-            SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
-            shift 2
-            ;;
-        --src-ssh-command)
-            SRC_SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
-            shift 2
-            ;;
-        --dst-ssh-command)
-            DST_SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
-            shift 2
-            ;;
-        --port)
-            SSH_PORT="$(__get_option_value "$1" "${2-}")"
-            __validate_port "$SSH_PORT"
-            shift 2
-            ;;
-        --src-port)
-            SRC_SSH_PORT="$(__get_option_value "$1" "${2-}")"
-            __validate_port "$SRC_SSH_PORT"
-            shift 2
-            ;;
-        --dst-port)
-            DST_SSH_PORT="$(__get_option_value "$1" "${2-}")"
-            __validate_port "$DST_SSH_PORT"
-            shift 2
-            ;;
-        --no-multiplex)
-            SSH_MULTIPLEX=false
-            shift
-            ;;
-        --include-zfs-snapdir)
-            EXCLUDE_ZFS_SNAPDIR=false
-            shift
-            ;;
-        --rsync-path)
-            RSYNC_PATH="$(__get_option_value "$1" "${2-}")"
-            shift 2
-            ;;
-        --rsync-arg)
-            RSYNC_EXTRA_ARGS+=("$(__get_verbatim_value "$1" "$#" "${2-}")")
-            shift 2
-            ;;
-        -*)
-            __show_error_and_usage "Unknown option: $1" 11
-            ;;
-        *)
-            __show_error_and_usage "Unexpected positional argument: $1. This script does not accept positional arguments." 12
-            ;;
+            --version)
+                printf '%s %s\n' "$PROG_NAME" "$VERSION"
+                exit 0
+                ;;
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            -s | --source)
+                SOURCE_SPEC=$(__get_option_value "$1" "${2-}")
+                shift 2
+                ;;
+            -d | --dest)
+                DEST_SPEC=$(__get_option_value "$1" "${2-}")
+                shift 2
+                ;;
+            -p | --parent-name)
+                PARENT_DIR_NAME=$(__get_option_value "$1" "${2-}")
+                shift 2
+                ;;
+            -f | --force)
+                IS_FORCE=true
+                shift
+                ;;
+            -n | --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            -q | --quiet)
+                QUIET=true
+                shift
+                ;;
+            -y | --yes)
+                AUTO_CONFIRM=true
+                shift
+                ;;
+            -t | --timeout)
+                SNAPSHOT_TIMEOUT=$(__get_option_value "$1" "${2-}")
+                __validate_positive_integer "$SNAPSHOT_TIMEOUT"
+                SNAPSHOT_TIMEOUT="$((SNAPSHOT_TIMEOUT * 60))"
+                shift 2
+                ;;
+            -k | --keep)
+                SNAPSHOTS_TO_KEEP=$(__get_option_value "$1" "${2-}")
+                __validate_positive_integer "$SNAPSHOTS_TO_KEEP"
+                shift 2
+                ;;
+            -e | --exclude)
+                EXCLUDE_PATTERNS+=("$(__get_verbatim_value "$1" "$#" "${2-}")")
+                shift 2
+                ;;
+            --exclude-from)
+                local exclude_file
+                exclude_file="$(__get_option_value "$1" "${2-}")"
+                if [[ ! -f "$exclude_file" ]]; then
+                    __show_error_and_usage "Exclude file does not exist: $exclude_file" 13
+                fi
+                if [[ ! -r "$exclude_file" ]]; then
+                    __show_error_and_usage "Exclude file is not readable: $exclude_file" 14
+                fi
+                EXCLUDE_FROM_FILES+=("$exclude_file")
+                shift 2
+                ;;
+            --exclude-preset)
+                EXCLUDE_PRESET="$(__get_option_value "$1" "${2-}")"
+                case "$EXCLUDE_PRESET" in
+                    home | none) ;;
+                    *) __show_error_and_usage "Unknown exclude preset: $EXCLUDE_PRESET (supported: home, none)" 15 ;;
+                esac
+                shift 2
+                ;;
+            --ssh-command)
+                SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
+                shift 2
+                ;;
+            --src-ssh-command)
+                SRC_SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
+                shift 2
+                ;;
+            --dst-ssh-command)
+                DST_SSH_COMMAND="$(__get_option_value "$1" "${2-}")"
+                shift 2
+                ;;
+            --port)
+                SSH_PORT="$(__get_option_value "$1" "${2-}")"
+                __validate_port "$SSH_PORT"
+                shift 2
+                ;;
+            --src-port)
+                SRC_SSH_PORT="$(__get_option_value "$1" "${2-}")"
+                __validate_port "$SRC_SSH_PORT"
+                shift 2
+                ;;
+            --dst-port)
+                DST_SSH_PORT="$(__get_option_value "$1" "${2-}")"
+                __validate_port "$DST_SSH_PORT"
+                shift 2
+                ;;
+            --no-multiplex)
+                SSH_MULTIPLEX=false
+                shift
+                ;;
+            --include-zfs-snapdir)
+                EXCLUDE_ZFS_SNAPDIR=false
+                shift
+                ;;
+            --rsync-path)
+                RSYNC_PATH="$(__get_option_value "$1" "${2-}")"
+                shift 2
+                ;;
+            --rsync-arg)
+                RSYNC_EXTRA_ARGS+=("$(__get_verbatim_value "$1" "$#" "${2-}")")
+                shift 2
+                ;;
+            -*)
+                __show_error_and_usage "Unknown option: $1" 11
+                ;;
+            *)
+                __show_error_and_usage "Unexpected positional argument: $1. This script does not accept positional arguments." 12
+                ;;
         esac
     done
 
@@ -666,9 +666,9 @@ path_expr() {
     local path="$1"
 
     case "$path" in
-    "~") printf '"$HOME"' ;;
-    "~/"*) printf '"$HOME"/%s' "$(shquote "${path#\~/}")" ;;
-    *) shquote "$path" ;;
+        "~") printf '"$HOME"' ;;
+        "~/"*) printf '"$HOME"/%s' "$(shquote "${path#\~/}")" ;;
+        *) shquote "$path" ;;
     esac
 }
 
@@ -687,8 +687,8 @@ reject_user_tilde() {
     local path="$1" label="$2"
 
     case "$path" in
-    "~" | "~/"*) return 0 ;;
-    "~"*) exit_err "$label: ~user paths are not supported, use an absolute path: $path" 16 ;;
+        "~" | "~/"*) return 0 ;;
+        "~"*) exit_err "$label: ~user paths are not supported, use an absolute path: $path" 16 ;;
     esac
     return 0
 }
@@ -707,35 +707,35 @@ parse_path_spec() {
     _PS_PATH=""
 
     case "$spec" in
-    \[*)
-        # Checked before the daemon syntax below, which [::1]:/path would
-        # otherwise match on its double colon
-        exit_err "$label: IPv6 literals are not supported, use a ~/.ssh/config host alias: $spec" 16
-        ;;
-    rsync://* | *::*)
-        exit_err "$label: rsync daemon syntax is not supported: $spec" 16
-        ;;
-    /* | ./* | ../*)
-        # A leading ./ is the escape hatch for a local path holding a colon
-        _PS_PATH="$spec"
-        ;;
-    "~" | "~/"*)
-        _PS_PATH="${HOME}${spec#\~}"
-        ;;
-    "~"*)
-        reject_user_tilde "$spec" "$label"
-        ;;
-    *)
-        if [[ "$spec" =~ ^(([A-Za-z0-9._+-]+)@)?([A-Za-z0-9._-]+):(.*)$ ]]; then
-            _PS_REMOTE=true
-            _PS_HOST="${BASH_REMATCH[3]}"
-            [[ -n "${BASH_REMATCH[2]}" ]] && _PS_HOST="${BASH_REMATCH[2]}@${_PS_HOST}"
-            _PS_PATH="${BASH_REMATCH[4]}"
-            reject_user_tilde "$_PS_PATH" "$label"
-        else
+        \[*)
+            # Checked before the daemon syntax below, which [::1]:/path would
+            # otherwise match on its double colon
+            exit_err "$label: IPv6 literals are not supported, use a ~/.ssh/config host alias: $spec" 16
+            ;;
+        rsync://* | *::*)
+            exit_err "$label: rsync daemon syntax is not supported: $spec" 16
+            ;;
+        /* | ./* | ../*)
+            # A leading ./ is the escape hatch for a local path holding a colon
             _PS_PATH="$spec"
-        fi
-        ;;
+            ;;
+        "~" | "~/"*)
+            _PS_PATH="${HOME}${spec#\~}"
+            ;;
+        "~"*)
+            reject_user_tilde "$spec" "$label"
+            ;;
+        *)
+            if [[ "$spec" =~ ^(([A-Za-z0-9._+-]+)@)?([A-Za-z0-9._-]+):(.*)$ ]]; then
+                _PS_REMOTE=true
+                _PS_HOST="${BASH_REMATCH[3]}"
+                [[ -n "${BASH_REMATCH[2]}" ]] && _PS_HOST="${BASH_REMATCH[2]}@${_PS_HOST}"
+                _PS_PATH="${BASH_REMATCH[4]}"
+                reject_user_tilde "$_PS_PATH" "$label"
+            else
+                _PS_PATH="$spec"
+            fi
+            ;;
     esac
 
     _PS_PATH="$(strip_trailing_slashes "$_PS_PATH")"
@@ -896,9 +896,9 @@ finalize_paths() {
     [[ -z "$PARENT_DIR_NAME" ]] && PARENT_DIR_NAME="$(basename "$SRC_PATH")"
 
     case "$PARENT_DIR_NAME" in
-    */* | *\\* | . | ..)
-        exit_err "Invalid parent directory name: $PARENT_DIR_NAME" 4
-        ;;
+        */* | *\\* | . | ..)
+            exit_err "Invalid parent directory name: $PARENT_DIR_NAME" 4
+            ;;
     esac
     # A tab would corrupt the tab separated snapshot inventory
     if [[ "$PARENT_DIR_NAME" == *$'\t'* ]]; then
@@ -967,23 +967,23 @@ run_on() {
     local side="$1" cmd="$2"
 
     case "$side" in
-    src)
-        if "$SRC_IS_REMOTE"; then
-            "${SRC_SSH[@]}" "$(remote_sh "$cmd")" </dev/null
-        else
-            sh -c "$cmd" </dev/null
-        fi
-        ;;
-    dst)
-        if "$DST_IS_REMOTE"; then
-            "${DST_SSH[@]}" "$(remote_sh "$cmd")" </dev/null
-        else
-            sh -c "$cmd" </dev/null
-        fi
-        ;;
-    *)
-        exit_err "Internal error: unknown side '$side'" 99
-        ;;
+        src)
+            if "$SRC_IS_REMOTE"; then
+                "${SRC_SSH[@]}" "$(remote_sh "$cmd")" </dev/null
+            else
+                sh -c "$cmd" </dev/null
+            fi
+            ;;
+        dst)
+            if "$DST_IS_REMOTE"; then
+                "${DST_SSH[@]}" "$(remote_sh "$cmd")" </dev/null
+            else
+                sh -c "$cmd" </dev/null
+            fi
+            ;;
+        *)
+            exit_err "Internal error: unknown side '$side'" 99
+            ;;
     esac
 }
 
@@ -992,20 +992,20 @@ pipe_on() {
     local side="$1" cmd="$2"
 
     case "$side" in
-    src)
-        if "$SRC_IS_REMOTE"; then
-            "${SRC_SSH[@]}" "$(remote_sh "$cmd")"
-        else
-            sh -c "$cmd"
-        fi
-        ;;
-    dst)
-        if "$DST_IS_REMOTE"; then
-            "${DST_SSH[@]}" "$(remote_sh "$cmd")"
-        else
-            sh -c "$cmd"
-        fi
-        ;;
+        src)
+            if "$SRC_IS_REMOTE"; then
+                "${SRC_SSH[@]}" "$(remote_sh "$cmd")"
+            else
+                sh -c "$cmd"
+            fi
+            ;;
+        dst)
+            if "$DST_IS_REMOTE"; then
+                "${DST_SSH[@]}" "$(remote_sh "$cmd")"
+            else
+                sh -c "$cmd"
+            fi
+            ;;
     esac
 }
 
@@ -1103,19 +1103,19 @@ pwd"
     out=$(run_on src "$cmd") || rc=$?
     fail_if_ssh_error "$rc" src
     case "$rc" in
-    0) ;;
-    21) exit_err "Source directory does not exist: $SOURCE_SPEC" 2 ;;
-    22) exit_err "Source path is not a directory: $SOURCE_SPEC" 2 ;;
-    23) exit_err "Source directory is not readable: $SOURCE_SPEC" 2 ;;
-    24) exit_err "Source directory cannot be entered: $SOURCE_SPEC" 2 ;;
-    *) exit_err "Failed to inspect the source: $SOURCE_SPEC (exit code $rc)" 2 ;;
+        0) ;;
+        21) exit_err "Source directory does not exist: $SOURCE_SPEC" 2 ;;
+        22) exit_err "Source path is not a directory: $SOURCE_SPEC" 2 ;;
+        23) exit_err "Source directory is not readable: $SOURCE_SPEC" 2 ;;
+        24) exit_err "Source directory cannot be entered: $SOURCE_SPEC" 2 ;;
+        *) exit_err "Failed to inspect the source: $SOURCE_SPEC (exit code $rc)" 2 ;;
     esac
 
     # Everything after this point works with the absolute path, so no later
     # operation depends on the login directory of the ssh session.
     case "$out" in
-    /*) SRC_PATH="$(strip_trailing_slashes "$out")" ;;
-    *) exit_err "Source did not resolve to an absolute path: $SOURCE_SPEC" 2 ;;
+        /*) SRC_PATH="$(strip_trailing_slashes "$out")" ;;
+        *) exit_err "Source did not resolve to an absolute path: $SOURCE_SPEC" 2 ;;
     esac
     return 0
 }
@@ -1136,16 +1136,16 @@ pwd"
     out=$(run_on dst "$cmd") || rc=$?
     fail_if_ssh_error "$rc" dst
     case "$rc" in
-    0) ;;
-    31) exit_err "Failed to create the destination directory: $DEST_SPEC" 3 ;;
-    32) exit_err "Destination directory is not writable: $DEST_SPEC" 3 ;;
-    33) exit_err "Destination directory cannot be entered: $DEST_SPEC" 3 ;;
-    *) exit_err "Failed to inspect the destination: $DEST_SPEC (exit code $rc)" 3 ;;
+        0) ;;
+        31) exit_err "Failed to create the destination directory: $DEST_SPEC" 3 ;;
+        32) exit_err "Destination directory is not writable: $DEST_SPEC" 3 ;;
+        33) exit_err "Destination directory cannot be entered: $DEST_SPEC" 3 ;;
+        *) exit_err "Failed to inspect the destination: $DEST_SPEC (exit code $rc)" 3 ;;
     esac
 
     case "$out" in
-    /*) DST_PATH="$(strip_trailing_slashes "$out")" ;;
-    *) exit_err "Destination did not resolve to an absolute path: $DEST_SPEC" 3 ;;
+        /*) DST_PATH="$(strip_trailing_slashes "$out")" ;;
+        *) exit_err "Destination did not resolve to an absolute path: $DEST_SPEC" 3 ;;
     esac
     return 0
 }
@@ -1271,8 +1271,8 @@ confirmation_dialog() {
     echo
 
     case "$answer" in
-    [yY]) return 0 ;;
-    *) return 1 ;;
+        [yY]) return 0 ;;
+        *) return 1 ;;
     esac
 }
 
@@ -1391,20 +1391,20 @@ rsync_arg_for() {
     fi
 
     case "$side" in
-    src)
-        if "$SRC_IS_REMOTE"; then
-            printf '%s:%s/' "$SRC_HOST" "$path"
-        else
-            printf '%s/' "$path"
-        fi
-        ;;
-    dst)
-        if "$DST_IS_REMOTE"; then
-            printf '%s:%s/' "$DST_HOST" "$path"
-        else
-            printf '%s/' "$path"
-        fi
-        ;;
+        src)
+            if "$SRC_IS_REMOTE"; then
+                printf '%s:%s/' "$SRC_HOST" "$path"
+            else
+                printf '%s/' "$path"
+            fi
+            ;;
+        dst)
+            if "$DST_IS_REMOTE"; then
+                printf '%s:%s/' "$DST_HOST" "$path"
+            else
+                printf '%s/' "$path"
+            fi
+            ;;
     esac
 }
 
@@ -1566,9 +1566,9 @@ create_snapshot() {
     # 24 means "some source files vanished during the transfer", which is
     # expected on a live directory and does not invalidate the snapshot.
     case "$rsync_rc" in
-    0) ;;
-    24) log_warn "Some source files vanished during the transfer (rsync code 24)" ;;
-    *) exit_err "Rsync failed during snapshot creation (exit code $rsync_rc)" 6 ;;
+        0) ;;
+        24) log_warn "Some source files vanished during the transfer (rsync code 24)" ;;
+        *) exit_err "Rsync failed during snapshot creation (exit code $rsync_rc)" 6 ;;
     esac
 
     end_time=$(date +%s)

@@ -8,12 +8,11 @@ else
 fi
 
 declare -i ID
-ID=$(xinput list | grep -Eo "$TOUCHPAD_DEVICE_NAME\s*id\=[0-9]{1,2}" | \
+ID=$(xinput list | grep -Eo "$TOUCHPAD_DEVICE_NAME\s*id\=[0-9]{1,2}" |
     tail -1 | cut -d = -f 2)
 declare -i STATE
 STATE=$(xinput list-props "$ID" | grep 'Device Enabled' | awk '{print $4}')
-if [ "$STATE" -eq 1 ]
-then
+if [ "$STATE" -eq 1 ]; then
     xinput --disable "$ID"
     echo "Touchpad disabled."
     yad --timeout=1 --no-buttons --width=150 --height=30 --text-align=center \

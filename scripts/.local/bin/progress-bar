@@ -73,7 +73,8 @@ _progressbar() {
     fi
     local terminal_related_width
     terminal_related_width=$(echo "$(tput cols) $suffix_length" | awk '{print $1 - $2}')
-    local bar_width; bar_width=$(( terminal_related_width < 100 ? terminal_related_width : 100 ))
+    local bar_width
+    bar_width=$((terminal_related_width < 100 ? terminal_related_width : 100))
 
     # Proccess data
     local progress # percentage of the progress
@@ -85,9 +86,11 @@ _progressbar() {
 
     # Build progressbar string lengths
     local fill empty line
-    line=""; for ((i=0; i<ready; i++)); do line+="#"; done
+    line=""
+    for ((i = 0; i < ready; i++)); do line+="#"; done
     fill="$line"
-    line=""; for ((i=0; i<left; i++)); do line+="-"; done
+    line=""
+    for ((i = 0; i < left; i++)); do line+="-"; done
     empty="$line"
 
     # Output message and progress bar

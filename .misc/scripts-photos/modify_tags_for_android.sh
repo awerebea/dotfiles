@@ -20,7 +20,7 @@ echo "Creating a list of files..."
 find "$SOURCE_DIR" \
     -not \
     \( \
-       -path "$SOURCE_DIR/_Inbox" -prune \
+    -path "$SOURCE_DIR/_Inbox" -prune \
     -o -path "$SOURCE_DIR/_RAW" -prune \
     \) \
     -type f -iname "*.xmp" -execdir \
@@ -31,10 +31,10 @@ FINISH_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 START_SECONDS=$(date --date "$START_TIME" +%s)
 FINISH_SECONDS=$(date --date "$FINISH_TIME" +%s)
 
-SECONDS_ELEAPSED="$(( FINISH_SECONDS - START_SECONDS ))"
+SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
-echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >> "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
 echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 
