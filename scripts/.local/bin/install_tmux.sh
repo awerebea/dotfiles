@@ -36,7 +36,7 @@ TMP_DIR=$HOME/tmux_$(tr -dc 'a-zA-Z0-9' </dev/urandom |
     fold -w 32 | head -n 1)
 
 # Check if PREFIX directory is writable for the current user
-if [ -w "$PREFIX" ]; then
+if [[ -w "$PREFIX" ]]; then
     MAKE_COMMAND="make"
 else
     MAKE_COMMAND="sudo make"
@@ -67,14 +67,14 @@ fi
 # Extract files, configure, compile and install
 
 # libevent
-tar -xvf libevent-$LIBEVENT_VER.tar.gz || clean-exit
-cd libevent-$LIBEVENT_VER || clean-exit
+tar -xvf "libevent-$LIBEVENT_VER.tar.gz" || clean-exit
+cd "libevent-$LIBEVENT_VER" || clean-exit
 (./configure --prefix="$PREFIX" --disable-openssl && make && $MAKE_COMMAND install) || clean-exit
 cd ..
 
 # ncurses
-tar -xvf ncurses-$NCURSES_VER.tar.gz
-cd ncurses-$NCURSES_VER || clean-exit
+tar -xvf "ncurses-$NCURSES_VER.tar.gz"
+cd "ncurses-$NCURSES_VER" || clean-exit
 (./configure --prefix="$PREFIX" \
     --with-default-terminfo-dir=/usr/share/terminfo \
     --with-terminfo-dirs="/etc/terminfo:/lib/terminfo:/usr/share/terminfo" \
@@ -83,8 +83,8 @@ cd ncurses-$NCURSES_VER || clean-exit
 cd ..
 
 # tmux
-tar -xvf tmux-$TMUX_VER.tar.gz
-cd tmux-$TMUX_VER || clean-exit
+tar -xvf "tmux-$TMUX_VER.tar.gz"
+cd "tmux-$TMUX_VER" || clean-exit
 export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 (./configure --enable-static --prefix="$PREFIX" \
     CFLAGS="-I$PREFIX/include -I$PREFIX/include/ncurses" \
@@ -92,7 +92,7 @@ export PKG_CONFIG_PATH="$PREFIX/lib/pkgconfig"
 cd ..
 
 if [[ ":$PATH:" != *":$PREFIX/bin:"* ]]; then
-    cat <<EOT >>"$HOME"/.bashrc >>"$HOME"/.zshrc
+    tee -a "$HOME"/.bashrc "$HOME"/.zshrc >/dev/null <<EOT
 if [[ ":\$PATH:" != *":$PREFIX/bin:"* ]]; then
     export PATH="$PREFIX/bin:\$PATH"
 fi

@@ -37,7 +37,7 @@ done
 
 i=0
 echo "Recreate filestructure in the temp directory in order to preserve timestamps..."
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     mkdir -p "$(dirname "${backup_list[$i]}")"
     touch -r "${file_list[$i]}" "${backup_list[$i]}"
     progress-bar $((i + 1)) ${#file_list[@]} "${file_list[$i]}"
@@ -50,7 +50,7 @@ git -C "$SOURCE_DIR" restore .
 
 i=0
 echo "Restore files timestamps from backup..."
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     touch -r "${backup_list[$i]}" "${file_list[$i]}"
     progress-bar $((i + 1)) ${#file_list[@]} "${file_list[$i]}"
     i=$((i + 1))
@@ -70,7 +70,7 @@ SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
 echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
-echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "Time elapsed: $(date -d@"$SECONDS_ELEAPSED" -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 
 echo -en "${YEL}WRN:${END} "
 if read -n 1 -t 60 -s -r -p "The system will be suspended after 1 minute. Press any key to prevent suspension and exit now."; then

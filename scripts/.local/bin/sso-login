@@ -6,7 +6,7 @@ _check_inputs() {
         exit 1
     fi
 
-    if [ "$#" -lt 1 ]; then
+    if [[ "$#" -lt 1 ]]; then
         printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
         exit 1
     fi
@@ -55,7 +55,7 @@ _main() {
         local output url code status
         output=$(aws sso login --profile="$env" 2>&1)
         status=$?
-        if [ "$status" -ne 0 ]; then
+        if [[ "$status" -ne 0 ]]; then
             echo "Failed to start SSO login for profile '$env':" >&2
             printf '%s\n' "$output" >&2
             continue
@@ -64,7 +64,7 @@ _main() {
         url=$(printf '%s\n' "$output" | grep -E '^https://')
         code=$(printf '%s\n' "$output" | grep -E '^[A-Z0-9]{4}-[A-Z0-9]{4}$')
 
-        if [ -z "$url" ] || [ -z "$code" ]; then
+        if [[ -z "$url" ]] || [[ -z "$code" ]]; then
             echo "Could not find login URL/code for profile '$env'. Output was:" >&2
             printf '%s\n' "$output" >&2
             continue

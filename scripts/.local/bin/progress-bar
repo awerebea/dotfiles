@@ -5,7 +5,7 @@ _progressbar() {
 
     local verbose=false
     local positional_args=()
-    while [ $# -gt 0 ]; do
+    while [[ $# -gt 0 ]]; do
         case "${1}" in
             -v | --verbose)
                 verbose=true
@@ -19,7 +19,7 @@ _progressbar() {
 
     _is_positive_int() {
         # Check if the argument is a positive integer
-        if ! [ "${1}" -gt 0 ] 2>/dev/null; then
+        if ! [[ "${1}" -gt 0 ]] 2>/dev/null; then
             return 1
         fi
     }
@@ -33,7 +33,7 @@ _progressbar() {
 
     local usage="Usage: ${0} <curr_elem_num> <total_elements> [<message>]"
     # Check arguments
-    if [ ${#positional_args[@]} -lt 2 ] || [ ${#positional_args[@]} -gt 3 ]; then
+    if [[ ${#positional_args[@]} -lt 2 ]] || [[ ${#positional_args[@]} -gt 3 ]]; then
         echo "$usage" >&2
         return 1
     fi
@@ -42,13 +42,13 @@ _progressbar() {
     if [[ -n "$BASH_VERSION" ]]; then
         local curr_elem_num="${positional_args[0]}"
         local total_elements="${positional_args[1]}"
-        if [ ${#positional_args[@]} -ge 3 ]; then
+        if [[ ${#positional_args[@]} -ge 3 ]]; then
             message="${positional_args[2]}"
         fi
     elif [[ -n "$ZSH_VERSION" ]]; then
         local curr_elem_num="${positional_args[1]}"
         local total_elements="${positional_args[2]}"
-        if [ ${#positional_args[@]} -ge 3 ]; then
+        if [[ ${#positional_args[@]} -ge 3 ]]; then
             message="${positional_args[3]}"
         fi
     else
@@ -94,8 +94,8 @@ _progressbar() {
     empty="$line"
 
     # Output message and progress bar
-    [ -v __progressbar_start ] && unset __progressbar_start || echo -en "$ERASE_LINE_BEFORE"
-    [ "$message" != "" ] && echo -e "$message"
+    [[ -v __progressbar_start ]] && unset __progressbar_start || echo -en "$ERASE_LINE_BEFORE"
+    [[ "$message" != "" ]] && echo -e "$message"
     if "$verbose"; then
         printf "[%s%s] %6s%% %${verbose_suffix_length}s\n" "$fill" "$empty" "$progress" "$curr_elem_num/$total_elements"
     else

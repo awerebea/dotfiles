@@ -91,8 +91,8 @@ VALUE_OPTS=""
 # parsing loop below can handle them one at a time, same as `ls -la`.
 expanded=()
 take_value=0
-while [ $# -gt 0 ]; do
-    if [ "$take_value" -eq 1 ]; then
+while [[ $# -gt 0 ]]; do
+    if [[ "$take_value" -eq 1 ]]; then
         # Value of the previous option: keep it as-is, even if it starts
         # with '-'
         expanded+=("$1")
@@ -117,7 +117,7 @@ while [ $# -gt 0 ]; do
                 case "$VALUE_OPTS" in
                     *"$c"*)
                         rest="${chars:i+1}"
-                        if [ -n "$rest" ]; then
+                        if [[ -n "$rest" ]]; then
                             expanded+=("$rest")
                         else
                             take_value=1

@@ -120,6 +120,7 @@ fi
 CWD_BCKP=$(pwd)
 
 # cd to the dotfiles directory
+: "${GIT_DOTFILES:?GIT_DOTFILES must point to the dotfiles repo}"
 cd "${GIT_DOTFILES}" || exit 1
 
 # generate a random name for file archive
@@ -127,10 +128,10 @@ ARC_NAME=$(tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 32 | head -n 1)
 
 # pack files for transfer to a remote host into one archive
 FINAL_FILELIST=()
-[ -n "${VIM}" ] && FINAL_FILELIST+=("${VIM}")
-[ -n "${ZSH[*]}" ] && FINAL_FILELIST+=("${ZSH[@]}")
-[ -n "${TMUX[*]}" ] && FINAL_FILELIST+=("${TMUX[@]}")
-[ -n "${RANGER}" ] && FINAL_FILELIST+=("${RANGER}")
+[[ -n "${VIM}" ]] && FINAL_FILELIST+=("${VIM}")
+[[ -n "${ZSH[*]}" ]] && FINAL_FILELIST+=("${ZSH[@]}")
+[[ -n "${TMUX[*]}" ]] && FINAL_FILELIST+=("${TMUX[@]}")
+[[ -n "${RANGER}" ]] && FINAL_FILELIST+=("${RANGER}")
 tar -czf "${ARC_NAME}".tar.gz --transform 's,^ranger,.config/ranger,' \
     "${FINAL_FILELIST[@]}"
 
@@ -140,7 +141,7 @@ result=$?
 
 # remove archive from local host
 rm -f "${ARC_NAME}".tar.gz
-[ "${result}" -ne 0 ] && exit ${result}
+[[ "${result}" -ne 0 ]] && exit "${result}"
 
 # create directories on the remote host if needed
 [[ -n ${NVIM} ]] && NVIM_HANDLING="&& mkdir -p ~/.config/nvim && \

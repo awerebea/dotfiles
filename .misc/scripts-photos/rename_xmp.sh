@@ -21,20 +21,20 @@ mapfile -d $'\0' file_list < <(find "$SOURCE_DIR" -type f -iname "*.xmp" -print0
 
 i=0
 echo "Processing files..."
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     # progress-bar $(( i + 1 )) ${#file_list[@]} "${file_list[$i]}"
     IMAGE_FILE="$(find "$(dirname "${file_list[$i]}")" -type f -wholename "${file_list[$i]%.*}.*" | grep -v "${file_list[$i]}")"
-    if [ ! -f "${file_list[$i]%.*}" ] && [ -n "$IMAGE_FILE" ] && [ "$(echo "$IMAGE_FILE" | wc -l)" -eq 1 ]; then
+    if [[ ! -f "${file_list[$i]%.*}" ]] && [[ -n "$IMAGE_FILE" ]] && [[ "$(echo "$IMAGE_FILE" | wc -l)" -eq 1 ]]; then
         mv "${file_list[$i]}" "${IMAGE_FILE}.xmp"
         touch -r "$IMAGE_FILE" "${IMAGE_FILE}.xmp"
         echo "$(date "+%Y.%m.%d %H:%M:%S") : [RENAMED] ${file_list[$i]}" >>"$LOGS_DIR/$SCRIPT_NAME.log"
         progress-bar $((i + 1)) ${#file_list[@]} \
             "Rename: \"${file_list[$i]/"$SOURCE_DIR"/}\" -> \"${IMAGE_FILE/"$SOURCE_DIR"/}.xmp\"."
-    elif [ "$(echo "$IMAGE_FILE" | wc -l)" -gt 1 ]; then
+    elif [[ "$(echo "$IMAGE_FILE" | wc -l)" -gt 1 ]]; then
         echo "$(date "+%Y.%m.%d %H:%M:%S") : [UNTOUCHED AS AMBIGUOUS] ${file_list[$i]}" >>"$LOGS_DIR/$SCRIPT_NAME.log"
         progress-bar $((i + 1)) ${#file_list[@]} \
             "Error: The name of the image file associated with \"${file_list[$i]/"$SOURCE_DIR"/}\" is ambiguous."
-    elif [ ! -f "${file_list[$i]%.*}" ] && [ -z "$IMAGE_FILE" ]; then
+    elif [[ ! -f "${file_list[$i]%.*}" ]] && [[ -z "$IMAGE_FILE" ]]; then
         rm -f "${file_list[$i]}"
         echo "$(date "+%Y.%m.%d %H:%M:%S") : [REMOVED] ${file_list[$i]}" >>"$LOGS_DIR/$SCRIPT_NAME.log"
         progress-bar $((i + 1)) ${#file_list[@]} \
@@ -59,7 +59,7 @@ SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
 echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
-echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "Time elapsed: $(date -d@"$SECONDS_ELEAPSED" -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 
 echo -en "${YEL}WRN:${END} "
 if read -n 1 -t 60 -s -r -p "The system will be suspended after 1 minute. Press any key to prevent suspension and exit now."; then

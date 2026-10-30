@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+# shellcheck disable=SC1071 # zsh script, shellcheck cannot check it
 # Fixes a corrupt .zsh_history file
 
 mv ~/.zsh_history ~/.zsh_history_bad

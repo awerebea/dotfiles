@@ -3,7 +3,7 @@
 mapfile -d $'\0' file_list < <(find /media/andrei/Data/Music -type f -name "*.mp3" -print0)
 
 cptimestamp() {
-    if [ -z "$2" ]; then
+    if [[ -z "$2" ]]; then
         echo "usage: cptimestamp <sourcefile> <destfile>"
         exit
     fi
@@ -17,7 +17,7 @@ for f in "${file_list[@]}"; do
 done
 
 i=0
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     # cptimestamp "${file_list[$i]}" "${empty_mirror[$i]}"
     mkdir -p "$(dirname "${empty_mirror[$i]}")"
     touch -r "${file_list[$i]}" "${empty_mirror[$i]}"

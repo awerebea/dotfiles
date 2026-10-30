@@ -38,7 +38,7 @@ function clean_and_exit() {
 
 # Exit with an error if option $1 has no value ($2: number of arguments left)
 function require_value() {
-    if [ "$2" -lt 2 ]; then
+    if [[ "$2" -lt 2 ]]; then
         echo -e "${RED}ERR:${END} Option '$1' requires a value" >&2
         usage >&2
         clean_and_exit 1
@@ -48,7 +48,7 @@ function require_value() {
 
 # Check if the specified path exists and is a directory
 function validate_path_d() {
-    if [ ! -d "$1" ]; then
+    if [[ ! -d "$1" ]]; then
         echo -en "${RED}ERR:${END} Path ${RED}${1}${END} " >&2
         echo "is not a valid directory" >&2
         false
@@ -58,7 +58,7 @@ function validate_path_d() {
 
 # Check if the specified path exists and is a regular file
 function validate_path_f() {
-    if [ ! -f "$1" ]; then
+    if [[ ! -f "$1" ]]; then
         echo -en "${RED}ERR:${END} Path ${RED}${1}${END} " >&2
         echo "is not a valid file" >&2
         false
@@ -68,7 +68,7 @@ function validate_path_f() {
 
 # Check if the specified path exists and is a regular file
 function validate_path_b() {
-    if [ ! -b "$1" ]; then
+    if [[ ! -b "$1" ]]; then
         echo -en "${RED}ERR:${END} Path ${RED}${1}${END} " >&2
         echo "is not a valid block special file (device partition)" >&2
         false
@@ -112,8 +112,8 @@ VALUE_OPTS="p"
 # parsing loop below can handle them one at a time, same as `ls -la`.
 expanded=()
 take_value=0
-while [ $# -gt 0 ]; do
-    if [ "$take_value" -eq 1 ]; then
+while [[ $# -gt 0 ]]; do
+    if [[ "$take_value" -eq 1 ]]; then
         # Value of the previous option: keep it as-is, even if it starts
         # with '-'
         expanded+=("$1")
@@ -138,7 +138,7 @@ while [ $# -gt 0 ]; do
                 case "$VALUE_OPTS" in
                     *"$c"*)
                         rest="${chars:i+1}"
-                        if [ -n "$rest" ]; then
+                        if [[ -n "$rest" ]]; then
                             expanded+=("$rest")
                         else
                             take_value=1
@@ -157,7 +157,7 @@ done
 set -- "${expanded[@]}"
 
 # Process command line options
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
     case "$1" in
         --version)
             printf '%s %s\n' "$PROG_NAME" "$VERSION"
@@ -174,7 +174,7 @@ while [ $# -gt 0 ]; do
             ACTION="restore"
             ;;
         -p | --path | --path=*)
-            if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
+            if [[ "$1" = "-p" ]] || [[ "$1" = "--path" ]]; then
                 require_value "$1" "$#"
                 shift
                 BACKUP_PATH="$1"
@@ -192,7 +192,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Define action if no command line parameters were passed
-if [ -z "${ACTION}" ]; then
+if [[ -z "${ACTION}" ]]; then
     printf "Do you want to backup or restore a partition from an image?\n"
     PS3="Please select an option: "
     options=(backup restore help)
@@ -217,16 +217,16 @@ echo -en "${GRN}INF:${END} "
 echo -e "Selected option: ${BLU}${ACTION}${END}"
 
 # Define backup path if no command line parameters were passed
-if [ -z "${BACKUP_PATH}" ]; then
-    if [ "${ACTION}" = "backup" ]; then
+if [[ -z "${BACKUP_PATH}" ]]; then
+    if [[ "${ACTION}" = "backup" ]]; then
         MESSAGE="to store backup image(s)"
-    elif [ "${ACTION}" = "restore" ]; then
+    elif [[ "${ACTION}" = "restore" ]]; then
         MESSAGE="of backup image(s)"
     fi
     while true; do
         read -r -p "Please enter the path ${MESSAGE}: " BACKUP_PATH
         validate_path_d "${BACKUP_PATH}"
-        if [ $? -eq 1 ]; then
+        if [[ $? -eq 1 ]]; then
             echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
             read -r ANS
             case "${ANS}" in
@@ -247,7 +247,7 @@ echo -e "${GRN}INF:${END} Backup image(s) path: ${BLU}${BACKUP_PATH}${END}"
 
 # Loop to input partitions and images names
 while true; do
-    if [ "${#PARTITIONS[@]}" -eq 0 ]; then
+    if [[ "${#PARTITIONS[@]}" -eq 0 ]]; then
         ANS="yes"
     else
         echo -en "${YEL}WRN:${END} Add one more target (y|n): "
@@ -258,7 +258,7 @@ while true; do
             while true; do
                 read -r -p "Input full partition name in format /dev/sdXY: " ANS
                 validate_path_b "${ANS}"
-                if [ $? -eq 1 ]; then
+                if [[ $? -eq 1 ]]; then
                     echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
                     read -r ANS
                     case "${ANS}" in
@@ -277,9 +277,9 @@ while true; do
             PARTITIONS+=("${ANS}")
             while true; do
                 read -r -p "Input image file name: " ANS2
-                if [ "${ACTION}" = "restore" ]; then
+                if [[ "${ACTION}" = "restore" ]]; then
                     validate_path_f "${BACKUP_PATH}"/"${ANS2}"
-                    if [ $? -eq 1 ]; then
+                    if [[ $? -eq 1 ]]; then
                         echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
                         read -r ANS2
                         case "${ANS2}" in
@@ -320,17 +320,17 @@ function preview_and_confirm() {
     for idx in "${!PARTITIONS[@]}"; do
         PART=${PARTITIONS[$idx]}
         IMG=${IMAGES[$idx]}
-        if [ "${ACTION}" = "backup" ]; then
+        if [[ "${ACTION}" = "backup" ]]; then
             INPUT_PATH="${PART}"
             OUTPUT_PATH="${BACKUP_PATH}"/"${IMG}"
-        elif [ "${ACTION}" = "restore" ]; then
+        elif [[ "${ACTION}" = "restore" ]]; then
             INPUT_PATH="${BACKUP_PATH}"/"${IMG}"
             OUTPUT_PATH="${PART}"
         fi
         LAUNCH_CMD="${COMMAND} if=${INPUT_PATH} of=${OUTPUT_PATH}"
         echo -e "${YEL}${LAUNCH_CMD}${END}"
     done
-    if [ "${ACTION}" = "restore" ]; then
+    if [[ "${ACTION}" = "restore" ]]; then
         echo -e "\n${MESSAGE}"
     fi
     echo -en "\n${YEL}WRN:${END} Are you sure (y|n): "
@@ -351,10 +351,10 @@ preview_and_confirm
 for idx in "${!PARTITIONS[@]}"; do
     PART=${PARTITIONS[$idx]}
     IMG=${IMAGES[$idx]}
-    if [ "${ACTION}" = "backup" ]; then
+    if [[ "${ACTION}" = "backup" ]]; then
         INPUT_PATH="${PART}"
         OUTPUT_PATH="${BACKUP_PATH}"/"${IMG}"
-    elif [ "${ACTION}" = "restore" ]; then
+    elif [[ "${ACTION}" = "restore" ]]; then
         INPUT_PATH="${BACKUP_PATH}"/"${IMG}"
         OUTPUT_PATH="${PART}"
     fi

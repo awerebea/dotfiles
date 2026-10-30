@@ -30,7 +30,7 @@ IFS=$'\n'
 ## Script arguments
 FILE_PATH="${1}" # Full path of the highlighted file
 PV_WIDTH="${2}"  # Width of the preview pane (number of fitting characters)
-## shellcheck disable=SC2034 # PV_HEIGHT is provided for convenience and unused
+# shellcheck disable=SC2034 # PV_HEIGHT is provided for convenience and unused
 PV_HEIGHT="${3}"        # Height of the preview pane (number of fitting characters)
 IMAGE_CACHE_PATH="${4}" # Full path that should be used to cache image preview
 PV_IMAGE_ENABLED="${5}" # 'True' if image previews are enabled, 'False' otherwise.
@@ -45,7 +45,9 @@ HIGHLIGHT_TABWIDTH=${HIGHLIGHT_TABWIDTH:-4}
 HIGHLIGHT_STYLE=${HIGHLIGHT_STYLE:-~/.highlight/my_gruvbox.theme}
 HIGHLIGHT_OPTIONS="--replace-tabs=${HIGHLIGHT_TABWIDTH} -n --style=${HIGHLIGHT_STYLE} ${HIGHLIGHT_OPTIONS:-}"
 PYGMENTIZE_STYLE=${PYGMENTIZE_STYLE:-autumn}
+# shellcheck disable=SC2034 # used by the commented-out openscad preview
 OPENSCAD_IMGSIZE=${RNGR_OPENSCAD_IMGSIZE:-1000,1000}
+# shellcheck disable=SC2034 # used by the commented-out openscad preview
 OPENSCAD_COLORSCHEME=${RNGR_OPENSCAD_COLORSCHEME:-Tomorrow Night}
 
 handle_extension() {
@@ -131,6 +133,7 @@ handle_image() {
     ## rendered from vector graphics. If the conversion program allows
     ## specifying only one dimension while keeping the aspect ratio, the width
     ## will be used.
+    # shellcheck disable=SC2034 # used by the commented-out previews
     local DEFAULT_SIZE="1920x1080"
 
     local mimetype="${1}"
@@ -366,4 +369,5 @@ handle_extension
 handle_mime "${MIMETYPE}"
 handle_fallback
 
+# shellcheck disable=SC2317 # handle_fallback exits, kept as a safety net
 exit 1
