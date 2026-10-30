@@ -18,11 +18,11 @@ usage() {
 }
 
 #check for beta flag
-if [ -n "$1" ] && [ "$1" != "beta" ]; then
+if [[ -n "$1" ]] && [[ "$1" != "beta" ]]; then
     usage
 fi
 
-if [ -n "$1" ]; then
+if [[ -n "$1" ]]; then
     install_beta="beta "
 fi
 
@@ -32,9 +32,8 @@ cd "$tmp_dir"
 
 #make sure unzip tool is available and choose one to work with
 set +e
-for tool in ${unzip_tools_list[*]}; do
-    trash=$(hash "$tool" 2>>errors)
-    if [ "$?" -eq 0 ]; then
+for tool in "${unzip_tools_list[@]}"; do
+    if hash "$tool" 2>>errors; then
         unzip_tool="$tool"
         break
     fi
@@ -42,8 +41,8 @@ done
 set -e
 
 # exit if no unzip tools available
-if [ -z "$unzip_tool" ]; then
-    printf "\nNone of the supported tools for extracting zip archives (${unzip_tools_list[*]}) were found. "
+if [[ -z "$unzip_tool" ]]; then
+    printf "\nNone of the supported tools for extracting zip archives (%s) were found. " "${unzip_tools_list[*]}"
     printf "Please install one of them and try again.\n\n"
     exit 4
 fi
@@ -53,14 +52,14 @@ export XDG_CONFIG_HOME=config
 
 #check installed version of rclone to determine if update is necessary
 version=$(rclone --version 2>>errors | head -n 1)
-if [ -z "$install_beta" ]; then
+if [[ -z "$install_beta" ]]; then
     current_version=$(curl -fsS https://downloads.rclone.org/version.txt)
 else
     current_version=$(curl -fsS https://beta.rclone.org/version.txt)
 fi
 
-if [ "$version" = "$current_version" ]; then
-    printf "\nThe latest ${install_beta}version of rclone ${version} is already installed.\n\n"
+if [[ "$version" = "$current_version" ]]; then
+    printf "\nThe latest %sversion of rclone %s is already installed.\n\n" "$install_beta" "$version"
     exit 3
 fi
 
@@ -114,7 +113,7 @@ case "$OS_type" in
 esac
 
 #download and unzip
-if [ -z "$install_beta" ]; then
+if [[ -z "$install_beta" ]]; then
     download_link="https://downloads.rclone.org/rclone-current-${OS}-${OS_type}.zip"
     rclone_zip="rclone-current-${OS}-${OS_type}.zip"
 else
@@ -138,7 +137,7 @@ case "$unzip_tool" in
         ;;
 esac
 
-cd $unzip_dir/*
+cd "$unzip_dir"/*
 
 #mounting rclone to environment
 
@@ -150,7 +149,7 @@ case "$OS" in
         # chown root:root "$HOME"/.local/bin/rclone.new
         mv "$HOME"/.local/bin/rclone.new "$HOME"/.local/bin/rclone
         #manual
-        if ! [ -x "$(command -v mandb)" ]; then
+        if ! [[ -x "$(command -v mandb)" ]]; then
             echo 'mandb not found. The rclone man docs will not be installed.'
         else
             mkdir -p "$HOME"/.local/share/man/man1
@@ -186,6 +185,6 @@ esac
 #update version variable post install
 version=$(rclone --version 2>>errors | head -n 1)
 
-printf "\n${version} has successfully installed."
+printf "\n%s has successfully installed." "$version"
 printf '\nNow run "rclone config" for setup. Check https://rclone.org/docs/ for more details.\n\n'
 exit 0

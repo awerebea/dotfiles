@@ -5,7 +5,7 @@ tmp_file="$(mktemp -t tmp.XXXXXXXX)"
 
 while IFS= read -r line; do
     path="$(echo "$line" | cut -d"|" -f1)"
-    [ -d "$path" ] && echo "$line" >>"$tmp_file"
+    [[ -d "$path" ]] && echo "$line" >>"$tmp_file"
 done <"$FILE"
 
 mv "$tmp_file" "$FILE"

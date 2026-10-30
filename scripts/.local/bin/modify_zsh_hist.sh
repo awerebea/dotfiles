@@ -1,4 +1,5 @@
 #!/usr/bin/env zsh
+# shellcheck disable=SC1071 # zsh script, shellcheck cannot check it
 # "Squash" multi-line commands in bash_history file to one line
 
 SOURCE_FILE="zsh_history"

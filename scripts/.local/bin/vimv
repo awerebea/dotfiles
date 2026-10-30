@@ -5,11 +5,12 @@ set -eu
 # USAGE: vimv [file1 file2]
 # https://github.com/thameera/vimv
 
-declare -r FILENAMES_FILE=$(mktemp "${TMPDIR:-/tmp}/vimv.XXX")
+FILENAMES_FILE=$(mktemp "${TMPDIR:-/tmp}/vimv.XXX")
+readonly FILENAMES_FILE
 
 trap '{ rm -f "${FILENAMES_FILE}" ; }' EXIT
 
-if [ $# -ne 0 ]; then
+if [[ $# -ne 0 ]]; then
     src=("$@")
 else
     IFS=$'\r\n' GLOBIGNORE='*' command eval 'src=($(ls))'
@@ -23,6 +24,7 @@ ${EDITOR:-vi} "${FILENAMES_FILE}"
 
 IFS=$'\r\n' GLOBIGNORE='*' command eval 'dest=($(cat "${FILENAMES_FILE}"))'
 
+# shellcheck disable=SC2154 # dest is set by the eval above
 if ((${#src[@]} != ${#dest[@]})); then
     echo "WARN: Number of files changed. Did you delete a line by accident? Aborting.." >&2
     exit 1
@@ -30,7 +32,7 @@ fi
 
 declare -i count=0
 for ((i = 0; i < ${#src[@]}; ++i)); do
-    if [ "${src[i]}" != "${dest[i]}" ]; then
+    if [[ "${src[i]}" != "${dest[i]}" ]]; then
         mkdir -p "$(dirname "${dest[i]}")"
         if git ls-files --error-unmatch "${src[i]}" >/dev/null 2>&1; then
             git mv "${src[i]}" "${dest[i]}"

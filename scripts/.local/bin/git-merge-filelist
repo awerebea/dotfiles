@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Check if the commit hash is provided
-if [ $# -eq 0 ]; then
+if [[ $# -eq 0 ]]; then
     echo "Please provide the merge commit hash as a parameter."
     exit 1
 fi
@@ -10,7 +10,7 @@ fi
 commit_hash="$1"
 
 # Check if the commit hash is a merge commit
-if [ "$(git cat-file -p "$commit_hash" | grep -c parent)" -lt 2 ]; then
+if [[ "$(git cat-file -p "$commit_hash" | grep -c parent)" -lt 2 ]]; then
     echo "The provided commit hash is not a merge commit."
     exit 1
 fi

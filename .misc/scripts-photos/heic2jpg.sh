@@ -24,7 +24,7 @@ mapfile -d $'\0' file_list < <(
 
 shopt -s nocasematch
 i=0
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     echo "${file_list[$i]}"
     heif-convert -q 90 "${file_list[$i]}" "${file_list[$i]/%.HEIC/.jpg}" || exit $?
     touch -r "${file_list[$i]}" "${file_list[$i]/%.HEIC/.jpg}"
@@ -42,7 +42,7 @@ SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
 echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
-echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "Time elapsed: $(date -d@"$SECONDS_ELEAPSED" -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 
 echo -en "${YEL}WRN:${END} "
 if read -n 1 -t 60 -s -r -p "The system will be suspended after 1 minute. Press any key to prevent suspension and exit now."; then

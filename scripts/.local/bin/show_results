@@ -49,8 +49,8 @@ _process_cmd_options() {
     # Expand squashed short options (-pa -> -p -a) into separate tokens so
     # the parsing loop below can handle them one at a time, same as `ls -la`.
     local expanded=() chars i c rest take_value=0
-    while [ $# -gt 0 ]; do
-        if [ "$take_value" -eq 1 ]; then
+    while [[ $# -gt 0 ]]; do
+        if [[ "$take_value" -eq 1 ]]; then
             # Value of the previous option: keep it as-is, even if it starts
             # with '-'
             expanded+=("$1")
@@ -75,7 +75,7 @@ _process_cmd_options() {
                     case "$value_opts" in
                         *"$c"*)
                             rest="${chars:i+1}"
-                            if [ -n "$rest" ]; then
+                            if [[ -n "$rest" ]]; then
                                 expanded+=("$rest")
                             else
                                 take_value=1
@@ -133,7 +133,7 @@ _process_cmd_options() {
     declare -A g_seen_elements
     g_envs=()
     for element in "${g_envs_raw[@]}"; do
-        if [ "${g_seen_elements[$element]}" = "" ]; then
+        if [[ "${g_seen_elements[$element]}" = "" ]]; then
             g_envs+=("$element")
             g_seen_elements["$element"]=1
         fi
@@ -145,9 +145,9 @@ _process_cmd_options() {
             exit 1
         fi
     done
-    if [ "${#g_envs[@]}" -gt 1 ]; then
+    if [[ "${#g_envs[@]}" -gt 1 ]]; then
         g_envs_pattern="{$(__join_by ',' "${g_envs[@]}")}"
-    elif [ "${#g_envs[@]}" -eq 1 ]; then
+    elif [[ "${#g_envs[@]}" -eq 1 ]]; then
         g_envs_pattern="${g_envs[0]}"
     fi
 }
@@ -156,7 +156,7 @@ _process_cmd_options() {
 _main() {
     local results pattern commands subdirs
     _process_cmd_options "$@"
-    if [ "$g_envs_pattern" == "" ]; then
+    if [[ "$g_envs_pattern" == "" ]]; then
         g_envs_pattern="{$(__join_by ',' "${VALID_ENVS[@]}")}"
     fi
 
@@ -165,9 +165,9 @@ _main() {
     "$g_error" && results+=("error")
 
     pattern="(output|error)\.txt"
-    if [ "${#results[@]}" -gt 1 ]; then
+    if [[ "${#results[@]}" -gt 1 ]]; then
         pattern="($(__join_by '|' "${results[@]}"))\.txt"
-    elif [ "${#results[@]}" -eq 1 ]; then
+    elif [[ "${#results[@]}" -eq 1 ]]; then
         pattern="${results[0]}\.txt"
     fi
 
@@ -176,9 +176,9 @@ _main() {
     "$g_apply" && commands+=("apply")
 
     subdirs=""
-    if [ "${#commands[@]}" -gt 1 ]; then
+    if [[ "${#commands[@]}" -gt 1 ]]; then
         subdirs="{$(__join_by ',' "${commands[@]}")}"
-    elif [ "${#commands[@]}" -eq 1 ]; then
+    elif [[ "${#commands[@]}" -eq 1 ]]; then
         subdirs="${commands[0]}"
     fi
 

@@ -2,7 +2,7 @@
 # Copy config files to user's home directory on remote host
 
 # Check if required argument is provided
-[ $# -lt 1 ] && echo "Specify the target in the format: user@hostgame" && exit 1
+[[ $# -lt 1 ]] && echo "Specify the target in the format: user@hostgame" && exit 1
 
 FILE_LIST=(".vimrc" ".zshrc" ".p10k.zsh")
 FILE_LIST+=(".tmux.conf" ".tmux.conf.local" "scripts/install_tmux.sh")

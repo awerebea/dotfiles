@@ -6,9 +6,9 @@ END='\e[0m' # No Color
 
 function fingerprint_toggle() {
     local ACTION
-    if [ "$1" == "disable" ]; then
+    if [[ "$1" == "disable" ]]; then
         ACTION="remove"
-    elif [ "$1" == "enable" ]; then
+    elif [[ "$1" == "enable" ]]; then
         ACTION="enable"
     fi
     echo -en "${YEL}WRN:${END} Do you want to $1 fingerprint? (y|n): "

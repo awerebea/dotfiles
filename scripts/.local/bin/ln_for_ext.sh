@@ -42,7 +42,7 @@ END='\e[0m' # No Color
 
 # Exit with an error if option $1 has no value ($2: number of arguments left)
 function require_value() {
-    if [ "$2" -lt 2 ]; then
+    if [[ "$2" -lt 2 ]]; then
         echo "Option '$1' requires a value" >&2
         usage >&2
         exit 1
@@ -52,7 +52,7 @@ function require_value() {
 
 # Check if the specified path exists and is a directory
 function validate_path_d() {
-    if [ ! -d "$1" ]; then
+    if [[ ! -d "$1" ]]; then
         echo "Path: ${RED}${1}${END} is not a valid directory" >&2
         exit 1
     fi
@@ -70,8 +70,8 @@ VALUE_OPTS="sde"
 # below can handle them one at a time, same as `ls -la`.
 expanded=()
 take_value=0
-while [ $# -gt 0 ]; do
-    if [ "$take_value" -eq 1 ]; then
+while [[ $# -gt 0 ]]; do
+    if [[ "$take_value" -eq 1 ]]; then
         # Value of the previous option: keep it as-is, even if it starts
         # with '-'
         expanded+=("$1")
@@ -96,7 +96,7 @@ while [ $# -gt 0 ]; do
                 case "$VALUE_OPTS" in
                     *"$c"*)
                         rest="${chars:i+1}"
-                        if [ -n "$rest" ]; then
+                        if [[ -n "$rest" ]]; then
                             expanded+=("$rest")
                         else
                             take_value=1
@@ -115,7 +115,7 @@ done
 set -- "${expanded[@]}"
 
 # Process command line options
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
     case "$1" in
         --version)
             printf '%s %s\n' "$PROG_NAME" "$VERSION"
@@ -126,7 +126,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         -s | --src | --src=*)
-            if [ "$1" = "-s" ] || [ "$1" = "--src" ]; then
+            if [[ "$1" = "-s" ]] || [[ "$1" = "--src" ]]; then
                 require_value "$1" "$#"
                 shift
                 SRC_DIR="$1"
@@ -136,7 +136,7 @@ while [ $# -gt 0 ]; do
             validate_path_d "${SRC_DIR}"
             ;;
         -d | --dst | --dst=*)
-            if [ "$1" = "-d" ] || [ "$1" = "--dst" ]; then
+            if [[ "$1" = "-d" ]] || [[ "$1" = "--dst" ]]; then
                 require_value "$1" "$#"
                 shift
                 DST_DIR="$1"
@@ -146,7 +146,7 @@ while [ $# -gt 0 ]; do
             validate_path_d "${DST_DIR}"
             ;;
         -e | --ext | --ext=*)
-            if [ "$1" = "-e" ] || [ "$1" = "--ext" ]; then
+            if [[ "$1" = "-e" ]] || [[ "$1" = "--ext" ]]; then
                 require_value "$1" "$#"
                 shift
                 EXT="$1"

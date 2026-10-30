@@ -665,6 +665,7 @@ shquote() {
 path_expr() {
     local path="$1"
 
+    # shellcheck disable=SC2016,SC2088 # emit a literal "$HOME" for the remote shell
     case "$path" in
         "~") printf '"$HOME"' ;;
         "~/"*) printf '"$HOME"/%s' "$(shquote "${path#\~/}")" ;;
@@ -686,6 +687,7 @@ strip_trailing_slashes() {
 reject_user_tilde() {
     local path="$1" label="$2"
 
+    # shellcheck disable=SC2088 # matching a literal ~
     case "$path" in
         "~" | "~/"*) return 0 ;;
         "~"*) exit_err "$label: ~user paths are not supported, use an absolute path: $path" 16 ;;
@@ -706,6 +708,7 @@ parse_path_spec() {
     _PS_HOST=""
     _PS_PATH=""
 
+    # shellcheck disable=SC2088 # matching a literal ~
     case "$spec" in
         \[*)
             # Checked before the daemon syntax below, which [::1]:/path would
@@ -1019,6 +1022,7 @@ write_file_on() {
 # The path is returned in _TMP_FILE: a command substitution would run these in
 # a subshell and lose the bookkeeping needed to clean the file up later.
 create_remote_tmp_file() {
+    # shellcheck disable=SC2016 # TMPDIR expands on the destination host
     if ! _TMP_FILE=$(run_on dst 'mktemp "${TMPDIR:-/tmp}/bsnap.XXXXXX"'); then
         exit_err "Failed to create a temporary file on $DST_HOST" 4
     fi

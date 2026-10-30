@@ -1,4 +1,6 @@
 #! bash oh-my-bash.module
+# Sourced by oh-my-bash, which defines the _omb_prompt_* colors, OSH and SCM
+# shellcheck shell=bash disable=SC2239,SC2154
 
 # powerbash10k theme for oh-my-bash, inspired by powerlevel10k zsh theme
 # made by awerebea, based on brainy theme by MunifTanjim
@@ -11,7 +13,7 @@ function __pb10k_remove_empty_elements {
     for element in "${origin_array[@]}"; do
         trimmed="${element#"${element%%[![:space:]]*}"}"
         trimmed="${trimmed%"${trimmed##*[![:space:]]}"}"
-        if [ "$trimmed" != "" ]; then
+        if [[ "$trimmed" != "" ]]; then
             new_array+=("$element")
         fi
     done
@@ -50,11 +52,11 @@ trap '__pb10k_timer_start' DEBUG
 function __pb10k_top_left_parse {
     local args
     IFS="|" read -ra args <<<"$1"
-    if [ "${args[3]}" != "" ]; then
+    if [[ "${args[3]}" != "" ]]; then
         __TOP_LEFT+="${args[2]}${args[3]}"
     fi
     __TOP_LEFT+="${args[0]}${args[1]}"
-    if [ "${args[4]}" != "" ]; then
+    if [[ "${args[4]}" != "" ]]; then
         __TOP_LEFT+="${args[2]}${args[4]}"
     fi
     __TOP_LEFT+=" "
@@ -64,11 +66,11 @@ function __pb10k_top_right_parse {
     local args
     IFS="|" read -ra args <<<"$1"
     __TOP_RIGHT+=" "
-    if [ "${args[3]}" != "" ]; then
+    if [[ "${args[3]}" != "" ]]; then
         __TOP_RIGHT+="${args[2]}${args[3]}"
     fi
     __TOP_RIGHT+="${args[0]}${args[1]}"
-    if [ "${args[4]}" != "" ]; then
+    if [[ "${args[4]}" != "" ]]; then
         __TOP_RIGHT+="${args[2]}${args[4]}"
     fi
     __TOP_RIGHT_LEN=$((__TOP_RIGHT_LEN + ${#args[1]} + ${#args[3]} + ${#args[4]} + 1))
@@ -79,7 +81,7 @@ function __pb10k_bottom_parse {
     local args
     IFS="|" read -ra args <<<"$1"
     __BOTTOM+="${args[0]}${args[1]}"
-    [ ${#args[1]} -gt 0 ] && __BOTTOM+=" "
+    [[ ${#args[1]} -gt 0 ]] && __BOTTOM+=" "
 }
 
 function __pb10k_top {
@@ -92,7 +94,7 @@ function __pb10k_top {
     IFS=" " read -ra segments <<<"$__PB10K_TOP_LEFT"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
-        [ "$info" != "" ] && __pb10k_top_left_parse "$info"
+        [[ "$info" != "" ]] && __pb10k_top_left_parse "$info"
     done
 
     terminal_width=$(tput cols)
@@ -104,10 +106,10 @@ function __pb10k_top {
     IFS=" " read -ra segments <<<"$__PB10K_TOP_RIGHT"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
-        [ "$info" != "" ] && __pb10k_top_right_parse "$info"
+        [[ "$info" != "" ]] && __pb10k_top_right_parse "$info"
     done
 
-    [ "$__TOP_RIGHT_LEN" -gt 0 ] && __TOP_RIGHT_LEN=$((__TOP_RIGHT_LEN - 1))
+    [[ "$__TOP_RIGHT_LEN" -gt 0 ]] && __TOP_RIGHT_LEN=$((__TOP_RIGHT_LEN - 1))
     cursor_adjust="\033[${__TOP_RIGHT_LEN}D"
     __TOP_LEFT+="$cursor_adjust"
 
@@ -120,7 +122,7 @@ function __pb10k_bottom {
     IFS=" " read -ra segments <<<"$__PB10K_BOTTOM"
     for seg in "${segments[@]}"; do
         info="$(__pb10k_prompt_"$seg")"
-        [ "$info" != "" ] && __pb10k_bottom_parse "$info"
+        [[ "$info" != "" ]] && __pb10k_bottom_parse "$info"
     done
     printf "\n%s" "$__BOTTOM"
 }
@@ -129,16 +131,16 @@ function __pb10k_bottom {
 function __pb10k_prompt_user_info {
     local color box info
     color=$_omb_prompt_bold_olive
-    if [ "$THEME_SHOW_SUDO" == "true" ]; then
+    if [[ "$THEME_SHOW_SUDO" == "true" ]]; then
         if sudo -n id -u 2>&1 | grep -q 0; then
             color=$_omb_prompt_bold_brown
         fi
     fi
     box=""
     info="$USER@$(hostname | cut -d'.' -f1)"
-    if [ "$SSH_CLIENT" != "" ]; then
+    if [[ "$SSH_CLIENT" != "" ]]; then
         printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_white" "$box"
-    elif [ "$__PB10K_PROMPT_LOCAL_USER_INFO" == "true" ]; then
+    elif [[ "$__PB10K_PROMPT_LOCAL_USER_INFO" == "true" ]]; then
         printf "%s|%s" "$color" "$info"
     fi
 }
@@ -153,24 +155,24 @@ function __pb10k_prompt_dir {
 
 function __pb10k_prompt_scm {
     local color box info
-    [ "$THEME_SHOW_SCM" != "true" ] && return
+    [[ "$THEME_SHOW_SCM" != "true" ]] && return
     color=$_omb_prompt_bold_green
     scm
     box=""
-    info="$(if [ "$SCM" == "git" ]; then echo "  "; fi)"
-    info+="$(if [ "$SCM" != "NONE" ]; then echo " $(scm_prompt_info)"; fi)"
-    [ "$info" == "" ] && return
+    info="$(if [[ "$SCM" == "git" ]]; then echo "  "; fi)"
+    info+="$(if [[ "$SCM" != "NONE" ]]; then echo " $(scm_prompt_info)"; fi)"
+    [[ "$info" == "" ]] && return
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_green" "$box"
 }
 
 function __pb10k_prompt_python {
     local color box info response_array venvs
-    [ "$THEME_SHOW_PYTHON" != "true" ] && return
+    [[ "$THEME_SHOW_PYTHON" != "true" ]] && return
     color=$_omb_prompt_bold_olive
     box=""
     read -ra response_array <<<"$(__pb10k_remove_empty_elements "$(python_version_prompt)")"
     info="${response_array[-1]}"
-    if [ ${#response_array[@]} -gt 1 ]; then
+    if [[ ${#response_array[@]} -gt 1 ]]; then
         # Print all elements except the last one, separated by commas
         venvs=$(printf "%s," "${response_array[@]:0:${#response_array[@]}-1}")
         # Remove the trailing comma
@@ -178,13 +180,13 @@ function __pb10k_prompt_python {
         info="${info} (${venvs})"
     fi
     info="${info/#py-/ }"
-    [ ${#response_array[@]} -lt 2 ] && return
+    [[ ${#response_array[@]} -lt 2 ]] && return
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_navy" "$box"
 }
 
 function __pb10k_prompt_ruby {
     local color box info
-    [ "$THEME_SHOW_RUBY" != "true" ] && return
+    [[ "$THEME_SHOW_RUBY" != "true" ]] && return
     color=$_omb_prompt_bold_white
     box="[|]"
     info="rb-$(_omb_prompt_print_ruby_env)"
@@ -193,7 +195,7 @@ function __pb10k_prompt_ruby {
 
 function __pb10k_prompt_todo {
     local color box info
-    [ "$THEME_SHOW_TODO" != "true" ] && return
+    [[ "$THEME_SHOW_TODO" != "true" ]] && return
     _omb_util_binary_exists todo.sh || return
     color=$_omb_prompt_bold_white
     box="[|]"
@@ -203,7 +205,7 @@ function __pb10k_prompt_todo {
 
 function __pb10k_prompt_clock {
     local color box info
-    [ "$THEME_SHOW_CLOCK" != "true" ] && return
+    [[ "$THEME_SHOW_CLOCK" != "true" ]] && return
     color=$THEME_CLOCK_COLOR
     box=""
     info=" $(date +"$THEME_CLOCK_FORMAT")"
@@ -212,31 +214,31 @@ function __pb10k_prompt_clock {
 
 function __pb10k_prompt_battery {
     local color box info
-    [ ! -e "$OSH/plugins/battery/battery.plugin.sh" ] ||
-        [ "$THEME_SHOW_BATTERY" != "true" ] && return
+    [[ ! -e "$OSH/plugins/battery/battery.plugin.sh" ]] ||
+        [[ "$THEME_SHOW_BATTERY" != "true" ]] && return
     info=$(battery_percentage)
     color=$_omb_prompt_bold_green
-    if [ "$info" -lt 50 ]; then
+    if [[ "$info" -lt 50 ]]; then
         color=$_omb_prompt_bold_olive
-    elif [ "$info" -lt 25 ]; then
+    elif [[ "$info" -lt 25 ]]; then
         color=$_omb_prompt_bold_brown
     fi
     box="[|]"
     ac_adapter_connected && info+="+"
-    [ "$info" == "100+" ] && info="AC"
+    [[ "$info" == "100+" ]] && info="AC"
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_white" "$box"
 }
 
 function __pb10k_prompt_exitcode {
     local color
-    [ "$THEME_SHOW_EXITCODE" != "true" ] && return
+    [[ "$THEME_SHOW_EXITCODE" != "true" ]] && return
     color=$_omb_prompt_bold_red
-    [ "$exitcode" -ne 0 ] && printf "%s|%s" "$color" "✘ ${exitcode}"
+    [[ "$exitcode" -ne 0 ]] && printf "%s|%s" "$color" "✘ ${exitcode}"
 }
 
 function __pb10k_prompt_char {
     local color
-    color=$(if [ "$exitcode" -ne 0 ]; then
+    color=$(if [[ "$exitcode" -ne 0 ]]; then
         echo "$_omb_prompt_bold_red"
     else
         echo "$_omb_prompt_bold_green"
@@ -248,10 +250,10 @@ function __pb10k_prompt_cmd_duration {
     local color box info
     color=$_omb_prompt_bold_navy
     box=""
-    info="$(if [ "$__pb10k_timer_show" -gt 0 ]; then
+    info="$(if [[ "$__pb10k_timer_show" -gt 0 ]]; then
         printf " %s" "$(__pb10k_format_duration "$__pb10k_timer_show")"
     fi)"
-    [ "$info" == "" ] && return
+    [[ "$info" == "" ]] && return
     printf "%s|%s|%s|%s" "$color" "$info" "$_omb_prompt_bold_white" "$box"
 }
 

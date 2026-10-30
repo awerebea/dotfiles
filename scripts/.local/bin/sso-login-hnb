@@ -11,7 +11,7 @@ _check_inputs() {
         exit 1
     fi
 
-    if [ "$#" -lt 1 ]; then
+    if [[ "$#" -lt 1 ]]; then
         printf "The desired AWS profile(s) must be passed as arguments.\n" >&2
         exit 1
     fi
@@ -44,7 +44,7 @@ _get_envs() {
             echo "Invalid environment passed." >&2
             exit 1
         fi
-        if [ "$env" = "all" ]; then
+        if [[ "$env" = "all" ]]; then
             envs=("${VALID_ENVS[@]}")
             unset 'envs[0]' # remove "all" from an array of envs
             break

@@ -61,7 +61,7 @@ MISSING="<none>"
 
 # Exit with an error if option $1 has no value ($2: number of arguments left)
 function require_value() {
-    if [ "$2" -lt 2 ]; then
+    if [[ "$2" -lt 2 ]]; then
         echo "Option '$1' requires a value" >&2
         usage >&2
         exit 1
@@ -71,7 +71,7 @@ function require_value() {
 
 # Check if the specified path exists and is a directory
 function validate_path_d() {
-    if [ ! -d "$1" ]; then
+    if [[ ! -d "$1" ]]; then
         echo -e "Path: ${RED}${1}${END} is not a valid directory" >&2
         exit 1
     fi
@@ -88,13 +88,13 @@ function resolve_media() {
     local CANDIDATES=()
     local FILE
 
-    if [ -f "${BASE}" ]; then
+    if [[ -f "${BASE}" ]]; then
         echo "${BASE##*/}"
         return 0
     fi
     shopt -s nullglob
     for FILE in "${BASE}".*; do
-        [ "${FILE}" = "${XMP}" ] && continue
+        [[ "${FILE}" = "${XMP}" ]] && continue
         [[ "${FILE,,}" == *.xmp ]] && continue
         CANDIDATES+=("${FILE}")
     done
@@ -118,13 +118,13 @@ function print_table() {
         ROWS+=("${ROW}")
         IFS=$'\t' read -r -a FIELDS <<<"${ROW}"
         for ((i = 0; i < ${#FIELDS[@]}; i++)); do
-            [ "${#FIELDS[i]}" -gt "${WIDTHS[i]:-0}" ] && WIDTHS[i]=${#FIELDS[i]}
+            [[ "${#FIELDS[i]}" -gt "${WIDTHS[i]:-0}" ]] && WIDTHS[i]=${#FIELDS[i]}
         done
     done
     for ROW in "${ROWS[@]}"; do
         IFS=$'\t' read -r -a FIELDS <<<"${ROW}"
         for ((i = 0; i < ${#FIELDS[@]}; i++)); do
-            if [ "${i}" -eq $((${#FIELDS[@]} - 1)) ]; then
+            if [[ "${i}" -eq $((${#FIELDS[@]} - 1)) ]]; then
                 printf '%s\n' "${FIELDS[i]}"
             else
                 PAD=$((WIDTHS[i] - ${#FIELDS[i]} + 2))
@@ -165,7 +165,7 @@ function cmd_read() {
             1) MEDIA="${XMP%.*} (no media file)" ;;
             *) MEDIA="${XMP%.*} (ambiguous media file)" ;;
         esac
-        if [ "${VALUE}" = "${MISSING}" ]; then
+        if [[ "${VALUE}" = "${MISSING}" ]]; then
             VALUE="-"
             UNSET=$((UNSET + 1))
         fi
@@ -174,7 +174,7 @@ function cmd_read() {
 
     {
         printf 'PATH\tCURRENT NAME\tPRESERVED NAME\n'
-        [ "${#ROWS[@]}" -gt 0 ] && printf '%s\n' "${ROWS[@]}"
+        [[ "${#ROWS[@]}" -gt 0 ]] && printf '%s\n' "${ROWS[@]}"
     } | print_table
     echo
     echo -e "Sidecars: ${TOTAL}, with tag: $((TOTAL - UNSET)), ${YEL}without tag: ${UNSET}${END}"
@@ -187,7 +187,7 @@ function cmd_read() {
 function confirm_overwrite() {
     local ANSWER=
 
-    if [ "${OVERWRITE_ALL}" = true ]; then
+    if [[ "${OVERWRITE_ALL}" = true ]]; then
         return 0
     fi
     if ! (: </dev/tty) 2>/dev/null; then
@@ -219,10 +219,10 @@ function cmd_write() {
     while IFS=$'\t' read -r DIR XMP VALUE; do
         MEDIA=$(resolve_media "${DIR}/${XMP}")
         STATUS=$?
-        if [ "${VALUE}" != "${MISSING}" ]; then
-            if [ "${STATUS}" -eq 0 ] && [ "${MEDIA}" != "${VALUE}" ]; then
+        if [[ "${VALUE}" != "${MISSING}" ]]; then
+            if [[ "${STATUS}" -eq 0 ]] && [[ "${MEDIA}" != "${VALUE}" ]]; then
                 DIFFER=$((DIFFER + 1))
-                if [ "${OVERWRITE}" = true ]; then
+                if [[ "${OVERWRITE}" = true ]]; then
                     C_FILE+=("${DIR}/${XMP}")
                     C_SHOW+=("${DIR#"${ROOT}"}/${XMP}")
                     C_SHOW[-1]="${C_SHOW[-1]#/}"
@@ -246,11 +246,11 @@ function cmd_write() {
             1) MEDIA="- (skipped: no media file)" ;;
             *) MEDIA="- (skipped: ambiguous media file)" ;;
         esac
-        [ "${STATUS}" -ne 0 ] && SKIPPED=$((SKIPPED + 1))
+        [[ "${STATUS}" -ne 0 ]] && SKIPPED=$((SKIPPED + 1))
         ROWS+=("$(relative_dir "${DIR}")"$'\t'"${XMP}"$'\t'"${MEDIA}")
     done < <(scan_sidecars)
 
-    if [ "${#ROWS[@]}" -gt 0 ]; then
+    if [[ "${#ROWS[@]}" -gt 0 ]]; then
         {
             printf 'PATH\tSIDECAR\tNAME TO PRESERVE\n'
             printf '%s\n' "${ROWS[@]}"
@@ -262,9 +262,9 @@ function cmd_write() {
     # a replaced value can be restored from the output
     for ((i = 0; i < ${#C_FILE[@]}; i++)); do
         echo -e "${YEL}WRN:${END} ${C_SHOW[i]}: tag is '${C_OLD[i]}', current name is '${C_NEW[i]}'" >&2
-        if [ "${DRY_RUN}" = true ]; then
+        if [[ "${DRY_RUN}" = true ]]; then
             REPLACED=$((REPLACED + 1))
-        elif [ "${ASSUME_YES}" = true ] || confirm_overwrite; then
+        elif [[ "${ASSUME_YES}" = true ]] || confirm_overwrite; then
             echo "  overwriting '${C_OLD[i]}' -> '${C_NEW[i]}'" >&2
             printf -- '-%s=%s\n%s\n-execute\n' \
                 "${TAG}" "${C_NEW[i]}" "${C_FILE[i]}" >>"${ARGFILE}"
@@ -274,22 +274,22 @@ function cmd_write() {
             KEPT=$((KEPT + 1))
         fi
     done
-    [ "${#C_FILE[@]}" -gt 0 ] && echo >&2
+    [[ "${#C_FILE[@]}" -gt 0 ]] && echo >&2
 
-    if [ "${DRY_RUN}" = true ]; then
+    if [[ "${DRY_RUN}" = true ]]; then
         echo -e "${YEL}Dry run:${END} ${TODO} to write, ${REPLACED} to overwrite, ${SKIPPED} skipped, ${KEPT} already set"
     else
-        if [ -s "${ARGFILE}" ]; then
+        if [[ -s "${ARGFILE}" ]]; then
             # Exit code 2 only means some files did not pass an -if condition
             exiftool -@ "${ARGFILE}" -common_args -q -q -m -P -overwrite_original || RC=$?
-            if [ "${RC}" -ne 0 ] && [ "${RC}" -ne 2 ]; then
+            if [[ "${RC}" -ne 0 ]] && [[ "${RC}" -ne 2 ]]; then
                 echo -e "${RED}exiftool failed with exit code ${RC}${END}" >&2
                 exit 1
             fi
         fi
         echo -e "${GRN}Written: ${TODO}${END}, overwritten: ${REPLACED}, skipped: ${SKIPPED}, already set: ${KEPT}"
     fi
-    if [ "${OVERWRITE}" != true ] && [ "${DIFFER}" -gt 0 ]; then
+    if [[ "${OVERWRITE}" != true ]] && [[ "${DIFFER}" -gt 0 ]]; then
         echo -e "${YEL}WRN:${END} ${DIFFER} existing value(s) differ from the current name, use --overwrite to review them" >&2
     fi
     return
@@ -312,8 +312,8 @@ VALUE_OPTS="p"
 # below can handle them one at a time, same as `ls -la`.
 expanded=()
 take_value=0
-while [ $# -gt 0 ]; do
-    if [ "$take_value" -eq 1 ]; then
+while [[ $# -gt 0 ]]; do
+    if [[ "$take_value" -eq 1 ]]; then
         # Value of the previous option: keep it as-is, even if it starts
         # with '-'
         expanded+=("$1")
@@ -338,7 +338,7 @@ while [ $# -gt 0 ]; do
                 case "$VALUE_OPTS" in
                     *"$c"*)
                         rest="${chars:i+1}"
-                        if [ -n "$rest" ]; then
+                        if [[ -n "$rest" ]]; then
                             expanded+=("$rest")
                         else
                             take_value=1
@@ -357,7 +357,7 @@ done
 set -- "${expanded[@]}"
 
 # Process command line options
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
     case "$1" in
         --version)
             printf '%s %s\n' "$PROG_NAME" "$VERSION"
@@ -368,7 +368,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         -p | --path | --path=*)
-            if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
+            if [[ "$1" = "-p" ]] || [[ "$1" = "--path" ]]; then
                 require_value "$1" "$#"
                 shift
                 ROOT="$1"
@@ -387,7 +387,7 @@ while [ $# -gt 0 ]; do
             DRY_RUN=true
             ;;
         write | read)
-            if [ -n "${COMMAND}" ]; then
+            if [[ -n "${COMMAND}" ]]; then
                 usage >&2
                 exit 1
             fi
@@ -402,7 +402,7 @@ while [ $# -gt 0 ]; do
 done
 
 # Main script
-if [ -z "${COMMAND}" ]; then
+if [[ -z "${COMMAND}" ]]; then
     usage >&2
     exit 1
 fi
@@ -412,12 +412,12 @@ if ! command -v exiftool >/dev/null 2>&1; then
 fi
 ROOT=${ROOT:-.}
 # Strip trailing slashes so relative paths are computed consistently
-[ "${ROOT}" != "/" ] && ROOT="${ROOT%"${ROOT##*[!/]}"}"
+[[ "${ROOT}" != "/" ]] && ROOT="${ROOT%"${ROOT##*[!/]}"}"
 DRY_RUN=${DRY_RUN:-false}
 OVERWRITE=${OVERWRITE:-false}
 ASSUME_YES=${ASSUME_YES:-false}
 OVERWRITE_ALL=false
-if [ "${ASSUME_YES}" = true ] && [ "${OVERWRITE}" != true ]; then
+if [[ "${ASSUME_YES}" = true ]] && [[ "${OVERWRITE}" != true ]]; then
     echo -e "${RED}--yes${END} only makes sense together with --overwrite" >&2
     exit 1
 fi

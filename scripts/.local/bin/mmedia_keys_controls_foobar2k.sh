@@ -2,7 +2,7 @@
 # Control Foobar2000 playback if running, default behavior if not.
 # Requires one of the arguments: play, stop, prev or next
 
-if [ $# -eq 0 ]; then
+if [[ $# -eq 0 ]]; then
     echo "Argument with the command is required"
     exit 1
 else
@@ -26,7 +26,7 @@ else
     esac
 fi
 
-if [ "$(pgrep 'foobar2000')" ]; then
+if pgrep 'foobar2000' >/dev/null; then
     wine /home/andrei/foobar2000/foobar2000.exe "${FB2K_CMD}"
 else
     for mplayer in $(qdbus |

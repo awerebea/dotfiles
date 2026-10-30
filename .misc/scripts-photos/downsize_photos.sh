@@ -33,9 +33,9 @@ for f in "${file_list[@]}"; do
 done
 
 i=0
-while [ $i -lt "${#file_list[@]}" ]; do
+while [[ $i -lt "${#file_list[@]}" ]]; do
     # echo "${file_list[$i]}"
-    if [ ! -f "${resized_list[$i]}" ]; then
+    if [[ ! -f "${resized_list[$i]}" ]]; then
         mkdir -p "$(dirname "${resized_list[$i]}")"
         progress-bar $((i + 1)) ${#file_list[@]} "${resized_list[$i]}"
         magick "${file_list[$i]}" -resize 3840x2560\> "${resized_list[$i]}" || exit $?
@@ -54,7 +54,7 @@ SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
 echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
-echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "Time elapsed: $(date -d@"$SECONDS_ELEAPSED" -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 
 echo -en "${YEL}WRN:${END} "
 if read -n 1 -t 60 -s -r -p "The system will be suspended after 1 minute. Press any key to prevent suspension and exit now."; then

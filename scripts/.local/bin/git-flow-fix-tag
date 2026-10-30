@@ -8,10 +8,14 @@ git-flow-fix-tag() {
 
     [[ -z $GIT_FLOW_PATH ]] && echo "git-flow binary not found!" && exit 1
 
+    # shellcheck disable=SC1003,SC2016 # literal git-flow source lines
     REL_1='eval git_do tag $opts "$tagname" "$BRANCH" || \'
+    # shellcheck disable=SC1003,SC2016 # literal git-flow source lines
     REL_2='eval git_do tag $opts "$tagname" "$MASTER_BRANCH" || \'
 
+    # shellcheck disable=SC1003,SC2016 # literal git-flow source lines
     HF_1='eval git_do tag $opts "$VERSION_PREFIX$VERSION" "$BRANCH" || \'
+    # shellcheck disable=SC1003,SC2016 # literal git-flow source lines
     HF_2='eval git_do tag $opts "$VERSION_PREFIX$VERSION" "$MASTER_BRANCH" || \'
 
     if sudo grep -F "$REL_1" "${GIT_FLOW_PATH}-release" >/dev/null; then

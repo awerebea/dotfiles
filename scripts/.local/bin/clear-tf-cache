@@ -55,8 +55,8 @@ VALUE_OPTS="p"
 # parsing loop below can handle them one at a time, same as `ls -la`.
 expanded=()
 take_value=0
-while [ $# -gt 0 ]; do
-    if [ "$take_value" -eq 1 ]; then
+while [[ $# -gt 0 ]]; do
+    if [[ "$take_value" -eq 1 ]]; then
         # Value of the previous option: keep it as-is, even if it starts
         # with '-'
         expanded+=("$1")
@@ -81,7 +81,7 @@ while [ $# -gt 0 ]; do
                 case "$VALUE_OPTS" in
                     *"$c"*)
                         rest="${chars:i+1}"
-                        if [ -n "$rest" ]; then
+                        if [[ -n "$rest" ]]; then
                             expanded+=("$rest")
                         else
                             take_value=1
@@ -104,7 +104,7 @@ dry_run=0
 no_color=0
 show_warnings=0
 search_path="."
-while [ $# -gt 0 ]; do
+while [[ $# -gt 0 ]]; do
     case "$1" in
         -f | --force)
             force=1
@@ -123,7 +123,7 @@ while [ $# -gt 0 ]; do
             shift
             ;;
         -p | --path)
-            if [ "$#" -lt 2 ]; then
+            if [[ "$#" -lt 2 ]]; then
                 echo "${ERROR_COLOR}ERROR:${COLOR_RESET} option '$1' requires a value" >&2
                 exit 1
             fi
@@ -149,7 +149,7 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-if [ "$no_color" -eq 1 ]; then
+if [[ "$no_color" -eq 1 ]]; then
     ERROR_COLOR=''
     WARN_COLOR=''
     PATH_COLOR=''
@@ -196,7 +196,7 @@ else
     )
 fi
 
-if [ "${#paths[@]}" -eq 0 ]; then
+if [[ "${#paths[@]}" -eq 0 ]]; then
     exit 0
 fi
 
@@ -211,19 +211,19 @@ total_kb=0
 
 for path in "${paths[@]}"; do
     size_kb=$(path_size_kb "$path")
-    [ -z "$size_kb" ] && size_kb=0
+    [[ -z "$size_kb" ]] && size_kb=0
     size_human=$(human_size "$size_kb")
 
     keep=1
     reason=""
-    if [ "$force" -eq 0 ]; then
+    if [[ "$force" -eq 0 ]]; then
         path_dir=$(dirname -- "$path")
         path_base=$(basename -- "$path")
         # check-ignore infers directory-ness from a trailing slash instead
         # of stat-ing the path, and the canonical Terraform ignore pattern
         # (**/.terraform/*) only covers the directory contents. Without the
         # slash the query looks like a file and the pattern never matches.
-        [ -d "$path" ] && path_base="$path_base/"
+        [[ -d "$path" ]] && path_base="$path_base/"
         # git's own -C flag (unrelated to this script's -C/--no-color) scopes
         # the command to the repo containing this specific path, so this
         # works when the current directory holds multiple unrelated clones
@@ -237,21 +237,21 @@ for path in "${paths[@]}"; do
         fi
     fi
 
-    if [ "$keep" -eq 1 ]; then
+    if [[ "$keep" -eq 1 ]]; then
         to_remove+=("$path")
         total_kb=$((total_kb + size_kb))
         echo "${PATH_COLOR}$path${COLOR_RESET} ${SIZE_COLOR}($size_human)${COLOR_RESET}"
-    elif [ "$show_warnings" -eq 1 ]; then
+    elif [[ "$show_warnings" -eq 1 ]]; then
         echo "${WARN_COLOR}WARNING: Skipped ($reason):${COLOR_RESET} ${PATH_COLOR}$path${COLOR_RESET} ${SIZE_COLOR}($size_human)${COLOR_RESET}"
     fi
 done
 
 total_human=$(human_size "$total_kb")
 
-if [ "$dry_run" -eq 1 ]; then
+if [[ "$dry_run" -eq 1 ]]; then
     echo "Would reclaim: ${SIZE_COLOR}$total_human${COLOR_RESET}"
 else
-    if [ "${#to_remove[@]}" -gt 0 ]; then
+    if [[ "${#to_remove[@]}" -gt 0 ]]; then
         rm -rf -- "${to_remove[@]}"
     fi
     echo "Reclaimed: ${SIZE_COLOR}$total_human${COLOR_RESET}"
