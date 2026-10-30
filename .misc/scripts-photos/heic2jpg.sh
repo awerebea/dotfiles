@@ -17,9 +17,10 @@ START_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 
 # Create lists
 echo "Creating a list of files..."
-mapfile -d $'\0' file_list < <( \
+mapfile -d $'\0' file_list < <(
     find "$SOURCE_DIR" \
-    -type f -iname "*.HEIC" -print0)
+        -type f -iname "*.HEIC" -print0
+)
 
 shopt -s nocasematch
 i=0
@@ -28,7 +29,7 @@ while [ $i -lt "${#file_list[@]}" ]; do
     heif-convert -q 90 "${file_list[$i]}" "${file_list[$i]/%.HEIC/.jpg}" || exit $?
     touch -r "${file_list[$i]}" "${file_list[$i]/%.HEIC/.jpg}"
     rm "${file_list[$i]}"
-    i=$(( i + 1 ))
+    i=$((i + 1))
 done
 
 FINISH_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
@@ -36,10 +37,10 @@ FINISH_TIME="$(date "+%Y-%m-%d %H:%M:%S")"
 START_SECONDS=$(date --date "$START_TIME" +%s)
 FINISH_SECONDS=$(date --date "$FINISH_TIME" +%s)
 
-SECONDS_ELEAPSED="$(( FINISH_SECONDS - START_SECONDS ))"
+SECONDS_ELEAPSED="$((FINISH_SECONDS - START_SECONDS))"
 
 echo -e "$(date "+%Y.%m.%d %H:%M:%S") : ${GRN}Processing finished successfully.${END}"
-echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >> "$LOGS_DIR/$SCRIPT_NAME.log"
+echo "$(date "+%Y.%m.%d %H:%M:%S") : Processing finished successfully. " >>"$LOGS_DIR/$SCRIPT_NAME.log"
 truncate -s-1 "$LOGS_DIR/$SCRIPT_NAME.log"
 echo "Time elapsed: $(date -d@$SECONDS_ELEAPSED -u +%H:%M:%S)" | tee -a "$LOGS_DIR/$SCRIPT_NAME.log"
 

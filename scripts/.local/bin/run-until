@@ -63,10 +63,10 @@ EOF
 
     # `version` as the first argument prints the version and exits
     case "${1:-}" in
-    version | --version)
-        printf '%s %s\n' "$prog_name" "$version"
-        return 0
-        ;;
+        version | --version)
+            printf '%s %s\n' "$prog_name" "$version"
+            return 0
+            ;;
     esac
 
     # Validate first positional argument
@@ -79,13 +79,13 @@ EOF
     shift
 
     case "$mode" in
-    s | success) mode="success" ;;
-    f | fail) mode="fail" ;;
-    *)
-        echo "Error: first argument must be 'success' or 'fail'" >&2
-        usage
-        return 1
-        ;;
+        s | success) mode="success" ;;
+        f | fail) mode="fail" ;;
+        *)
+            echo "Error: first argument must be 'success' or 'fail'" >&2
+            usage
+            return 1
+            ;;
     esac
 
     # Short options that require a value. Used by the squash-expansion below
@@ -111,34 +111,34 @@ EOF
             continue
         fi
         case "$1" in
-        --)
-            expanded+=("$1")
-            stop_expanding=1
-            ;;
-        --*)
-            expanded+=("$1")
-            ;;
-        -?*)
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:$i:1}"
-                expanded+=("-$c")
-                case "$value_opts" in
-                *"$c"*)
-                    rest="${chars:$((i + 1))}"
-                    if [[ -n "$rest" ]]; then
-                        expanded+=("$rest")
-                    else
-                        take_value=1
-                    fi
-                    break
-                    ;;
-                esac
-            done
-            ;;
-        *)
-            expanded+=("$1")
-            ;;
+            --)
+                expanded+=("$1")
+                stop_expanding=1
+                ;;
+            --*)
+                expanded+=("$1")
+                ;;
+            -?*)
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:$i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                        *"$c"*)
+                            rest="${chars:$((i + 1))}"
+                            if [[ -n "$rest" ]]; then
+                                expanded+=("$rest")
+                            else
+                                take_value=1
+                            fi
+                            break
+                            ;;
+                    esac
+                done
+                ;;
+            *)
+                expanded+=("$1")
+                ;;
         esac
         shift
     done
@@ -148,81 +148,81 @@ EOF
     while [[ $# -gt 0 ]]; do
         # Options taking a separate value need one more argument
         case "$1" in
-        -t | --timeout | -p | --pause | -i | --pause-increment | -m | --pause-multiplier | \
-            -M | --pause-max | -c | --command)
-            if [[ $# -lt 2 ]]; then
-                echo "Error: $1 requires a value" >&2
-                usage
-                return 1
-            fi
-            ;;
+            -t | --timeout | -p | --pause | -i | --pause-increment | -m | --pause-multiplier | \
+                -M | --pause-max | -c | --command)
+                if [[ $# -lt 2 ]]; then
+                    echo "Error: $1 requires a value" >&2
+                    usage
+                    return 1
+                fi
+                ;;
         esac
 
         case "$1" in
-        -t | --timeout)
-            shift
-            timeout="$1"
-            ;;
-        --timeout=*) timeout="${1#*=}" ;;
-        -p | --pause)
-            shift
-            pause="$1"
-            ;;
-        --pause=*) pause="${1#*=}" ;;
-        -i | --pause-increment)
-            shift
-            pause_increment="$1"
-            ;;
-        --pause-increment=*) pause_increment="${1#*=}" ;;
-        -m | --pause-multiplier)
-            shift
-            pause_multiplier="$1"
-            ;;
-        --pause-multiplier=*) pause_multiplier="${1#*=}" ;;
-        -M | --pause-max)
-            shift
-            pause_max="$1"
-            ;;
-        --pause-max=*) pause_max="${1#*=}" ;;
-        -c | --command)
-            if [[ "$cmd_source" == "--" ]]; then
-                echo "Error: -c/--command and -- are mutually exclusive" >&2
+            -t | --timeout)
+                shift
+                timeout="$1"
+                ;;
+            --timeout=*) timeout="${1#*=}" ;;
+            -p | --pause)
+                shift
+                pause="$1"
+                ;;
+            --pause=*) pause="${1#*=}" ;;
+            -i | --pause-increment)
+                shift
+                pause_increment="$1"
+                ;;
+            --pause-increment=*) pause_increment="${1#*=}" ;;
+            -m | --pause-multiplier)
+                shift
+                pause_multiplier="$1"
+                ;;
+            --pause-multiplier=*) pause_multiplier="${1#*=}" ;;
+            -M | --pause-max)
+                shift
+                pause_max="$1"
+                ;;
+            --pause-max=*) pause_max="${1#*=}" ;;
+            -c | --command)
+                if [[ "$cmd_source" == "--" ]]; then
+                    echo "Error: -c/--command and -- are mutually exclusive" >&2
+                    usage
+                    return 1
+                fi
+                shift
+                cmd=("$1")
+                cmd_source="-c"
+                ;;
+            --command=*)
+                if [[ "$cmd_source" == "--" ]]; then
+                    echo "Error: -c/--command and -- are mutually exclusive" >&2
+                    usage
+                    return 1
+                fi
+                cmd=("${1#*=}")
+                cmd_source="-c"
+                ;;
+            --version)
+                printf '%s %s\n' "$prog_name" "$version"
+                return 0
+                ;;
+            --)
+                if [[ "$cmd_source" == "-c" ]]; then
+                    echo "Error: -c/--command and -- are mutually exclusive" >&2
+                    usage
+                    return 1
+                fi
+                shift
+                cmd=("$@")
+                cmd_source="--"
+                break
+                ;;
+            *)
+                echo "Unknown argument: $1" >&2
                 usage
                 return 1
-            fi
-            shift
-            cmd=("$1")
-            cmd_source="-c"
-            ;;
-        --command=*)
-            if [[ "$cmd_source" == "--" ]]; then
-                echo "Error: -c/--command and -- are mutually exclusive" >&2
-                usage
-                return 1
-            fi
-            cmd=("${1#*=}")
-            cmd_source="-c"
-            ;;
-        --version)
-            printf '%s %s\n' "$prog_name" "$version"
-            return 0
-            ;;
-        --)
-            if [[ "$cmd_source" == "-c" ]]; then
-                echo "Error: -c/--command and -- are mutually exclusive" >&2
-                usage
-                return 1
-            fi
-            shift
-            cmd=("$@")
-            cmd_source="--"
-            break
-            ;;
-        *)
-            echo "Unknown argument: $1" >&2
-            usage
-            return 1
-            ;;
+                ;;
         esac
         shift
     done

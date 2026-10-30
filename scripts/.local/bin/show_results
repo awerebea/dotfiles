@@ -59,35 +59,35 @@ _process_cmd_options() {
             continue
         fi
         case "$1" in
-        --)
-            # End of options: keep everything after it untouched
-            expanded+=("$@")
-            break
-            ;;
-        --*)
-            expanded+=("$1")
-            ;;
-        -?*)
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
-                expanded+=("-$c")
-                case "$value_opts" in
-                *"$c"*)
-                    rest="${chars:i+1}"
-                    if [ -n "$rest" ]; then
-                        expanded+=("$rest")
-                    else
-                        take_value=1
-                    fi
-                    break
-                    ;;
-                esac
-            done
-            ;;
-        *)
-            expanded+=("$1")
-            ;;
+            --)
+                # End of options: keep everything after it untouched
+                expanded+=("$@")
+                break
+                ;;
+            --*)
+                expanded+=("$1")
+                ;;
+            -?*)
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                        *"$c"*)
+                            rest="${chars:i+1}"
+                            if [ -n "$rest" ]; then
+                                expanded+=("$rest")
+                            else
+                                take_value=1
+                            fi
+                            break
+                            ;;
+                    esac
+                done
+                ;;
+            *)
+                expanded+=("$1")
+                ;;
         esac
         shift
     done
@@ -95,30 +95,30 @@ _process_cmd_options() {
 
     while [[ $# -gt 0 ]]; do
         case "$1" in
-        --version)
-            printf '%s %s\n' "$PROG_NAME" "$VERSION"
-            exit 0
-            ;;
-        "-p" | "--plan")
-            g_plan=true
-            ;;
-        "-a" | "--apply")
-            g_apply=true
-            ;;
-        "-o" | "--out" | "--output" | "--outputs")
-            g_output=true
-            ;;
-        "-e" | "--err" | "--error" | "--errors")
-            g_error=true
-            ;;
-        --)
-            shift
-            g_positional_args+=("$@")
-            break
-            ;;
-        *)
-            g_positional_args+=("$1")
-            ;;
+            --version)
+                printf '%s %s\n' "$PROG_NAME" "$VERSION"
+                exit 0
+                ;;
+            "-p" | "--plan")
+                g_plan=true
+                ;;
+            "-a" | "--apply")
+                g_apply=true
+                ;;
+            "-o" | "--out" | "--output" | "--outputs")
+                g_output=true
+                ;;
+            "-e" | "--err" | "--error" | "--errors")
+                g_error=true
+                ;;
+            --)
+                shift
+                g_positional_args+=("$@")
+                break
+                ;;
+            *)
+                g_positional_args+=("$1")
+                ;;
         esac
         shift
     done

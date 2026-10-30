@@ -15,9 +15,9 @@ FILES_TMUX=(".tmux.conf" ".tmux.conf.local")
 FILES_RANGER="ranger"
 
 # Usage message
-usage () {
+usage() {
     local MESSAGE=
-    read -r -d '' MESSAGE << __EOM__ || true
+    read -r -d '' MESSAGE <<__EOM__ || true
 ${PROG_NAME} ${VERSION}
 usage: ${0} [OPTIONS] [SSH-OPTIONS] [USERNAME@]HOSTNAME
 Transfer dotfiles from local host to remote using scp utility
@@ -67,40 +67,40 @@ SSH_DATA=()
 # Process command line options
 while [[ $# -gt 0 ]]; do
     case "$1" in
-    all)
-        VIM="${FILES_VIM}"
-        NVIM="1"
-        ZSH=("${FILES_ZSH[@]}")
-        TMUX=("${FILES_TMUX[@]}")
-        RANGER="${FILES_RANGER}"
-        ;;
-    vim)
-        VIM="${FILES_VIM}"
-        ;;
-    nvim)
-        VIM="${FILES_VIM}"
-        NVIM="1"
-        ;;
-    zsh)
-        ZSH=("${FILES_ZSH[@]}")
-        ;;
-    tmux)
-        TMUX=("${FILES_TMUX[@]}")
-        ;;
-    ranger)
-        RANGER="${FILES_RANGER}"
-        ;;
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit
-        ;;
-    *)
-        SSH_DATA+=("${1}")
-    ;;
+        all)
+            VIM="${FILES_VIM}"
+            NVIM="1"
+            ZSH=("${FILES_ZSH[@]}")
+            TMUX=("${FILES_TMUX[@]}")
+            RANGER="${FILES_RANGER}"
+            ;;
+        vim)
+            VIM="${FILES_VIM}"
+            ;;
+        nvim)
+            VIM="${FILES_VIM}"
+            NVIM="1"
+            ;;
+        zsh)
+            ZSH=("${FILES_ZSH[@]}")
+            ;;
+        tmux)
+            TMUX=("${FILES_TMUX[@]}")
+            ;;
+        ranger)
+            RANGER="${FILES_RANGER}"
+            ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit
+            ;;
+        *)
+            SSH_DATA+=("${1}")
+            ;;
     esac
     shift
 done
@@ -110,10 +110,10 @@ SSH_OPTS=("${SSH_DATA[@]::${#SSH_DATA[@]}-1}")
 SSH_HOST="${SSH_DATA[${#SSH_DATA[*]} - 1]}"
 
 # check if all required arguments are specified
-if [[ -z ${VIM} ]] && [[ -z ${ZSH[*]} ]] \
-    && [[ -z ${TMUX[*]} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA[*]} ]]; then
+if [[ -z ${VIM} ]] && [[ -z ${ZSH[*]} ]] &&
+    [[ -z ${TMUX[*]} ]] && [[ -z ${RANGER} ]] || [[ -z ${SSH_DATA[*]} ]]; then
     usage
-    exit 1;
+    exit 1
 fi
 
 # backup current working directory path
@@ -123,7 +123,7 @@ CWD_BCKP=$(pwd)
 cd "${GIT_DOTFILES}" || exit 1
 
 # generate a random name for file archive
-ARC_NAME=$(tr -dc 'a-zA-Z0-9' < /dev/urandom | fold -w 32 | head -n 1)
+ARC_NAME=$(tr -dc 'a-zA-Z0-9' </dev/urandom | fold -w 32 | head -n 1)
 
 # pack files for transfer to a remote host into one archive
 FINAL_FILELIST=()

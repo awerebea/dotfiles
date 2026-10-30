@@ -65,35 +65,35 @@ while [ $# -gt 0 ]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [ -n "$rest" ]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [ -n "$rest" ]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -106,46 +106,46 @@ show_warnings=0
 search_path="."
 while [ $# -gt 0 ]; do
     case "$1" in
-    -f | --force)
-        force=1
-        shift
-        ;;
-    -n | -d | --dry-run)
-        dry_run=1
-        shift
-        ;;
-    -C | --no-color)
-        no_color=1
-        shift
-        ;;
-    -w | --warnings)
-        show_warnings=1
-        shift
-        ;;
-    -p | --path)
-        if [ "$#" -lt 2 ]; then
-            echo "${ERROR_COLOR}ERROR:${COLOR_RESET} option '$1' requires a value" >&2
+        -f | --force)
+            force=1
+            shift
+            ;;
+        -n | -d | --dry-run)
+            dry_run=1
+            shift
+            ;;
+        -C | --no-color)
+            no_color=1
+            shift
+            ;;
+        -w | --warnings)
+            show_warnings=1
+            shift
+            ;;
+        -p | --path)
+            if [ "$#" -lt 2 ]; then
+                echo "${ERROR_COLOR}ERROR:${COLOR_RESET} option '$1' requires a value" >&2
+                exit 1
+            fi
+            search_path="$2"
+            shift 2
+            ;;
+        --path=*)
+            search_path="${1#--path=}"
+            shift
+            ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "${ERROR_COLOR}ERROR:${COLOR_RESET} unknown option '$1'" >&2
             exit 1
-        fi
-        search_path="$2"
-        shift 2
-        ;;
-    --path=*)
-        search_path="${1#--path=}"
-        shift
-        ;;
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit 0
-        ;;
-    *)
-        echo "${ERROR_COLOR}ERROR:${COLOR_RESET} unknown option '$1'" >&2
-        exit 1
-        ;;
+            ;;
     esac
 done
 

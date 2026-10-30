@@ -12,25 +12,25 @@ echo "PermitRootLogin no" | sudo tee -a /etc/ssh/sshd_config
 sudo add-apt-repository -y ppa:git-core/ppa
 
 # Install required packages
-sudo apt-get update && \
-sudo apt-get install -y \
-curl \
-git \
-gcc \
-cmake \
-unzip \
-gettext \
-libx11-dev \
-xorg-dev \
-xclip \
-liblua5.3-dev \
-python3-pip \
-net-tools \
-docker-ce \
-nfs-kernel-server \
-fasd \
-xdotool \
-wmctrl
+sudo apt-get update &&
+    sudo apt-get install -y \
+        curl \
+        git \
+        gcc \
+        cmake \
+        unzip \
+        gettext \
+        libx11-dev \
+        xorg-dev \
+        xclip \
+        liblua5.3-dev \
+        python3-pip \
+        net-tools \
+        docker-ce \
+        nfs-kernel-server \
+        fasd \
+        xdotool \
+        wmctrl
 
 # Install VIM from sources
 sudo ln -s /usr/include/lua5.3/lua.h /usr/include/
@@ -43,17 +43,17 @@ mkdir -p ~/build
 git clone https://github.com/vim/vim.git ~/build/vim
 cd ~/build/vim || return
 sudo ./configure \
---enable-multibyte \
---with-features=huge \
---enable-luainterp=dynamic \
---enable-python3interp=dynamic \
---enable-cscope \
---enable-gui=auto \
---enable-fontset \
---enable-largefile \
---disable-netbeans \
---with-x \
---enable-fail-if-missing
+    --enable-multibyte \
+    --with-features=huge \
+    --enable-luainterp=dynamic \
+    --enable-python3interp=dynamic \
+    --enable-cscope \
+    --enable-gui=auto \
+    --enable-fontset \
+    --enable-largefile \
+    --disable-netbeans \
+    --with-x \
+    --enable-fail-if-missing
 make && sudo make install
 
 # Install neovim from sources
@@ -69,8 +69,8 @@ cd ~/build/ranger || return
 sudo make install
 # To prevent runtime errors
 pip3 install gnupg
-echo 'export LANGUAGE="en_US.UTF-8"' >> ~/.zshenv
-echo 'export LC_ALL="en_US.UTF-8"' >> ~/.zshenv
+echo 'export LANGUAGE="en_US.UTF-8"' >>~/.zshenv
+echo 'export LC_ALL="en_US.UTF-8"' >>~/.zshenv
 
 # Install latest docker
 # sudo apt-get install -y \
@@ -98,6 +98,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 
 # Install anchore-cli
 pip3 install anchorecli
-{ echo 'export ANCHORE_CLI_URL=http://localhost:8228/v1'; \
-    echo 'export ANCHORE_CLI_USER=admin'; \
-    echo 'export ANCHORE_CLI_PASS=foobar'; } >> ~/.zshenv
+{
+    echo 'export ANCHORE_CLI_URL=http://localhost:8228/v1'
+    echo 'export ANCHORE_CLI_USER=admin'
+    echo 'export ANCHORE_CLI_PASS=foobar'
+} >>~/.zshenv

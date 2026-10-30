@@ -143,35 +143,35 @@ parse_args() {
             continue
         fi
         case "$1" in
-        --)
-            # End of options: keep everything after it untouched
-            expanded+=("$@")
-            break
-            ;;
-        --*)
-            expanded+=("$1")
-            ;;
-        -?*)
-            chars="${1#-}"
-            for ((i = 0; i < ${#chars}; i++)); do
-                c="${chars:i:1}"
-                expanded+=("-$c")
-                case "$value_opts" in
-                *"$c"*)
-                    rest="${chars:i+1}"
-                    if [[ -n "$rest" ]]; then
-                        expanded+=("$rest")
-                    else
-                        take_value=1
-                    fi
-                    break
-                    ;;
-                esac
-            done
-            ;;
-        *)
-            expanded+=("$1")
-            ;;
+            --)
+                # End of options: keep everything after it untouched
+                expanded+=("$@")
+                break
+                ;;
+            --*)
+                expanded+=("$1")
+                ;;
+            -?*)
+                chars="${1#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-$c")
+                    case "$value_opts" in
+                        *"$c"*)
+                            rest="${chars:i+1}"
+                            if [[ -n "$rest" ]]; then
+                                expanded+=("$rest")
+                            else
+                                take_value=1
+                            fi
+                            break
+                            ;;
+                    esac
+                done
+                ;;
+            *)
+                expanded+=("$1")
+                ;;
         esac
         shift
     done
@@ -179,89 +179,89 @@ parse_args() {
 
     while [[ $# -gt 0 ]]; do
         case $1 in
-        --version)
-            printf '%s %s\n' "$PROG_NAME" "$VERSION"
-            exit 0
-            ;;
-        -h | --help)
-            usage 0
-            ;;
-        -p | --primary)
-            [[ -n "${2:-}" ]] || error_exit "Primary database path required"
-            PRIMARY_DB="$2"
-            shift 2
-            ;;
-        --primary=*)
-            PRIMARY_DB="${1#*=}"
-            [[ -n "$PRIMARY_DB" ]] || error_exit "Primary database path required"
-            shift
-            ;;
-        -s | --secondary)
-            [[ -n "${2:-}" ]] || error_exit "Secondary database path required"
-            SECONDARY_DB="$2"
-            shift 2
-            ;;
-        --secondary=*)
-            SECONDARY_DB="${1#*=}"
-            [[ -n "$SECONDARY_DB" ]] || error_exit "Secondary database path required"
-            shift
-            ;;
-        -k | --key-file)
-            [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
-            KEYFILE="$2"
-            shift 2
-            ;;
-        --key-file=*)
-            KEYFILE="${1#*=}"
-            [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
-            shift
-            ;;
-        --secret-name)
-            [[ -n "${2:-}" ]] || error_exit "Secret name required"
-            SECRET_NAME="$2"
-            shift 2
-            ;;
-        --secret-name=*)
-            SECRET_NAME="${1#*=}"
-            [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
-            shift
-            ;;
-        --no-password)
-            NO_PASSWORD=true
-            shift
-            ;;
-        --yubikey)
-            YUBIKEY=true
-            shift
-            ;;
-        --backup-dir)
-            [[ -n "${2:-}" ]] || error_exit "Backup directory path required"
-            BACKUP_DIR="$2"
-            shift 2
-            ;;
-        --backup-dir=*)
-            BACKUP_DIR="${1#*=}"
-            [[ -n "$BACKUP_DIR" ]] || error_exit "Backup directory path required"
-            shift
-            ;;
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        --force)
-            FORCE=true
-            shift
-            ;;
-        --debug)
-            DEBUG=true
-            shift
-            ;;
-        -*)
-            error_exit "Unknown option: $1"
-            ;;
-        *)
-            error_exit "Unexpected argument: $1"
-            ;;
+            --version)
+                printf '%s %s\n' "$PROG_NAME" "$VERSION"
+                exit 0
+                ;;
+            -h | --help)
+                usage 0
+                ;;
+            -p | --primary)
+                [[ -n "${2:-}" ]] || error_exit "Primary database path required"
+                PRIMARY_DB="$2"
+                shift 2
+                ;;
+            --primary=*)
+                PRIMARY_DB="${1#*=}"
+                [[ -n "$PRIMARY_DB" ]] || error_exit "Primary database path required"
+                shift
+                ;;
+            -s | --secondary)
+                [[ -n "${2:-}" ]] || error_exit "Secondary database path required"
+                SECONDARY_DB="$2"
+                shift 2
+                ;;
+            --secondary=*)
+                SECONDARY_DB="${1#*=}"
+                [[ -n "$SECONDARY_DB" ]] || error_exit "Secondary database path required"
+                shift
+                ;;
+            -k | --key-file)
+                [[ -n "${2:-}" ]] || error_exit "Keyfile path required"
+                KEYFILE="$2"
+                shift 2
+                ;;
+            --key-file=*)
+                KEYFILE="${1#*=}"
+                [[ -n "$KEYFILE" ]] || error_exit "Keyfile path required"
+                shift
+                ;;
+            --secret-name)
+                [[ -n "${2:-}" ]] || error_exit "Secret name required"
+                SECRET_NAME="$2"
+                shift 2
+                ;;
+            --secret-name=*)
+                SECRET_NAME="${1#*=}"
+                [[ -n "$SECRET_NAME" ]] || error_exit "Secret name required"
+                shift
+                ;;
+            --no-password)
+                NO_PASSWORD=true
+                shift
+                ;;
+            --yubikey)
+                YUBIKEY=true
+                shift
+                ;;
+            --backup-dir)
+                [[ -n "${2:-}" ]] || error_exit "Backup directory path required"
+                BACKUP_DIR="$2"
+                shift 2
+                ;;
+            --backup-dir=*)
+                BACKUP_DIR="${1#*=}"
+                [[ -n "$BACKUP_DIR" ]] || error_exit "Backup directory path required"
+                shift
+                ;;
+            --dry-run)
+                DRY_RUN=true
+                shift
+                ;;
+            --force)
+                FORCE=true
+                shift
+                ;;
+            --debug)
+                DEBUG=true
+                shift
+                ;;
+            -*)
+                error_exit "Unknown option: $1"
+                ;;
+            *)
+                error_exit "Unexpected argument: $1"
+                ;;
         esac
     done
 }

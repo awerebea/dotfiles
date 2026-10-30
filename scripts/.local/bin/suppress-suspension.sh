@@ -7,7 +7,7 @@ ALLOW_IDLE=2600000
 
 if [ "$(xprintidle)" -gt $ALLOW_IDLE ]; then
     if [ "$(sudo smbstatus | grep --count DENY)" -gt 0 ] ||
-    [ "$(pgrep --count rclone)" -gt 0 ]; then
+        [ "$(pgrep --count rclone)" -gt 0 ]; then
         eval "$(xdotool getmouselocation --shell)"
         xdotool mousemove "$X" "$Y"
         exit 0

@@ -20,12 +20,12 @@ mapfile -t commit_list < <(git log --pretty=format:'%H' "$commit_hash"^.."$commi
 
 # Create or truncate the result patch file
 result_patch="result_$commit_hash.patch"
-: > "$result_patch"
+: >"$result_patch"
 
 # Loop over each commit hash
 for commit in "${commit_list[@]}"; do
     # Generate a patch for each commit and append it to the result patch
-    git format-patch -1 --stdout "$commit" >> "$result_patch"
+    git format-patch -1 --stdout "$commit" >>"$result_patch"
 done
 
 echo "Patch file $result_patch created for merge commit $commit_hash."

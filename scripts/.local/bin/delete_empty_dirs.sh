@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 # Define colors
 GRN='\e[1;32m'
 YEL='\e[1;33m'

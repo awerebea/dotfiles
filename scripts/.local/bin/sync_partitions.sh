@@ -19,7 +19,6 @@ INPUT_PATH=
 OUTPUT_PATH=
 PARTITIONS=()
 
-
 # Define colors
 RED='\e[1;31m'
 GRN='\e[1;32m'
@@ -27,10 +26,8 @@ YEL='\e[1;33m'
 BLU='\e[1;34m'
 END='\e[0m' # No Color
 
-
 # Define main command
 COMMAND="sudo dd bs=16M status=progress"
-
 
 # Clean up environment and exit
 function clean_and_exit() {
@@ -38,7 +35,6 @@ function clean_and_exit() {
         LAUNCH_CMD MESSAGE OUTPUT_PATH PARTITIONS
     exit "${1}"
 }
-
 
 # Exit with an error if option $1 has no value ($2: number of arguments left)
 function require_value() {
@@ -60,7 +56,6 @@ function validate_path_d() {
     return
 }
 
-
 # Check if the specified path exists and is a regular file
 function validate_path_f() {
     if [ ! -f "$1" ]; then
@@ -70,7 +65,6 @@ function validate_path_f() {
     fi
     return
 }
-
 
 # Check if the specified path exists and is a regular file
 function validate_path_b() {
@@ -82,11 +76,10 @@ function validate_path_b() {
     return
 }
 
-
 # Usage message
-usage () {
+usage() {
     local MESSAGE=
-    read -r -d '' MESSAGE << __EOM__ || true
+    read -r -d '' MESSAGE <<__EOM__ || true
 ${PROG_NAME} ${VERSION}
 usage: ${0} [OPTIONS]
 
@@ -107,7 +100,6 @@ __EOM__
     echo -e "${MESSAGE}"
     return
 }
-
 
 # Short options that require a value. Used by the squash-expansion below to
 # stop mid-token once one of these is hit: a value-taking short option
@@ -130,35 +122,35 @@ while [ $# -gt 0 ]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [ -n "$rest" ]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [ -n "$rest" ]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -167,34 +159,34 @@ set -- "${expanded[@]}"
 # Process command line options
 while [ $# -gt 0 ]; do
     case "$1" in
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        clean_and_exit 0
-        ;;
-    -h | --help)
-        usage
-        clean_and_exit 0
-        ;;
-    -b | --backup)
-        ACTION="backup"
-        ;;
-    -r | --restore)
-        ACTION="restore"
-        ;;
-    -p | --path | --path=*)
-        if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
-            require_value "$1" "$#"
-            shift
-            BACKUP_PATH="$1"
-        else
-            BACKUP_PATH="${1#*=}"
-        fi
-        validate_path_d "${BACKUP_PATH}"
-        ;;
-    *)
-        usage >&2
-        clean_and_exit 1
-        ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            clean_and_exit 0
+            ;;
+        -h | --help)
+            usage
+            clean_and_exit 0
+            ;;
+        -b | --backup)
+            ACTION="backup"
+            ;;
+        -r | --restore)
+            ACTION="restore"
+            ;;
+        -p | --path | --path=*)
+            if [ "$1" = "-p" ] || [ "$1" = "--path" ]; then
+                require_value "$1" "$#"
+                shift
+                BACKUP_PATH="$1"
+            else
+                BACKUP_PATH="${1#*=}"
+            fi
+            validate_path_d "${BACKUP_PATH}"
+            ;;
+        *)
+            usage >&2
+            clean_and_exit 1
+            ;;
     esac
     shift
 done
@@ -224,7 +216,6 @@ fi
 echo -en "${GRN}INF:${END} "
 echo -e "Selected option: ${BLU}${ACTION}${END}"
 
-
 # Define backup path if no command line parameters were passed
 if [ -z "${BACKUP_PATH}" ]; then
     if [ "${ACTION}" = "backup" ]; then
@@ -239,13 +230,13 @@ if [ -z "${BACKUP_PATH}" ]; then
             echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
             read -r ANS
             case "${ANS}" in
-            [yY] | [yY][eE][sS])
-                continue
-                ;;
-            *)
-                echo -e "${YEL}WRN:${END} Operation aborted"
-                clean_and_exit 0
-                ;;
+                [yY] | [yY][eE][sS])
+                    continue
+                    ;;
+                *)
+                    echo -e "${YEL}WRN:${END} Operation aborted"
+                    clean_and_exit 0
+                    ;;
             esac
         else
             break
@@ -253,7 +244,6 @@ if [ -z "${BACKUP_PATH}" ]; then
     done
 fi
 echo -e "${GRN}INF:${END} Backup image(s) path: ${BLU}${BACKUP_PATH}${END}"
-
 
 # Loop to input partitions and images names
 while true; do
@@ -264,67 +254,65 @@ while true; do
         read -r ANS
     fi
     case "${ANS}" in
-    [yY] | [yY][eE][sS])
-        while true; do
-            read -r -p "Input full partition name in format /dev/sdXY: " ANS
-            validate_path_b "${ANS}"
-            if [ $? -eq 1 ]; then
-                echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
-                read -r ANS
-                case "${ANS}" in
-                [yY] | [yY][eE][sS])
-                    continue
-                    ;;
-                *)
-                    echo -e "${YEL}WRN:${END} Operation aborted"
-                    clean_and_exit 0
-                    ;;
-                esac
-            else
-                break
-            fi
-        done
-        PARTITIONS+=("${ANS}")
-        while true; do
-            read -r -p "Input image file name: " ANS2
-            if [ "${ACTION}" = "restore" ]; then
-                validate_path_f "${BACKUP_PATH}"/"${ANS2}"
+        [yY] | [yY][eE][sS])
+            while true; do
+                read -r -p "Input full partition name in format /dev/sdXY: " ANS
+                validate_path_b "${ANS}"
                 if [ $? -eq 1 ]; then
                     echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
-                    read -r ANS2
-                    case "${ANS2}" in
-                    [yY] | [yY][eE][sS])
-                        continue
-                        ;;
-                    *)
-                        echo -e "${YEL}WRN:${END} Operation aborted"
-                        clean_and_exit 0
-                        ;;
+                    read -r ANS
+                    case "${ANS}" in
+                        [yY] | [yY][eE][sS])
+                            continue
+                            ;;
+                        *)
+                            echo -e "${YEL}WRN:${END} Operation aborted"
+                            clean_and_exit 0
+                            ;;
                     esac
+                else
+                    break
                 fi
-            fi
+            done
+            PARTITIONS+=("${ANS}")
+            while true; do
+                read -r -p "Input image file name: " ANS2
+                if [ "${ACTION}" = "restore" ]; then
+                    validate_path_f "${BACKUP_PATH}"/"${ANS2}"
+                    if [ $? -eq 1 ]; then
+                        echo -en "${YEL}WRN:${END} Do you want to try again? (y|n): "
+                        read -r ANS2
+                        case "${ANS2}" in
+                            [yY] | [yY][eE][sS])
+                                continue
+                                ;;
+                            *)
+                                echo -e "${YEL}WRN:${END} Operation aborted"
+                                clean_and_exit 0
+                                ;;
+                        esac
+                    fi
+                fi
+                break
+            done
+            IMAGES+=("${ANS2}")
+            echo -en "${GRN}INF:${END} Added target pair: "
+            echo -en "partition ${BLU}${ANS}${END}, "
+            echo -e "image name ${BLU}${ANS2}${END}"
+            ;;
+        *)
             break
-        done
-        IMAGES+=("${ANS2}")
-        echo -en "${GRN}INF:${END} Added target pair: "
-        echo -en "partition ${BLU}${ANS}${END}, "
-        echo -e "image name ${BLU}${ANS2}${END}"
-        ;;
-    *)
-        break
-        ;;
+            ;;
     esac
 done
 
-
 # Define warning message
 ANS="BE CAREFUL, ALL DATA ON TARGET PARTITIONS WILL BE COMPLETELY OVERWRITTEN"
-read -r -d '' MESSAGE << __EOM__ || true
+read -r -d '' MESSAGE <<__EOM__ || true
 +----------------------------------------------------------------------------------+
 | ${RED}!!! ${ANS} !!!${END} |
 +----------------------------------------------------------------------------------+
 __EOM__
-
 
 # Show a message with a command queue and confirm the launch
 function preview_and_confirm() {
@@ -348,17 +336,16 @@ function preview_and_confirm() {
     echo -en "\n${YEL}WRN:${END} Are you sure (y|n): "
     read -r ANS
     case "${ANS}" in
-    [yY] | [yY][eE][sS])
-        return
-        ;;
-    *)
-        echo -e "${YEL}WRN:${END} Operation aborted"
-        clean_and_exit 0
-        ;;
+        [yY] | [yY][eE][sS])
+            return
+            ;;
+        *)
+            echo -e "${YEL}WRN:${END} Operation aborted"
+            clean_and_exit 0
+            ;;
     esac
 }
 preview_and_confirm
-
 
 # Main loop with commands execution
 for idx in "${!PARTITIONS[@]}"; do

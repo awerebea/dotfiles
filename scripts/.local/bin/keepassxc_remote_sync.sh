@@ -65,14 +65,14 @@ fi
 
 # `version` and `help` as the first argument win over everything else
 case "$1" in
-version | --version)
-    printf '%s %s\n' "$PROG_NAME" "$VERSION"
-    exit 0
-    ;;
-help | -h | --help)
-    usage
-    exit 0
-    ;;
+    version | --version)
+        printf '%s %s\n' "$PROG_NAME" "$VERSION"
+        exit 0
+        ;;
+    help | -h | --help)
+        usage
+        exit 0
+        ;;
 esac
 
 COMMAND=$1
@@ -100,35 +100,35 @@ while [[ $# -gt 0 ]]; do
         continue
     fi
     case "$1" in
-    --)
-        # End of options: keep everything after it untouched
-        expanded+=("$@")
-        break
-        ;;
-    --*)
-        expanded+=("$1")
-        ;;
-    -?*)
-        chars="${1#-}"
-        for ((i = 0; i < ${#chars}; i++)); do
-            c="${chars:i:1}"
-            expanded+=("-$c")
-            case "$VALUE_OPTS" in
-            *"$c"*)
-                rest="${chars:i+1}"
-                if [[ -n "$rest" ]]; then
-                    expanded+=("$rest")
-                else
-                    take_value=1
-                fi
-                break
-                ;;
-            esac
-        done
-        ;;
-    *)
-        expanded+=("$1")
-        ;;
+        --)
+            # End of options: keep everything after it untouched
+            expanded+=("$@")
+            break
+            ;;
+        --*)
+            expanded+=("$1")
+            ;;
+        -?*)
+            chars="${1#-}"
+            for ((i = 0; i < ${#chars}; i++)); do
+                c="${chars:i:1}"
+                expanded+=("-$c")
+                case "$VALUE_OPTS" in
+                    *"$c"*)
+                        rest="${chars:i+1}"
+                        if [[ -n "$rest" ]]; then
+                            expanded+=("$rest")
+                        else
+                            take_value=1
+                        fi
+                        break
+                        ;;
+                esac
+            done
+            ;;
+        *)
+            expanded+=("$1")
+            ;;
     esac
     shift
 done
@@ -142,85 +142,85 @@ DB_NAME=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
-    --version)
-        printf '%s %s\n' "$PROG_NAME" "$VERSION"
-        exit 0
-        ;;
-    -h | --help)
-        usage
-        exit 0
-        ;;
+        --version)
+            printf '%s %s\n' "$PROG_NAME" "$VERSION"
+            exit 0
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
 
-    -f | --temp-file | --temp-file=*)
-        if [[ "$1" == "-f" || "$1" == "--temp-file" ]]; then
-            [[ $# -ge 2 ]] || {
-                echo "Error: $1 requires a value." >&2
-                exit 1
-            }
-            TEMP_FILE=$2
-            shift
-        else
-            TEMP_FILE=${1#*=}
-        fi
-        ;;
+        -f | --temp-file | --temp-file=*)
+            if [[ "$1" == "-f" || "$1" == "--temp-file" ]]; then
+                [[ $# -ge 2 ]] || {
+                    echo "Error: $1 requires a value." >&2
+                    exit 1
+                }
+                TEMP_FILE=$2
+                shift
+            else
+                TEMP_FILE=${1#*=}
+            fi
+            ;;
 
-    -r | --remote | --remote=*)
-        if [[ "$1" == "-r" || "$1" == "--remote" ]]; then
-            [[ $# -ge 2 ]] || {
-                echo "Error: $1 requires a value." >&2
-                exit 1
-            }
-            REMOTE=$2
-            shift
-        else
-            REMOTE=${1#*=}
-        fi
-        ;;
+        -r | --remote | --remote=*)
+            if [[ "$1" == "-r" || "$1" == "--remote" ]]; then
+                [[ $# -ge 2 ]] || {
+                    echo "Error: $1 requires a value." >&2
+                    exit 1
+                }
+                REMOTE=$2
+                shift
+            else
+                REMOTE=${1#*=}
+            fi
+            ;;
 
-    -s | --sync-destination | --sync-destination=*)
-        if [[ "$1" == "-s" || "$1" == "--sync-destination" ]]; then
-            [[ $# -ge 2 ]] || {
-                echo "Error: $1 requires a value." >&2
-                exit 1
-            }
-            SYNC_DESTINATION=$2
-            shift
-        else
-            SYNC_DESTINATION=${1#*=}
-        fi
-        ;;
+        -s | --sync-destination | --sync-destination=*)
+            if [[ "$1" == "-s" || "$1" == "--sync-destination" ]]; then
+                [[ $# -ge 2 ]] || {
+                    echo "Error: $1 requires a value." >&2
+                    exit 1
+                }
+                SYNC_DESTINATION=$2
+                shift
+            else
+                SYNC_DESTINATION=${1#*=}
+            fi
+            ;;
 
-    -b | --backup-destination | --backup-destination=*)
-        if [[ "$1" == "-b" || "$1" == "--backup-destination" ]]; then
-            [[ $# -ge 2 ]] || {
-                echo "Error: $1 requires a value." >&2
-                exit 1
-            }
-            BACKUP_DESTINATION=$2
-            shift
-        else
-            BACKUP_DESTINATION=${1#*=}
-        fi
-        ;;
+        -b | --backup-destination | --backup-destination=*)
+            if [[ "$1" == "-b" || "$1" == "--backup-destination" ]]; then
+                [[ $# -ge 2 ]] || {
+                    echo "Error: $1 requires a value." >&2
+                    exit 1
+                }
+                BACKUP_DESTINATION=$2
+                shift
+            else
+                BACKUP_DESTINATION=${1#*=}
+            fi
+            ;;
 
-    -n | --db-name | --db-name=*)
-        if [[ "$1" == "-n" || "$1" == "--db-name" ]]; then
-            [[ $# -ge 2 ]] || {
-                echo "Error: $1 requires a value." >&2
-                exit 1
-            }
-            DB_NAME=$2
-            shift
-        else
-            DB_NAME=${1#*=}
-        fi
-        ;;
+        -n | --db-name | --db-name=*)
+            if [[ "$1" == "-n" || "$1" == "--db-name" ]]; then
+                [[ $# -ge 2 ]] || {
+                    echo "Error: $1 requires a value." >&2
+                    exit 1
+                }
+                DB_NAME=$2
+                shift
+            else
+                DB_NAME=${1#*=}
+            fi
+            ;;
 
-    *)
-        echo "Error: Unknown argument: $1" >&2
-        usage >&2
-        exit 1
-        ;;
+        *)
+            echo "Error: Unknown argument: $1" >&2
+            usage >&2
+            exit 1
+            ;;
     esac
     shift
 done
@@ -247,46 +247,46 @@ ensure_remote_dir() {
 }
 
 case "$COMMAND" in
-upload)
-    if [[ ! -f "$TEMP_FILE" ]]; then
-        echo "Error: Local file not found: $TEMP_FILE" >&2
-        exit 1
-    fi
-
-    # Ensure remote destination directories exist.
-    ensure_remote_dir "$SYNC_DESTINATION"
-
-    if [[ -n "$BACKUP_DESTINATION" ]]; then
-        ensure_remote_dir "$BACKUP_DESTINATION"
-    fi
-
-    # Upload the main database.
-    scp -- "$TEMP_FILE" "$REMOTE:$REMOTE_FILE"
-    echo "Uploaded: $REMOTE_FILE"
-
-    # Optionally upload a timestamped backup.
-    if [[ -n "$BACKUP_DESTINATION" ]]; then
-        TIMESTAMP=$(date +%Y%m%d%H%M%S)
-
-        if [[ "$DB_NAME" == *.* && "$DB_NAME" != .* ]]; then
-            BACKUP_NAME="${DB_NAME%.*}_${TIMESTAMP}.${DB_NAME##*.}"
-        else
-            BACKUP_NAME="${DB_NAME}_${TIMESTAMP}"
+    upload)
+        if [[ ! -f "$TEMP_FILE" ]]; then
+            echo "Error: Local file not found: $TEMP_FILE" >&2
+            exit 1
         fi
 
-        REMOTE_BACKUP="${BACKUP_DESTINATION%/}/$BACKUP_NAME"
+        # Ensure remote destination directories exist.
+        ensure_remote_dir "$SYNC_DESTINATION"
 
-        scp -- "$TEMP_FILE" "$REMOTE:$REMOTE_BACKUP"
-        echo "Backup uploaded: $REMOTE_BACKUP"
-    fi
-    ;;
+        if [[ -n "$BACKUP_DESTINATION" ]]; then
+            ensure_remote_dir "$BACKUP_DESTINATION"
+        fi
 
-download)
-    # Ensure the local destination directory exists.
-    LOCAL_DIR=$(dirname "$TEMP_FILE")
-    mkdir -p -- "$LOCAL_DIR"
+        # Upload the main database.
+        scp -- "$TEMP_FILE" "$REMOTE:$REMOTE_FILE"
+        echo "Uploaded: $REMOTE_FILE"
 
-    scp -- "$REMOTE:$REMOTE_FILE" "$TEMP_FILE"
-    echo "Downloaded: $REMOTE_FILE -> $TEMP_FILE"
-    ;;
+        # Optionally upload a timestamped backup.
+        if [[ -n "$BACKUP_DESTINATION" ]]; then
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+
+            if [[ "$DB_NAME" == *.* && "$DB_NAME" != .* ]]; then
+                BACKUP_NAME="${DB_NAME%.*}_${TIMESTAMP}.${DB_NAME##*.}"
+            else
+                BACKUP_NAME="${DB_NAME}_${TIMESTAMP}"
+            fi
+
+            REMOTE_BACKUP="${BACKUP_DESTINATION%/}/$BACKUP_NAME"
+
+            scp -- "$TEMP_FILE" "$REMOTE:$REMOTE_BACKUP"
+            echo "Backup uploaded: $REMOTE_BACKUP"
+        fi
+        ;;
+
+    download)
+        # Ensure the local destination directory exists.
+        LOCAL_DIR=$(dirname "$TEMP_FILE")
+        mkdir -p -- "$LOCAL_DIR"
+
+        scp -- "$REMOTE:$REMOTE_FILE" "$TEMP_FILE"
+        echo "Downloaded: $REMOTE_FILE -> $TEMP_FILE"
+        ;;
 esac

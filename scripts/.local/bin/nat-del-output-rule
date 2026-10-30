@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Delete rule of routing outgoing traffic from NAT IP table
 
-nat-del-output-rule () {
+nat-del-output-rule() {
     # Define colors
     local RED GRN YEL END VERIFY NUM ANS
     RED='\e[1;31m'
@@ -34,14 +34,14 @@ nat-del-output-rule () {
         echo -en "Are you sure? (y|N): "
         read -r -N 1 ANS
         case "$ANS" in
-        [yY])
-            sudo iptables -t nat -D OUTPUT "$NUM"
-            echo -e "\n\n${GRN}SUCCESS:${END} Entry deleted\n"
-            continue
-            ;;
-        *)
-            echo -e "\n\n${YEL}WRN:${END} Operation aborted\n"
-            ;;
+            [yY])
+                sudo iptables -t nat -D OUTPUT "$NUM"
+                echo -e "\n\n${GRN}SUCCESS:${END} Entry deleted\n"
+                continue
+                ;;
+            *)
+                echo -e "\n\n${YEL}WRN:${END} Operation aborted\n"
+                ;;
         esac
     done
 }

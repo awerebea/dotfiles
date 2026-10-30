@@ -12,7 +12,10 @@ set -e
 #when adding a tool to the list make sure to also add its corresponding command further in the script
 unzip_tools_list=('unzip' '7z' 'busybox')
 
-usage() { echo "Usage: curl https://rclone.org/install.sh | sudo bash [-s beta]" 1>&2; exit 1; }
+usage() {
+    echo "Usage: curl https://rclone.org/install.sh | sudo bash [-s beta]" 1>&2
+    exit 1
+}
 
 #check for beta flag
 if [ -n "$1" ] && [ "$1" != "beta" ]; then
@@ -23,11 +26,9 @@ if [ -n "$1" ]; then
     install_beta="beta "
 fi
 
-
 #create tmp directory and move to it with macOS compatibility fallback
 tmp_dir=$(mktemp -d 2>/dev/null || mktemp -d -t 'rclone-install.XXXXXXXXXX')
 cd "$tmp_dir"
-
 
 #make sure unzip tool is available and choose one to work with
 set +e
@@ -37,7 +38,7 @@ for tool in ${unzip_tools_list[*]}; do
         unzip_tool="$tool"
         break
     fi
-done  
+done
 set -e
 
 # exit if no unzip tools available
@@ -63,56 +64,54 @@ if [ "$version" = "$current_version" ]; then
     exit 3
 fi
 
-
 #detect the platform
 OS="$(uname)"
 case $OS in
-  Linux)
-    OS='linux'
-    ;;
-  FreeBSD)
-    OS='freebsd'
-    ;;
-  NetBSD)
-    OS='netbsd'
-    ;;
-  OpenBSD)
-    OS='openbsd'
-    ;;  
-  Darwin)
-    OS='osx'
-    ;;
-  SunOS)
-    OS='solaris'
-    echo 'OS not supported'
-    exit 2
-    ;;
-  *)
-    echo 'OS not supported'
-    exit 2
-    ;;
+    Linux)
+        OS='linux'
+        ;;
+    FreeBSD)
+        OS='freebsd'
+        ;;
+    NetBSD)
+        OS='netbsd'
+        ;;
+    OpenBSD)
+        OS='openbsd'
+        ;;
+    Darwin)
+        OS='osx'
+        ;;
+    SunOS)
+        OS='solaris'
+        echo 'OS not supported'
+        exit 2
+        ;;
+    *)
+        echo 'OS not supported'
+        exit 2
+        ;;
 esac
 
 OS_type="$(uname -m)"
 case "$OS_type" in
-  x86_64|amd64)
-    OS_type='amd64'
-    ;;
-  i?86|x86)
-    OS_type='386'
-    ;;
-  aarch64|arm64)
-    OS_type='arm64'
-    ;;
-  arm*)
-    OS_type='arm'
-    ;;
-  *)
-    echo 'OS type not supported'
-    exit 2
-    ;;
+    x86_64 | amd64)
+        OS_type='amd64'
+        ;;
+    i?86 | x86)
+        OS_type='386'
+        ;;
+    aarch64 | arm64)
+        OS_type='arm64'
+        ;;
+    arm*)
+        OS_type='arm'
+        ;;
+    *)
+        echo 'OS type not supported'
+        exit 2
+        ;;
 esac
-
 
 #download and unzip
 if [ -z "$install_beta" ]; then
@@ -127,16 +126,16 @@ curl -OfsS "$download_link"
 unzip_dir="tmp_unzip_dir_for_rclone"
 # there should be an entry in this switch for each element of unzip_tools_list
 case "$unzip_tool" in
-  'unzip')
-    unzip -a "$rclone_zip" -d "$unzip_dir"
-    ;;
-  '7z')
-    7z x "$rclone_zip" "-o$unzip_dir"
-    ;;
-  'busybox')
-    mkdir -p "$unzip_dir"
-    busybox unzip "$rclone_zip" -d "$unzip_dir"
-    ;;
+    'unzip')
+        unzip -a "$rclone_zip" -d "$unzip_dir"
+        ;;
+    '7z')
+        7z x "$rclone_zip" "-o$unzip_dir"
+        ;;
+    'busybox')
+        mkdir -p "$unzip_dir"
+        busybox unzip "$rclone_zip" -d "$unzip_dir"
+        ;;
 esac
 
 cd $unzip_dir/*
@@ -144,45 +143,45 @@ cd $unzip_dir/*
 #mounting rclone to environment
 
 case "$OS" in
-  'linux')
-    #binary
-    cp rclone "$HOME"/.local/bin/rclone.new
-    chmod 755 "$HOME"/.local/bin/rclone.new
-    # chown root:root "$HOME"/.local/bin/rclone.new
-    mv "$HOME"/.local/bin/rclone.new "$HOME"/.local/bin/rclone
-    #manual
-    if ! [ -x "$(command -v mandb)" ]; then
-        echo 'mandb not found. The rclone man docs will not be installed.'
-    else 
+    'linux')
+        #binary
+        cp rclone "$HOME"/.local/bin/rclone.new
+        chmod 755 "$HOME"/.local/bin/rclone.new
+        # chown root:root "$HOME"/.local/bin/rclone.new
+        mv "$HOME"/.local/bin/rclone.new "$HOME"/.local/bin/rclone
+        #manual
+        if ! [ -x "$(command -v mandb)" ]; then
+            echo 'mandb not found. The rclone man docs will not be installed.'
+        else
+            mkdir -p "$HOME"/.local/share/man/man1
+            cp rclone.1 "$HOME"/.local/share/man/man1/
+            mandb
+        fi
+        ;;
+    'freebsd' | 'openbsd' | 'netbsd')
+        #binary
+        cp rclone "$HOME"/.local/bin/rclone.new
+        chown root:wheel "$HOME"/.local/bin/rclone.new
+        mv "$HOME"/.local/bin/rclone.new "$HOME"/.local/bin/rclone
+        #manual
+        mkdir -p "$HOME"/.local/man/man1
+        cp rclone.1 "$HOME"/.local/man/man1/
+        makewhatis
+        ;;
+    'osx')
+        #binary
+        mkdir -p "$HOME"/.local/local/bin
+        cp rclone "$HOME"/.local/local/bin/rclone.new
+        mv "$HOME"/.local/local/bin/rclone.new "$HOME"/.local/local/bin/rclone
+        #manual
         mkdir -p "$HOME"/.local/share/man/man1
         cp rclone.1 "$HOME"/.local/share/man/man1/
-        mandb
-    fi
-    ;;
-  'freebsd'|'openbsd'|'netbsd')
-    #binary
-    cp rclone "$HOME"/.local/bin/rclone.new
-    chown root:wheel "$HOME"/.local/bin/rclone.new
-    mv "$HOME"/.local/bin/rclone.new "$HOME"/.local/bin/rclone
-    #manual
-    mkdir -p "$HOME"/.local/man/man1
-    cp rclone.1 "$HOME"/.local/man/man1/
-    makewhatis
-    ;;
-  'osx')
-    #binary
-    mkdir -p "$HOME"/.local/local/bin
-    cp rclone "$HOME"/.local/local/bin/rclone.new
-    mv "$HOME"/.local/local/bin/rclone.new "$HOME"/.local/local/bin/rclone
-    #manual
-    mkdir -p "$HOME"/.local/share/man/man1
-    cp rclone.1 "$HOME"/.local/share/man/man1/    
-    ;;
-  *)
-    echo 'OS not supported'
-    exit 2
+        ;;
+    *)
+        echo 'OS not supported'
+        exit 2
+        ;;
 esac
-
 
 #update version variable post install
 version=$(rclone --version 2>>errors | head -n 1)
