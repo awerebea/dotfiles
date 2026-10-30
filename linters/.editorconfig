@@ -1,0 +1,13 @@
+# Global editorconfig, symlinked to ~/.editorconfig
+root = true
+
+[*.{sh,bash}]
+indent_style = space
+indent_size = 4
+switch_case_indent = true
+
+# shfmt only: matches shell scripts by shebang, e.g. extensionless ones
+[[shell]]
+indent_style = space
+indent_size = 4
+switch_case_indent = true
