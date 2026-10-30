@@ -26,7 +26,7 @@ return {
       bash = { "shfmt" },
     },
     formatters = {
-      shfmt = { prepend_args = { "-i", "4" } },
+      -- shfmt style comes from ~/.editorconfig; any formatting flag here would disable it
       black = { prepend_args = { "--line-length=88" } },
       -- stylua: to enable column width add: prepend_args = { "--column-width", "99" }
     },

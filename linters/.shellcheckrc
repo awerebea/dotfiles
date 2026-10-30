@@ -1,0 +1,10 @@
+# Global shellcheck config, symlinked to ~/.shellcheckrc
+# List optional checks with: shellcheck --list-optional
+
+# follow `source` statements to files outside the checked set
+external-sources=true
+
+enable=quote-safe-variables
+enable=require-double-brackets
+enable=check-unassigned-uppercase
+enable=avoid-nullary-conditions
