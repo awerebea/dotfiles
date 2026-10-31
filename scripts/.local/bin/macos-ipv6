@@ -1,0 +1,338 @@
+#!/usr/bin/env bash
+# Turn IPv6 off or on (automatic) for the Wi-Fi and Ethernet network services
+# of macOS, or show its state. Useful when a VPN only tunnels IPv4: with IPv6
+# off, all traffic falls back to IPv4 and goes through the VPN.
+
+set -euo pipefail
+
+if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4))); then
+    echo "Error: bash 4.4 or newer is required (brew install bash)" >&2
+    exit 1
+fi
+
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="macos-ipv6"
+readonly SCRIPT_NAME="${0##*/}"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="1.0.0"
+
+# Short options that require a value. Used by the squash expansion below to
+# stop mid-token once one of these is hit: a value-taking short option
+# consumes the rest of its token (or the next argument, if nothing is left)
+# as its value, same GNU/POSIX convention as `tar -xvf file`.
+readonly VALUE_OPTS="s"
+# Long options that require a value given as a separate argument. Their next
+# argument is kept verbatim, even if it starts with '-'.
+readonly -a LONG_VALUE_OPTS=(--service)
+
+# Hardware ports changed by default (case-insensitive match); Thunderbolt
+# Bridge, VPN and other services are left alone unless named with -s
+readonly DEFAULT_PORT_RE='^wi-fi$|ethernet|lan'
+
+# Command line values
+command=""
+dry_run="false"
+declare -a cli_services=()
+declare -a expanded=()
+
+# Network services of this Mac: parallel arrays filled by load_services
+declare -a svc_names=() svc_ports=() svc_enabled=()
+
+usage() {
+    cat <<EOF
+${PROG_NAME} ${VERSION}
+Usage: ${SCRIPT_NAME} COMMAND [OPTIONS]
+
+Turn IPv6 off or on for the Wi-Fi and Ethernet network services of macOS.
+
+Commands:
+  off        Turn IPv6 off (networksetup -setv6off)
+  on         Turn IPv6 on, configured automatically (networksetup -setv6automatic)
+  status     Show the IPv6 setting and address of each service
+  version    Show the version and exit
+  help       Show this help and exit
+
+Options:
+  -s, --service NAME  Network service to use instead of the defaults (repeatable),
+                      as listed by 'networksetup -listallnetworkservices'
+  -n, --dry-run       Show what would be changed without changing anything
+  -h, --help          Show this help and exit
+      --version       Show the version and exit
+
+By default, every enabled service whose hardware port is Wi-Fi or an Ethernet
+or LAN adapter is used. Changing settings needs administrator rights; the
+script uses sudo when it is not run as root.
+EOF
+}
+
+die() {
+    printf 'Error: %s\n' "$*" >&2
+    exit 1
+}
+
+warn() {
+    printf 'Warning: %s\n' "$*" >&2
+}
+
+print_version() {
+    printf '%s %s\n' "$PROG_NAME" "$VERSION"
+}
+
+is_long_value_opt() {
+    local opt
+    for opt in "${LONG_VALUE_OPTS[@]}"; do
+        if [[ "$1" == "$opt" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Normalize the command line into one token per option: squashed short
+# options are split (`-ns` -> `-n -s`, `-sWi-Fi` -> `-s Wi-Fi`). Arguments
+# after `--` and values of value-taking options are left untouched.
+expand_args() {
+    local arg chars c i take_value="false"
+    expanded=()
+    while (($# > 0)); do
+        arg="$1"
+        shift
+        if [[ "$take_value" == "true" ]]; then
+            expanded+=("$arg")
+            take_value="false"
+            continue
+        fi
+        case "$arg" in
+            --)
+                expanded+=("$arg" "$@")
+                break
+                ;;
+            --*)
+                expanded+=("$arg")
+                if is_long_value_opt "$arg"; then
+                    take_value="true"
+                fi
+                ;;
+            -?*)
+                chars="${arg#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-${c}")
+                    if [[ "$VALUE_OPTS" == *"$c"* ]]; then
+                        if ((i + 1 < ${#chars})); then
+                            expanded+=("${chars:i+1}")
+                        else
+                            take_value="true"
+                        fi
+                        break
+                    fi
+                done
+                ;;
+            *)
+                expanded+=("$arg")
+                ;;
+        esac
+    done
+}
+
+# Set opt_value and opt_shift (number of arguments consumed) for the
+# value-taking option in $1. Only long options accept `=` (GNU rules).
+take_value() {
+    if [[ "$1" == --*=* ]]; then
+        opt_value="${1#*=}"
+        opt_shift=1
+    elif (($# >= 2)); then
+        opt_value="$2"
+        opt_shift=2
+    else
+        die "Option '${1}' requires a value"
+    fi
+    [[ -n "$opt_value" ]] || die "Option '${1%%=*}' requires a non-empty value"
+}
+
+parse_args() {
+    # `version` and `help` as the first argument win over everything else
+    case "${1:-}" in
+        version | --version)
+            print_version
+            exit 0
+            ;;
+        help | -h | --help)
+            usage
+            exit 0
+            ;;
+        off | on | status)
+            command="$1"
+            shift
+            ;;
+        "")
+            usage >&2
+            die "Command should be specified"
+            ;;
+        *)
+            usage >&2
+            die "Unsupported command: $1"
+            ;;
+    esac
+
+    expand_args "$@"
+    set -- "${expanded[@]}"
+
+    local opt_value opt_shift
+    while (($# > 0)); do
+        case "$1" in
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            --version)
+                print_version
+                exit 0
+                ;;
+            -s | --service | --service=*)
+                take_value "$@"
+                shift "$opt_shift"
+                cli_services+=("$opt_value")
+                continue
+                ;;
+            -n | --dry-run) dry_run="true" ;;
+            -*) die "Unknown option: $1 (see '${SCRIPT_NAME} help')" ;;
+            *) die "Unexpected argument: '$1' (use -s/--service for services)" ;;
+        esac
+        shift
+    done
+}
+
+# Fill svc_* from `networksetup -listnetworkserviceorder`, which prints pairs:
+#   (1) Wi-Fi                 ("(*) Name" for a disabled service)
+#   (Hardware Port: Wi-Fi, Device: en0)
+load_services() {
+    local line name="" enabled=""
+    local name_re='^\(([0-9]+|\*)\) (.+)$'
+    local port_re='^\(Hardware Port: (.*), Device: (.*)\)$'
+    local output
+    output="$(networksetup -listnetworkserviceorder)" || die "networksetup failed"
+
+    while IFS= read -r line; do
+        if [[ "$line" =~ $name_re ]]; then
+            name="${BASH_REMATCH[2]}"
+            if [[ "${BASH_REMATCH[1]}" == "*" ]]; then
+                enabled="false"
+            else
+                enabled="true"
+            fi
+        elif [[ -n "$name" && "$line" =~ $port_re ]]; then
+            svc_names+=("$name")
+            svc_ports+=("${BASH_REMATCH[1]}")
+            svc_enabled+=("$enabled")
+            name=""
+        fi
+    done <<<"$output"
+}
+
+# Print the services to use, one per line
+select_services() {
+    local i requested found
+    if ((${#cli_services[@]} > 0)); then
+        for requested in "${cli_services[@]}"; do
+            found="false"
+            for i in "${!svc_names[@]}"; do
+                if [[ "${svc_names[i]}" == "$requested" ]]; then
+                    found="true"
+                    break
+                fi
+            done
+            [[ "$found" == "true" ]] || die "Unknown network service: '${requested}'"
+            printf '%s\n' "$requested"
+        done
+        return 0
+    fi
+
+    for i in "${!svc_names[@]}"; do
+        if [[ "${svc_enabled[i]}" == "true" && "${svc_ports[i],,}" =~ $DEFAULT_PORT_RE ]]; then
+            printf '%s\n' "${svc_names[i]}"
+        fi
+    done
+}
+
+# Print "<setting>|<address>" of a service from `networksetup -getinfo`
+service_ipv6() {
+    local line setting="unknown" address="none" output
+    output="$(networksetup -getinfo "$1")" || die "networksetup -getinfo failed for '$1'"
+    while IFS= read -r line; do
+        case "$line" in
+            "IPv6: "*) setting="${line#IPv6: }" ;;
+            "IPv6 IP address: "*) address="${line#IPv6 IP address: }" ;;
+            *) ;;
+        esac
+    done <<<"$output"
+    printf '%s|%s\n' "$setting" "$address"
+}
+
+show_status() {
+    local service info
+    for service in "$@"; do
+        info="$(service_ipv6 "$service")"
+        printf '%-32s IPv6: %-10s address: %s\n' "$service" "${info%%|*}" "${info#*|}"
+    done
+}
+
+# Change IPv6 on the given services; $1 is "off" or "on"
+set_ipv6() {
+    local mode="$1" service flag rc=0
+    shift
+    if [[ "$mode" == "off" ]]; then
+        flag="-setv6off"
+    else
+        flag="-setv6automatic"
+    fi
+
+    local -a runner=()
+    if ((EUID != 0)) && [[ "$dry_run" == "false" ]]; then
+        runner=(sudo)
+    fi
+
+    for service in "$@"; do
+        if [[ "$dry_run" == "true" ]]; then
+            printf '[dry-run] Would run: networksetup %s "%s"\n' "$flag" "$service"
+        elif "${runner[@]}" networksetup "$flag" "$service"; then
+            printf 'IPv6 %s: %s\n' "$mode" "$service"
+        else
+            warn "Failed to turn IPv6 ${mode} for '${service}'"
+            rc=1
+        fi
+    done
+    return "$rc"
+}
+
+main() {
+    parse_args "$@"
+
+    [[ "$(uname -s)" == "Darwin" ]] || die "This script only works on macOS"
+    command -v networksetup >/dev/null 2>&1 || die "'networksetup' is not available"
+
+    load_services
+    local selected
+    # Command substitution, so an error in select_services stops the script
+    selected="$(select_services)" || exit 1
+    [[ -n "$selected" ]] || die "No Wi-Fi or Ethernet network services found (use -s/--service)"
+    local -a services=()
+    mapfile -t services <<<"$selected"
+
+    local rc=0
+    case "$command" in
+        status) show_status "${services[@]}" ;;
+        off | on)
+            set_ipv6 "$command" "${services[@]}" || rc=1
+            if [[ "$dry_run" == "false" ]]; then
+                show_status "${services[@]}"
+            fi
+            ;;
+        *) die "Unsupported command: ${command}" ;;
+    esac
+    return "$rc"
+}
+
+main "$@"
