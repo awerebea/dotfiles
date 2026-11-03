@@ -868,6 +868,8 @@ alias re=" fc -R"
 # auto correction
 setopt CORRECT
 setopt CORRECT_ALL
+# never suggest hidden files as corrections (e.g. docker -> .docker)
+CORRECT_IGNORE_FILE='.*'
 
 # ranger
 export RANGER_LOAD_DEFAULT_RC=FALSE
