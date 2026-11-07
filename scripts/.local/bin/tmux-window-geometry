@@ -1,0 +1,371 @@
+#!/usr/bin/env bash
+# Save and restore the terminal window position and size for tmux-resurrect.
+#
+# Meant to be used from tmux-resurrect's save/restore hooks. The geometry is
+# kept in one small file next to the resurrect snapshots as "X Y WIDTH HEIGHT".
+#
+#   Linux (X11): needs xdotool and wmctrl, and the $WINDOWID variable that
+#                the terminal sets for its X window.
+#   macOS:       needs osascript (System Events), the unix PID of the
+#                terminal application (kitty sets $KITTY_PID) and the
+#                Accessibility permission for the app that runs tmux. Only
+#                the first window of that application is handled.
+
+set -euo pipefail
+
+if ((BASH_VERSINFO[0] < 4 || (BASH_VERSINFO[0] == 4 && BASH_VERSINFO[1] < 4))); then
+    echo "Error: bash 4.4 or newer is required" >&2
+    exit 1
+fi
+
+# Canonical program name for the version output (GNU: a constant, never
+# derived from $0); usage and error messages use the invoked name instead.
+readonly PROG_NAME="tmux-window-geometry"
+readonly SCRIPT_NAME="${0##*/}"
+# Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
+# features, PATCH for fixes. Bump it with every change to this script.
+readonly VERSION="0.1.0"
+
+# Short options that require a value (see expand_args).
+readonly VALUE_OPTS="fp"
+# Long options that require a value given as a separate argument.
+readonly -a LONG_VALUE_OPTS=(--file --pid)
+
+# Command line values (empty means "not set on the command line")
+command=""
+cli_file=""
+cli_pid=""
+dry_run="false"
+declare -a expanded=()
+
+usage() {
+    cat <<EOF
+${PROG_NAME} ${VERSION}
+Save and restore the terminal window position and size (Linux and macOS).
+
+Usage: ${SCRIPT_NAME} COMMAND [OPTIONS]
+
+Commands:
+  save       Store the current window geometry in the geometry file
+  restore    Move and resize the window to the stored geometry
+  version    Show the version and exit
+  help       Show this help and exit
+
+Options:
+  -f, --file FILE   Geometry file (env: TMUX_WINDOW_GEOMETRY_FILE; default:
+                    "geometry" in the tmux-resurrect directory, which is
+                    ~/.tmux/resurrect if it exists, else
+                    \${XDG_DATA_HOME:-~/.local/share}/tmux/resurrect)
+  -p, --pid PID     macOS only: unix PID of the terminal application
+                    (env: TMUX_WINDOW_GEOMETRY_PID, then KITTY_PID)
+  -n, --dry-run     Show what would be done without doing it
+  -h, --help        Show this help and exit
+      --version     Show the version and exit
+
+On Linux the X window is taken from \$WINDOWID.
+Precedence: command line > environment > default.
+EOF
+}
+
+die() {
+    printf 'Error: %s\n' "$*" >&2
+    exit 1
+}
+
+warn() {
+    printf 'Warning: %s\n' "$*" >&2
+}
+
+print_version() {
+    printf '%s %s\n' "$PROG_NAME" "$VERSION"
+}
+
+is_long_value_opt() {
+    local opt
+    for opt in "${LONG_VALUE_OPTS[@]}"; do
+        if [[ "$1" == "$opt" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Normalize the command line into one token per option: squashed short
+# options are split (`-nv` -> `-n -v`, `-ffile` -> `-f file`). Arguments
+# after `--` and values of value-taking options are left untouched.
+expand_args() {
+    local arg chars c i take_value="false"
+    expanded=()
+    while (($# > 0)); do
+        arg="$1"
+        shift
+        if [[ "$take_value" == "true" ]]; then
+            expanded+=("$arg")
+            take_value="false"
+            continue
+        fi
+        case "$arg" in
+            --)
+                expanded+=("$arg" "$@")
+                break
+                ;;
+            --*)
+                expanded+=("$arg")
+                if is_long_value_opt "$arg"; then
+                    take_value="true"
+                fi
+                ;;
+            -?*)
+                chars="${arg#-}"
+                for ((i = 0; i < ${#chars}; i++)); do
+                    c="${chars:i:1}"
+                    expanded+=("-${c}")
+                    if [[ "$VALUE_OPTS" == *"$c"* ]]; then
+                        if ((i + 1 < ${#chars})); then
+                            expanded+=("${chars:i+1}")
+                        else
+                            take_value="true"
+                        fi
+                        break
+                    fi
+                done
+                ;;
+            *)
+                expanded+=("$arg")
+                ;;
+        esac
+    done
+}
+
+# Set opt_value and opt_shift (number of arguments consumed) for the
+# value-taking option in $1. Only long options accept `=` (GNU rules), so
+# `-f=x` gives the value `=x`.
+take_value() {
+    if [[ "$1" == --*=* ]]; then
+        opt_value="${1#*=}"
+        opt_shift=1
+    elif (($# >= 2)); then
+        opt_value="$2"
+        opt_shift=2
+    else
+        die "Option '${1}' requires a value"
+    fi
+    [[ -n "$opt_value" ]] || die "Option '${1%%=*}' requires a non-empty value"
+}
+
+parse_args() {
+    # `version` and `help` as the first argument win over everything else
+    case "${1:-}" in
+        version | --version)
+            print_version
+            exit 0
+            ;;
+        help | -h | --help)
+            usage
+            exit 0
+            ;;
+        save | restore)
+            command="$1"
+            shift
+            ;;
+        "")
+            usage >&2
+            die "Command should be specified"
+            ;;
+        *)
+            usage >&2
+            die "Unsupported command: $1"
+            ;;
+    esac
+
+    expand_args "$@"
+    set -- "${expanded[@]}"
+
+    local opt_value opt_shift
+    while (($# > 0)); do
+        case "$1" in
+            -h | --help)
+                usage
+                exit 0
+                ;;
+            --version)
+                print_version
+                exit 0
+                ;;
+            -f | --file | --file=*)
+                take_value "$@"
+                shift "$opt_shift"
+                cli_file="$opt_value"
+                continue
+                ;;
+            -p | --pid | --pid=*)
+                take_value "$@"
+                shift "$opt_shift"
+                cli_pid="$opt_value"
+                continue
+                ;;
+            -n | --dry-run) dry_run="true" ;;
+            --)
+                shift
+                (($# == 0)) || die "Unexpected argument: '$1'"
+                break
+                ;;
+            -*) die "Unknown option: $1 (see '${SCRIPT_NAME} help')" ;;
+            "") die "Empty argument" ;;
+            *) die "Unexpected argument: '$1'" ;;
+        esac
+        shift
+    done
+}
+
+# Default geometry file: same directory logic as tmux-resurrect itself.
+default_geometry_file() {
+    local dir="${HOME}/.tmux/resurrect"
+    if [[ ! -d "$dir" ]]; then
+        dir="${XDG_DATA_HOME:-${HOME}/.local/share}/tmux/resurrect"
+    fi
+    printf '%s/geometry\n' "$dir"
+}
+
+is_int() {
+    [[ "$1" =~ ^-?[0-9]+$ ]]
+}
+
+# True when all four arguments are integers.
+all_ints() {
+    local v
+    for v in "$@"; do
+        is_int "$v" || return 1
+    done
+    (($# == 4))
+}
+
+# Print "X Y WIDTH HEIGHT" of the terminal window (Linux, X11).
+linux_get() {
+    local key value x="" y="" w="" h=""
+    [[ -n "${WINDOWID:-}" ]] || die "WINDOWID is not set; not running in an X11 terminal"
+    while IFS='=' read -r key value; do
+        case "$key" in
+            X) x="$value" ;;
+            Y) y="$value" ;;
+            WIDTH) w="$value" ;;
+            HEIGHT) h="$value" ;;
+        esac
+    done < <(xdotool getwindowgeometry --shell "$WINDOWID")
+    if ! all_ints "$x" "$y" "$w" "$h"; then
+        die "Could not read the geometry of window ${WINDOWID}"
+    fi
+    printf '%s %s %s %s\n' "$x" "$y" "$w" "$h"
+}
+
+linux_set() {
+    local x="$1" y="$2" w="$3" h="$4"
+    [[ -n "${WINDOWID:-}" ]] || die "WINDOWID is not set; not running in an X11 terminal"
+    wmctrl -i -r "$WINDOWID" -e "0,${x},${y},${w},${h}"
+}
+
+# Print "X Y WIDTH HEIGHT" of the first window of the process with PID $1.
+macos_get() {
+    local out x y w h
+    out="$(osascript \
+        -e 'on run argv' \
+        -e 'tell application "System Events" to tell (first process whose unix id is (item 1 of argv as integer))' \
+        -e 'get (position of window 1) & (size of window 1)' \
+        -e 'end tell' \
+        -e 'end run' \
+        "$1")" || die "osascript failed (is Accessibility access granted?)"
+    IFS=', ' read -r x y w h <<<"$out"
+    if ! all_ints "$x" "$y" "$w" "$h"; then
+        die "Unexpected osascript output: ${out}"
+    fi
+    printf '%s %s %s %s\n' "$x" "$y" "$w" "$h"
+}
+
+macos_set() {
+    osascript \
+        -e 'on run argv' \
+        -e 'tell application "System Events" to tell (first process whose unix id is (item 1 of argv as integer))' \
+        -e 'set position of window 1 to {item 2 of argv as integer, item 3 of argv as integer}' \
+        -e 'set size of window 1 to {item 4 of argv as integer, item 5 of argv as integer}' \
+        -e 'end tell' \
+        -e 'end run' \
+        "$1" "$2" "$3" "$4" "$5" >/dev/null ||
+        die "osascript failed (is Accessibility access granted?)"
+}
+
+# Set the global `platform` and `pid` for the current system.
+detect_platform() {
+    local -a deps
+    local dep
+    case "$(uname -s)" in
+        Linux)
+            platform="linux"
+            deps=(xdotool wmctrl)
+            ;;
+        Darwin)
+            platform="macos"
+            deps=(osascript)
+            pid="${cli_pid:-${TMUX_WINDOW_GEOMETRY_PID:-${KITTY_PID:-}}}"
+            [[ -n "$pid" ]] || die "No terminal PID: use --pid or set TMUX_WINDOW_GEOMETRY_PID (or KITTY_PID)"
+            is_int "$pid" || die "Invalid PID: ${pid}"
+            ;;
+        *) die "Unsupported platform: $(uname -s)" ;;
+    esac
+    for dep in "${deps[@]}"; do
+        command -v "$dep" >/dev/null 2>&1 || die "'${dep}' is required but not installed"
+    done
+}
+
+# Command: save
+save_main() {
+    local file="$1" geometry
+    if [[ "$platform" == "linux" ]]; then
+        geometry="$(linux_get)"
+    else
+        geometry="$(macos_get "$pid")"
+    fi
+    if [[ "$dry_run" == "true" ]]; then
+        printf '[dry-run] Would write "%s" to %s\n' "$geometry" "$file"
+        return 0
+    fi
+    mkdir -p "${file%/*}"
+    printf '%s\n' "$geometry" >"$file"
+}
+
+# Command: restore
+restore_main() {
+    local file="$1" x y w h
+    [[ -r "$file" ]] || die "Geometry file not found: ${file}"
+    read -r x y w h <"$file"
+    if ! all_ints "${x:-}" "${y:-}" "${w:-}" "${h:-}"; then
+        die "Invalid geometry file: ${file}"
+    fi
+    if [[ "$dry_run" == "true" ]]; then
+        printf '[dry-run] Would move the window to %s,%s and resize it to %sx%s\n' "$x" "$y" "$w" "$h"
+        return 0
+    fi
+    if [[ "$platform" == "linux" ]]; then
+        linux_set "$x" "$y" "$w" "$h"
+    else
+        macos_set "$pid" "$x" "$y" "$w" "$h"
+    fi
+}
+
+platform=""
+pid=""
+
+main() {
+    parse_args "$@"
+    detect_platform
+
+    # Precedence: command line > environment > default
+    local file="${cli_file:-${TMUX_WINDOW_GEOMETRY_FILE:-$(default_geometry_file)}}"
+
+    case "$command" in
+        save) save_main "$file" ;;
+        restore) restore_main "$file" ;;
+        *) die "Unsupported command: ${command}" ;;
+    esac
+}
+
+main "$@"
