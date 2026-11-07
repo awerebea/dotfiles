@@ -42,3 +42,6 @@ __pycache__/
 
 # Python virtualenvs
 venv/
+
+# tmux plugins installed by TPM under the symlinked ~/.config/tmux
+tmux/.config/tmux/plugins/
