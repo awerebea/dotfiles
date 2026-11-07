@@ -623,6 +623,12 @@ set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.l
 # tmux resurrect. Restoring vim and neovim sessions
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
+# Plugins are applied asynchronously after this file is sourced, so a plain
+# `bind C-s` here would be overwritten by the plugin's blocking run-shell
+# binding. Move the plugin's own save key to an unused one and bind C-s to a
+# background (-b) save ourselves.
+set -g @resurrect-save 'M-F12'
+bind C-s run-shell -b "$TMUX_PLUGIN_MANAGER_PATH/tmux-resurrect/scripts/save.sh"
 
 
 set -g @plugin 'tmux-plugins/tmux-continuum'
