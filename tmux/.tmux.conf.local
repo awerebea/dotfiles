@@ -628,7 +628,7 @@ set -g @resurrect-strategy-nvim 'session'
 # binding. Move the plugin's own save key to an unused one and bind C-s to a
 # background (-b) save ourselves.
 set -g @resurrect-save 'M-F12'
-bind C-s run-shell -b "$TMUX_PLUGIN_MANAGER_PATH/tmux-resurrect/scripts/save.sh"
+bind C-s run-shell -b '"${TMUX_PLUGIN_MANAGER_PATH:-$HOME/.tmux/plugins}/tmux-resurrect/scripts/save.sh"'
 
 
 set -g @plugin 'tmux-plugins/tmux-continuum'
