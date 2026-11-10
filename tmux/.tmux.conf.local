@@ -386,7 +386,7 @@ tmux_conf_theme_clock_style="24"
 #   - false (default)
 #   - disabled
 # on Linux, this requires xsel, xclip or wl-copy
-tmux_conf_copy_to_os_clipboard=false
+tmux_conf_copy_to_os_clipboard=true
 
 
 # -- urlscan -------------------------------------------------------------------
@@ -592,6 +592,9 @@ set -g allow-passthrough on
 # in the specified time milliseconds (the default is 500).
 set -g repeat-time 500
 
+# tmux >= 3.3: persist command-prompt history across restarts
+set -g history-file "$HOME/.tmux_history"
+
 # ！！！important！！！ enabling 24 bit color
 set -ga terminal-overrides ",*256col*:Tc"
 
@@ -618,8 +621,11 @@ bind -r S-Right swap-window -t +1 \; next-window
 # {{{ --------------- List of installed plugins with their settings -------------------------------
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 # save and restore window geometry for most terminals in X11
-set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
-set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.local/share/tmux/resurrect/geometry)'
+# (Linux only: xdotool and wmctrl do not exist on macOS, where the hooks would just fail)
+if-shell '[ $(uname -s) = Linux ]' {
+  set -g @resurrect-hook-post-save-all 'eval $(xdotool getwindowgeometry --shell $WINDOWID); echo 0,$X,$Y,$WIDTH,$HEIGHT > $HOME/.tmux/resurrect/geometry'
+  set -g @resurrect-hook-pre-restore-all 'wmctrl -i -r $WINDOWID -e $(cat $HOME/.local/share/tmux/resurrect/geometry)'
+}
 # tmux resurrect. Restoring vim and neovim sessions
 set -g @resurrect-strategy-vim 'session'
 set -g @resurrect-strategy-nvim 'session'
@@ -1029,7 +1035,6 @@ setw -g aggressive-resize on
 # OSC 52, so copies reach the host terminal's clipboard over SSH or from
 # inside a nested tmux, which neither this setting nor tmux-yank's local
 # pbcopy/xclip path covers on their own.
-tmux_conf_copy_to_os_clipboard=true
 set -s set-clipboard on
 
 # -- display -------------------------------------------------------------------
@@ -1254,6 +1259,9 @@ bind-key -r -T marked-pane-actions Down swap-pane -t '{down-of}' \; select-pane 
 bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
 
 # Create a new window preserving the path of the current pane
+# NOTE: must stay a run-shell. Oh My Tmux rewrites any plain
+# `new-window -c "#{pane_current_path}"` and strips the -c while
+# tmux_conf_new_window_retain_current_path=false, so a direct bind loses the path.
 bind-key c run-shell 'tmux new-window -c "$(echo "#{pane_current_path}")"'
 
 bind-key -r i run-shell "tmux neww tmux-cht.sh"
