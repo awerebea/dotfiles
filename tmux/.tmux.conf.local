@@ -38,7 +38,7 @@ tmux_conf_new_session_retain_current_path=false
 #   - true
 #   - false (default)
 #   - disabled (do not modify new-window bindings)
-tmux_conf_new_window_retain_current_path=false
+tmux_conf_new_window_retain_current_path=true
 
 # new window tries to reconnect ssh sessions, possible values are:
 #   - true
@@ -1258,11 +1258,9 @@ bind-key -r -T marked-pane-actions Down swap-pane -t '{down-of}' \; select-pane 
 # Start rectangle (block) selection in copy-mode
 bind-key -T copy-mode-vi 'C-v' send -X begin-selection \; send -X rectangle-toggle
 
-# Create a new window preserving the path of the current pane
-# NOTE: must stay a run-shell. Oh My Tmux rewrites any plain
-# `new-window -c "#{pane_current_path}"` and strips the -c while
-# tmux_conf_new_window_retain_current_path=false, so a direct bind loses the path.
-bind-key c run-shell 'tmux new-window -c "$(echo "#{pane_current_path}")"'
+# Create a new window; Oh My Tmux adds -c "#{pane_current_path}" because
+# tmux_conf_new_window_retain_current_path=true
+bind-key c new-window
 
 bind-key -r i run-shell "tmux neww tmux-cht.sh"
 
