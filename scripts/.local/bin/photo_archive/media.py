@@ -91,7 +91,7 @@ def ffprobe_video(path: Path) -> VideoInfo | None:
             "ffprobe", "-v", "error",
             "-select_streams", "v",
             "-show_entries",
-            "stream=codec_name,width,height,disposition=attached_pic",
+            "stream=codec_name,width,height,duration,disposition=attached_pic",
             "-show_entries", "format=duration",
             "-of", "json",
             str(path),
@@ -118,13 +118,17 @@ def ffprobe_video(path: Path) -> VideoInfo | None:
     if stream is None:
         return None
 
-    raw_duration = (data.get("format") or {}).get("duration")
-    try:
-        duration = float(raw_duration)
-    except (TypeError, ValueError):
-        duration = None
-    if duration is not None and duration <= 0:
-        duration = None
+    # The container duration is preferred; some files only carry it on the
+    # video stream
+    duration = None
+    for raw_duration in ((data.get("format") or {}).get("duration"), stream.get("duration")):
+        try:
+            value = float(raw_duration)
+        except (TypeError, ValueError):
+            continue
+        if value > 0:
+            duration = value
+            break
 
     return VideoInfo(
         path=path,

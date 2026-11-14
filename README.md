@@ -130,6 +130,7 @@ video_face_tagger.py extract \
   --jobs 6 \
   --interval 5 \
   --max-frames 40 \
+  --min-samples 1 \
   --long-edge 1280 \
   --quality 2 \
   --select sharpest \
@@ -153,11 +154,18 @@ probing with ffprobe where it is not, so unusual containers and extensionless
 files are still found. Videos already carrying the marker are skipped unless
 `--force` is given.
 
-The number of frames per video is `duration / interval`, clamped between 1 and
-`--max-frames`, and the samples are spread evenly across the whole clip. A long
-video therefore gets `--max-frames` samples spanning its full length rather than
-a dense burst at the start, and a clip shorter than one interval still yields
-one frame taken from the middle.
+The number of frames per video is `duration / interval`, at least
+`--min-samples` (default 1) and at most `--max-frames` (`0`: no cap), and the
+samples are spread evenly across the whole clip. A long video therefore gets
+`--max-frames` samples spanning its full length rather than a dense burst at the
+start, and a clip shorter than one interval still yields `--min-samples` frames,
+the first from the middle. `--min-samples 4` gives a 9 s clip four frames,
+2.25 s apart, instead of one. When ffprobe reports no duration for the container
+it falls back to the video stream's; with none at all, frames at 0.5, 2 and 5 s
+are taken (previously only t=0, which is often black). The same sampling is
+vendored in the Immich stack's `immich-video-faces` (truenas repository,
+`Dockge/stacks/immich/sidecar-sync/frames.py`), which uses
+`--min-samples 4` and no cap; keep the two in step.
 
 With `--select sharpest` the tool takes `--candidates` frames within a window of
 `--candidate-window` seconds around each sample point and keeps the sharpest.

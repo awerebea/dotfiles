@@ -230,17 +230,29 @@ def scale_filter(long_edge: int) -> str:
     )
 
 
-def sample_timestamps(duration: float | None, interval: float, max_frames: int) -> list[float]:
+# Sample points when ffprobe cannot tell the duration (t=0 is often black)
+UNKNOWN_DURATION_SAMPLES = (0.5, 2.0, 5.0)
+
+
+def sample_timestamps(
+    duration: float | None, interval: float, max_frames: int, min_samples: int = 1
+) -> list[float]:
     """Pick sample points, evenly spread and biased away from the very edges.
 
-    A clip shorter than one interval still yields one frame, taken from the
-    middle. When the interval would produce more frames than the cap, the cap
-    is spread across the whole clip rather than truncating to the opening.
+    count = max(min_samples, duration // interval), capped at max_frames
+    unless max_frames is 0. A clip shorter than one interval still yields
+    min_samples frames (at least one, from the middle), closer together than
+    the interval. When the interval would produce more frames than the cap,
+    the cap is spread across the whole clip rather than truncating to the
+    opening. Without a known duration, a few fixed points near the start are
+    sampled. Shared with immich-video-faces (truenas repository,
+    Dockge/stacks/immich/sidecar-sync/frames.py): keep the two in step.
     """
     if duration is None:
-        return [0.0]
-    count = int(duration // interval)
-    count = max(1, min(max_frames, count))
+        return list(UNKNOWN_DURATION_SAMPLES)
+    count = max(1, min_samples, int(duration // interval))
+    if max_frames > 0:
+        count = min(count, max_frames)
     return [(index + 0.5) * duration / count for index in range(count)]
 
 
@@ -540,7 +552,9 @@ def extract_video(
             stale.unlink(missing_ok=True)
             sidecar_for(stale).unlink(missing_ok=True)
 
-    timestamps = sample_timestamps(info.duration, args.interval, args.max_frames)
+    timestamps = sample_timestamps(
+        info.duration, args.interval, args.max_frames, args.min_samples
+    )
 
     if args.dry_run:
         LOG.info(
@@ -1446,6 +1460,7 @@ CONFIG_TEMPLATE = """\
 [extract]
 # interval = 5.0
 # max_frames = 40
+# min_samples = 1
 # long_edge = 1280
 # select = "sharpest"
 # face_filter = "auto"
@@ -1525,7 +1540,12 @@ def build_parser(config: dict[str, Any] | None = None) -> argparse.ArgumentParse
     )
     extract.add_argument(
         "--max-frames", type=int, default=40,
-        help="cap on frames per video (default: 40)",
+        help="cap on frames per video, 0 for no cap (default: 40)",
+    )
+    extract.add_argument(
+        "--min-samples", type=int, default=1,
+        help="frames per video at least, so short clips get several "
+        "(default: 1)",
     )
     extract.add_argument(
         "--long-edge", type=int, default=1280,
