@@ -724,6 +724,8 @@ if [[ "${commands[claude-session]}" ]]; then
     claude-session completion zsh > "$ZSH/completions/_claude-session"
   fi
   alias cs='claude-session'
+  alias csr='claude-session resume'
+  alias csl='claude-session list'
 fi
 
 # Lazy loading vagrant completions
