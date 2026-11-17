@@ -718,3 +718,156 @@ normalize_names_nfc.py --resolve-duplicates --apply /mnt/tank/photo
 Where both spellings of one name exist side by side, the collision is reported
 with a comparison of the two objects. `--resolve-duplicates` deletes a non-NFC
 object only when its contents are already present in full under the NFC name.
+
+### [claude_session.py](scripts/.local/bin/claude_session.py)
+
+Find, resume and manage Claude Code sessions from any directory, by the name
+given with `/rename`, in an fzf picker modelled on
+[fzf-git-branches](https://github.com/awerebea/fzf-git-branches).
+
+It keeps a registry of named sessions across all projects, shows which ones
+are open right now and where, and resumes a session in the directory it was
+started in.
+
+#### Requirements
+
+- Python 3.10 or newer, standard library only
+- `fzf` (a recent version; tested with 0.75) for the picker
+- `tmux`, optionally, to jump to a session that is already open
+
+#### Install
+
+```sh
+# from the repository root: the command is claude-session
+ln -s "$PWD/scripts/.local/bin/claude_session.py" ~/.local/bin/claude-session
+```
+
+Register sessions as they end with a `SessionEnd` hook in
+`~/.claude/settings.json`:
+
+```json
+"hooks": {
+  "SessionEnd": [
+    { "hooks": [{ "type": "command", "command": "$HOME/.local/bin/claude-session hook" }] }
+  ]
+}
+```
+
+Then pick up the sessions that ended before the hook existed:
+
+```sh
+claude-session sync
+```
+
+`zsh/.zshrc` regenerates the zsh completion whenever the script is newer than
+it, and defines the aliases `cs`, `csr` (resume) and `csl` (list).
+
+#### How it works
+
+- `/rename` writes a `custom-title` record into the session transcript
+  (`~/.claude/projects/<project>/<session id>.jsonl`). The hook reads it when
+  the session ends and records the name, the session ID and the directory in
+  the registry.
+- Open sessions are read from Claude Code's own
+  `~/.claude/sessions/<pid>.json`, so a `/rename` shows up at once, together
+  with the process ID and tmux pane of the session.
+- The registry is keyed by session ID, so names may repeat: two `infra`
+  sessions in different repositories are told apart by their directory.
+- With `-a/--all` or `-u/--unnamed`, the transcripts themselves are scanned, so
+  unnamed sessions can be listed, resumed, named or deleted as well.
+
+#### Usage
+
+```sh
+claude-session                 # the picker (same as `claude-session manage`)
+claude-session resume infra    # the picker, with "infra" as the query
+claude-session resume -1 infra # resume at once if only one session matches
+claude-session resume 8c1f2a90 # a session ID or 8+ character prefix: no picker
+claude-session resume infra -- --model opus   # arguments after -- go to claude
+
+claude-session list -a -t      # every session, with its AI title
+claude-session list -u -s path # unnamed sessions by directory
+claude-session info infra      # everything known about a session
+claude-session rename old new
+claude-session remove infra    # drop from the list (sync skips it)
+claude-session remove -P infra # delete its data for good
+```
+
+Resume changes into the session's directory first (`-H/--here` stays put).
+Choosing a session that is open in another tmux pane offers to switch to that
+pane instead; outside tmux it prints where the session is open, and
+`-f/--force` resumes it anyway.
+
+Without fzf or a terminal, NAME is looked up directly: an exact name, a unique
+prefix of one, or a session ID. A name shared by several sessions means the one
+started in the current directory; anything still ambiguous is an error listing
+the candidates.
+
+#### The picker
+
+Named sessions are shown as `[name]` and unnamed ones as `(short ID)`, with
+their directory, status (`open`, or `hidden` for removed sessions) and dates.
+The query matches the name and directory columns only.
+
+| Key          | Action                                                        |
+| ------------ | ------------------------------------------------------------- |
+| `enter`      | Resume the session under the cursor                           |
+| `ctrl-t`     | Select and move down; selections are for the delete keys      |
+| `ctrl-d`     | Remove the selected sessions from the list (asks first)       |
+| `ctrl-alt-d` | Delete the selected sessions' data, closing open ones (asks)  |
+| `ctrl-r`     | Rename the session under the cursor                           |
+| `ctrl-o`     | Show its info                                                 |
+| `alt-a`      | Cycle the sessions shown: named, all, unnamed                 |
+| `alt-t`      | Show or hide the AI title column                              |
+| `alt-c`      | Cycle the date columns: last active, created, both            |
+| `alt-s`      | Cycle the sort: last active, created, name, directory, status |
+| `alt-r`      | Reverse the sort order                                        |
+
+The view keys last until the picker closes; their defaults come from the
+options below. Dates sort newest first, names and directories A-Z, statuses
+open first; the sorted column is marked `v` or `^`. Sessions whose name matches
+the NAME argument are listed first.
+
+#### Removing and deleting
+
+`remove` (`ctrl-d`) only takes a session off the list: `sync` and the hook skip
+it until it is renamed, and its transcript stays where it is, so `claude
+--resume` still finds it.
+
+`remove -P` (`ctrl-alt-d`) deletes the transcript, the folder beside it (tool
+results, `custom-title.json`), `~/.claude/file-history/<id>` and
+`~/.claude/session-env/<id>`, after listing them with their sizes and asking
+once, default no. An open session is closed first (SIGTERM, then SIGKILL), and
+a session never deletes the one it runs in. The shared prompt history,
+`~/.claude/history.jsonl`, is left alone: open sessions append to it.
+
+#### Configuration
+
+Defaults can be set in the environment or in
+`~/.config/claude-session/claude-session.conf`, as `KEY=VALUE` lines. The
+command line wins over the environment, which wins over the file.
+
+| Setting                       | Meaning                                       |
+| ----------------------------- | --------------------------------------------- |
+| `CLAUDE_SESSION_SORT`         | `active`, `created`, `name`, `path`, `status` |
+| `CLAUDE_SESSION_REVERSE=1`    | Reverse the sort order                        |
+| `CLAUDE_SESSION_DATE`         | `active`, `created` or `both`                 |
+| `CLAUDE_SESSION_AI_TITLE=1`   | Show the AI title column                      |
+| `CLAUDE_SESSION_KEY_<ACTION>` | Picker key of an action, see below            |
+| `CLAUDE_SESSION_CLAUDE_BIN`   | The claude executable                         |
+| `CLAUDE_SESSION_REGISTRY`     | The registry file                             |
+
+The picker actions are `REMOVE`, `PURGE`, `RENAME`, `INFO`, `ALL`, `TITLES`,
+`DATES`, `SORT` and `REVERSE`, e.g. `CLAUDE_SESSION_KEY_PURGE=ctrl-x`.
+
+#### Where things are stored
+
+| Path                                           | Contents                                                       |
+| ---------------------------------------------- | -------------------------------------------------------------- |
+| `~/.claude/session-registry.json`              | Named sessions by ID, and removed ones                         |
+| `~/.claude/projects/<project>/<id>.jsonl`      | Transcripts (Claude Code's; read, and appended to by `rename`) |
+| `~/.claude/sessions/<pid>.json`                | Open sessions (Claude Code's; read only)                       |
+| `~/.config/claude-session/claude-session.conf` | Defaults                                                       |
+
+`CLAUDE_CONFIG_DIR` moves everything under `~/.claude`, as it does for Claude
+Code itself.
