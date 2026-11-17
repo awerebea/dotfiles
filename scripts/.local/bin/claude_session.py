@@ -2,8 +2,9 @@
 """Resume Claude Code sessions by the name given with /rename, from anywhere.
 
 Claude Code writes a `custom-title` record into the session transcript on
-/rename. This tool keeps a registry (JSON) that maps those names to session
-IDs and the directory each session was started in:
+/rename. This tool keeps a registry (JSON) of named sessions by session ID,
+with the name and the directory each session was started in (names may
+repeat across directories):
 
 - `hook` is run by a Claude Code SessionEnd hook and updates the registry
   from the ending session's transcript.
@@ -41,7 +42,7 @@ from typing import Any
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.8.0"
+__version__ = "0.9.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -73,7 +74,9 @@ DEFAULT_CLAUDE_BIN = "claude"
 # Claude Code's own config dir; transcripts live in <dir>/projects/*/*.jsonl
 CLAUDE_DIR = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
 DEFAULT_REGISTRY = CLAUDE_DIR / "session-registry.json"
-REGISTRY_FORMAT = 1
+REGISTRY_FORMAT = 2
+# Shortest session ID prefix accepted in place of a name
+MIN_ID_PREFIX = 8
 # fzf exit code for Esc / Ctrl-C
 FZF_CANCELLED = 130
 # Picker keys (fzf key names), configurable like the settings above
@@ -201,8 +204,10 @@ def build_parser() -> argparse.ArgumentParser:
         nargs="*",
         metavar="NAME",
         help=(
-            "session name or a unique prefix of it; words are joined with spaces. "
-            "Without NAME, or if it is ambiguous or unknown, pick with fzf"
+            "session name, a unique prefix of it or a session ID; words are joined "
+            "with spaces. A name shared by several sessions means the one started "
+            "in the current directory. Without NAME, or if it is ambiguous or "
+            "unknown, pick with fzf"
         ),
     )
     resume.epilog = (
@@ -220,7 +225,10 @@ def build_parser() -> argparse.ArgumentParser:
         "name",
         nargs="*",
         metavar="NAME",
-        help="session name or a unique prefix of it; without NAME, pick with fzf",
+        help=(
+            "session name, a unique prefix of it or a session ID; "
+            "without NAME, pick with fzf"
+        ),
     )
 
     list_cmd = add_command("list", "List registered and open named sessions")
@@ -250,13 +258,17 @@ def build_parser() -> argparse.ArgumentParser:
     rename = add_command(
         "rename", "Rename a session (writes a custom-title record, as /rename does)"
     )
-    rename.add_argument("old", metavar="OLD", help="current name")
+    rename.add_argument(
+        "old", metavar="OLD", help="current name or session ID (names may repeat)"
+    )
     rename.add_argument("new", metavar="NEW", help="new name")
 
     remove = add_command(
         "remove", "Remove registry entries; sync skips them until renamed"
     )
-    remove.add_argument("names", nargs="+", metavar="NAME", help="names to remove")
+    remove.add_argument(
+        "names", nargs="+", metavar="NAME", help="session names or IDs to remove"
+    )
 
     completion = add_command("completion", "Print a shell completion script")
     completion.add_argument("shell", choices=["zsh"], help="shell to complete for")
@@ -348,9 +360,10 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-# Registry layout: {"version": 1,
-#   "sessions": {NAME: {"session_id", "cwd", "transcript", "updated"}},
+# Registry layout: {"version": 2,
+#   "sessions": {SESSION_ID: {"name", "cwd", "transcript", "updated"}},
 #   "hidden": {SESSION_ID: {"title", "transcript"}}}
+# Names need not be unique: sessions in different directories may share one.
 # Hidden sessions were removed by the user; sync and the hook skip them until
 # the session gets a different title.
 
@@ -359,6 +372,16 @@ def now() -> str:
 class Registry:
     sessions: dict[str, dict[str, str]] = dataclasses.field(default_factory=dict)
     hidden: dict[str, dict[str, str]] = dataclasses.field(default_factory=dict)
+
+
+def upgrade_v1(sessions: dict[str, Any]) -> dict[str, dict[str, str]]:
+    """Format 1 keyed sessions by name, so a name could hold only one."""
+    upgraded = {}
+    for name, entry in sessions.items():
+        if isinstance(entry, dict) and isinstance(entry.get("session_id"), str):
+            fields = {k: v for k, v in entry.items() if k != "session_id"}
+            upgraded[entry["session_id"]] = {"name": name, **fields}
+    return upgraded
 
 
 def load_registry(path: Path) -> Registry:
@@ -372,6 +395,11 @@ def load_registry(path: Path) -> Registry:
     hidden = data.get("hidden", {}) if isinstance(data, dict) else None
     if not isinstance(sessions, dict) or not isinstance(hidden, dict):
         raise AppError(f"Unexpected registry format in {path}")
+    version = data.get("version")
+    if version == 1:
+        sessions = upgrade_v1(sessions)
+    elif version != REGISTRY_FORMAT:
+        raise AppError(f"Unsupported registry format {version!r} in {path}")
     return Registry(sessions, hidden)
 
 
@@ -450,14 +478,14 @@ def apply_entry(
 ) -> list[str]:
     """Register `title` for `session_id`; return messages about the changes."""
     sessions = registry.sessions
-    messages = []
-    # A session renamed again must not stay registered under its old name
-    for name in [n for n, e in sessions.items() if e.get("session_id") == session_id]:
-        if name != title:
-            del sessions[name]
-            messages.append(f"Unregistered old name: {name}")
+    previous = sessions.get(session_id)
     if title is None:
-        return messages
+        # The name was cleared
+        if previous is None:
+            return []
+        del sessions[session_id]
+        return [f"Unregistered: {previous.get('name')} ({session_id})"]
+    messages: list[str] = []
     hidden = registry.hidden.get(session_id)
     if hidden is not None:
         if hidden.get("title") == title:
@@ -465,14 +493,9 @@ def apply_entry(
         # Renamed since it was removed: the user wants it back
         del registry.hidden[session_id]
         messages.append(f"Unhidden session {session_id}: renamed to '{title}'")
-    previous = sessions.get(title)
-    if previous and previous.get("session_id") != session_id:
-        messages.append(
-            f"Name '{title}' moved from session {previous.get('session_id')}"
-        )
-    entry = {"session_id": session_id, "cwd": cwd or "", "transcript": str(transcript)}
+    entry = {"name": title, "cwd": cwd or "", "transcript": str(transcript)}
     if previous is None or {k: previous.get(k) for k in entry} != entry:
-        sessions[title] = {**entry, "updated": now()}
+        sessions[session_id] = {**entry, "updated": now()}
         messages.append(f"Registered session: {title} -> {session_id}")
     return messages
 
@@ -488,7 +511,7 @@ def pid_alive(pid: int) -> bool:
 
 
 def live_sessions() -> dict[str, dict[str, str]]:
-    """Named sessions that are open right now.
+    """Named sessions that are open right now, by session ID.
 
     Running Claude Code instances keep <config dir>/sessions/<pid>.json with
     the session name; `nameSource` is "user" for /rename and --name.
@@ -506,34 +529,28 @@ def live_sessions() -> dict[str, dict[str, str]]:
             continue
         if not isinstance(pid, int) or not pid_alive(pid):
             continue
-        sessions[name] = {
-            "session_id": session_id,
+        sessions[session_id] = {
+            "name": name,
             "cwd": str(data.get("cwd") or ""),
             "open_pid": str(pid),
             "tmux": str(data.get("tmux") or ""),
         }
         updated_ms = data.get("updatedAt")
         if isinstance(updated_ms, int):
-            sessions[name]["active"] = str(updated_ms / 1000)
+            sessions[session_id]["active"] = str(updated_ms / 1000)
     return sessions
 
 
 def merge_live(sessions: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
     """Registry plus open sessions; an open session's current name wins."""
-    live = live_sessions()
-    live_ids = {entry["session_id"] for entry in live.values()}
-    merged = {
-        name: entry
-        for name, entry in sessions.items()
-        if entry.get("session_id") not in live_ids
-    }
-    for name, entry in live.items():
-        merged[name] = {**sessions.get(name, {}), **entry}
+    merged = dict(sessions)
+    for session_id, entry in live_sessions().items():
+        merged[session_id] = {**sessions.get(session_id, {}), **entry}
     return merged
 
 
-def open_hint(name: str, entry: dict[str, str]) -> str:
-    hint = f"Session '{name}' is already open (pid {entry['open_pid']})"
+def open_hint(entry: dict[str, str]) -> str:
+    hint = f"Session '{entry['name']}' is already open (pid {entry['open_pid']})"
     # tmux location looks like "session:@window.%pane"
     pane = entry.get("tmux", "").rpartition(".")[2]
     if pane.startswith("%"):
@@ -541,12 +558,37 @@ def open_hint(name: str, entry: dict[str, str]) -> str:
     return f"{hint}. Use -f/--force to resume it anyway"
 
 
-def match_names(sessions: dict[str, dict[str, str]], name: str) -> list[str]:
-    """Exact name first, then names starting with it (case-insensitive)."""
-    if name in sessions:
-        return [name]
-    lowered = name.casefold()
-    return sorted(n for n in sessions if n.casefold().startswith(lowered))
+def current_dirs() -> set[str]:
+    """The working directory, both as given by the shell and resolved."""
+    return {os.getcwd(), os.environ.get("PWD", "")} - {""}
+
+
+def match_sessions(
+    sessions: dict[str, dict[str, str]], query: str, prefixes: bool = True
+) -> list[str]:
+    """Session IDs a query refers to, best matches only.
+
+    A session ID or an ID prefix of MIN_ID_PREFIX or more characters; an exact
+    name; with `prefixes`, a name prefix (case-insensitive). When all matches
+    share one name, the session started in the current directory wins.
+    """
+    if query in sessions:
+        return [query]
+    matches = sorted(i for i, e in sessions.items() if e.get("name") == query)
+    if not matches and len(query) >= MIN_ID_PREFIX:
+        matches = sorted(i for i in sessions if i.startswith(query))
+    if not matches and prefixes:
+        lowered = query.casefold()
+        matches = sorted(
+            i
+            for i, e in sessions.items()
+            if e.get("name", "").casefold().startswith(lowered)
+        )
+    if len({sessions[i].get("name") for i in matches}) == 1:
+        here = [i for i in matches if sessions[i].get("cwd") in current_dirs()]
+        if len(here) == 1:
+            return here
+    return matches
 
 
 def display_path(path: str) -> str:
@@ -554,6 +596,12 @@ def display_path(path: str) -> str:
     if path == home or path.startswith(f"{home}/"):
         return f"~{path[len(home) :]}"
     return path
+
+
+def describe(session_id: str, entry: dict[str, str]) -> str:
+    """One line telling sessions with the same name apart."""
+    where = display_path(entry.get("cwd", "")) or "unknown directory"
+    return f"'{entry.get('name', '')}' in {where} ({session_id})"
 
 
 def can_pick() -> bool:
@@ -599,14 +647,15 @@ def last_active(entry: dict[str, str]) -> float | None:
 def picker_rows(sessions: dict[str, dict[str, str]]) -> tuple[str, list[str]]:
     """Return the column header and one fzf line per session, latest first.
 
-    Each line is "<name>\t<colored row>": fzf shows only the row and the
-    bare name is read back from the selection.
+    Each line is "<session id>\t<colored row>": fzf shows only the row and
+    the session ID is read back from the selection.
     """
-    active = {name: last_active(entry) for name, entry in sessions.items()}
-    order = sorted(sessions, key=lambda name: active[name] or 0, reverse=True)
-    paths = {name: display_path(sessions[name].get("cwd", "")) for name in order}
+    active = {i: last_active(entry) for i, entry in sessions.items()}
+    order = sorted(sessions, key=lambda i: active[i] or 0, reverse=True)
+    names = {i: sessions[i].get("name", "") for i in order}
+    paths = {i: display_path(sessions[i].get("cwd", "")) for i in order}
     columns = ("Name", "Directory", "Status", "Last active")
-    name_width = max(len(columns[0]), *(len(name) for name in order))
+    name_width = max(len(columns[0]), *(len(name) for name in names.values()))
     path_width = max(len(columns[1]), *(len(path) for path in paths.values()))
     status_width = len(columns[2])
     header = (
@@ -614,24 +663,24 @@ def picker_rows(sessions: dict[str, dict[str, str]]) -> tuple[str, list[str]]:
         f"{columns[2]:<{status_width}}  {columns[3]}"
     )
     lines = []
-    for name in order:
-        status = "open" if sessions[name].get("open_pid") else ""
-        timestamp = active[name]
+    for session_id in order:
+        status = "open" if sessions[session_id].get("open_pid") else ""
+        timestamp = active[session_id]
         date = f"({relative_time(timestamp)})" if timestamp is not None else ""
         row = (
-            f"{paint(f'{name:<{name_width}}', COLOR_YELLOW_BOLD)}  "
-            f"{paths[name]:<{path_width}}  "
+            f"{paint(f'{names[session_id]:<{name_width}}', COLOR_YELLOW_BOLD)}  "
+            f"{paths[session_id]:<{path_width}}  "
             f"{paint(f'{status:<{status_width}}', COLOR_GREEN_BOLD)}  "
             f"{paint(date, COLOR_BLUE)}"
         )
-        lines.append(f"{name}\t{row}")
+        lines.append(f"{session_id}\t{row}")
     return header, lines
 
 
 def run_fzf(
     sessions: dict[str, dict[str, str]], query: str, keys: dict[str, str]
 ) -> tuple[str, str, list[str]]:
-    """Show the picker; return (query, action, chosen names).
+    """Show the picker; return (query, action, chosen session IDs).
 
     The action is "remove", "rename", "info" or "" (resume). Several sessions can be
     selected for removal; resume and rename always take the one under the
@@ -677,10 +726,10 @@ def run_fzf(
     action = "remove" if key == keys["remove"] else ""
     if rest[:1] in (["rename"], ["info"]):
         action, rest = rest[0], rest[1:]
-    names = [line.split("\t", 1)[0] for line in rest if line]
-    if result.returncode != 0 or not names:
+    chosen = [line.split("\t", 1)[0] for line in rest if line]
+    if result.returncode != 0 or not chosen:
         raise AppError("No session selected")
-    return query, action, names
+    return query, action, chosen
 
 
 def confirm(prompt: str) -> bool:
@@ -733,25 +782,37 @@ def prompt_text(message: str, initial: str, header: str) -> str | None:
 
 
 def picker_remove(
-    path: Path, names: list[str], sessions: dict[str, dict[str, str]]
+    path: Path, chosen: list[str], sessions: dict[str, dict[str, str]]
 ) -> None:
-    for name in [n for n in names if sessions[n].get("open_pid")]:
-        print(f"Session '{name}' is open; it cannot be removed", file=sys.stderr)
-    names = [n for n in names if not sessions[n].get("open_pid")]
-    if not names:
+    for session_id in [i for i in chosen if sessions[i].get("open_pid")]:
+        print(
+            f"Session {describe(session_id, sessions[session_id])} is open; "
+            "it cannot be removed",
+            file=sys.stderr,
+        )
+    chosen = [i for i in chosen if not sessions[i].get("open_pid")]
+    if not chosen:
         return
-    listed = ", ".join(f"'{paint(name, COLOR_BLUE_BOLD)}'" for name in names)
-    entries = "registry entry" if len(names) == 1 else f"{len(names)} registry entries"
+    listed = ", ".join(
+        f"'{paint(sessions[i].get('name', ''), COLOR_BLUE_BOLD)}'" for i in chosen
+    )
+    entries = (
+        "registry entry" if len(chosen) == 1 else f"{len(chosen)} registry entries"
+    )
     prompt = (
         f"{paint('Remove', COLOR_RED_BOLD)} {entries} {listed} (transcripts are kept)?"
     )
     if confirm(prompt):
-        remove_entries(path, names)
-        for name in names:
-            print(f"Removed: {name}", file=sys.stderr)
+        remove_entries(path, chosen)
+        for session_id in chosen:
+            print(
+                f"Removed: {describe(session_id, sessions[session_id])}",
+                file=sys.stderr,
+            )
 
 
-def picker_rename(path: Path, name: str, entry: dict[str, str]) -> None:
+def picker_rename(path: Path, session_id: str, entry: dict[str, str]) -> None:
+    name = entry.get("name", "")
     if entry.get("open_pid"):
         print(
             f"Session '{name}' is open; rename it with /rename inside that session",
@@ -763,17 +824,17 @@ def picker_rename(path: Path, name: str, entry: dict[str, str]) -> None:
         print("Rename cancelled", file=sys.stderr)
         return
     try:
-        rename_entry(path, name, new)
+        shared = rename_entry(path, session_id, new)
     except AppError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return
-    print(f"Renamed: {name} -> {new}", file=sys.stderr)
+    print(f"Renamed: {name} -> {new}{shared_note(shared)}", file=sys.stderr)
 
 
 def pick_session(path: Path, config: dict[str, str], query: str) -> tuple[str, str]:
     """Run the picker until a session is chosen; remove and rename reopen it.
 
-    Return (action, name), where the action is "info" or "" (resume).
+    Return (action, session ID), where the action is "info" or "" (resume).
     """
     keys = {
         "remove": resolve(None, ENV_KEY_REMOVE, config, DEFAULT_KEY_REMOVE),
@@ -788,26 +849,28 @@ def pick_session(path: Path, config: dict[str, str], query: str) -> tuple[str, s
         sessions = merge_live(load_registry(path).sessions)
         if not sessions:
             raise AppError("No sessions left")
-        query, action, names = run_fzf(sessions, query, keys)
+        query, action, chosen = run_fzf(sessions, query, keys)
         if action == "remove":
-            picker_remove(path, names, sessions)
+            picker_remove(path, chosen, sessions)
         elif action == "rename":
-            picker_rename(path, names[0], sessions[names[0]])
+            picker_rename(path, chosen[0], sessions[chosen[0]])
         else:
-            return action, names[0]
+            return action, chosen[0]
 
 
-def choose_session(path: Path, config: dict[str, str], query: str) -> tuple[str, str]:
-    """Resolve a name or unique prefix, else ask with the picker.
+def choose_session(
+    path: Path, config: dict[str, str], query: str, prefixes: bool = True
+) -> tuple[str, str]:
+    """Resolve a name or session ID (see match_sessions), else ask with the picker.
 
-    Return (action, name) as pick_session does.
+    Return (action, session ID) as pick_session does.
     """
     sessions = merge_live(load_registry(path).sessions)
     if not sessions:
         raise AppError(
             f"No registered sessions (run '{PROG} sync' to scan transcripts)"
         )
-    matches = match_names(sessions, query) if query else []
+    matches = match_sessions(sessions, query, prefixes) if query else []
     if len(matches) == 1:
         return "", matches[0]
     if can_pick():
@@ -816,10 +879,17 @@ def choose_session(path: Path, config: dict[str, str], query: str) -> tuple[str,
     if not query:
         raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
     if matches:
-        raise AppError(f"Ambiguous name '{query}': {', '.join(matches)}")
+        listed = "".join(f"\n  {describe(i, sessions[i])}" for i in matches)
+        raise AppError(f"Ambiguous name '{query}'; use a session ID:{listed}")
     raise AppError(
         f"Session not found: {query} (see '{PROG} list' or run '{PROG} sync')"
     )
+
+
+def shared_note(shared: list[str]) -> str:
+    if not shared:
+        return ""
+    return f" (name shared with {plural(len(shared), 'other session')})"
 
 
 @dataclasses.dataclass
@@ -959,14 +1029,12 @@ def read_details(path: Path) -> TranscriptInfo:
     return info
 
 
-def find_transcript(entry: dict[str, str]) -> Path | None:
+def find_transcript(session_id: str, entry: dict[str, str]) -> Path | None:
     transcript = entry.get("transcript")
     if transcript and Path(transcript).is_file():
         return Path(transcript)
-    session_id = entry.get("session_id")
-    if session_id:
-        for path in (CLAUDE_DIR / "projects").glob(f"*/{session_id}.jsonl"):
-            return path
+    for path in (CLAUDE_DIR / "projects").glob(f"*/{session_id}.jsonl"):
+        return path
     return None
 
 
@@ -991,11 +1059,11 @@ def format_duration(milliseconds: int) -> str:
     return f"{hours}h {minutes:02}m" if hours else f"{minutes}m {seconds:02}s"
 
 
-def status_rows(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
+def status_rows(session_id: str, entry: dict[str, str]) -> list[tuple[str, str]]:
     """Name, ID, open status and directory: known without the transcript."""
     rows = [
-        ("name", paint(name, COLOR_YELLOW_BOLD)),
-        ("session id", paint(entry.get("session_id", ""), COLOR_MAGENTA)),
+        ("name", paint(entry.get("name", ""), COLOR_YELLOW_BOLD)),
+        ("session id", paint(session_id, COLOR_MAGENTA)),
     ]
     if entry.get("open_pid"):
         status = f"open (pid {entry['open_pid']}"
@@ -1040,10 +1108,10 @@ def usage_rows(details: TranscriptInfo) -> list[tuple[str, str]]:
     return rows
 
 
-def session_details(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
+def session_details(session_id: str, entry: dict[str, str]) -> list[tuple[str, str]]:
     """Rows of (label, colored value) for `info`."""
-    rows = status_rows(name, entry)
-    transcript = find_transcript(entry)
+    rows = status_rows(session_id, entry)
+    transcript = find_transcript(session_id, entry)
     details = read_details(transcript) if transcript else TranscriptInfo()
     if details.branch:
         rows.append(("git branch", paint(details.branch, COLOR_GREEN)))
@@ -1056,7 +1124,7 @@ def session_details(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
     rows += usage_rows(details)
     if details.ai_title:
         rows.append(("ai title", details.ai_title))
-    earlier = [title for title in details.titles if title != name]
+    earlier = [title for title in details.titles if title != entry.get("name")]
     if earlier:
         rows.append(("earlier names", ", ".join(earlier)))
     size = f" ({format_count(transcript.stat().st_size)}B)" if transcript else ""
@@ -1067,12 +1135,10 @@ def session_details(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
         rows.append(("registered", paint(format_time(registered), COLOR_BLUE)))
     elif entry.get("open_pid"):
         rows.append(("registered", "not yet (registered when the session ends)"))
-    session_id, cwd = entry.get("session_id", ""), entry.get("cwd", "")
-    if session_id:
-        command = shlex.join(["claude", "--resume", session_id])
-        if cwd:
-            command = f"cd {shlex.quote(cwd)} && {command}"
-        rows.append(("resume with", command))
+    command = shlex.join(["claude", "--resume", session_id])
+    if entry.get("cwd"):
+        command = f"cd {shlex.quote(entry['cwd'])} && {command}"
+    rows.append(("resume with", command))
     last_prompt = details.prompt or details.last_prompt
     if last_prompt.strip():
         lines = last_prompt.strip().splitlines()
@@ -1082,8 +1148,8 @@ def session_details(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
     return rows
 
 
-def print_details(name: str, entry: dict[str, str]) -> None:
-    rows = session_details(name, entry)
+def print_details(session_id: str, entry: dict[str, str]) -> None:
+    rows = session_details(session_id, entry)
     width = max(len(label) for label, _ in rows)
     indent = " " * (width + 3)
     for label, value in rows:
@@ -1124,36 +1190,25 @@ def cmd_hook(args: argparse.Namespace) -> int:
 def cmd_sync(args: argparse.Namespace) -> int:
     path = registry_path(args, settings(args))
     projects = CLAUDE_DIR / "projects"
-    found: list[tuple[float, str, str | None, str | None, Path]] = []
-    for transcript in projects.glob("*/*.jsonl"):
+    found: list[tuple[str, str, str | None, Path]] = []
+    for transcript in sorted(projects.glob("*/*.jsonl")):
         session_id, title, cwd = read_transcript(transcript)
         if title is not None:
-            found.append(
-                (
-                    transcript.stat().st_mtime,
-                    session_id or transcript.stem,
-                    title,
-                    cwd,
-                    transcript,
-                )
-            )
+            found.append((session_id or transcript.stem, title, cwd, transcript))
     with locked(path):
         registry = load_registry(path)
         sessions = registry.sessions
         messages = []
-        # Oldest first, so the most recently active session wins a shared name
-        for _, session_id, title, cwd, transcript in sorted(
-            found, key=lambda item: item[0]
-        ):
+        for session_id, title, cwd, transcript in found:
             messages += apply_entry(registry, session_id, title, cwd, transcript)
         if args.prune:
-            for name in [
-                n
-                for n, e in sessions.items()
+            for session_id in [
+                i
+                for i, e in sessions.items()
                 if not Path(e.get("transcript", "")).is_file()
             ]:
-                del sessions[name]
-                messages.append(f"Pruned: {name}")
+                entry = sessions.pop(session_id)
+                messages.append(f"Pruned: {describe(session_id, entry)}")
             for session_id in [
                 i
                 for i, e in registry.hidden.items()
@@ -1179,7 +1234,7 @@ def cmd_list(args: argparse.Namespace) -> int:
         print(json.dumps(sessions, indent=2, ensure_ascii=False))
         return 0
     if args.names:
-        for name in sorted(sessions):
+        for name in sorted({entry.get("name", "") for entry in sessions.values()}):
             print(name)
         return 0
     if not sessions:
@@ -1188,9 +1243,12 @@ def cmd_list(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 0
-    width = max(len(name) for name in sessions)
-    for name, entry in sorted(sessions.items()):
-        line = f"{name:<{width}}  {entry.get('session_id', '')}"
+    width = max(len(entry.get("name", "")) for entry in sessions.values())
+    for session_id, entry in sorted(
+        sessions.items(),
+        key=lambda item: (item[1].get("name", ""), item[1].get("cwd", "")),
+    ):
+        line = f"{entry.get('name', ''):<{width}}  {session_id}"
         if args.long:
             cwd = display_path(entry.get("cwd", ""))
             line += f"  {entry.get('updated', ''):<25}  {cwd}"
@@ -1203,16 +1261,13 @@ def cmd_list(args: argparse.Namespace) -> int:
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
     path = registry_path(args, config)
-    action, name = choose_session(path, config, " ".join(args.name))
-    entry = merge_live(load_registry(path).sessions)[name]
+    action, session_id = choose_session(path, config, " ".join(args.name))
+    entry = merge_live(load_registry(path).sessions)[session_id]
     if action == "info":
-        print_details(name, entry)
+        print_details(session_id, entry)
         return 0
     if entry.get("open_pid") and not args.force:
-        raise AppError(open_hint(name, entry))
-    session_id = entry.get("session_id")
-    if not session_id:
-        raise AppError(f"Registry entry '{name}' has no session ID")
+        raise AppError(open_hint(entry))
     claude = resolve(args.claude_bin, ENV_CLAUDE_BIN, config, DEFAULT_CLAUDE_BIN)
     claude_path = shutil.which(claude)
     if claude_path is None:
@@ -1226,7 +1281,7 @@ def cmd_resume(args: argparse.Namespace) -> int:
     if args.dry_run:
         print(f"cd {shlex.quote(cwd)} && {shlex.join(command)}")
         return 0
-    print(f"Resuming '{name}' in {cwd}", file=sys.stderr)
+    print(f"Resuming '{entry.get('name', '')}' in {cwd}", file=sys.stderr)
     os.chdir(cwd)
     os.execv(claude_path, command)
     return 0  # not reached
@@ -1253,71 +1308,96 @@ def append_title(transcript: Path, session_id: str, title: str) -> None:
         raise AppError(f"Cannot write transcript {transcript}: {exc.strerror}") from exc
 
 
-def rename_entry(path: Path, old: str, new: str) -> None:
-    """Rename the session itself (in its transcript) and its registry entry."""
-    open_ids = {entry["session_id"] for entry in live_sessions().values()}
+def rename_entry(path: Path, session_id: str, new: str) -> list[str]:
+    """Rename the session itself (in its transcript) and its registry entry.
+
+    Return the IDs of other sessions that already use the new name.
+    """
     with locked(path):
         registry = load_registry(path)
         sessions = registry.sessions
-        if old not in sessions:
-            raise AppError(f"Session not found: {old}")
-        if new in sessions and new != old:
-            raise AppError(f"Name already registered: {new}")
-        entry = sessions[old]
-        session_id = entry.get("session_id", "")
-        if session_id in open_ids:
+        if session_id not in sessions:
+            raise AppError(f"Session not registered: {session_id}")
+        entry = sessions[session_id]
+        if session_id in live_sessions():
             # Claude Code is writing that transcript and keeps its own name
             raise AppError(
-                f"Session '{old}' is open; rename it with /rename inside that session"
+                f"Session '{entry.get('name')}' is open; "
+                "rename it with /rename inside that session"
             )
         transcript = Path(entry.get("transcript") or "")
         if entry.get("transcript") and transcript.is_file():
             append_title(transcript, session_id, new)
         else:
             print(
-                f"Warning: transcript of '{old}' not found; "
+                f"Warning: transcript of '{entry.get('name')}' not found; "
                 "only the registry entry is renamed",
                 file=sys.stderr,
             )
-        sessions[new] = {**sessions.pop(old), "updated": now()}
+        sessions[session_id] = {**entry, "name": new, "updated": now()}
         save_registry(path, registry)
+    return [i for i, e in sessions.items() if e.get("name") == new and i != session_id]
 
 
-def remove_entries(path: Path, names: Sequence[str]) -> None:
+def remove_entries(path: Path, session_ids: Sequence[str]) -> None:
     """Remove entries and hide their sessions from sync and the hook."""
     with locked(path):
         registry = load_registry(path)
-        missing = [name for name in names if name not in registry.sessions]
+        missing = [i for i in session_ids if i not in registry.sessions]
         if missing:
-            raise AppError(f"Session not found: {', '.join(missing)}")
-        for name in names:
-            entry = registry.sessions.pop(name)
-            if entry.get("session_id"):
-                registry.hidden[entry["session_id"]] = {
-                    "title": name,
-                    "transcript": entry.get("transcript", ""),
-                }
+            raise AppError(f"Session not registered: {', '.join(missing)}")
+        for session_id in session_ids:
+            entry = registry.sessions.pop(session_id)
+            registry.hidden[session_id] = {
+                "title": entry.get("name", ""),
+                "transcript": entry.get("transcript", ""),
+            }
         save_registry(path, registry)
 
 
 def cmd_info(args: argparse.Namespace) -> int:
     config = settings(args)
     path = registry_path(args, config)
-    _, name = choose_session(path, config, " ".join(args.name))
-    print_details(name, merge_live(load_registry(path).sessions)[name])
+    _, session_id = choose_session(path, config, " ".join(args.name))
+    print_details(session_id, merge_live(load_registry(path).sessions)[session_id])
     return 0
 
 
+def select_exact(args: argparse.Namespace, query: str) -> str | None:
+    """Session ID for rename and remove: no name prefixes, ctrl-o shows info."""
+    config = settings(args)
+    path = registry_path(args, config)
+    action, session_id = choose_session(path, config, query, prefixes=False)
+    if action == "info":
+        print_details(session_id, merge_live(load_registry(path).sessions)[session_id])
+        return None
+    return session_id
+
+
 def cmd_rename(args: argparse.Namespace) -> int:
-    rename_entry(registry_path(args, settings(args)), args.old, args.new)
-    print(f"Renamed: {args.old} -> {args.new}")
+    session_id = select_exact(args, args.old)
+    if session_id is None:
+        return 0
+    path = registry_path(args, settings(args))
+    old = load_registry(path).sessions.get(session_id, {}).get("name", args.old)
+    shared = rename_entry(path, session_id, args.new)
+    print(f"Renamed: {old} -> {args.new}{shared_note(shared)}")
     return 0
 
 
 def cmd_remove(args: argparse.Namespace) -> int:
-    remove_entries(registry_path(args, settings(args)), args.names)
-    for name in args.names:
-        print(f"Removed: {name}")
+    chosen = []
+    for query in args.names:
+        session_id = select_exact(args, query)
+        if session_id is None:
+            return 0
+        chosen.append(session_id)
+    path = registry_path(args, settings(args))
+    sessions = load_registry(path).sessions
+    chosen = list(dict.fromkeys(chosen))
+    remove_entries(path, chosen)
+    for session_id in chosen:
+        print(f"Removed: {describe(session_id, sessions[session_id])}")
     return 0
 
 
