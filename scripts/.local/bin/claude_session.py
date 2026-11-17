@@ -29,13 +29,16 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import termios
+import time
+import tty
 from collections.abc import Iterator, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -48,7 +51,9 @@ SHORT_VALUE_OPTS = "crb"
 ENV_CONFIG = "CLAUDE_SESSION_CONFIG"
 ENV_REGISTRY = "CLAUDE_SESSION_REGISTRY"
 ENV_CLAUDE_BIN = "CLAUDE_SESSION_CLAUDE_BIN"
-CONFIG_KEYS = {ENV_REGISTRY, ENV_CLAUDE_BIN}
+ENV_KEY_REMOVE = "CLAUDE_SESSION_KEY_REMOVE"
+ENV_KEY_RENAME = "CLAUDE_SESSION_KEY_RENAME"
+CONFIG_KEYS = {ENV_REGISTRY, ENV_CLAUDE_BIN, ENV_KEY_REMOVE, ENV_KEY_RENAME}
 DEFAULT_CONFIG = (
     Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
     / "claude-session"
@@ -61,6 +66,28 @@ DEFAULT_REGISTRY = CLAUDE_DIR / "session-registry.json"
 REGISTRY_FORMAT = 1
 # fzf exit code for Esc / Ctrl-C
 FZF_CANCELLED = 130
+# Picker keys (fzf key names), configurable like the settings above
+DEFAULT_KEY_REMOVE = "ctrl-d"
+DEFAULT_KEY_RENAME = "ctrl-r"
+# Picker colors, as in fzf-git-branches; NO_COLOR turns them off
+USE_COLOR = not os.environ.get("NO_COLOR")
+COLOR_RESET = "\033[0m"
+COLOR_BLUE = "\033[34m"
+COLOR_RED_BOLD = "\033[1;31m"
+COLOR_GREEN_BOLD = "\033[1;32m"
+COLOR_YELLOW_BOLD = "\033[1;33m"
+COLOR_BLUE_BOLD = "\033[1;34m"
+# Relative dates: (below this many seconds, count in units of, unit name)
+RELATIVE_UNITS = (
+    (90, 1, "second"),
+    (90 * 60, 60, "minute"),
+    (36 * 3600, 3600, "hour"),
+    (14 * 86400, 86400, "day"),
+    (70 * 86400, 7 * 86400, "week"),
+    (365 * 86400, 30 * 86400, "month"),
+)
+SECONDS_PER_YEAR = 365 * 86400
+SECONDS_PER_MONTH = 30 * 86400
 
 
 class AppError(Exception):
@@ -160,7 +187,13 @@ def build_parser() -> argparse.ArgumentParser:
             "Without NAME, or if it is ambiguous or unknown, pick with fzf"
         ),
     )
-    resume.epilog = "Arguments after '--' are passed to claude (e.g. -- --model opus)."
+    resume.epilog = (
+        "Arguments after '--' are passed to claude (e.g. -- --model opus).\n\n"
+        f"Picker keys: {DEFAULT_KEY_REMOVE} removes the selected registry entries "
+        f"(asks first),\n{DEFAULT_KEY_RENAME} renames the current one, ctrl-t "
+        "selects, ctrl-y accepts. "
+        f"Change them with {ENV_KEY_REMOVE} and {ENV_KEY_RENAME} (env or config)."
+    )
 
     list_cmd = add_command("list", "List registered and open named sessions")
     list_cmd.add_argument(
@@ -432,6 +465,9 @@ def live_sessions() -> dict[str, dict[str, str]]:
             "open_pid": str(pid),
             "tmux": str(data.get("tmux") or ""),
         }
+        updated_ms = data.get("updatedAt")
+        if isinstance(updated_ms, int):
+            sessions[name]["active"] = str(updated_ms / 1000)
     return sessions
 
 
@@ -479,30 +515,106 @@ def can_pick() -> bool:
     )
 
 
-def pick_with_fzf(sessions: dict[str, dict[str, str]], query: str) -> str:
-    """Let the user choose a session name with fzf."""
+def paint(text: str, color: str) -> str:
+    return f"{color}{text}{COLOR_RESET}" if USE_COLOR and text else text
+
+
+def plural(count: int, unit: str) -> str:
+    return f"{count} {unit}{'' if count == 1 else 's'}"
+
+
+def relative_time(timestamp: float) -> str:
+    """Git-style relative date: '45 seconds ago', '2 years, 3 months ago'."""
+    seconds = max(0, round(time.time() - timestamp))
+    for limit, size, unit in RELATIVE_UNITS:
+        if seconds < limit:
+            return f"{plural(seconds // size, unit)} ago"
+    years, rest = divmod(seconds, SECONDS_PER_YEAR)
+    months = rest // SECONDS_PER_MONTH
+    if months:
+        return f"{plural(years, 'year')}, {plural(months, 'month')} ago"
+    return f"{plural(years, 'year')} ago"
+
+
+def last_active(entry: dict[str, str]) -> float | None:
+    """Live sessions report it; otherwise the transcript's modification time."""
+    if entry.get("active"):
+        return float(entry["active"])
+    transcript = entry.get("transcript")
+    if transcript:
+        with contextlib.suppress(OSError):
+            return Path(transcript).stat().st_mtime
+    with contextlib.suppress(ValueError):
+        return datetime.fromisoformat(entry.get("updated", "")).timestamp()
+    return None
+
+
+def picker_rows(sessions: dict[str, dict[str, str]]) -> tuple[str, list[str]]:
+    """Return the column header and one fzf line per session, latest first.
+
+    Each line is "<name>\t<colored row>": fzf shows only the row and the
+    bare name is read back from the selection.
+    """
+    active = {name: last_active(entry) for name, entry in sessions.items()}
+    order = sorted(sessions, key=lambda name: active[name] or 0, reverse=True)
+    paths = {name: display_path(sessions[name].get("cwd", "")) for name in order}
+    columns = ("Name", "Directory", "Status", "Last active")
+    name_width = max(len(columns[0]), *(len(name) for name in order))
+    path_width = max(len(columns[1]), *(len(path) for path in paths.values()))
+    status_width = len(columns[2])
+    header = (
+        f"{columns[0]:<{name_width}}  {columns[1]:<{path_width}}  "
+        f"{columns[2]:<{status_width}}  {columns[3]}"
+    )
+    lines = []
+    for name in order:
+        status = "open" if sessions[name].get("open_pid") else ""
+        timestamp = active[name]
+        date = f"({relative_time(timestamp)})" if timestamp is not None else ""
+        row = (
+            f"{paint(f'{name:<{name_width}}', COLOR_YELLOW_BOLD)}  "
+            f"{paths[name]:<{path_width}}  "
+            f"{paint(f'{status:<{status_width}}', COLOR_GREEN_BOLD)}  "
+            f"{paint(date, COLOR_BLUE)}"
+        )
+        lines.append(f"{name}\t{row}")
+    return header, lines
+
+
+def run_fzf(
+    sessions: dict[str, dict[str, str]], query: str, keys: dict[str, str]
+) -> tuple[str, str, list[str]]:
+    """Show the picker; return (query, action, chosen names).
+
+    The action is "remove", "rename" or "" (resume). Several sessions can be
+    selected for removal; resume and rename always take the one under the
+    cursor, so they clear the selection first.
+    """
     fzf = shutil.which("fzf")
     if fzf is None:
         raise AppError("fzf not found")
-    width = max(len(name) for name in sessions)
-    # Open sessions get a marker column, so they are not resumed twice by
-    # accident; the column is left out when nothing is open
-    marks = {n: "[open]  " if e.get("open_pid") else "" for n, e in sessions.items()}
-    mark_width = max(len(mark) for mark in marks.values())
-    # Field 1 is the bare name for the result, field 2 is what fzf shows
-    lines = [
-        f"{name}\t{name:<{width}}  {marks[name]:<{mark_width}}"
-        f"{display_path(entry.get('cwd', ''))}"
-        for name, entry in sorted(sessions.items())
-    ]
+    columns, lines = picker_rows(sessions)
+    hints = (
+        f"{keys['remove']}:remove, {keys['rename']}:rename, "
+        "ctrl-t:toggle+down, ctrl-y:accept"
+    )
     result = subprocess.run(
         [
             fzf,
+            "--ansi",
+            "--border=top",
+            "--cycle",
+            "--multi",
+            "--height=80%",
+            "--reverse",
             "--delimiter=\t",
             "--with-nth=2..",
-            "--height=40%",
-            "--reverse",
-            "--prompt=session> ",
+            "--print-query",
+            f"--expect={keys['remove']}",
+            "--bind=ctrl-t:toggle+down",
+            "--bind=enter:clear-multi+accept,ctrl-y:clear-multi+accept",
+            f"--bind={keys['rename']}:clear-multi+print(rename)+accept",
+            f"--header=Resume Claude Session: {hints}\n{columns}",
             f"--query={query}",
         ],
         input="\n".join(lines),
@@ -512,9 +624,125 @@ def pick_with_fzf(sessions: dict[str, dict[str, str]], query: str) -> str:
     )
     if result.returncode == FZF_CANCELLED:
         raise KeyboardInterrupt
-    if result.returncode != 0 or not result.stdout.strip():
+    # Output: query, the --expect key (or ""), print() text, selected lines
+    query, key, *rest = [*result.stdout.rstrip("\n").split("\n"), "", ""]
+    action = "remove" if key == keys["remove"] else ""
+    if rest[:1] == ["rename"]:
+        action, rest = "rename", rest[1:]
+    names = [line.split("\t", 1)[0] for line in rest if line]
+    if result.returncode != 0 or not names:
         raise AppError("No session selected")
-    return result.stdout.split("\t", 1)[0]
+    return query, action, names
+
+
+def confirm(prompt: str) -> bool:
+    """Ask a yes/no question answered by a single key; anything but y is no."""
+    print(f"{prompt} (y|N): ", end="", file=sys.stderr, flush=True)
+    fd = sys.stdin.fileno()
+    if os.isatty(fd):
+        saved = termios.tcgetattr(fd)
+        try:
+            tty.setcbreak(fd)
+            answer = os.read(fd, 1).decode(errors="replace")
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, saved)
+    else:
+        answer = sys.stdin.read(1)
+    print(file=sys.stderr)
+    return answer in {"y", "Y"}
+
+
+def prompt_text(message: str, initial: str, header: str) -> str | None:
+    """Edit a line that starts as `initial`; None when cancelled.
+
+    fzf serves as the line editor (an empty list, Enter prints the query): it
+    looks like the picker and, unlike libedit's readline, can pre-fill text.
+    """
+    fzf = shutil.which("fzf")
+    if fzf is None:
+        raise AppError("fzf not found")
+    result = subprocess.run(
+        [
+            fzf,
+            "--height=3",
+            "--reverse",
+            "--disabled",
+            "--info=hidden",
+            "--no-separator",
+            f"--header={header}",
+            f"--prompt={message} ",
+            f"--query={initial}",
+            "--bind=enter:print-query",
+        ],
+        input="",
+        stdout=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+    return result.stdout.strip()
+
+
+def picker_remove(
+    path: Path, names: list[str], sessions: dict[str, dict[str, str]]
+) -> None:
+    for name in [n for n in names if sessions[n].get("open_pid")]:
+        print(f"Session '{name}' is open; it cannot be removed", file=sys.stderr)
+    names = [n for n in names if not sessions[n].get("open_pid")]
+    if not names:
+        return
+    listed = ", ".join(f"'{paint(name, COLOR_BLUE_BOLD)}'" for name in names)
+    entries = "registry entry" if len(names) == 1 else f"{len(names)} registry entries"
+    prompt = (
+        f"{paint('Remove', COLOR_RED_BOLD)} {entries} {listed} (transcripts are kept)?"
+    )
+    if confirm(prompt):
+        remove_entries(path, names)
+        for name in names:
+            print(f"Removed: {name}", file=sys.stderr)
+
+
+def picker_rename(path: Path, name: str, entry: dict[str, str]) -> None:
+    if entry.get("open_pid"):
+        print(
+            f"Session '{name}' is open; rename it with /rename inside that session",
+            file=sys.stderr,
+        )
+        return
+    new = prompt_text(
+        "New name:", name, f"Rename registry entry '{name}' (esc: cancel)"
+    )
+    if not new or new == name:
+        print("Rename cancelled", file=sys.stderr)
+        return
+    try:
+        rename_entry(path, name, new)
+    except AppError as exc:
+        print(f"Error: {exc}", file=sys.stderr)
+        return
+    print(f"Renamed: {name} -> {new}", file=sys.stderr)
+
+
+def pick_session(path: Path, config: dict[str, str], query: str) -> str:
+    """Run the picker until a session is chosen; remove and rename reopen it."""
+    keys = {
+        "remove": resolve(None, ENV_KEY_REMOVE, config, DEFAULT_KEY_REMOVE),
+        "rename": resolve(None, ENV_KEY_RENAME, config, DEFAULT_KEY_RENAME),
+    }
+    if keys["remove"] == keys["rename"]:
+        raise AppError(f"{ENV_KEY_REMOVE} and {ENV_KEY_RENAME} must differ")
+    while True:
+        sessions = merge_live(load_registry(path))
+        if not sessions:
+            raise AppError("No sessions left")
+        query, action, names = run_fzf(sessions, query, keys)
+        if action == "remove":
+            picker_remove(path, names, sessions)
+        elif action == "rename":
+            picker_rename(path, names[0], sessions[names[0]])
+        else:
+            return names[0]
 
 
 def cmd_hook(args: argparse.Namespace) -> int:
@@ -614,7 +842,8 @@ def cmd_list(args: argparse.Namespace) -> int:
 
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
-    sessions = merge_live(load_registry(registry_path(args, config)))
+    path = registry_path(args, config)
+    sessions = merge_live(load_registry(path))
     if not sessions:
         raise AppError(
             f"No registered sessions (run '{PROG} sync' to scan transcripts)"
@@ -624,10 +853,9 @@ def cmd_resume(args: argparse.Namespace) -> int:
     if len(matches) == 1:
         name = matches[0]
     elif can_pick():
-        # No name: choose from all; ambiguous: from the matches; unknown:
-        # from all, with the name as a fuzzy query
-        choices = {n: sessions[n] for n in matches} if matches else sessions
-        name = pick_with_fzf(choices, "" if matches else query)
+        # No name, ambiguous or unknown: the name becomes the fuzzy query
+        name = pick_session(path, config, query)
+        sessions = merge_live(load_registry(path))
     elif not query:
         raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
     elif matches:
@@ -661,16 +889,30 @@ def cmd_resume(args: argparse.Namespace) -> int:
     return 0  # not reached
 
 
-def cmd_rename(args: argparse.Namespace) -> int:
-    path = registry_path(args, settings(args))
+def rename_entry(path: Path, old: str, new: str) -> None:
     with locked(path):
         sessions = load_registry(path)
-        if args.old not in sessions:
-            raise AppError(f"Session not found: {args.old}")
-        if args.new in sessions and args.new != args.old:
-            raise AppError(f"Name already registered: {args.new}")
-        sessions[args.new] = {**sessions.pop(args.old), "updated": now()}
+        if old not in sessions:
+            raise AppError(f"Session not found: {old}")
+        if new in sessions and new != old:
+            raise AppError(f"Name already registered: {new}")
+        sessions[new] = {**sessions.pop(old), "updated": now()}
         save_registry(path, sessions)
+
+
+def remove_entries(path: Path, names: Sequence[str]) -> None:
+    with locked(path):
+        sessions = load_registry(path)
+        missing = [name for name in names if name not in sessions]
+        if missing:
+            raise AppError(f"Session not found: {', '.join(missing)}")
+        for name in names:
+            del sessions[name]
+        save_registry(path, sessions)
+
+
+def cmd_rename(args: argparse.Namespace) -> int:
+    rename_entry(registry_path(args, settings(args)), args.old, args.new)
     print(f"Renamed: {args.old} -> {args.new}")
     print(
         "Note: a later /rename in that session will register its own name again",
@@ -680,15 +922,7 @@ def cmd_rename(args: argparse.Namespace) -> int:
 
 
 def cmd_remove(args: argparse.Namespace) -> int:
-    path = registry_path(args, settings(args))
-    with locked(path):
-        sessions = load_registry(path)
-        missing = [name for name in args.names if name not in sessions]
-        if missing:
-            raise AppError(f"Session not found: {', '.join(missing)}")
-        for name in args.names:
-            del sessions[name]
-        save_registry(path, sessions)
+    remove_entries(registry_path(args, settings(args)), args.names)
     for name in args.names:
         print(f"Removed: {name}")
     return 0
