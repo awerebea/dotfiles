@@ -22,6 +22,7 @@ import json
 import os
 import shlex
 import shutil
+import subprocess
 import sys
 import tempfile
 from collections.abc import Iterator, Sequence
@@ -30,7 +31,7 @@ from pathlib import Path
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.2.0"
+__version__ = "0.3.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -54,6 +55,8 @@ DEFAULT_CLAUDE_BIN = "claude"
 CLAUDE_DIR = Path(os.environ.get("CLAUDE_CONFIG_DIR") or Path.home() / ".claude")
 DEFAULT_REGISTRY = CLAUDE_DIR / "session-registry.json"
 REGISTRY_FORMAT = 1
+# fzf exit code for Esc / Ctrl-C
+FZF_CANCELLED = 130
 
 
 class AppError(Exception):
@@ -137,12 +140,15 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print the command instead of running it",
     )
-    resume.usage = f"{PROG} resume [OPTIONS] NAME... [-- CLAUDE_ARG...]"
+    resume.usage = f"{PROG} resume [OPTIONS] [NAME...] [-- CLAUDE_ARG...]"
     resume.add_argument(
         "name",
-        nargs="+",
+        nargs="*",
         metavar="NAME",
-        help="session name or a unique prefix of it; words are joined with spaces",
+        help=(
+            "session name or a unique prefix of it; words are joined with spaces. "
+            "Without NAME, or if it is ambiguous or unknown, pick with fzf"
+        ),
     )
     resume.epilog = "Arguments after '--' are passed to claude (e.g. -- --model opus)."
 
@@ -381,21 +387,58 @@ def apply_entry(
     return messages
 
 
-def find_entry(
-    sessions: dict[str, dict[str, str]], name: str
-) -> tuple[str, dict[str, str]]:
-    """Exact name first, then a unique prefix (case-insensitive)."""
+def match_names(sessions: dict[str, dict[str, str]], name: str) -> list[str]:
+    """Exact name first, then names starting with it (case-insensitive)."""
     if name in sessions:
-        return name, sessions[name]
+        return [name]
     lowered = name.casefold()
-    matches = [n for n in sessions if n.casefold().startswith(lowered)]
-    if len(matches) == 1:
-        return matches[0], sessions[matches[0]]
-    if matches:
-        raise AppError(f"Ambiguous name '{name}': {', '.join(sorted(matches))}")
-    raise AppError(
-        f"Session not found: {name} (see '{PROG} list' or run '{PROG} sync')"
+    return sorted(n for n in sessions if n.casefold().startswith(lowered))
+
+
+def display_path(path: str) -> str:
+    home = str(Path.home())
+    if path == home or path.startswith(f"{home}/"):
+        return f"~{path[len(home) :]}"
+    return path
+
+
+def can_pick() -> bool:
+    return (
+        shutil.which("fzf") is not None and sys.stdin.isatty() and sys.stderr.isatty()
     )
+
+
+def pick_with_fzf(sessions: dict[str, dict[str, str]], query: str) -> str:
+    """Let the user choose a session name with fzf."""
+    fzf = shutil.which("fzf")
+    if fzf is None:
+        raise AppError("fzf not found")
+    width = max(len(name) for name in sessions)
+    # Field 1 is the bare name for the result, field 2 is what fzf shows
+    lines = [
+        f"{name}\t{name:<{width}}  {display_path(entry.get('cwd', ''))}"
+        for name, entry in sorted(sessions.items())
+    ]
+    result = subprocess.run(
+        [
+            fzf,
+            "--delimiter=\t",
+            "--with-nth=2..",
+            "--height=40%",
+            "--reverse",
+            "--prompt=session> ",
+            f"--query={query}",
+        ],
+        input="\n".join(lines),
+        stdout=subprocess.PIPE,
+        text=True,
+        check=False,
+    )
+    if result.returncode == FZF_CANCELLED:
+        raise KeyboardInterrupt
+    if result.returncode != 0 or not result.stdout.strip():
+        raise AppError("No session selected")
+    return result.stdout.split("\t", 1)[0]
 
 
 def cmd_hook(args: argparse.Namespace) -> int:
@@ -482,13 +525,10 @@ def cmd_list(args: argparse.Namespace) -> int:
         )
         return 0
     width = max(len(name) for name in sessions)
-    home = str(Path.home())
     for name, entry in sorted(sessions.items()):
         line = f"{name:<{width}}  {entry.get('session_id', '')}"
         if args.long:
-            cwd = entry.get("cwd", "")
-            if cwd == home or cwd.startswith(f"{home}/"):
-                cwd = f"~{cwd[len(home) :]}"
+            cwd = display_path(entry.get("cwd", ""))
             line += f"  {entry.get('updated', ''):<25}  {cwd}"
         print(line)
     return 0
@@ -497,7 +537,28 @@ def cmd_list(args: argparse.Namespace) -> int:
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
     sessions = load_registry(registry_path(args, config))
-    name, entry = find_entry(sessions, " ".join(args.name))
+    if not sessions:
+        raise AppError(
+            f"No registered sessions (run '{PROG} sync' to scan transcripts)"
+        )
+    query = " ".join(args.name)
+    matches = match_names(sessions, query) if query else []
+    if len(matches) == 1:
+        name = matches[0]
+    elif can_pick():
+        # No name: choose from all; ambiguous: from the matches; unknown:
+        # from all, with the name as a fuzzy query
+        choices = {n: sessions[n] for n in matches} if matches else sessions
+        name = pick_with_fzf(choices, "" if matches else query)
+    elif not query:
+        raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
+    elif matches:
+        raise AppError(f"Ambiguous name '{query}': {', '.join(matches)}")
+    else:
+        raise AppError(
+            f"Session not found: {query} (see '{PROG} list' or run '{PROG} sync')"
+        )
+    entry = sessions[name]
     session_id = entry.get("session_id")
     if not session_id:
         raise AppError(f"Registry entry '{name}' has no session ID")
