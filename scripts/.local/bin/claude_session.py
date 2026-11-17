@@ -47,7 +47,7 @@ from typing import Any
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -55,7 +55,7 @@ PROG_NAME = "claude-session"
 PROG = Path(sys.argv[0]).name
 # Short options that take a value. Used to enforce GNU rules that argparse does
 # not: `-c=x` is rejected instead of silently meaning `-c x`.
-SHORT_VALUE_OPTS = "crb"
+SHORT_VALUE_OPTS = "crbds"
 # Settings: environment variable names double as config file keys
 ENV_CONFIG = "CLAUDE_SESSION_CONFIG"
 ENV_REGISTRY = "CLAUDE_SESSION_REGISTRY"
@@ -66,7 +66,13 @@ ENV_KEY_INFO = "CLAUDE_SESSION_KEY_INFO"
 ENV_KEY_PURGE = "CLAUDE_SESSION_KEY_PURGE"
 ENV_KEY_ALL = "CLAUDE_SESSION_KEY_ALL"
 ENV_KEY_TITLES = "CLAUDE_SESSION_KEY_TITLES"
+ENV_KEY_DATES = "CLAUDE_SESSION_KEY_DATES"
+ENV_KEY_SORT = "CLAUDE_SESSION_KEY_SORT"
+ENV_KEY_REVERSE = "CLAUDE_SESSION_KEY_REVERSE"
 ENV_AI_TITLE = "CLAUDE_SESSION_AI_TITLE"
+ENV_DATE = "CLAUDE_SESSION_DATE"
+ENV_SORT = "CLAUDE_SESSION_SORT"
+ENV_REVERSE = "CLAUDE_SESSION_REVERSE"
 CONFIG_KEYS = {
     ENV_REGISTRY,
     ENV_CLAUDE_BIN,
@@ -76,7 +82,13 @@ CONFIG_KEYS = {
     ENV_KEY_PURGE,
     ENV_KEY_ALL,
     ENV_KEY_TITLES,
+    ENV_KEY_DATES,
+    ENV_KEY_SORT,
+    ENV_KEY_REVERSE,
     ENV_AI_TITLE,
+    ENV_DATE,
+    ENV_SORT,
+    ENV_REVERSE,
 }
 DEFAULT_CONFIG = (
     Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
@@ -108,15 +120,38 @@ DEFAULT_KEY_INFO = "ctrl-o"
 DEFAULT_KEY_PURGE = "ctrl-alt-d"
 DEFAULT_KEY_ALL = "alt-a"
 DEFAULT_KEY_TITLES = "alt-t"
+# Not alt-d: fzf deletes a word of the query with it
+DEFAULT_KEY_DATES = "alt-c"
+DEFAULT_KEY_SORT = "alt-s"
+DEFAULT_KEY_REVERSE = "alt-r"
 # Picker action -> (setting, default key), in the order the header lists them
 PICKER_KEYS = {
     "remove": (ENV_KEY_REMOVE, DEFAULT_KEY_REMOVE),
     "purge": (ENV_KEY_PURGE, DEFAULT_KEY_PURGE),
     "rename": (ENV_KEY_RENAME, DEFAULT_KEY_RENAME),
     "info": (ENV_KEY_INFO, DEFAULT_KEY_INFO),
-    "all": (ENV_KEY_ALL, DEFAULT_KEY_ALL),
+    "scope": (ENV_KEY_ALL, DEFAULT_KEY_ALL),
     "titles": (ENV_KEY_TITLES, DEFAULT_KEY_TITLES),
+    "dates": (ENV_KEY_DATES, DEFAULT_KEY_DATES),
+    "sort": (ENV_KEY_SORT, DEFAULT_KEY_SORT),
+    "reverse": (ENV_KEY_REVERSE, DEFAULT_KEY_REVERSE),
 }
+# Actions that change what the picker shows; the others act on sessions
+VIEW_ACTIONS = ("scope", "titles", "dates", "sort", "reverse")
+# Values the view keys cycle through, the first one being the default
+SCOPES = ("named", "all", "unnamed")
+DATE_COLUMNS = ("active", "created", "both")
+SORT_KEYS = ("active", "created", "name", "path", "status")
+SORT_LABELS = {
+    "active": "last active",
+    "created": "created",
+    "name": "name",
+    "path": "directory",
+    "status": "status",
+}
+# Natural order: newest first for dates; A-Z, open first otherwise
+DESCENDING_SORTS = {"active", "created"}
+STATUS_RANK = {"open": 0, "": 1, "hidden": 2}
 PICKER_TITLES = {
     "resume": "Resume Claude Session",
     "manage": "Manage Claude Sessions",
@@ -182,11 +217,18 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Which sessions to show and how; for commands that list or pick sessions
     scope = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
-    scope.add_argument(
+    which = scope.add_mutually_exclusive_group()
+    which.add_argument(
         "-a",
         "--all",
         action="store_true",
         help="include unnamed and removed sessions (scans all transcripts)",
+    )
+    which.add_argument(
+        "-u",
+        "--unnamed",
+        action="store_true",
+        help="show only unnamed sessions (scans all transcripts)",
     )
     scope.add_argument(
         "-t",
@@ -196,6 +238,27 @@ def build_parser() -> argparse.ArgumentParser:
             "show the AI title of each session, or its first prompt "
             f"(env: {ENV_AI_TITLE}=1)"
         ),
+    )
+    scope.add_argument(
+        "-d",
+        "--date",
+        choices=DATE_COLUMNS,
+        help=f"date columns: last active, created or both (env: {ENV_DATE})",
+    )
+    scope.add_argument(
+        "-s",
+        "--sort",
+        choices=SORT_KEYS,
+        help=(
+            "sort by last active or created (newest first), name, directory "
+            f"(A-Z) or status (open first) (env: {ENV_SORT}, default: active)"
+        ),
+    )
+    scope.add_argument(
+        "-R",
+        "--reverse",
+        action="store_true",
+        help=f"reverse the sort order (env: {ENV_REVERSE}=1)",
     )
 
     def add_command(
@@ -295,11 +358,17 @@ def build_parser() -> argparse.ArgumentParser:
         "closing open ones\n"
         f"  {DEFAULT_KEY_RENAME:<11} rename the session under the cursor\n"
         f"  {DEFAULT_KEY_INFO:<11} show its info\n"
-        f"  {DEFAULT_KEY_ALL:<11} show or hide unnamed and removed sessions\n"
-        f"  {DEFAULT_KEY_TITLES:<11} show or hide the AI title column\n"
         f"  {'ctrl-t':<11} select, ctrl-y or enter: accept\n"
+        "View keys (until the picker closes):\n"
+        f"  {DEFAULT_KEY_ALL:<11} cycle sessions: named, all, unnamed\n"
+        f"  {DEFAULT_KEY_TITLES:<11} show or hide the AI title column\n"
+        f"  {DEFAULT_KEY_DATES:<11} cycle date columns: last active, created, both\n"
+        f"  {DEFAULT_KEY_SORT:<11} cycle sort: last active, created, name, "
+        "directory, status\n"
+        f"  {DEFAULT_KEY_REVERSE:<11} reverse the sort order\n"
         "Change them with CLAUDE_SESSION_KEY_<ACTION> (env or config), e.g.\n"
-        f"{ENV_KEY_PURGE}=ctrl-x."
+        f"{ENV_KEY_PURGE}=ctrl-x; ACTION is REMOVE, PURGE, RENAME, INFO, ALL,\n"
+        "TITLES, DATES, SORT or REVERSE."
     )
 
     info = add_command("info", "Show what is known about a session", scoped=True)
@@ -670,9 +739,10 @@ def live_sessions() -> dict[str, dict[str, str]]:
             "open_pid": str(pid),
             "tmux": str(data.get("tmux") or ""),
         }
-        updated_ms = data.get("updatedAt")
-        if isinstance(updated_ms, int):
-            sessions[session_id]["active"] = str(updated_ms / 1000)
+        for field, key in (("updatedAt", "active"), ("startedAt", "started")):
+            milliseconds = data.get(field)
+            if isinstance(milliseconds, int):
+                sessions[session_id][key] = str(milliseconds / 1000)
     return sessions
 
 
@@ -680,55 +750,145 @@ def live_sessions() -> dict[str, dict[str, str]]:
 class View:
     """Which sessions a command shows and how."""
 
-    # Also unnamed and removed sessions, found by scanning all transcripts
-    show_all: bool = False
+    # A SCOPES value: registered and open named sessions; also unnamed and
+    # removed ones, found by scanning all transcripts; or only unnamed ones
+    scope: str = SCOPES[0]
     # The AI title column (the first prompt when there is no AI title)
     titles: bool = False
+    # A DATE_COLUMNS value: which date columns to show
+    dates: str = DATE_COLUMNS[0]
+    # A SORT_KEYS value, and whether to flip its natural order
+    sort: str = SORT_KEYS[0]
+    reverse: bool = False
     # Skip the resume picker when the query matches a single session
     select_one: bool = False
+
+    def date_columns(self) -> list[str]:
+        """Date columns shown; the one sorted by always is."""
+        shown = ["active", "created"] if self.dates == "both" else [self.dates]
+        if self.sort in DATE_COLUMNS and self.sort not in shown:
+            shown = ["active", "created"]
+        return shown
+
+    def describe(self) -> str:
+        order = SORT_LABELS[self.sort] + (", reversed" if self.reverse else "")
+        return f"{self.scope} sessions, by {order}"
+
+
+def cycle(values: Sequence[str], current: str) -> str:
+    return values[(values.index(current) + 1) % len(values)]
+
+
+def next_view(view: View, action: str) -> View:
+    """The view after pressing the picker key of a VIEW_ACTIONS action."""
+    if action == "scope":
+        return dataclasses.replace(view, scope=cycle(SCOPES, view.scope))
+    if action == "titles":
+        return dataclasses.replace(view, titles=not view.titles)
+    if action == "dates":
+        return dataclasses.replace(view, dates=cycle(DATE_COLUMNS, view.dates))
+    if action == "sort":
+        return dataclasses.replace(view, sort=cycle(SORT_KEYS, view.sort))
+    return dataclasses.replace(view, reverse=not view.reverse)
 
 
 def summary_title(summary: TranscriptSummary) -> str:
     return summary.ai_title or summary.first_prompt
 
 
+def scan_transcripts(
+    registry: Registry, sessions: dict[str, dict[str, str]], titles: bool
+) -> None:
+    """Add every transcript not in `sessions`: unnamed sessions get an empty
+    name and removed ones a "hidden" mark."""
+    for transcript in (CLAUDE_DIR / "projects").glob("*/*.jsonl"):
+        session_id = transcript.stem
+        if session_id in sessions:
+            continue
+        summary = read_transcript(transcript, titles)
+        entry = {
+            "name": summary.title or "",
+            "cwd": summary.cwd or "",
+            "transcript": str(transcript),
+        }
+        if session_id in registry.hidden:
+            entry["hidden"] = "1"
+        if titles:
+            entry["title"] = summary_title(summary)
+        sessions[session_id] = entry
+
+
+def add_details(sessions: dict[str, dict[str, str]], view: View) -> None:
+    """The AI title and creation time, when the view shows them."""
+    created = "created" in view.date_columns()
+    for session_id, entry in sessions.items():
+        if view.titles and "title" not in entry:
+            found = find_transcript(session_id, entry)
+            details = read_transcript(found, True) if found else None
+            entry["title"] = summary_title(details) if details else ""
+        if created:
+            stamp = created_at(session_id, entry)
+            entry["created"] = "" if stamp is None else str(stamp)
+
+
 def collect_sessions(path: Path, view: View) -> dict[str, dict[str, str]]:
     """Registered sessions plus open ones; an open session's current name
-    wins. With view.show_all, every transcript too: unnamed sessions get an
-    empty name and removed ones a "hidden" mark.
+    wins. Unless view.scope is "named", every transcript too (see
+    scan_transcripts); "unnamed" keeps only the sessions without a name.
     """
     registry = load_registry(path)
     sessions = {i: dict(e) for i, e in registry.sessions.items()}
-    if view.show_all:
-        for transcript in (CLAUDE_DIR / "projects").glob("*/*.jsonl"):
-            session_id = transcript.stem
-            if session_id in sessions:
-                continue
-            summary = read_transcript(transcript, view.titles)
-            entry = {
-                "name": summary.title or "",
-                "cwd": summary.cwd or "",
-                "transcript": str(transcript),
-            }
-            if session_id in registry.hidden:
-                entry["hidden"] = "1"
-            if view.titles:
-                entry["title"] = summary_title(summary)
-            sessions[session_id] = entry
+    scan = view.scope != "named"
+    if scan:
+        scan_transcripts(registry, sessions, view.titles)
     for session_id, live in live_sessions().items():
         known = sessions.get(session_id)
-        if known is None and not (live["name"] or view.show_all):
+        if known is None and not (live["name"] or scan):
             continue
         merged = {**(known or {}), **live}
         merged["name"] = live["name"] or (known or {}).get("name", "")
         sessions[session_id] = merged
-    if view.titles:
-        for session_id, entry in sessions.items():
-            if "title" not in entry:
-                found = find_transcript(session_id, entry)
-                details = read_transcript(found, True) if found else None
-                entry["title"] = summary_title(details) if details else ""
+    if view.scope == "unnamed":
+        sessions = {i: e for i, e in sessions.items() if not e.get("name")}
+    add_details(sessions, view)
     return sessions
+
+
+def first_timestamp(path: Path) -> float | None:
+    """When the first timestamped record of a transcript was written."""
+    try:
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                if '"timestamp"' not in line:
+                    continue
+                try:
+                    record = json.loads(line)
+                except ValueError:
+                    continue
+                stamp = (
+                    parse_time(record.get("timestamp"))
+                    if isinstance(record, dict)
+                    else None
+                )
+                if stamp:
+                    return stamp.timestamp()
+    except OSError:
+        return None
+    return None
+
+
+def created_at(session_id: str, entry: dict[str, str]) -> float | None:
+    """The transcript's first record, else when the open session started
+    (which may be a later resume), else the transcript's creation time."""
+    transcript = find_transcript(session_id, entry)
+    stamp = first_timestamp(transcript) if transcript else None
+    if stamp is None and entry.get("started"):
+        stamp = float(entry["started"])
+    if stamp is None and transcript:
+        with contextlib.suppress(OSError):
+            info = transcript.stat()
+            stamp = float(getattr(info, "st_birthtime", info.st_mtime))
+    return stamp
 
 
 def tmux_pane(entry: dict[str, str]) -> str:
@@ -854,50 +1014,97 @@ def status_of(entry: dict[str, str]) -> tuple[str, str]:
     return "", ""
 
 
+def sort_sessions(
+    sessions: dict[str, dict[str, str]], view: View, first: frozenset[str]
+) -> list[str]:
+    """Session IDs in view.sort order, those in `first` before the rest;
+    ties stay newest active first."""
+    active = {i: last_active(entry) or 0.0 for i, entry in sessions.items()}
+    order = sorted(sessions, key=lambda i: active[i], reverse=True)
+
+    def key(session_id: str) -> tuple[Any, ...]:
+        entry = sessions[session_id]
+        if view.sort == "created":
+            return (float(entry.get("created") or 0),)
+        if view.sort == "name":
+            # Named sessions first, then unnamed ones by ID
+            name = entry.get("name", "")
+            return (0, name.casefold()) if name else (1, session_id)
+        if view.sort == "path":
+            return (entry.get("cwd", "").casefold(),)
+        if view.sort == "status":
+            return (STATUS_RANK[status_of(entry)[0]],)
+        return (active[session_id],)
+
+    order.sort(key=key, reverse=view.sort in DESCENDING_SORTS)
+    if view.reverse:
+        order.reverse()
+    return sorted(order, key=lambda i: i not in first)
+
+
+def relative_cell(timestamp: float | None) -> tuple[str, str]:
+    return (f"({relative_time(timestamp)})" if timestamp else "", COLOR_BLUE)
+
+
 def session_rows(
-    sessions: dict[str, dict[str, str]], view: View, long: bool = False
+    sessions: dict[str, dict[str, str]],
+    view: View,
+    long: bool = False,
+    first: frozenset[str] = frozenset(),
 ) -> tuple[str, list[tuple[str, list[str]]]]:
-    """Column header and (session ID, padded colored cells) per session,
-    latest first; columns are two spaces apart.
+    """Column header and (session ID, padded colored cells) per session, in
+    view.sort order; columns are two spaces apart.
 
     Named sessions show as [name], unnamed ones as (short ID), the way
     fzf-git-branches shows local and remote branches. `long` adds the full
-    session ID and the registration time.
+    session ID and the registration time. The sorted column's header is
+    marked "^" (ascending) or "v" (descending).
     """
-    active = {i: last_active(entry) for i, entry in sessions.items()}
-    order = sorted(sessions, key=lambda i: active[i] or 0, reverse=True)
-    header = ["Name (ID)", "Directory", "Status", "Last active"]
+    order = sort_sessions(sessions, view, first)
+    dates = view.date_columns()
+    columns = ["name", "path", "status"]
     if long:
-        header[1:1] = ["Session ID"]
-        header.append("Registered")
+        columns[1:1] = ["id"]
+    columns += dates
+    if long:
+        columns.append("registered")
     if view.titles:
-        header.append("AI title")
+        columns.append("title")
+    titles = {
+        "name": "Name (ID)",
+        "id": "Session ID",
+        "path": "Directory",
+        "status": "Status",
+        "active": "Last active",
+        "created": "Created",
+        "registered": "Registered",
+        "title": "AI title",
+    }
+    descending = (view.sort in DESCENDING_SORTS) != view.reverse
+    titles[view.sort] += " v" if descending else " ^"
+    header = [titles[column] for column in columns]
     # Cells are (plain, colored) text; the plain text sets the column widths
     table: list[list[tuple[str, str]]] = []
     for session_id in order:
         entry = sessions[session_id]
         name = entry.get("name")
         if name:
-            cells = [(f"[{name}]", f"[{paint(name, COLOR_YELLOW_BOLD)}]")]
+            label_cell = (f"[{name}]", f"[{paint(name, COLOR_YELLOW_BOLD)}]")
         else:
             short = session_id[:SHORT_ID]
-            cells = [(f"({short})", f"({paint(short, COLOR_MAGENTA)})")]
-        timestamp = active[session_id]
-        date = f"({relative_time(timestamp)})" if timestamp is not None else ""
-        status, status_color = status_of(entry)
-        plain = [
-            (display_path(entry.get("cwd", "")), ""),
-            (status, status_color),
-            (date, COLOR_BLUE),
-        ]
-        if long:
-            plain[0:0] = [(session_id, COLOR_MAGENTA)]
-            registered = parse_time(entry.get("updated"))
-            stamp = f"({relative_time(registered.timestamp())})" if registered else ""
-            plain.append((stamp, COLOR_BLUE))
-        if view.titles:
-            plain.append((shorten(entry.get("title", ""), TITLE_WIDTH), ""))
-        cells += [(text, paint(text, color)) for text, color in plain]
+            label_cell = (f"({short})", f"({paint(short, COLOR_MAGENTA)})")
+        registered = parse_time(entry.get("updated"))
+        values = {
+            "id": (session_id, COLOR_MAGENTA),
+            "path": (display_path(entry.get("cwd", "")), ""),
+            "status": status_of(entry),
+            "active": relative_cell(last_active(entry)),
+            "created": relative_cell(float(entry.get("created") or 0)),
+            "registered": relative_cell(registered.timestamp() if registered else None),
+            "title": (shorten(entry.get("title", ""), TITLE_WIDTH), ""),
+        }
+        cells = [label_cell]
+        cells += [(values[c][0], paint(*values[c])) for c in columns if c != "name"]
         table.append(cells)
     widths = [
         max([len(header[column]), *(len(row[column][0]) for row in table)])
@@ -924,6 +1131,8 @@ class PickerMode:
     purpose: str
     keys: dict[str, str]
     multi: bool = True
+    # Sessions whose name matches the NAME argument, listed first
+    first: frozenset[str] = frozenset()
 
 
 def picker_keys(config: dict[str, str]) -> dict[str, str]:
@@ -951,12 +1160,13 @@ def run_fzf(
     if fzf is None:
         raise AppError("fzf not found")
     keys, purpose, multi = mode.keys, mode.purpose, mode.multi
-    columns, rows = session_rows(sessions, view)
-    hints = ", ".join(f"{keys[action]}:{action}" for action in PICKER_KEYS)
+    columns, rows = session_rows(sessions, view, first=mode.first)
+    actions = [a for a in PICKER_KEYS if a not in VIEW_ACTIONS]
+    hints = ", ".join(f"{keys[action]}:{action}" for action in actions)
     hints += ", ctrl-t:toggle+down, ctrl-y:accept" if multi else ", ctrl-y:accept"
-    scope = " (all)" if view.show_all else ""
+    view_hints = ", ".join(f"{keys[action]}:{action}" for action in VIEW_ACTIONS)
     accept = "accept" if purpose == "remove" else "clear-multi+accept"
-    printed = ("rename", "info", "all", "titles")
+    printed = ("rename", "info", *VIEW_ACTIONS)
     command = [
         fzf,
         "--ansi",
@@ -970,11 +1180,14 @@ def run_fzf(
         # searched; a tab shown one column wide keeps them aligned
         "--nth=1,2",
         "--tabstop=1",
+        # Keep the chosen order; the query only filters
+        "--no-sort",
         "--print-query",
         f"--expect={keys['remove']},{keys['purge']}",
         f"--bind=enter:{accept},ctrl-y:{accept}",
         *(f"--bind={keys[a]}:clear-multi+print({a})+accept" for a in printed),
-        f"--header={PICKER_TITLES[purpose]}{scope}: {hints}\n{columns}",
+        f"--header={PICKER_TITLES[purpose]} ({view.describe()}): {hints}\n"
+        f"View: {view_hints}\n{columns}",
         f"--query={query}",
     ]
     if multi:
@@ -996,7 +1209,7 @@ def run_fzf(
     action = {keys["remove"]: "remove", keys["purge"]: "purge"}.get(key, "")
     if rest[0] in printed:
         action, rest = rest[0], rest[1:]
-    if action in ("all", "titles"):
+    if action in VIEW_ACTIONS:
         return query, action, []
     chosen = [line.split("\t", 1)[0] for line in rest if line]
     if result.returncode != 0 or not chosen:
@@ -1128,17 +1341,17 @@ def pick_session(
     Return (action, session IDs, sessions shown), where the action is "info"
     or "" (Enter).
     """
+    action = ""
     while True:
         sessions = collect_sessions(path, view)
         if only is not None:
             sessions = {i: e for i, e in sessions.items() if i in only}
-        if not sessions:
+        # An empty list is fine after a view change: it can be changed back
+        if not sessions and action not in VIEW_ACTIONS:
             raise AppError("No sessions left")
         query, action, chosen = run_fzf(sessions, query, view, mode)
-        if action == "all":
-            view = dataclasses.replace(view, show_all=not view.show_all)
-        elif action == "titles":
-            view = dataclasses.replace(view, titles=not view.titles)
+        if action in VIEW_ACTIONS:
+            view = next_view(view, action)
         elif action == "remove":
             picker_remove(path, chosen, sessions, mode.keys["purge"])
         elif action == "purge":
@@ -1196,7 +1409,7 @@ def choose_sessions(
         if matches and not browse:
             mode = PickerMode(purpose, picker_keys(config), purpose == "remove")
             return pick_session(path, "", view, mode, set(matches))
-        mode = PickerMode(purpose, picker_keys(config))
+        mode = PickerMode(purpose, picker_keys(config), first=frozenset(matches))
         return pick_session(path, query, view, mode)
     if not query:
         raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
@@ -1725,9 +1938,24 @@ def truthy(value: str) -> bool:
     return value.strip().lower() in {"1", "true", "yes", "on"}
 
 
+def choice(
+    cli: str | None, env_name: str, config: dict[str, str], values: Sequence[str]
+) -> str:
+    value = resolve(cli, env_name, config, values[0])
+    if value not in values:
+        raise AppError(f"{env_name} must be one of: {', '.join(values)}")
+    return value
+
+
 def view_of(args: argparse.Namespace, config: dict[str, str]) -> View:
-    titles = args.ai_title or truthy(resolve(None, ENV_AI_TITLE, config))
-    return View(show_all=args.all, titles=titles)
+    scope = "all" if args.all else "unnamed" if args.unnamed else SCOPES[0]
+    return View(
+        scope=scope,
+        titles=args.ai_title or truthy(resolve(None, ENV_AI_TITLE, config)),
+        dates=choice(args.date, ENV_DATE, config, DATE_COLUMNS),
+        sort=choice(args.sort, ENV_SORT, config, SORT_KEYS),
+        reverse=args.reverse or truthy(resolve(None, ENV_REVERSE, config)),
+    )
 
 
 def cmd_list(args: argparse.Namespace) -> int:
@@ -1980,8 +2208,12 @@ _claude-session() {
   local -a common
   local -a scope
   scope=(
-    '(-a --all)'{-a,--all}'[include unnamed and removed sessions]'
+    '(-a --all -u --unnamed)'{-a,--all}'[include unnamed and removed sessions]'
+    '(-a --all -u --unnamed)'{-u,--unnamed}'[show only unnamed sessions]'
     '(-t --ai-title)'{-t,--ai-title}'[show the AI title column]'
+    '(-d --date)'{-d+,--date=}'[date columns]:date columns:(active created both)'
+    '(-s --sort)'{-s+,--sort=}'[sort key]:sort key:(active created name path status)'
+    '(-R --reverse)'{-R,--reverse}'[reverse the sort order]'
   )
   common=(
     '(- *)'{-h,--help}'[show help and exit]'
