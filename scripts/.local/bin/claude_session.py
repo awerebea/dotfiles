@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import argparse
 import contextlib
+import dataclasses
 import fcntl
 import json
 import os
@@ -38,7 +39,7 @@ from pathlib import Path
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.6.0"
+__version__ = "0.7.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -220,13 +221,13 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     rename = add_command(
-        "rename", "Rename a registry entry (the transcript is not changed)"
+        "rename", "Rename a session (writes a custom-title record, as /rename does)"
     )
     rename.add_argument("old", metavar="OLD", help="current name")
     rename.add_argument("new", metavar="NEW", help="new name")
 
     remove = add_command(
-        "remove", "Remove registry entries (transcripts are not changed)"
+        "remove", "Remove registry entries; sync skips them until renamed"
     )
     remove.add_argument("names", nargs="+", metavar="NAME", help="names to remove")
 
@@ -320,24 +321,34 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-# Registry layout: {"version": 1, "sessions": {NAME: {"session_id", "cwd",
-# "transcript", "updated"}}}
+# Registry layout: {"version": 1,
+#   "sessions": {NAME: {"session_id", "cwd", "transcript", "updated"}},
+#   "hidden": {SESSION_ID: {"title", "transcript"}}}
+# Hidden sessions were removed by the user; sync and the hook skip them until
+# the session gets a different title.
 
 
-def load_registry(path: Path) -> dict[str, dict[str, str]]:
+@dataclasses.dataclass
+class Registry:
+    sessions: dict[str, dict[str, str]] = dataclasses.field(default_factory=dict)
+    hidden: dict[str, dict[str, str]] = dataclasses.field(default_factory=dict)
+
+
+def load_registry(path: Path) -> Registry:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return {}
+        return Registry()
     except (OSError, ValueError) as exc:
         raise AppError(f"Cannot read registry {path}: {exc}") from exc
     sessions = data.get("sessions") if isinstance(data, dict) else None
-    if not isinstance(sessions, dict):
+    hidden = data.get("hidden", {}) if isinstance(data, dict) else None
+    if not isinstance(sessions, dict) or not isinstance(hidden, dict):
         raise AppError(f"Unexpected registry format in {path}")
-    return sessions
+    return Registry(sessions, hidden)
 
 
-def save_registry(path: Path, sessions: dict[str, dict[str, str]]) -> None:
+def save_registry(path: Path, registry: Registry) -> None:
     """Write atomically: a temporary file in the same directory, then rename."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
@@ -346,7 +357,8 @@ def save_registry(path: Path, sessions: dict[str, dict[str, str]]) -> None:
             json.dump(
                 {
                     "version": REGISTRY_FORMAT,
-                    "sessions": dict(sorted(sessions.items())),
+                    "sessions": dict(sorted(registry.sessions.items())),
+                    "hidden": dict(sorted(registry.hidden.items())),
                 },
                 fh,
                 indent=2,
@@ -403,13 +415,14 @@ def read_transcript(path: Path) -> tuple[str | None, str | None, str | None]:
 
 
 def apply_entry(
-    sessions: dict[str, dict[str, str]],
+    registry: Registry,
     session_id: str,
     title: str | None,
     cwd: str | None,
     transcript: Path,
 ) -> list[str]:
     """Register `title` for `session_id`; return messages about the changes."""
+    sessions = registry.sessions
     messages = []
     # A session renamed again must not stay registered under its old name
     for name in [n for n, e in sessions.items() if e.get("session_id") == session_id]:
@@ -418,6 +431,13 @@ def apply_entry(
             messages.append(f"Unregistered old name: {name}")
     if title is None:
         return messages
+    hidden = registry.hidden.get(session_id)
+    if hidden is not None:
+        if hidden.get("title") == title:
+            return messages
+        # Renamed since it was removed: the user wants it back
+        del registry.hidden[session_id]
+        messages.append(f"Unhidden session {session_id}: renamed to '{title}'")
     previous = sessions.get(title)
     if previous and previous.get("session_id") != session_id:
         messages.append(
@@ -710,9 +730,7 @@ def picker_rename(path: Path, name: str, entry: dict[str, str]) -> None:
             file=sys.stderr,
         )
         return
-    new = prompt_text(
-        "New name:", name, f"Rename registry entry '{name}' (esc: cancel)"
-    )
+    new = prompt_text("New name:", name, f"Rename session '{name}' (esc: cancel)")
     if not new or new == name:
         print("Rename cancelled", file=sys.stderr)
         return
@@ -733,7 +751,7 @@ def pick_session(path: Path, config: dict[str, str], query: str) -> str:
     if keys["remove"] == keys["rename"]:
         raise AppError(f"{ENV_KEY_REMOVE} and {ENV_KEY_RENAME} must differ")
     while True:
-        sessions = merge_live(load_registry(path))
+        sessions = merge_live(load_registry(path).sessions)
         if not sessions:
             raise AppError("No sessions left")
         query, action, names = run_fzf(sessions, query, keys)
@@ -763,10 +781,10 @@ def cmd_hook(args: argparse.Namespace) -> int:
     _, title, cwd = read_transcript(transcript_path)
     cwd = cwd or (event.get("cwd") if isinstance(event.get("cwd"), str) else None)
     with locked(path):
-        sessions = load_registry(path)
-        messages = apply_entry(sessions, session_id, title, cwd, transcript_path)
+        registry = load_registry(path)
+        messages = apply_entry(registry, session_id, title, cwd, transcript_path)
         if messages:
-            save_registry(path, sessions)
+            save_registry(path, registry)
     for message in messages:
         print(message, file=sys.stderr)
     return 0
@@ -789,13 +807,14 @@ def cmd_sync(args: argparse.Namespace) -> int:
                 )
             )
     with locked(path):
-        sessions = load_registry(path)
+        registry = load_registry(path)
+        sessions = registry.sessions
         messages = []
         # Oldest first, so the most recently active session wins a shared name
         for _, session_id, title, cwd, transcript in sorted(
             found, key=lambda item: item[0]
         ):
-            messages += apply_entry(sessions, session_id, title, cwd, transcript)
+            messages += apply_entry(registry, session_id, title, cwd, transcript)
         if args.prune:
             for name in [
                 n
@@ -804,17 +823,27 @@ def cmd_sync(args: argparse.Namespace) -> int:
             ]:
                 del sessions[name]
                 messages.append(f"Pruned: {name}")
+            for session_id in [
+                i
+                for i, e in registry.hidden.items()
+                if not Path(e.get("transcript", "")).is_file()
+            ]:
+                del registry.hidden[session_id]
+                messages.append(f"Pruned hidden session: {session_id}")
         prefix = "[dry-run] " if args.dry_run else ""
         for message in messages:
             print(f"{prefix}{message}")
         if messages and not args.dry_run:
-            save_registry(path, sessions)
-    print(f"{prefix}{len(sessions)} session(s) registered, {len(messages)} change(s)")
+            save_registry(path, registry)
+    print(
+        f"{prefix}{len(sessions)} session(s) registered, "
+        f"{len(registry.hidden)} hidden, {len(messages)} change(s)"
+    )
     return 0
 
 
 def cmd_list(args: argparse.Namespace) -> int:
-    sessions = merge_live(load_registry(registry_path(args, settings(args))))
+    sessions = merge_live(load_registry(registry_path(args, settings(args))).sessions)
     if args.json:
         print(json.dumps(sessions, indent=2, ensure_ascii=False))
         return 0
@@ -843,7 +872,7 @@ def cmd_list(args: argparse.Namespace) -> int:
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
     path = registry_path(args, config)
-    sessions = merge_live(load_registry(path))
+    sessions = merge_live(load_registry(path).sessions)
     if not sessions:
         raise AppError(
             f"No registered sessions (run '{PROG} sync' to scan transcripts)"
@@ -855,7 +884,7 @@ def cmd_resume(args: argparse.Namespace) -> int:
     elif can_pick():
         # No name, ambiguous or unknown: the name becomes the fuzzy query
         name = pick_session(path, config, query)
-        sessions = merge_live(load_registry(path))
+        sessions = merge_live(load_registry(path).sessions)
     elif not query:
         raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
     elif matches:
@@ -889,35 +918,77 @@ def cmd_resume(args: argparse.Namespace) -> int:
     return 0  # not reached
 
 
+def append_title(transcript: Path, session_id: str, title: str) -> None:
+    """Name the session the way /rename does: a custom-title record."""
+    record = json.dumps(
+        {"type": "custom-title", "customTitle": title, "sessionId": session_id},
+        ensure_ascii=False,
+        separators=(",", ":"),  # compact, as Claude Code writes it
+    )
+    try:
+        with transcript.open("ab+") as fh:
+            fh.seek(0, os.SEEK_END)
+            ends_in_newline = True
+            if fh.tell():
+                fh.seek(-1, os.SEEK_END)
+                ends_in_newline = fh.read(1) == b"\n"
+            fh.write(
+                ("" if ends_in_newline else "\n").encode() + record.encode() + b"\n"
+            )
+    except OSError as exc:
+        raise AppError(f"Cannot write transcript {transcript}: {exc.strerror}") from exc
+
+
 def rename_entry(path: Path, old: str, new: str) -> None:
+    """Rename the session itself (in its transcript) and its registry entry."""
+    open_ids = {entry["session_id"] for entry in live_sessions().values()}
     with locked(path):
-        sessions = load_registry(path)
+        registry = load_registry(path)
+        sessions = registry.sessions
         if old not in sessions:
             raise AppError(f"Session not found: {old}")
         if new in sessions and new != old:
             raise AppError(f"Name already registered: {new}")
+        entry = sessions[old]
+        session_id = entry.get("session_id", "")
+        if session_id in open_ids:
+            # Claude Code is writing that transcript and keeps its own name
+            raise AppError(
+                f"Session '{old}' is open; rename it with /rename inside that session"
+            )
+        transcript = Path(entry.get("transcript") or "")
+        if entry.get("transcript") and transcript.is_file():
+            append_title(transcript, session_id, new)
+        else:
+            print(
+                f"Warning: transcript of '{old}' not found; "
+                "only the registry entry is renamed",
+                file=sys.stderr,
+            )
         sessions[new] = {**sessions.pop(old), "updated": now()}
-        save_registry(path, sessions)
+        save_registry(path, registry)
 
 
 def remove_entries(path: Path, names: Sequence[str]) -> None:
+    """Remove entries and hide their sessions from sync and the hook."""
     with locked(path):
-        sessions = load_registry(path)
-        missing = [name for name in names if name not in sessions]
+        registry = load_registry(path)
+        missing = [name for name in names if name not in registry.sessions]
         if missing:
             raise AppError(f"Session not found: {', '.join(missing)}")
         for name in names:
-            del sessions[name]
-        save_registry(path, sessions)
+            entry = registry.sessions.pop(name)
+            if entry.get("session_id"):
+                registry.hidden[entry["session_id"]] = {
+                    "title": name,
+                    "transcript": entry.get("transcript", ""),
+                }
+        save_registry(path, registry)
 
 
 def cmd_rename(args: argparse.Namespace) -> int:
     rename_entry(registry_path(args, settings(args)), args.old, args.new)
     print(f"Renamed: {args.old} -> {args.new}")
-    print(
-        "Note: a later /rename in that session will register its own name again",
-        file=sys.stderr,
-    )
     return 0
 
 
@@ -961,7 +1032,7 @@ _claude-session() {
         'list:list registered and open named sessions'
         'hook:update the registry from a SessionEnd hook event'
         'sync:rebuild the registry from all transcripts'
-        'rename:rename a registry entry'
+        'rename:rename a session'
         'remove:remove registry entries'
         'completion:print a shell completion script'
         'version:show the version and exit'
