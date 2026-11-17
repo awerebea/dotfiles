@@ -47,7 +47,7 @@ from typing import Any
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.10.0"
+__version__ = "0.11.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -119,6 +119,7 @@ PICKER_KEYS = {
 }
 PICKER_TITLES = {
     "resume": "Resume Claude Session",
+    "manage": "Manage Claude Sessions",
     "info": "Claude Session Info",
     "rename": "Rename Claude Session",
     "remove": "Remove Claude Sessions",
@@ -198,10 +199,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     def add_command(
-        name: str, summary: str, scoped: bool = False
+        name: str, summary: str, scoped: bool = False, aliases: Sequence[str] = ()
     ) -> argparse.ArgumentParser:
         return commands.add_parser(
             name,
+            aliases=list(aliases),
             parents=[common, scope] if scoped else [common],
             allow_abbrev=False,
             help=summary,
@@ -219,6 +221,7 @@ def build_parser() -> argparse.ArgumentParser:
             "Hook setup (~/.claude/settings.json):\n"
             '  "hooks": {"SessionEnd": [{"hooks": [{"type": "command",\n'
             f'    "command": "{PROG_NAME} hook"}}]}}]}}\n\n'
+            f"Without a command, '{PROG_NAME} manage' runs.\n"
             "Precedence: command line > environment > config file > default."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -234,7 +237,12 @@ def build_parser() -> argparse.ArgumentParser:
     commands.add_parser("version", help="show the version and exit")
     commands.add_parser("help", help="show this help and exit")
 
-    resume = add_command("resume", "Resume a session by name", scoped=True)
+    resume = add_command(
+        "resume",
+        "Pick a session to resume (alias: manage, also the default command)",
+        scoped=True,
+        aliases=["manage"],
+    )
     resume.add_argument(
         "-H",
         "--here",
@@ -259,20 +267,28 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print the command instead of running it",
     )
-    resume.usage = f"{PROG} resume [OPTIONS] [NAME...] [-- CLAUDE_ARG...]"
+    resume.add_argument(
+        "-1",
+        "--select-1",
+        action="store_true",
+        help="resume without the picker when NAME matches a single session",
+    )
+    resume.usage = f"{PROG} resume|manage [OPTIONS] [NAME...] [-- CLAUDE_ARG...]"
     resume.add_argument(
         "name",
         nargs="*",
         metavar="NAME",
         help=(
-            "session name, a unique prefix of it or a session ID; words are joined "
-            "with spaces. A name shared by several sessions means the one started "
-            "in the current directory. Without NAME, or if it is ambiguous or "
-            "unknown, pick with fzf"
+            "the picker's initial query; words are joined with spaces. A session "
+            "ID (or a prefix of 8+ characters) resumes it directly. Without fzf "
+            "or a terminal, NAME is a session name, a unique prefix of it or an "
+            "ID, and a name shared by several sessions means the one started in "
+            "the current directory"
         ),
     )
     resume.epilog = (
-        "Arguments after '--' are passed to claude (e.g. -- --model opus).\n\n"
+        "Arguments after '--' are passed to claude (e.g. -- --model opus).\n"
+        "Choosing a session that is open in a tmux pane offers to switch to it.\n\n"
         "Picker keys (ask before changing anything):\n"
         f"  {DEFAULT_KEY_REMOVE:<11} remove the selected sessions from the list\n"
         f"  {DEFAULT_KEY_PURGE:<11} delete the selected sessions' data, "
@@ -668,6 +684,8 @@ class View:
     show_all: bool = False
     # The AI title column (the first prompt when there is no AI title)
     titles: bool = False
+    # Skip the resume picker when the query matches a single session
+    select_one: bool = False
 
 
 def summary_title(summary: TranscriptSummary) -> str:
@@ -838,8 +856,9 @@ def status_of(entry: dict[str, str]) -> tuple[str, str]:
 
 def session_rows(
     sessions: dict[str, dict[str, str]], view: View, long: bool = False
-) -> tuple[str, list[tuple[str, str]]]:
-    """Column header and (session ID, colored row) per session, latest first.
+) -> tuple[str, list[tuple[str, list[str]]]]:
+    """Column header and (session ID, padded colored cells) per session,
+    latest first; columns are two spaces apart.
 
     Named sessions show as [name], unnamed ones as (short ID), the way
     fzf-git-branches shows local and remote branches. `long` adds the full
@@ -893,7 +912,7 @@ def session_rows(
             colored + " " * (width - len(text))
             for (text, colored), width in zip(row, widths, strict=True)
         ]
-        lines.append((session_id, "  ".join(padded).rstrip()))
+        lines.append((session_id, padded))
     return head.rstrip(), lines
 
 
@@ -947,6 +966,10 @@ def run_fzf(
         "--reverse",
         "--delimiter=\t",
         "--with-nth=2..",
+        # Columns are tab-separated so that only the name and directory are
+        # searched; a tab shown one column wide keeps them aligned
+        "--nth=1,2",
+        "--tabstop=1",
         "--print-query",
         f"--expect={keys['remove']},{keys['purge']}",
         f"--bind=enter:{accept},ctrl-y:{accept}",
@@ -958,7 +981,10 @@ def run_fzf(
         command += ["--multi", "--bind=ctrl-t:toggle+down"]
     result = subprocess.run(
         command,
-        input="\n".join(f"{session_id}\t{row}" for session_id, row in rows),
+        input="\n".join(
+            "\t".join([session_id, *(f"{cell} " for cell in cells)])
+            for session_id, cells in rows
+        ),
         stdout=subprocess.PIPE,
         text=True,
         check=False,
@@ -978,9 +1004,11 @@ def run_fzf(
     return query, action, chosen
 
 
-def confirm(prompt: str) -> bool:
-    """Ask a yes/no question answered by a single key; anything but y is no."""
-    print(f"{prompt} (y|N): ", end="", file=sys.stderr, flush=True)
+def confirm(prompt: str, default: bool = False) -> bool:
+    """Ask a yes/no question answered by a single key: y is yes, Enter takes
+    the default, anything else is no."""
+    choices = "Y|n" if default else "y|N"
+    print(f"{prompt} ({choices}): ", end="", file=sys.stderr, flush=True)
     fd = sys.stdin.fileno()
     if os.isatty(fd):
         saved = termios.tcgetattr(fd)
@@ -992,6 +1020,8 @@ def confirm(prompt: str) -> bool:
     else:
         answer = sys.stdin.read(1)
     print(file=sys.stderr)
+    if answer in {"\r", "\n", ""}:
+        return default
     return answer in {"y", "Y"}
 
 
@@ -1119,12 +1149,31 @@ def pick_session(
             return action, chosen, sessions
 
 
+def exact_id(sessions: dict[str, dict[str, str]], query: str) -> bool:
+    """A full session ID, or an ID prefix that is not also a name."""
+    if query in sessions:
+        return True
+    if len(query) < MIN_ID_PREFIX or any(
+        e.get("name") == query for e in sessions.values()
+    ):
+        return False
+    return sum(i.startswith(query) for i in sessions) == 1
+
+
 def choose_sessions(
-    path: Path, config: dict[str, str], query: str, view: View, purpose: str
+    path: Path,
+    config: dict[str, str],
+    query: str,
+    view: View,
+    purpose: str,
 ) -> tuple[str, list[str], dict[str, dict[str, str]]]:
     """Resolve a name or session ID (see match_sessions), else ask with the
     picker: limited to the matches when the name is ambiguous, with the name
     as the fuzzy query when it is unknown.
+
+    resume and manage always show the picker, with the name as the query, so
+    that open sessions and duplicates are seen first; unless the query is a
+    session ID, or view.select_one is set and the name has a single match.
 
     Return (action, session IDs, sessions) as pick_session does.
     """
@@ -1134,13 +1183,17 @@ def choose_sessions(
             f"No registered sessions (run '{PROG} sync' to scan transcripts, "
             "or use -a/--all)"
         )
-    prefixes = purpose in ("resume", "info")
+    browse = purpose in ("resume", "manage")
+    prefixes = browse or purpose == "info"
     matches = match_sessions(sessions, query, prefixes) if query else []
-    if len(matches) == 1:
+    picker = can_pick()
+    if len(matches) == 1 and (
+        not (browse and picker) or view.select_one or exact_id(sessions, query)
+    ):
         return "", matches, sessions
-    if can_pick():
+    if picker:
         # Only the matches of an ambiguous name, one at a time unless removing
-        if matches:
+        if matches and not browse:
             mode = PickerMode(purpose, picker_keys(config), purpose == "remove")
             return pick_session(path, "", view, mode, set(matches))
         mode = PickerMode(purpose, picker_keys(config))
@@ -1699,24 +1752,61 @@ def cmd_list(args: argparse.Namespace) -> int:
     terminal = sys.stdout.isatty()
     if terminal:
         print(paint(header, COLOR_BOLD))
-    for _, row in rows:
+    for _, cells in rows:
+        row = "  ".join(cells).rstrip()
         print(row if terminal else ANSI_ESCAPE.sub("", row))
     return 0
+
+
+def switch_to(session_id: str, entry: dict[str, str]) -> bool:
+    """Offer to switch to the tmux pane of an open session; True when
+    switched, False when declined. Raise when it cannot switch."""
+    pane = tmux_pane(entry)
+    if not pane or not os.environ.get("TMUX"):
+        raise AppError(open_hint(session_id, entry))
+    question = (
+        f"Session {label(session_id, entry)} is already open "
+        f"(pid {entry['open_pid']}). Switch to its tmux pane {pane}?"
+    )
+    if not confirm(question, default=True):
+        return False
+    result = subprocess.run(["tmux", "switch-client", "-t", pane], check=False)
+    if result.returncode != 0:
+        raise AppError(f"'tmux switch-client -t {pane}' failed")
+    return True
 
 
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
     path = registry_path(args, config)
-    action, chosen, sessions = choose_sessions(
-        path, config, " ".join(args.name), view_of(args, config), "resume"
-    )
-    session_id = chosen[0]
-    entry = sessions[session_id]
-    if action == "info":
-        print_details(session_id, entry)
-        return 0
-    if entry.get("open_pid") and not args.force:
-        raise AppError(open_hint(session_id, entry))
+    purpose = "manage" if args.command == "manage" else "resume"
+    view = dataclasses.replace(view_of(args, config), select_one=args.select_1)
+    query = " ".join(args.name)
+    action, chosen, sessions = choose_sessions(path, config, query, view, purpose)
+    while True:
+        session_id = chosen[0]
+        entry = sessions[session_id]
+        if action == "info":
+            print_details(session_id, entry)
+            return 0
+        if not entry.get("open_pid") or args.force:
+            break
+        if not can_pick():
+            raise AppError(open_hint(session_id, entry))
+        if switch_to(session_id, entry):
+            return 0
+        # Declined: back to the picker
+        mode = PickerMode(purpose, picker_keys(config))
+        action, chosen, sessions = pick_session(path, query, view, mode)
+    return exec_claude(args, config, session_id, entry)
+
+
+def exec_claude(
+    args: argparse.Namespace,
+    config: dict[str, str],
+    session_id: str,
+    entry: dict[str, str],
+) -> int:
     claude = resolve(args.claude_bin, ENV_CLAUDE_BIN, config, DEFAULT_CLAUDE_BIN)
     claude_path = shutil.which(claude)
     if claude_path is None:
@@ -1908,7 +1998,8 @@ _claude-session() {
     command)
       local -a commands
       commands=(
-        'resume:resume a session by name'
+        'resume:pick a session to resume'
+        'manage:pick a session to resume (alias of resume)'
         'info:show what is known about a session'
         'list:list registered and open named sessions'
         'hook:update the registry from a SessionEnd hook event'
@@ -1924,8 +2015,9 @@ _claude-session() {
     argument)
       curcontext="${curcontext%:*:*}:claude-session-$line[1]:"
       case $line[1] in
-        resume)
+        resume|manage)
           _arguments -S $common $scope \
+            '(-1 --select-1)'{-1,--select-1}'[skip the picker for a single match]' \
             '(-H --here)'{-H,--here}'[stay in the current directory]' \
             '(-b --claude-bin)'{-b+,--claude-bin=}'[claude executable]:file:_files' \
             '(-f --force)'{-f,--force}'[resume even if the session is open]' \
@@ -1982,6 +2074,7 @@ COMMANDS = {
     "hook": cmd_hook,
     "info": cmd_info,
     "list": cmd_list,
+    "manage": cmd_resume,
     "remove": cmd_remove,
     "rename": cmd_rename,
     "resume": cmd_resume,
@@ -1992,6 +2085,8 @@ COMMANDS = {
 def main(argv: Sequence[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     parser = build_parser()
+    if not argv:
+        argv = ["manage"]
 
     # `version` and `help` as the first argument win over everything else
     if argv[:1] == ["version"]:
@@ -2007,7 +2102,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(str(exc))
     # Everything after `--` goes to claude, so unquoted multi-word names work
     claude_args: list[str] = []
-    if argv[:1] == ["resume"] and "--" in argv:
+    if argv[:1] in (["resume"], ["manage"]) and "--" in argv:
         split = argv.index("--")
         argv, claude_args = argv[:split], argv[split + 1 :]
     args = parser.parse_args(argv)
