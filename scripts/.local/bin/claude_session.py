@@ -11,6 +11,10 @@ IDs and the directory each session was started in:
   ended before the hook was installed or that crashed).
 - `resume NAME` looks the name up, changes to the session's directory and
   replaces itself with `claude --resume SESSION_ID`.
+
+Sessions that are open right now are read from Claude Code's own
+<config dir>/sessions/<pid>.json files, so a /rename is visible at once,
+without waiting for the session to end.
 """
 
 from __future__ import annotations
@@ -31,7 +35,7 @@ from pathlib import Path
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -135,6 +139,12 @@ def build_parser() -> argparse.ArgumentParser:
         help=f"claude executable (env: {ENV_CLAUDE_BIN}, default: claude)",
     )
     resume.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="resume even if the session is open in another terminal",
+    )
+    resume.add_argument(
         "-n",
         "--dry-run",
         action="store_true",
@@ -152,7 +162,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     resume.epilog = "Arguments after '--' are passed to claude (e.g. -- --model opus)."
 
-    list_cmd = add_command("list", "List registered sessions")
+    list_cmd = add_command("list", "List registered and open named sessions")
     list_cmd.add_argument(
         "-j", "--json", action="store_true", help="print the registry as JSON"
     )
@@ -387,6 +397,67 @@ def apply_entry(
     return messages
 
 
+def pid_alive(pid: int) -> bool:
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def live_sessions() -> dict[str, dict[str, str]]:
+    """Named sessions that are open right now.
+
+    Running Claude Code instances keep <config dir>/sessions/<pid>.json with
+    the session name; `nameSource` is "user" for /rename and --name.
+    """
+    sessions: dict[str, dict[str, str]] = {}
+    for path in (CLAUDE_DIR / "sessions").glob("*.json"):
+        try:
+            data = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue  # being rewritten or not ours
+        if not isinstance(data, dict) or data.get("nameSource") != "user":
+            continue
+        name, session_id, pid = data.get("name"), data.get("sessionId"), data.get("pid")
+        if not (isinstance(name, str) and name and isinstance(session_id, str)):
+            continue
+        if not isinstance(pid, int) or not pid_alive(pid):
+            continue
+        sessions[name] = {
+            "session_id": session_id,
+            "cwd": str(data.get("cwd") or ""),
+            "open_pid": str(pid),
+            "tmux": str(data.get("tmux") or ""),
+        }
+    return sessions
+
+
+def merge_live(sessions: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+    """Registry plus open sessions; an open session's current name wins."""
+    live = live_sessions()
+    live_ids = {entry["session_id"] for entry in live.values()}
+    merged = {
+        name: entry
+        for name, entry in sessions.items()
+        if entry.get("session_id") not in live_ids
+    }
+    for name, entry in live.items():
+        merged[name] = {**sessions.get(name, {}), **entry}
+    return merged
+
+
+def open_hint(name: str, entry: dict[str, str]) -> str:
+    hint = f"Session '{name}' is already open (pid {entry['open_pid']})"
+    # tmux location looks like "session:@window.%pane"
+    pane = entry.get("tmux", "").rpartition(".")[2]
+    if pane.startswith("%"):
+        hint += f"; switch to it with: tmux switch-client -t '{pane}'"
+    return f"{hint}. Use -f/--force to resume it anyway"
+
+
 def match_names(sessions: dict[str, dict[str, str]], name: str) -> list[str]:
     """Exact name first, then names starting with it (case-insensitive)."""
     if name in sessions:
@@ -510,7 +581,7 @@ def cmd_sync(args: argparse.Namespace) -> int:
 
 
 def cmd_list(args: argparse.Namespace) -> int:
-    sessions = load_registry(registry_path(args, settings(args)))
+    sessions = merge_live(load_registry(registry_path(args, settings(args))))
     if args.json:
         print(json.dumps(sessions, indent=2, ensure_ascii=False))
         return 0
@@ -530,13 +601,15 @@ def cmd_list(args: argparse.Namespace) -> int:
         if args.long:
             cwd = display_path(entry.get("cwd", ""))
             line += f"  {entry.get('updated', ''):<25}  {cwd}"
+        if entry.get("open_pid"):
+            line += f"  [open, pid {entry['open_pid']}]"
         print(line)
     return 0
 
 
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
-    sessions = load_registry(registry_path(args, config))
+    sessions = merge_live(load_registry(registry_path(args, config)))
     if not sessions:
         raise AppError(
             f"No registered sessions (run '{PROG} sync' to scan transcripts)"
@@ -559,6 +632,8 @@ def cmd_resume(args: argparse.Namespace) -> int:
             f"Session not found: {query} (see '{PROG} list' or run '{PROG} sync')"
         )
     entry = sessions[name]
+    if entry.get("open_pid") and not args.force:
+        raise AppError(open_hint(name, entry))
     session_id = entry.get("session_id")
     if not session_id:
         raise AppError(f"Registry entry '{name}' has no session ID")
@@ -644,7 +719,7 @@ _claude-session() {
       local -a commands
       commands=(
         'resume:resume a registered session by name'
-        'list:list registered sessions'
+        'list:list registered and open named sessions'
         'hook:update the registry from a SessionEnd hook event'
         'sync:rebuild the registry from all transcripts'
         'rename:rename a registry entry'
@@ -662,6 +737,7 @@ _claude-session() {
           _arguments -S $common \
             '(-H --here)'{-H,--here}'[stay in the current directory]' \
             '(-b --claude-bin)'{-b+,--claude-bin=}'[claude executable]:file:_files' \
+            '(-f --force)'{-f,--force}'[resume even if the session is open]' \
             '(-n --dry-run)'{-n,--dry-run}'[print the command instead of running it]' \
             '*:session name:_claude-session_names' && ret=0
           ;;
