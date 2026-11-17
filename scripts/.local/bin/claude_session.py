@@ -24,6 +24,7 @@ import contextlib
 import dataclasses
 import fcntl
 import json
+import re
 import os
 import shlex
 import shutil
@@ -36,10 +37,11 @@ import tty
 from collections.abc import Iterator, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.7.0"
+__version__ = "0.8.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -54,7 +56,14 @@ ENV_REGISTRY = "CLAUDE_SESSION_REGISTRY"
 ENV_CLAUDE_BIN = "CLAUDE_SESSION_CLAUDE_BIN"
 ENV_KEY_REMOVE = "CLAUDE_SESSION_KEY_REMOVE"
 ENV_KEY_RENAME = "CLAUDE_SESSION_KEY_RENAME"
-CONFIG_KEYS = {ENV_REGISTRY, ENV_CLAUDE_BIN, ENV_KEY_REMOVE, ENV_KEY_RENAME}
+ENV_KEY_INFO = "CLAUDE_SESSION_KEY_INFO"
+CONFIG_KEYS = {
+    ENV_REGISTRY,
+    ENV_CLAUDE_BIN,
+    ENV_KEY_REMOVE,
+    ENV_KEY_RENAME,
+    ENV_KEY_INFO,
+}
 DEFAULT_CONFIG = (
     Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
     / "claude-session"
@@ -70,6 +79,7 @@ FZF_CANCELLED = 130
 # Picker keys (fzf key names), configurable like the settings above
 DEFAULT_KEY_REMOVE = "ctrl-d"
 DEFAULT_KEY_RENAME = "ctrl-r"
+DEFAULT_KEY_INFO = "ctrl-o"
 # Picker colors, as in fzf-git-branches; NO_COLOR turns them off
 USE_COLOR = not os.environ.get("NO_COLOR")
 COLOR_RESET = "\033[0m"
@@ -78,6 +88,13 @@ COLOR_RED_BOLD = "\033[1;31m"
 COLOR_GREEN_BOLD = "\033[1;32m"
 COLOR_YELLOW_BOLD = "\033[1;33m"
 COLOR_BLUE_BOLD = "\033[1;34m"
+COLOR_GREEN = "\033[32m"
+COLOR_YELLOW = "\033[33m"
+COLOR_MAGENTA = "\033[35m"
+COLOR_BOLD = "\033[1m"
+# Lines of the last prompt shown by `info`
+INFO_PROMPT_LINES = 15
+ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
 # Relative dates: (below this many seconds, count in units of, unit name)
 RELATIVE_UNITS = (
     (90, 1, "second"),
@@ -191,9 +208,19 @@ def build_parser() -> argparse.ArgumentParser:
     resume.epilog = (
         "Arguments after '--' are passed to claude (e.g. -- --model opus).\n\n"
         f"Picker keys: {DEFAULT_KEY_REMOVE} removes the selected registry entries "
-        f"(asks first),\n{DEFAULT_KEY_RENAME} renames the current one, ctrl-t "
-        "selects, ctrl-y accepts. "
-        f"Change them with {ENV_KEY_REMOVE} and {ENV_KEY_RENAME} (env or config)."
+        f"(asks first),\n{DEFAULT_KEY_RENAME} renames the current one, "
+        f"{DEFAULT_KEY_INFO} shows its info, ctrl-t selects, ctrl-y accepts.\n"
+        f"Change them with {ENV_KEY_REMOVE}, {ENV_KEY_RENAME}\n"
+        f"and {ENV_KEY_INFO} (env or config)."
+    )
+
+    info = add_command("info", "Show what is known about a session")
+    info.usage = f"{PROG} info [OPTIONS] [NAME...]"
+    info.add_argument(
+        "name",
+        nargs="*",
+        metavar="NAME",
+        help="session name or a unique prefix of it; without NAME, pick with fzf",
     )
 
     list_cmd = add_command("list", "List registered and open named sessions")
@@ -606,7 +633,7 @@ def run_fzf(
 ) -> tuple[str, str, list[str]]:
     """Show the picker; return (query, action, chosen names).
 
-    The action is "remove", "rename" or "" (resume). Several sessions can be
+    The action is "remove", "rename", "info" or "" (resume). Several sessions can be
     selected for removal; resume and rename always take the one under the
     cursor, so they clear the selection first.
     """
@@ -615,7 +642,7 @@ def run_fzf(
         raise AppError("fzf not found")
     columns, lines = picker_rows(sessions)
     hints = (
-        f"{keys['remove']}:remove, {keys['rename']}:rename, "
+        f"{keys['remove']}:remove, {keys['rename']}:rename, {keys['info']}:info, "
         "ctrl-t:toggle+down, ctrl-y:accept"
     )
     result = subprocess.run(
@@ -634,6 +661,7 @@ def run_fzf(
             "--bind=ctrl-t:toggle+down",
             "--bind=enter:clear-multi+accept,ctrl-y:clear-multi+accept",
             f"--bind={keys['rename']}:clear-multi+print(rename)+accept",
+            f"--bind={keys['info']}:clear-multi+print(info)+accept",
             f"--header=Resume Claude Session: {hints}\n{columns}",
             f"--query={query}",
         ],
@@ -647,8 +675,8 @@ def run_fzf(
     # Output: query, the --expect key (or ""), print() text, selected lines
     query, key, *rest = [*result.stdout.rstrip("\n").split("\n"), "", ""]
     action = "remove" if key == keys["remove"] else ""
-    if rest[:1] == ["rename"]:
-        action, rest = "rename", rest[1:]
+    if rest[:1] in (["rename"], ["info"]):
+        action, rest = rest[0], rest[1:]
     names = [line.split("\t", 1)[0] for line in rest if line]
     if result.returncode != 0 or not names:
         raise AppError("No session selected")
@@ -742,14 +770,20 @@ def picker_rename(path: Path, name: str, entry: dict[str, str]) -> None:
     print(f"Renamed: {name} -> {new}", file=sys.stderr)
 
 
-def pick_session(path: Path, config: dict[str, str], query: str) -> str:
-    """Run the picker until a session is chosen; remove and rename reopen it."""
+def pick_session(path: Path, config: dict[str, str], query: str) -> tuple[str, str]:
+    """Run the picker until a session is chosen; remove and rename reopen it.
+
+    Return (action, name), where the action is "info" or "" (resume).
+    """
     keys = {
         "remove": resolve(None, ENV_KEY_REMOVE, config, DEFAULT_KEY_REMOVE),
         "rename": resolve(None, ENV_KEY_RENAME, config, DEFAULT_KEY_RENAME),
+        "info": resolve(None, ENV_KEY_INFO, config, DEFAULT_KEY_INFO),
     }
-    if keys["remove"] == keys["rename"]:
-        raise AppError(f"{ENV_KEY_REMOVE} and {ENV_KEY_RENAME} must differ")
+    if len(set(keys.values())) != len(keys):
+        raise AppError(
+            f"{ENV_KEY_REMOVE}, {ENV_KEY_RENAME} and {ENV_KEY_INFO} must differ"
+        )
     while True:
         sessions = merge_live(load_registry(path).sessions)
         if not sessions:
@@ -760,7 +794,304 @@ def pick_session(path: Path, config: dict[str, str], query: str) -> str:
         elif action == "rename":
             picker_rename(path, names[0], sessions[names[0]])
         else:
-            return names[0]
+            return action, names[0]
+
+
+def choose_session(path: Path, config: dict[str, str], query: str) -> tuple[str, str]:
+    """Resolve a name or unique prefix, else ask with the picker.
+
+    Return (action, name) as pick_session does.
+    """
+    sessions = merge_live(load_registry(path).sessions)
+    if not sessions:
+        raise AppError(
+            f"No registered sessions (run '{PROG} sync' to scan transcripts)"
+        )
+    matches = match_names(sessions, query) if query else []
+    if len(matches) == 1:
+        return "", matches[0]
+    if can_pick():
+        # No name, ambiguous or unknown: the name becomes the fuzzy query
+        return pick_session(path, config, query)
+    if not query:
+        raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
+    if matches:
+        raise AppError(f"Ambiguous name '{query}': {', '.join(matches)}")
+    raise AppError(
+        f"Session not found: {query} (see '{PROG} list' or run '{PROG} sync')"
+    )
+
+
+@dataclasses.dataclass
+class TranscriptInfo:
+    started: datetime | None = None
+    ended: datetime | None = None
+    branch: str = ""
+    version: str = ""
+    permission_mode: str = ""
+    models: list[str] = dataclasses.field(default_factory=list)
+    prompts: int = 0
+    responses: int = 0
+    input_tokens: int = 0
+    output_tokens: int = 0
+    ai_title: str = ""
+    titles: list[str] = dataclasses.field(default_factory=list)
+    last_prompt: str = ""
+    # Full text of the last typed prompt; last_prompt is stored truncated
+    prompt: str = ""
+    cost: float | None = None
+    duration_ms: int = 0
+    lines_added: int = 0
+    lines_removed: int = 0
+
+
+def parse_time(value: object) -> datetime | None:
+    if not isinstance(value, str):
+        return None
+    try:
+        # Python 3.10 does not accept the "Z" suffix
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
+def number(value: object) -> int:
+    return value if isinstance(value, int) else 0
+
+
+def typed_prompt(record: dict[str, Any], message: dict[str, Any]) -> str | None:
+    """Text of a prompt typed by the user; None for tool results and meta."""
+    if record.get("isMeta"):
+        return None
+    content = message.get("content")
+    if isinstance(content, str):
+        return content
+    if not isinstance(content, list):
+        return None
+    parts = [part for part in content if isinstance(part, dict)]
+    if any(part.get("type") == "tool_result" for part in parts):
+        return None
+    return "\n".join(
+        str(part.get("text", "")) for part in parts if part.get("type") == "text"
+    )
+
+
+def add_response(
+    info: TranscriptInfo,
+    record: dict[str, Any],
+    message: dict[str, Any],
+    requests: set[str],
+) -> None:
+    model = message.get("model")
+    # Skip placeholders such as <synthetic>
+    if isinstance(model, str) and model not in info.models and model[:1] != "<":
+        info.models.append(model)
+    request = record.get("requestId")
+    # One response is stored as several records sharing its usage
+    if not isinstance(request, str) or request in requests:
+        return
+    requests.add(request)
+    usage = message.get("usage")
+    if isinstance(usage, dict):
+        info.input_tokens += (
+            number(usage.get("input_tokens"))
+            + number(usage.get("cache_creation_input_tokens"))
+            + number(usage.get("cache_read_input_tokens"))
+        )
+        info.output_tokens += number(usage.get("output_tokens"))
+
+
+def add_metadata(info: TranscriptInfo, kind: object, record: dict[str, Any]) -> None:
+    """Records Claude Code writes about the session rather than the chat."""
+    if kind == "ai-title" and isinstance(record.get("aiTitle"), str):
+        info.ai_title = record["aiTitle"]
+    elif kind == "custom-title" and isinstance(record.get("customTitle"), str):
+        title = record["customTitle"].strip()
+        if title and info.titles[-1:] != [title]:
+            info.titles.append(title)
+    elif kind == "last-prompt" and isinstance(record.get("lastPrompt"), str):
+        info.last_prompt = record["lastPrompt"]
+    elif kind == "permission-mode":
+        info.permission_mode = str(record.get("permissionMode") or "")
+    elif kind == "cost-state":
+        cost = record.get("totalCostUSD")
+        info.cost = float(cost) if isinstance(cost, (int, float)) else None
+        info.duration_ms = number(record.get("totalDuration"))
+        info.lines_added = number(record.get("totalLinesAdded"))
+        info.lines_removed = number(record.get("totalLinesRemoved"))
+
+
+def read_details(path: Path) -> TranscriptInfo:
+    """Collect what a transcript tells about its session."""
+    info = TranscriptInfo()
+    requests: set[str] = set()
+    try:
+        fh = path.open(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        raise AppError(f"Cannot read transcript {path}: {exc.strerror}") from exc
+    with fh:
+        for line in fh:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if not isinstance(record, dict) or record.get("isSidechain"):
+                continue
+            stamp = parse_time(record.get("timestamp"))
+            if stamp:
+                info.started = info.started or stamp
+                info.ended = stamp
+            info.branch = record.get("gitBranch") or info.branch
+            info.version = record.get("version") or info.version
+            message = record.get("message")
+            message = message if isinstance(message, dict) else {}
+            kind = record.get("type")
+            if kind == "user":
+                text = typed_prompt(record, message)
+                if text is not None:
+                    info.prompts += 1
+                    info.prompt = text or info.prompt
+            elif kind == "assistant":
+                add_response(info, record, message, requests)
+            else:
+                add_metadata(info, kind, record)
+    info.responses = len(requests)
+    return info
+
+
+def find_transcript(entry: dict[str, str]) -> Path | None:
+    transcript = entry.get("transcript")
+    if transcript and Path(transcript).is_file():
+        return Path(transcript)
+    session_id = entry.get("session_id")
+    if session_id:
+        for path in (CLAUDE_DIR / "projects").glob(f"*/{session_id}.jsonl"):
+            return path
+    return None
+
+
+def format_time(stamp: datetime) -> str:
+    local = stamp.astimezone()
+    return f"{local:%Y-%m-%d %H:%M:%S %z} ({relative_time(local.timestamp())})"
+
+
+def format_count(count: int) -> str:
+    for size, suffix in ((1_000_000, "M"), (1_000, "k")):
+        if count >= size:
+            return f"{count / size:.1f}{suffix}"
+    return str(count)
+
+
+def format_duration(milliseconds: int) -> str:
+    minutes, seconds = divmod(milliseconds // 1000, 60)
+    hours, minutes = divmod(minutes, 60)
+    days, hours = divmod(hours, 24)
+    if days:
+        return f"{days}d {hours}h {minutes:02}m"
+    return f"{hours}h {minutes:02}m" if hours else f"{minutes}m {seconds:02}s"
+
+
+def status_rows(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
+    """Name, ID, open status and directory: known without the transcript."""
+    rows = [
+        ("name", paint(name, COLOR_YELLOW_BOLD)),
+        ("session id", paint(entry.get("session_id", ""), COLOR_MAGENTA)),
+    ]
+    if entry.get("open_pid"):
+        status = f"open (pid {entry['open_pid']}"
+        pane = entry.get("tmux", "").rpartition(".")[2]
+        status += f", tmux pane {pane})" if pane.startswith("%") else ")"
+        rows.append(("status", paint(status, COLOR_GREEN_BOLD)))
+    else:
+        rows.append(("status", "closed"))
+    cwd = entry.get("cwd", "")
+    missing = " (no longer exists)" if cwd and not Path(cwd).is_dir() else ""
+    rows.append(("directory", f"{paint(cwd, COLOR_BOLD)}{missing}"))
+    return rows
+
+
+def usage_rows(details: TranscriptInfo) -> list[tuple[str, str]]:
+    """Model, version and how much the session was used."""
+    rows = []
+    if details.models:
+        rows.append(("model", paint(", ".join(details.models), COLOR_GREEN)))
+    if details.version:
+        rows.append(("claude code", details.version))
+    if details.permission_mode:
+        rows.append(("permission mode", details.permission_mode))
+    if details.prompts or details.responses:
+        messages = (
+            f"{plural(details.prompts, 'prompt')}, "
+            f"{plural(details.responses, 'response')}"
+        )
+        rows.append(("messages", messages))
+    if details.input_tokens or details.output_tokens:
+        tokens = (
+            f"{format_count(details.input_tokens)} input (with cache), "
+            f"{format_count(details.output_tokens)} output"
+        )
+        rows.append(("tokens", tokens))
+    if details.cost is not None:
+        last_run = (
+            f"${details.cost:.2f}, {format_duration(details.duration_ms)}, "
+            f"+{details.lines_added}/-{details.lines_removed} lines"
+        )
+        rows.append(("last run", last_run))
+    return rows
+
+
+def session_details(name: str, entry: dict[str, str]) -> list[tuple[str, str]]:
+    """Rows of (label, colored value) for `info`."""
+    rows = status_rows(name, entry)
+    transcript = find_transcript(entry)
+    details = read_details(transcript) if transcript else TranscriptInfo()
+    if details.branch:
+        rows.append(("git branch", paint(details.branch, COLOR_GREEN)))
+    if details.started:
+        rows.append(("started", paint(format_time(details.started), COLOR_BLUE)))
+    active = last_active(entry)
+    if active is not None:
+        stamp = datetime.fromtimestamp(active, tz=timezone.utc)
+        rows.append(("last active", paint(format_time(stamp), COLOR_BLUE)))
+    rows += usage_rows(details)
+    if details.ai_title:
+        rows.append(("ai title", details.ai_title))
+    earlier = [title for title in details.titles if title != name]
+    if earlier:
+        rows.append(("earlier names", ", ".join(earlier)))
+    size = f" ({format_count(transcript.stat().st_size)}B)" if transcript else ""
+    where = display_path(str(transcript)) if transcript else "not found"
+    rows.append(("transcript", f"{where}{size}"))
+    registered = parse_time(entry.get("updated"))
+    if registered:
+        rows.append(("registered", paint(format_time(registered), COLOR_BLUE)))
+    elif entry.get("open_pid"):
+        rows.append(("registered", "not yet (registered when the session ends)"))
+    session_id, cwd = entry.get("session_id", ""), entry.get("cwd", "")
+    if session_id:
+        command = shlex.join(["claude", "--resume", session_id])
+        if cwd:
+            command = f"cd {shlex.quote(cwd)} && {command}"
+        rows.append(("resume with", command))
+    last_prompt = details.prompt or details.last_prompt
+    if last_prompt.strip():
+        lines = last_prompt.strip().splitlines()
+        if len(lines) > INFO_PROMPT_LINES:
+            lines = [*lines[:INFO_PROMPT_LINES], "..."]
+        rows.append(("last prompt", paint("\n".join(lines), COLOR_YELLOW)))
+    return rows
+
+
+def print_details(name: str, entry: dict[str, str]) -> None:
+    rows = session_details(name, entry)
+    width = max(len(label) for label, _ in rows)
+    indent = " " * (width + 3)
+    for label, value in rows:
+        # Continuation lines line up with the first value line
+        aligned = value.replace("\n", f"\n{indent}")
+        if not sys.stdout.isatty():
+            aligned = ANSI_ESCAPE.sub("", aligned)
+        print(f"{label:<{width}} : {aligned}")
 
 
 def cmd_hook(args: argparse.Namespace) -> int:
@@ -872,28 +1203,11 @@ def cmd_list(args: argparse.Namespace) -> int:
 def cmd_resume(args: argparse.Namespace) -> int:
     config = settings(args)
     path = registry_path(args, config)
-    sessions = merge_live(load_registry(path).sessions)
-    if not sessions:
-        raise AppError(
-            f"No registered sessions (run '{PROG} sync' to scan transcripts)"
-        )
-    query = " ".join(args.name)
-    matches = match_names(sessions, query) if query else []
-    if len(matches) == 1:
-        name = matches[0]
-    elif can_pick():
-        # No name, ambiguous or unknown: the name becomes the fuzzy query
-        name = pick_session(path, config, query)
-        sessions = merge_live(load_registry(path).sessions)
-    elif not query:
-        raise AppError("NAME is required (fzf picker needs fzf and a terminal)")
-    elif matches:
-        raise AppError(f"Ambiguous name '{query}': {', '.join(matches)}")
-    else:
-        raise AppError(
-            f"Session not found: {query} (see '{PROG} list' or run '{PROG} sync')"
-        )
-    entry = sessions[name]
+    action, name = choose_session(path, config, " ".join(args.name))
+    entry = merge_live(load_registry(path).sessions)[name]
+    if action == "info":
+        print_details(name, entry)
+        return 0
     if entry.get("open_pid") and not args.force:
         raise AppError(open_hint(name, entry))
     session_id = entry.get("session_id")
@@ -986,6 +1300,14 @@ def remove_entries(path: Path, names: Sequence[str]) -> None:
         save_registry(path, registry)
 
 
+def cmd_info(args: argparse.Namespace) -> int:
+    config = settings(args)
+    path = registry_path(args, config)
+    _, name = choose_session(path, config, " ".join(args.name))
+    print_details(name, merge_live(load_registry(path).sessions)[name])
+    return 0
+
+
 def cmd_rename(args: argparse.Namespace) -> int:
     rename_entry(registry_path(args, settings(args)), args.old, args.new)
     print(f"Renamed: {args.old} -> {args.new}")
@@ -1029,6 +1351,7 @@ _claude-session() {
       local -a commands
       commands=(
         'resume:resume a registered session by name'
+        'info:show what is known about a session'
         'list:list registered and open named sessions'
         'hook:update the registry from a SessionEnd hook event'
         'sync:rebuild the registry from all transcripts'
@@ -1050,6 +1373,9 @@ _claude-session() {
             '(-f --force)'{-f,--force}'[resume even if the session is open]' \
             '(-n --dry-run)'{-n,--dry-run}'[print the command instead of running it]' \
             '*:session name:_claude-session_names' && ret=0
+          ;;
+        info)
+          _arguments $common '*:session name:_claude-session_names' && ret=0
           ;;
         list)
           _arguments $common \
@@ -1094,6 +1420,7 @@ def cmd_completion(args: argparse.Namespace) -> int:
 COMMANDS = {
     "completion": cmd_completion,
     "hook": cmd_hook,
+    "info": cmd_info,
     "list": cmd_list,
     "remove": cmd_remove,
     "rename": cmd_rename,
