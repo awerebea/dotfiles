@@ -716,6 +716,13 @@ if [[ "${commands[minikube]}" && ! -e "$ZSH/completions/_minikube" ]]; then
     mv "$ZSH/completions/_minikube.tmp" "$ZSH/completions/_minikube"
 fi
 
+# Create claude-session completion file if needed or if the script is newer
+if [[ "${commands[claude-session]}" ]] && [[ ! -s "$ZSH/completions/_claude-session" \
+    || "${commands[claude-session]}" -nt "$ZSH/completions/_claude-session" ]]; then
+    mkdir -p "$ZSH/completions"
+    claude-session completion zsh > "$ZSH/completions/_claude-session"
+fi
+
 # Lazy loading vagrant completions
 if [ "${commands[vagrant]}" ]; then
     vagrant() {
