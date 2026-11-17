@@ -35,7 +35,7 @@ from pathlib import Path
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.4.0"
+__version__ = "0.5.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -485,9 +485,14 @@ def pick_with_fzf(sessions: dict[str, dict[str, str]], query: str) -> str:
     if fzf is None:
         raise AppError("fzf not found")
     width = max(len(name) for name in sessions)
+    # Open sessions get a marker column, so they are not resumed twice by
+    # accident; the column is left out when nothing is open
+    marks = {n: "[open]  " if e.get("open_pid") else "" for n, e in sessions.items()}
+    mark_width = max(len(mark) for mark in marks.values())
     # Field 1 is the bare name for the result, field 2 is what fzf shows
     lines = [
-        f"{name}\t{name:<{width}}  {display_path(entry.get('cwd', ''))}"
+        f"{name}\t{name:<{width}}  {marks[name]:<{mark_width}}"
+        f"{display_path(entry.get('cwd', ''))}"
         for name, entry in sorted(sessions.items())
     ]
     result = subprocess.run(
