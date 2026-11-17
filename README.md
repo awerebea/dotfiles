@@ -787,6 +787,7 @@ claude-session resume infra -- --model opus   # arguments after -- go to claude
 
 claude-session list -a -t      # every session, with its AI title
 claude-session list -u -s path # unnamed sessions by directory
+claude-session list -C always | less -R   # keep the colors in a pipe
 claude-session info infra      # everything known about a session
 claude-session rename old new
 claude-session remove infra    # drop from the list (sync skips it)
@@ -853,12 +854,18 @@ command line wins over the environment, which wins over the file.
 | `CLAUDE_SESSION_REVERSE=1`    | Reverse the sort order                        |
 | `CLAUDE_SESSION_DATE`         | `active`, `created` or `both`                 |
 | `CLAUDE_SESSION_AI_TITLE=1`   | Show the AI title column                      |
+| `CLAUDE_SESSION_COLOR`        | `auto`, `always` or `never`                   |
 | `CLAUDE_SESSION_KEY_<ACTION>` | Picker key of an action, see below            |
 | `CLAUDE_SESSION_CLAUDE_BIN`   | The claude executable                         |
 | `CLAUDE_SESSION_REGISTRY`     | The registry file                             |
 
 The picker actions are `REMOVE`, `PURGE`, `RENAME`, `INFO`, `ALL`, `TITLES`,
 `DATES`, `SORT` and `REVERSE`, e.g. `CLAUDE_SESSION_KEY_PURGE=ctrl-x`.
+
+Output is colored where it goes to a terminal and plain where it is piped or
+redirected (`auto`, the default; stdout and stderr are judged separately).
+`-C/--color always` keeps the colors in a pipe, and `never` turns them off
+everywhere, the picker included. In `auto` mode, `NO_COLOR` turns them off too.
 
 #### Where things are stored
 

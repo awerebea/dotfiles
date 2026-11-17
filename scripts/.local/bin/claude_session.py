@@ -43,11 +43,11 @@ import tty
 from collections.abc import Iterator, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+from typing import Any, TextIO
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.12.0"
+__version__ = "0.13.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -55,7 +55,7 @@ PROG_NAME = "claude-session"
 PROG = Path(sys.argv[0]).name
 # Short options that take a value. Used to enforce GNU rules that argparse does
 # not: `-c=x` is rejected instead of silently meaning `-c x`.
-SHORT_VALUE_OPTS = "crbds"
+SHORT_VALUE_OPTS = "crbdsC"
 # Settings: environment variable names double as config file keys
 ENV_CONFIG = "CLAUDE_SESSION_CONFIG"
 ENV_REGISTRY = "CLAUDE_SESSION_REGISTRY"
@@ -73,6 +73,7 @@ ENV_AI_TITLE = "CLAUDE_SESSION_AI_TITLE"
 ENV_DATE = "CLAUDE_SESSION_DATE"
 ENV_SORT = "CLAUDE_SESSION_SORT"
 ENV_REVERSE = "CLAUDE_SESSION_REVERSE"
+ENV_COLOR = "CLAUDE_SESSION_COLOR"
 CONFIG_KEYS = {
     ENV_REGISTRY,
     ENV_CLAUDE_BIN,
@@ -89,6 +90,7 @@ CONFIG_KEYS = {
     ENV_DATE,
     ENV_SORT,
     ENV_REVERSE,
+    ENV_COLOR,
 }
 DEFAULT_CONFIG = (
     Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
@@ -159,19 +161,31 @@ PICKER_TITLES = {
     "rename": "Rename Claude Session",
     "remove": "Remove Claude Sessions",
 }
-# Picker colors, as in fzf-git-branches; NO_COLOR turns them off
-USE_COLOR = not os.environ.get("NO_COLOR")
+# --color: auto colors a stream only when it is a terminal and NO_COLOR is
+# unset, always colors it even when piped, never colors anything
+COLOR_MODES = ("auto", "always", "never")
+
+
+@dataclasses.dataclass
+class ColorSetting:
+    mode: str = COLOR_MODES[0]
+
+
+# Set once by main() from --color, the environment or the config file
+COLOR = ColorSetting()
+# Colors as in fzf-git-branches
 COLOR_RESET = "\033[0m"
 COLOR_BLUE = "\033[34m"
 COLOR_RED = "\033[31m"
 COLOR_RED_BOLD = "\033[1;31m"
 COLOR_GREEN_BOLD = "\033[1;32m"
 COLOR_YELLOW_BOLD = "\033[1;33m"
-COLOR_BLUE_BOLD = "\033[1;34m"
 COLOR_GREEN = "\033[32m"
 COLOR_YELLOW = "\033[33m"
 COLOR_MAGENTA = "\033[35m"
 COLOR_BOLD = "\033[1m"
+COLOR_DIM = "\033[2m"
+COLOR_CYAN = "\033[36m"
 # Lines of the last prompt shown by `info`
 INFO_PROMPT_LINES = 15
 ANSI_ESCAPE = re.compile(r"\033\[[0-9;]*m")
@@ -192,6 +206,12 @@ class AppError(Exception):
     """An expected failure, reported as 'Error: <message>' with exit code 1."""
 
 
+COLOR_HELP = (
+    "color the output: auto (in terminals), always (also when piped) or "
+    f"never (env: {ENV_COLOR}, default: auto)"
+)
+
+
 def build_parser() -> argparse.ArgumentParser:
     # Options shared by all commands, accepted after the command name
     common = argparse.ArgumentParser(add_help=False, allow_abbrev=False)
@@ -207,6 +227,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--registry",
         metavar="FILE",
         help=f"registry file (env: {ENV_REGISTRY}, default: {DEFAULT_REGISTRY})",
+    )
+    common.add_argument(
+        "-C",
+        "--color",
+        choices=COLOR_MODES,
+        # Unset unless given here, so that a --color before the command stays
+        default=argparse.SUPPRESS,
+        help=COLOR_HELP,
     )
     common.add_argument(
         "--version",
@@ -296,6 +324,7 @@ def build_parser() -> argparse.ArgumentParser:
         version=f"{PROG_NAME} {__version__}",
         help="show the version and exit",
     )
+    parser.add_argument("-C", "--color", choices=COLOR_MODES, help=COLOR_HELP)
     commands = parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
     commands.add_parser("version", help="show the version and exit")
     commands.add_parser("help", help="show this help and exit")
@@ -489,13 +518,10 @@ def load_config(path: Path, explicit: bool) -> dict[str, str]:
         line = line.removeprefix("export ")
         key, sep, value = line.partition("=")
         if not sep:
-            print(f"Warning: {path}:{number}: ignoring invalid line", file=sys.stderr)
+            warn(f"{path}:{number}: ignoring invalid line")
             continue
         if key not in CONFIG_KEYS:
-            print(
-                f"Warning: {path}:{number}: ignoring unknown key '{key}'",
-                file=sys.stderr,
-            )
+            warn(f"{path}:{number}: ignoring unknown key '{key}'")
             continue
         if len(value) > 1 and value[0] in "\"'" and value.endswith(value[0]):
             value = value[1:-1]
@@ -516,9 +542,13 @@ def resolve(
 
 
 def settings(args: argparse.Namespace) -> dict[str, str]:
-    explicit = args.config is not None or bool(os.environ.get(ENV_CONFIG))
-    config_path = args.config or Path(os.environ.get(ENV_CONFIG) or DEFAULT_CONFIG)
-    return load_config(config_path.expanduser(), explicit)
+    """The config file's settings, read once per run."""
+    if "settings" not in vars(args):
+        explicit = args.config is not None or bool(os.environ.get(ENV_CONFIG))
+        config_path = args.config or Path(os.environ.get(ENV_CONFIG) or DEFAULT_CONFIG)
+        args.settings = load_config(config_path.expanduser(), explicit)
+    config: dict[str, str] = args.settings
+    return config
 
 
 def registry_path(args: argparse.Namespace, config: dict[str, str]) -> Path:
@@ -686,7 +716,8 @@ def apply_entry(
         if previous is None:
             return []
         del sessions[session_id]
-        return [f"Unregistered: {previous.get('name')} ({session_id})"]
+        unregistered = paint("Unregistered:", COLOR_YELLOW_BOLD)
+        return [f"{unregistered} {describe(session_id, previous)}"]
     messages: list[str] = []
     hidden = registry.hidden.get(session_id)
     if hidden is not None:
@@ -694,11 +725,17 @@ def apply_entry(
             return messages
         # Renamed since it was removed: the user wants it back
         del registry.hidden[session_id]
-        messages.append(f"Unhidden session {session_id}: renamed to '{title}'")
+        renamed = paint(title, COLOR_YELLOW_BOLD)
+        messages.append(
+            f"{paint('Unhidden', COLOR_GREEN_BOLD)} session "
+            f"{paint(session_id, COLOR_MAGENTA)}: renamed to '{renamed}'"
+        )
     entry = {"name": title, "cwd": cwd or "", "transcript": str(transcript)}
     if previous is None or {k: previous.get(k) for k in entry} != entry:
         sessions[session_id] = {**entry, "updated": now()}
-        messages.append(f"Registered session: {title} -> {session_id}")
+        messages.append(
+            f"{paint('Registered:', COLOR_GREEN_BOLD)} {describe(session_id, entry)}"
+        )
     return messages
 
 
@@ -898,13 +935,14 @@ def tmux_pane(entry: dict[str, str]) -> str:
 
 
 def open_hint(session_id: str, entry: dict[str, str]) -> str:
-    hint = (
-        f"Session {label(session_id, entry)} is already open (pid {entry['open_pid']})"
-    )
+    pid = paint(entry["open_pid"], COLOR_CYAN)
+    opened = paint("already open", COLOR_GREEN_BOLD)
+    hint = f"Session {label(session_id, entry)} is {opened} (pid {pid})"
     pane = tmux_pane(entry)
     if pane:
-        hint += f"; switch to it with: tmux switch-client -t '{pane}'"
-    return f"{hint}. Use -f/--force to resume it anyway"
+        command = paint(f"tmux switch-client -t '{pane}'", COLOR_BOLD)
+        hint += f"; switch to it with: {command}"
+    return f"{hint}. Use {paint('-f/--force', COLOR_BOLD)} to resume it anyway"
 
 
 def current_dirs() -> set[str]:
@@ -950,15 +988,18 @@ def display_path(path: str) -> str:
 def label(session_id: str, entry: dict[str, str]) -> str:
     """'name' for named sessions, (short ID) for unnamed ones."""
     name = entry.get("name")
-    return f"'{name}'" if name else f"({session_id[:SHORT_ID]})"
+    if name:
+        return f"'{paint(name, COLOR_YELLOW_BOLD)}'"
+    return f"({paint(session_id[:SHORT_ID], COLOR_MAGENTA)})"
 
 
 def describe(session_id: str, entry: dict[str, str]) -> str:
     """One line telling sessions with the same name apart."""
     where = display_path(entry.get("cwd", "")) or "unknown directory"
     if not entry.get("name"):
-        return f"{session_id} in {where}"
-    return f"'{entry['name']}' in {where} ({session_id})"
+        return f"{paint(session_id, COLOR_MAGENTA)} in {where}"
+    name = paint(entry["name"], COLOR_YELLOW_BOLD)
+    return f"'{name}' in {where} ({paint(session_id, COLOR_MAGENTA)})"
 
 
 def can_pick() -> bool:
@@ -967,8 +1008,49 @@ def can_pick() -> bool:
     )
 
 
+def colors_on() -> bool:
+    """Whether to build colored text at all; emit() strips it again for a
+    stream that is not to be colored."""
+    if COLOR.mode == "auto":
+        return not os.environ.get("NO_COLOR")
+    return COLOR.mode == "always"
+
+
 def paint(text: str, color: str) -> str:
-    return f"{color}{text}{COLOR_RESET}" if USE_COLOR and text and color else text
+    return f"{color}{text}{COLOR_RESET}" if colors_on() and text and color else text
+
+
+def emit(text: str = "", stream: TextIO | None = None, end: str = "\n") -> None:
+    """Print to stderr, or to `stream`; without colors unless --color is
+    always, or auto and the stream is a terminal."""
+    stream = stream or sys.stderr
+    if not (COLOR.mode == "always" or (colors_on() and stream.isatty())):
+        text = ANSI_ESCAPE.sub("", text)
+    print(text, end=end, file=stream, flush=True)
+
+
+def warn(text: str) -> None:
+    emit(f"{paint('Warning:', COLOR_YELLOW_BOLD)} {text}")
+
+
+def report(text: str) -> None:
+    emit(f"{paint('Error:', COLOR_RED_BOLD)} {text}")
+
+
+def done(verb: str, text: str, stream: TextIO | None = None) -> None:
+    """A result line such as 'Removed: ...'."""
+    emit(f"{paint(verb, COLOR_GREEN_BOLD)} {text}", stream)
+
+
+def dim(text: str) -> None:
+    emit(paint(text, COLOR_DIM))
+
+
+def fzf_colors(spec: str = "") -> list[str]:
+    """fzf's own colors follow --color too (it honors NO_COLOR itself)."""
+    if COLOR.mode == "never":
+        return ["--no-color"]
+    return [f"--color={spec}"] if spec else []
 
 
 def plural(count: int, unit: str) -> str:
@@ -1169,6 +1251,7 @@ def run_fzf(
     printed = ("rename", "info", *VIEW_ACTIONS)
     command = [
         fzf,
+        *fzf_colors(),
         "--ansi",
         "--border=top",
         "--cycle",
@@ -1186,8 +1269,9 @@ def run_fzf(
         f"--expect={keys['remove']},{keys['purge']}",
         f"--bind=enter:{accept},ctrl-y:{accept}",
         *(f"--bind={keys[a]}:clear-multi+print({a})+accept" for a in printed),
-        f"--header={PICKER_TITLES[purpose]} ({view.describe()}): {hints}\n"
-        f"View: {view_hints}\n{columns}",
+        f"--header={paint(PICKER_TITLES[purpose], COLOR_BOLD)} "
+        f"({paint(view.describe(), COLOR_CYAN)}): {hints}\n"
+        f"View: {view_hints}\n{paint(columns, COLOR_BOLD)}",
         f"--query={query}",
     ]
     if multi:
@@ -1220,8 +1304,12 @@ def run_fzf(
 def confirm(prompt: str, default: bool = False) -> bool:
     """Ask a yes/no question answered by a single key: y is yes, Enter takes
     the default, anything else is no."""
-    choices = "Y|n" if default else "y|N"
-    print(f"{prompt} ({choices}): ", end="", file=sys.stderr, flush=True)
+    yes, no = (
+        (paint("Y", COLOR_GREEN_BOLD), "n")
+        if default
+        else ("y", paint("N", COLOR_RED_BOLD))
+    )
+    emit(f"{prompt} ({yes}|{no}): ", end="")
     fd = sys.stdin.fileno()
     if os.isatty(fd):
         saved = termios.tcgetattr(fd)
@@ -1232,7 +1320,7 @@ def confirm(prompt: str, default: bool = False) -> bool:
             termios.tcsetattr(fd, termios.TCSADRAIN, saved)
     else:
         answer = sys.stdin.read(1)
-    print(file=sys.stderr)
+    emit()
     if answer in {"\r", "\n", ""}:
         return default
     return answer in {"y", "Y"}
@@ -1250,6 +1338,8 @@ def prompt_text(message: str, initial: str, header: str) -> str | None:
     result = subprocess.run(
         [
             fzf,
+            # Typed like the names in the picker
+            *fzf_colors("prompt:green:bold,query:yellow:bold"),
             "--height=3",
             "--reverse",
             "--disabled",
@@ -1285,13 +1375,11 @@ def picker_remove(
             reason = f"is not registered; {purge_key} deletes its data"
         else:
             continue
-        print(f"Session {label(session_id, entry)} {reason}", file=sys.stderr)
+        warn(f"Session {label(session_id, entry)} {reason}")
     chosen = [i for i in chosen if i in registered and not sessions[i].get("open_pid")]
     if not chosen:
         return
-    listed = ", ".join(
-        f"'{paint(sessions[i].get('name', ''), COLOR_BLUE_BOLD)}'" for i in chosen
-    )
+    listed = ", ".join(label(i, sessions[i]) for i in chosen)
     entries = (
         "registry entry" if len(chosen) == 1 else f"{len(chosen)} registry entries"
     )
@@ -1301,31 +1389,34 @@ def picker_remove(
     if confirm(prompt):
         remove_entries(path, chosen)
         for session_id in chosen:
-            print(
-                f"Removed: {describe(session_id, sessions[session_id])}",
-                file=sys.stderr,
-            )
+            done("Removed:", describe(session_id, sessions[session_id]))
+    else:
+        dim("Remove cancelled")
 
 
 def picker_rename(path: Path, session_id: str, entry: dict[str, str]) -> None:
     name = entry.get("name", "")
     what = label(session_id, entry)
     if entry.get("open_pid"):
-        print(
-            f"Session {what} is open; rename it with /rename inside that session",
-            file=sys.stderr,
-        )
+        warn(f"Session {what} is open; rename it with /rename inside that session")
         return
-    new = prompt_text("New name:", name, f"Rename session {what} (esc: cancel)")
+    # An unnamed session gets its first name
+    action, message = ("Rename", "New name:") if name else ("Name", "Name:")
+    header = (
+        f"{paint(action, COLOR_BOLD)} session {what} "
+        f"{paint('(enter: save, esc: cancel)', COLOR_DIM)}"
+    )
+    new = prompt_text(message, name, header)
     if not new or new == name:
-        print("Rename cancelled", file=sys.stderr)
+        dim(f"{action} cancelled")
         return
     try:
         shared = rename_entry(path, session_id, entry, new)
     except AppError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        report(str(exc))
         return
-    print(f"Renamed: {what} -> {new}{shared_note(shared)}", file=sys.stderr)
+    renamed = paint(new, COLOR_YELLOW_BOLD)
+    done(f"{action}d:", f"{what} -> '{renamed}'{shared_note(shared)}")
 
 
 def pick_session(
@@ -1513,34 +1604,29 @@ def forget(path: Path, session_id: str) -> None:
             save_registry(path, registry)
 
 
-def say(text: str) -> None:
-    """Print to stderr; colors only when it is a terminal."""
-    print(text if sys.stderr.isatty() else ANSI_ESCAPE.sub("", text), file=sys.stderr)
-
-
 def show_purge_plan(
     chosen: list[str],
     sessions: dict[str, dict[str, str]],
     files: dict[str, list[Path]],
 ) -> None:
     warning = paint("Purge", COLOR_RED_BOLD)
-    say(
+    emit(
         f"{warning} {plural(len(chosen), 'session')}: the data below is deleted "
         "and cannot be restored"
     )
     for session_id in chosen:
         entry = sessions[session_id]
-        say(f"  {describe(session_id, entry)}")
+        emit(f"  {describe(session_id, entry)}")
         if entry.get("open_pid"):
             pane = tmux_pane(entry)
             where = f"pid {entry['open_pid']}" + (f", tmux pane {pane}" if pane else "")
             closing = f"OPEN ({where}): it will be closed first"
-            say(f"    {paint(closing, COLOR_RED_BOLD)}")
+            emit(f"    {paint(closing, COLOR_RED_BOLD)}")
         for file in files[session_id]:
             size = format_count(disk_usage(file))
-            say(f"    {display_path(str(file))} ({size}B)")
+            emit(f"    {display_path(str(file))} {paint(f'({size}B)', COLOR_DIM)}")
         if not files[session_id]:
-            say("    no files found; only the registry entry")
+            dim("    no files found; only the registry entry")
 
 
 def purge_one(
@@ -1567,10 +1653,9 @@ def purge_sessions(
     own = ancestors()
     for session_id in chosen:
         if int(sessions[session_id].get("open_pid") or 0) in own:
-            print(
+            warn(
                 f"Session {label(session_id, sessions[session_id])} runs this "
-                "command; it cannot be purged from inside itself",
-                file=sys.stderr,
+                "command; it cannot be purged from inside itself"
             )
     chosen = [i for i in chosen if int(sessions[i].get("open_pid") or 0) not in own]
     if not chosen:
@@ -1578,17 +1663,17 @@ def purge_sessions(
     files = {i: session_files(i, sessions[i]) for i in chosen}
     show_purge_plan(chosen, sessions, files)
     if not confirm("Proceed?"):
-        print("Purge cancelled", file=sys.stderr)
+        dim("Purge cancelled")
         return False
     purged = True
     for session_id in chosen:
         try:
             purge_one(path, session_id, sessions[session_id], files[session_id])
         except AppError as exc:
-            print(f"Error: {exc}", file=sys.stderr)
+            report(str(exc))
             purged = False
             continue
-        print(f"Purged: {describe(session_id, sessions[session_id])}", file=sys.stderr)
+        done("Purged:", describe(session_id, sessions[session_id]))
     return purged
 
 
@@ -1856,9 +1941,7 @@ def print_details(session_id: str, entry: dict[str, str]) -> None:
     for label, value in rows:
         # Continuation lines line up with the first value line
         aligned = value.replace("\n", f"\n{indent}")
-        if not sys.stdout.isatty():
-            aligned = ANSI_ESCAPE.sub("", aligned)
-        print(f"{label:<{width}} : {aligned}")
+        emit(f"{paint(f'{label:<{width}}', COLOR_BOLD)} : {aligned}", sys.stdout)
 
 
 def cmd_hook(args: argparse.Namespace) -> int:
@@ -1888,7 +1971,7 @@ def cmd_hook(args: argparse.Namespace) -> int:
         if messages:
             save_registry(path, registry)
     for message in messages:
-        print(message, file=sys.stderr)
+        emit(message)
     return 0
 
 
@@ -1914,23 +1997,29 @@ def cmd_sync(args: argparse.Namespace) -> int:
                 if not Path(e.get("transcript", "")).is_file()
             ]:
                 entry = sessions.pop(session_id)
-                messages.append(f"Pruned: {describe(session_id, entry)}")
+                pruned = paint("Pruned:", COLOR_YELLOW_BOLD)
+                messages.append(f"{pruned} {describe(session_id, entry)}")
             for session_id in [
                 i
                 for i, e in registry.hidden.items()
                 if not Path(e.get("transcript", "")).is_file()
             ]:
                 del registry.hidden[session_id]
-                messages.append(f"Pruned hidden session: {session_id}")
-        prefix = "[dry-run] " if args.dry_run else ""
+                hidden = paint(session_id, COLOR_MAGENTA)
+                messages.append(
+                    f"{paint('Pruned', COLOR_YELLOW_BOLD)} hidden session {hidden}"
+                )
+        prefix = f"{paint('[dry-run]', COLOR_CYAN)} " if args.dry_run else ""
         for message in messages:
-            print(f"{prefix}{message}")
+            emit(f"{prefix}{message}", sys.stdout)
         if messages and not args.dry_run:
             save_registry(path, registry)
-    print(
-        f"{prefix}{len(sessions)} session(s) registered, "
-        f"{len(registry.hidden)} hidden, {len(messages)} change(s)"
+    counts = (
+        f"{paint(str(len(sessions)), COLOR_BOLD)} session(s) registered, "
+        f"{paint(str(len(registry.hidden)), COLOR_BOLD)} hidden, "
+        f"{paint(str(len(messages)), COLOR_BOLD)} change(s)"
     )
+    emit(f"{prefix}{counts}", sys.stdout)
     return 0
 
 
@@ -1970,19 +2059,17 @@ def cmd_list(args: argparse.Namespace) -> int:
             print(name)
         return 0
     if not sessions:
-        print(
+        dim(
             f"No registered sessions (run '{PROG} sync' to scan transcripts, "
-            "or use -a/--all)",
-            file=sys.stderr,
+            "or use -a/--all)"
         )
         return 0
     header, rows = session_rows(sessions, view_of(args, config), long=args.long)
-    terminal = sys.stdout.isatty()
-    if terminal:
-        print(paint(header, COLOR_BOLD))
+    # The header is for people: in a terminal, or with --color=always
+    if sys.stdout.isatty() or COLOR.mode == "always":
+        emit(paint(header, COLOR_BOLD), sys.stdout)
     for _, cells in rows:
-        row = "  ".join(cells).rstrip()
-        print(row if terminal else ANSI_ESCAPE.sub("", row))
+        emit("  ".join(cells).rstrip(), sys.stdout)
     return 0
 
 
@@ -1993,8 +2080,10 @@ def switch_to(session_id: str, entry: dict[str, str]) -> bool:
     if not pane or not os.environ.get("TMUX"):
         raise AppError(open_hint(session_id, entry))
     question = (
-        f"Session {label(session_id, entry)} is already open "
-        f"(pid {entry['open_pid']}). Switch to its tmux pane {pane}?"
+        f"Session {label(session_id, entry)} is "
+        f"{paint('already open', COLOR_GREEN_BOLD)} "
+        f"(pid {paint(entry['open_pid'], COLOR_CYAN)}). "
+        f"Switch to its tmux pane {paint(pane, COLOR_CYAN)}?"
     )
     if not confirm(question, default=True):
         return False
@@ -2048,7 +2137,7 @@ def exec_claude(
     if args.dry_run:
         print(f"cd {shlex.quote(cwd)} && {shlex.join(command)}")
         return 0
-    print(f"Resuming {label(session_id, entry)} in {cwd}", file=sys.stderr)
+    done("Resuming", f"{label(session_id, entry)} in {paint(cwd, COLOR_BOLD)}")
     os.chdir(cwd)
     os.execv(claude_path, command)
     return 0  # not reached
@@ -2105,10 +2194,9 @@ def rename_entry(
         if transcript is not None:
             append_title(transcript, session_id, new)
         else:
-            print(
-                f"Warning: transcript of {label(session_id, entry)} not found; "
-                "only the registry entry is renamed",
-                file=sys.stderr,
+            warn(
+                f"transcript of {label(session_id, entry)} not found; "
+                "only the registry entry is renamed"
             )
         registry.hidden.pop(session_id, None)
         registry.sessions[session_id] = {
@@ -2166,7 +2254,12 @@ def cmd_rename(args: argparse.Namespace) -> int:
         print_details(session_id, entry)
         return 0
     shared = rename_entry(path, session_id, entry, args.new)
-    print(f"Renamed: {label(session_id, entry)} -> {args.new}{shared_note(shared)}")
+    renamed = paint(args.new, COLOR_YELLOW_BOLD)
+    done(
+        "Renamed:" if entry.get("name") else "Named:",
+        f"{label(session_id, entry)} -> '{renamed}'{shared_note(shared)}",
+        sys.stdout,
+    )
     return 0
 
 
@@ -2188,7 +2281,7 @@ def cmd_remove(args: argparse.Namespace) -> int:
         return 0 if purge_sessions(path, chosen, sessions) else 1
     remove_entries(path, chosen)
     for session_id in chosen:
-        print(f"Removed: {describe(session_id, sessions[session_id])}")
+        done("Removed:", describe(session_id, sessions[session_id]), sys.stdout)
     return 0
 
 
@@ -2206,7 +2299,10 @@ _claude-session_names() {
 _claude-session() {
   local curcontext="$curcontext" state line ret=1
   local -a common
-  local -a scope
+  local -a scope color
+  color=(
+    '(-C --color)'{-C+,--color=}'[when to color the output]:when:(auto always never)'
+  )
   scope=(
     '(-a --all -u --unnamed)'{-a,--all}'[include unnamed and removed sessions]'
     '(-a --all -u --unnamed)'{-u,--unnamed}'[show only unnamed sessions]'
@@ -2220,10 +2316,12 @@ _claude-session() {
     '(- *)--version[show the version and exit]'
     '(-c --config)'{-c+,--config=}'[config file]:config file:_files'
     '(-r --registry)'{-r+,--registry=}'[registry file]:registry file:_files'
+    $color
   )
   _arguments -C \
     '(- *)'{-h,--help}'[show help and exit]' \
     '(- *)--version[show the version and exit]' \
+    $color \
     '1:command:->command' \
     '*::argument:->argument' && ret=0
   case $state in
@@ -2314,17 +2412,34 @@ COMMANDS = {
 }
 
 
+def command_index(argv: Sequence[str]) -> int | None:
+    """Where the command is, after the options that may come before it."""
+    value = False
+    for index, arg in enumerate(argv):
+        if value:
+            value = False
+        elif arg in ("-C", "--color"):
+            value = True
+        elif arg == "--":
+            return None
+        elif not arg.startswith("-"):
+            return index
+    return None
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     parser = build_parser()
-    if not argv:
-        argv = ["manage"]
+    command = command_index(argv)
+    if command is None:
+        command = argv.index("--") if "--" in argv else len(argv)
+        argv.insert(command, "manage")
 
-    # `version` and `help` as the first argument win over everything else
-    if argv[:1] == ["version"]:
+    # `version` and `help` as the command win over everything else
+    if argv[command] == "version":
         print(f"{PROG_NAME} {__version__}")
         return 0
-    if argv[:1] == ["help"]:
+    if argv[command] == "help":
         parser.print_help()
         return 0
 
@@ -2334,19 +2449,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         parser.error(str(exc))
     # Everything after `--` goes to claude, so unquoted multi-word names work
     claude_args: list[str] = []
-    if argv[:1] in (["resume"], ["manage"]) and "--" in argv:
+    if argv[command] in ("resume", "manage") and "--" in argv:
         split = argv.index("--")
         argv, claude_args = argv[:split], argv[split + 1 :]
     args = parser.parse_args(argv)
     args.claude_args = claude_args
 
     try:
+        COLOR.mode = choice(args.color, ENV_COLOR, settings(args), COLOR_MODES)
         return COMMANDS[args.command](args)
     except AppError as exc:
-        print(f"Error: {exc}", file=sys.stderr)
+        report(str(exc))
         return 1
     except KeyboardInterrupt:
-        print(file=sys.stderr)
+        emit()
         return 130
     except BrokenPipeError:
         # Output piped into a command that exited early (e.g. `| head`)
