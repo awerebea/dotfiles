@@ -394,55 +394,52 @@ if command -v "yazi" &>/dev/null; then
 fi
 
 # fzf-git-branches https://github.com/awerebea/fzf-git-branches
-# Auto install
-if [[ ! -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]]; then
+# Auto install: clone it and put the program on PATH as fzf-git-branches
+if [[ ! -e "$HOME/.fzf-git-branches" ]]; then
     git clone https://github.com/awerebea/fzf-git-branches "$HOME/.fzf-git-branches"
 fi
-# Lazy load
-if [ -f "$HOME/.fzf-git-branches/fzf-git-branches.sh" ]; then
-    lazy_fgb() {
-        unset -f \
-            fgb \
-            gbl \
-            gbm \
-            gwl \
-            gwa \
-            gwm \
-            gwt \
-            lazy_fgb
-        # shellcheck disable=1091
-        if ! source "$HOME/.fzf-git-branches/fzf-git-branches.sh"; then
-            echo "Failed to load fzf-git-branches" >&2
-            return 1
-        fi
-        alias gbl='fgb branch list'
-        alias gbm='fgb branch manage'
-        alias gwl='fgb worktree list'
-        alias gwm='fgb worktree manage'
-        alias gwa='fgb worktree add --confirm'
-        alias gwt='fgb worktree total --confirm'
-        fgb "$@"
-    }
-    function fgb() {
-        lazy_fgb "$@"
-    }
+if [[ -f "$HOME/.fzf-git-branches/fzf_git_branches.py" &&
+    ! -e "$HOME/.local/bin/fzf-git-branches" ]]; then
+    mkdir -p "$HOME/.local/bin"
+    ln -s "$HOME/.fzf-git-branches/fzf_git_branches.py" \
+        "$HOME/.local/bin/fzf-git-branches"
+fi
+# Shell integration: the fgb function, which changes to the worktree it jumps
+# to, and completion. The init output is cached (python adds ~40ms per shell
+# start) and regenerated when the program is newer than the cache.
+if [[ -f "$HOME/.fzf-git-branches/fzf_git_branches.py" ]]; then
+    __fgb_shell=bash
+    [[ -n "${ZSH_VERSION-}" ]] && __fgb_shell=zsh
+    __fgb_init="${XDG_CACHE_HOME:-$HOME/.cache}/fzf-git-branches/init.$__fgb_shell"
+    if [[ ! -s "$__fgb_init" ||
+        "$HOME/.fzf-git-branches/fzf_git_branches.py" -nt "$__fgb_init" ]]; then
+        mkdir -p "${__fgb_init%/*}"
+        "$HOME/.fzf-git-branches/fzf_git_branches.py" init "$__fgb_shell" \
+            >"$__fgb_init" || rm -f "$__fgb_init"
+    fi
+    # shellcheck disable=1090
+    [[ -s "$__fgb_init" ]] && source "$__fgb_init"
+    unset __fgb_shell __fgb_init
+    # Functions rather than aliases: .zshrc unaliases gwt after this file to
+    # drop the oh-my-zsh git plugin's alias, and `function` defines them even
+    # where such an alias exists
     function gbl() {
-        lazy_fgb branch list "$@"
+        fgb branch list "$@"
     }
     function gbm() {
-        lazy_fgb branch manage "$@"
+        fgb branch manage "$@"
     }
     function gwl() {
-        lazy_fgb worktree list "$@"
+        fgb worktree list "$@"
     }
     function gwm() {
-        lazy_fgb worktree manage "$@"
+        fgb worktree manage "$@"
     }
     function gwa() {
-        lazy_fgb worktree add --confirm "$@"
+        fgb worktree add --confirm "$@"
     }
     function gwt() {
-        lazy_fgb worktree total --confirm "$@"
+        fgb worktree total --confirm "$@"
     }
 fi
 
