@@ -29,6 +29,7 @@ import contextlib
 import dataclasses
 import fcntl
 import json
+import logging
 import re
 import os
 import shlex
@@ -47,7 +48,7 @@ from typing import Any, TextIO
 
 # Semantic version: MAJOR for breaking CLI or behavior changes, MINOR for new
 # features, PATCH for fixes. Bump it with every change to this script.
-__version__ = "0.13.0"
+__version__ = "0.14.0"
 
 # Canonical program name for the version output (GNU: a constant, never
 # derived from argv[0]); usage and error messages use the invoked name (PROG).
@@ -55,7 +56,7 @@ PROG_NAME = "claude-session"
 PROG = Path(sys.argv[0]).name
 # Short options that take a value. Used to enforce GNU rules that argparse does
 # not: `-c=x` is rejected instead of silently meaning `-c x`.
-SHORT_VALUE_OPTS = "crbdsC"
+SHORT_VALUE_OPTS = "crbdsCL"
 # Settings: environment variable names double as config file keys
 ENV_CONFIG = "CLAUDE_SESSION_CONFIG"
 ENV_REGISTRY = "CLAUDE_SESSION_REGISTRY"
@@ -74,6 +75,7 @@ ENV_DATE = "CLAUDE_SESSION_DATE"
 ENV_SORT = "CLAUDE_SESSION_SORT"
 ENV_REVERSE = "CLAUDE_SESSION_REVERSE"
 ENV_COLOR = "CLAUDE_SESSION_COLOR"
+ENV_LOG_LEVEL = "CLAUDE_SESSION_LOG_LEVEL"
 CONFIG_KEYS = {
     ENV_REGISTRY,
     ENV_CLAUDE_BIN,
@@ -91,6 +93,7 @@ CONFIG_KEYS = {
     ENV_SORT,
     ENV_REVERSE,
     ENV_COLOR,
+    ENV_LOG_LEVEL,
 }
 DEFAULT_CONFIG = (
     Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")
@@ -161,6 +164,11 @@ PICKER_TITLES = {
     "rename": "Rename Claude Session",
     "remove": "Remove Claude Sessions",
 }
+# --log-level: what the log messages on stderr include; every level also
+# includes the more severe ones. Results (Removed:, Renamed:, ...) are not
+# log messages and are always shown.
+LOG_LEVELS = ("error", "warning", "info", "debug")
+DEFAULT_LOG_LEVEL = "warning"
 # --color: auto colors a stream only when it is a terminal and NO_COLOR is
 # unset, always colors it even when piped, never colors anything
 COLOR_MODES = ("auto", "always", "never")
@@ -206,10 +214,38 @@ class AppError(Exception):
     """An expected failure, reported as 'Error: <message>' with exit code 1."""
 
 
+log = logging.getLogger(PROG_NAME)
+
+LOG_LEVEL_HELP = (
+    f"what to log on stderr: {', '.join(LOG_LEVELS)} "
+    f"(env: {ENV_LOG_LEVEL}, default: {DEFAULT_LOG_LEVEL})"
+)
+VERBOSE_HELP = "same as --log-level info (unless a more detailed level is set)"
 COLOR_HELP = (
     "color the output: auto (in terminals), always (also when piped) or "
     f"never (env: {ENV_COLOR}, default: auto)"
 )
+
+
+def add_output_options(
+    parser: argparse.ArgumentParser, after_command: bool = False
+) -> None:
+    """--color, --log-level and --verbose, accepted before and after the
+    command. After it they stay unset unless given, so that a value given
+    before the command is kept."""
+    unset: dict[str, Any] = {"default": argparse.SUPPRESS} if after_command else {}
+    parser.add_argument("-C", "--color", choices=COLOR_MODES, help=COLOR_HELP, **unset)
+    parser.add_argument(
+        "-L",
+        "--log-level",
+        choices=LOG_LEVELS,
+        metavar="LEVEL",
+        help=LOG_LEVEL_HELP,
+        **unset,
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help=VERBOSE_HELP, **unset
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -228,14 +264,7 @@ def build_parser() -> argparse.ArgumentParser:
         metavar="FILE",
         help=f"registry file (env: {ENV_REGISTRY}, default: {DEFAULT_REGISTRY})",
     )
-    common.add_argument(
-        "-C",
-        "--color",
-        choices=COLOR_MODES,
-        # Unset unless given here, so that a --color before the command stays
-        default=argparse.SUPPRESS,
-        help=COLOR_HELP,
-    )
+    add_output_options(common, after_command=True)
     common.add_argument(
         "--version",
         action="version",
@@ -324,7 +353,7 @@ def build_parser() -> argparse.ArgumentParser:
         version=f"{PROG_NAME} {__version__}",
         help="show the version and exit",
     )
-    parser.add_argument("-C", "--color", choices=COLOR_MODES, help=COLOR_HELP)
+    add_output_options(parser)
     commands = parser.add_subparsers(dest="command", metavar="COMMAND", required=True)
     commands.add_parser("version", help="show the version and exit")
     commands.add_parser("help", help="show this help and exit")
@@ -546,15 +575,18 @@ def settings(args: argparse.Namespace) -> dict[str, str]:
     if "settings" not in vars(args):
         explicit = args.config is not None or bool(os.environ.get(ENV_CONFIG))
         config_path = args.config or Path(os.environ.get(ENV_CONFIG) or DEFAULT_CONFIG)
-        args.settings = load_config(config_path.expanduser(), explicit)
+        args.config_path = config_path.expanduser()
+        args.settings = load_config(args.config_path, explicit)
     config: dict[str, str] = args.settings
     return config
 
 
 def registry_path(args: argparse.Namespace, config: dict[str, str]) -> Path:
-    return Path(
+    path = Path(
         resolve(args.registry, ENV_REGISTRY, config, str(DEFAULT_REGISTRY))
     ).expanduser()
+    log.info("Registry: %s", path)
+    return path
 
 
 def now() -> str:
@@ -586,9 +618,11 @@ def upgrade_v1(sessions: dict[str, Any]) -> dict[str, dict[str, str]]:
 
 
 def load_registry(path: Path) -> Registry:
+    log.debug("Reading the registry %s", path)
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError:
+        log.info("No registry yet at %s", path)
         return Registry()
     except (OSError, ValueError) as exc:
         raise AppError(f"Cannot read registry {path}: {exc}") from exc
@@ -598,6 +632,7 @@ def load_registry(path: Path) -> Registry:
         raise AppError(f"Unexpected registry format in {path}")
     version = data.get("version")
     if version == 1:
+        log.info("Upgrading the registry from format 1 to %d", REGISTRY_FORMAT)
         sessions = upgrade_v1(sessions)
     elif version != REGISTRY_FORMAT:
         raise AppError(f"Unsupported registry format {version!r} in {path}")
@@ -606,6 +641,12 @@ def load_registry(path: Path) -> Registry:
 
 def save_registry(path: Path, registry: Registry) -> None:
     """Write atomically: a temporary file in the same directory, then rename."""
+    log.debug(
+        "Writing the registry %s: %d sessions, %d hidden",
+        path,
+        len(registry.sessions),
+        len(registry.hidden),
+    )
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
@@ -760,7 +801,8 @@ def live_sessions() -> dict[str, dict[str, str]]:
     for path in (CLAUDE_DIR / "sessions").glob("*.json"):
         try:
             data = json.loads(path.read_text(encoding="utf-8"))
-        except (OSError, ValueError):
+        except (OSError, ValueError) as exc:
+            log.debug("Skipping %s: %s", path, exc)
             continue  # being rewritten or not ours
         if not isinstance(data, dict):
             continue
@@ -768,7 +810,9 @@ def live_sessions() -> dict[str, dict[str, str]]:
         if not isinstance(session_id, str) or not isinstance(pid, int):
             continue
         if not pid_alive(pid):
+            log.debug("Skipping %s: pid %d has exited", path.name, pid)
             continue
+        log.debug("Open session %s (pid %d, %s)", session_id, pid, path.name)
         named = data.get("nameSource") == "user" and isinstance(name, str)
         sessions[session_id] = {
             "name": str(name) if named else "",
@@ -838,10 +882,13 @@ def scan_transcripts(
 ) -> None:
     """Add every transcript not in `sessions`: unnamed sessions get an empty
     name and removed ones a "hidden" mark."""
-    for transcript in (CLAUDE_DIR / "projects").glob("*/*.jsonl"):
+    transcripts = list((CLAUDE_DIR / "projects").glob("*/*.jsonl"))
+    log.info("Scanning %d transcripts", len(transcripts))
+    for transcript in transcripts:
         session_id = transcript.stem
         if session_id in sessions:
             continue
+        log.debug("Reading %s", transcript)
         summary = read_transcript(transcript, titles)
         entry = {
             "name": summary.title or "",
@@ -888,6 +935,13 @@ def collect_sessions(path: Path, view: View) -> dict[str, dict[str, str]]:
     if view.scope == "unnamed":
         sessions = {i: e for i, e in sessions.items() if not e.get("name")}
     add_details(sessions, view)
+    log.info(
+        "%d sessions shown (%s): %d registered, %d open",
+        len(sessions),
+        view.describe(),
+        len(registry.sessions),
+        sum(1 for e in sessions.values() if e.get("open_pid")),
+    )
     return sessions
 
 
@@ -1009,7 +1063,7 @@ def can_pick() -> bool:
 
 
 def colors_on() -> bool:
-    """Whether to build colored text at all; emit() strips it again for a
+    """Whether to build colored text at all; echo() strips it again for a
     stream that is not to be colored."""
     if COLOR.mode == "auto":
         return not os.environ.get("NO_COLOR")
@@ -1020,7 +1074,7 @@ def paint(text: str, color: str) -> str:
     return f"{color}{text}{COLOR_RESET}" if colors_on() and text and color else text
 
 
-def emit(text: str = "", stream: TextIO | None = None, end: str = "\n") -> None:
+def echo(text: str = "", stream: TextIO | None = None, end: str = "\n") -> None:
     """Print to stderr, or to `stream`; without colors unless --color is
     always, or auto and the stream is a terminal."""
     stream = stream or sys.stderr
@@ -1029,21 +1083,63 @@ def emit(text: str = "", stream: TextIO | None = None, end: str = "\n") -> None:
     print(text, end=end, file=stream, flush=True)
 
 
+LOG_PREFIXES = {
+    logging.ERROR: ("Error:", COLOR_RED_BOLD),
+    logging.WARNING: ("Warning:", COLOR_YELLOW_BOLD),
+}
+
+
+class LogHandler(logging.Handler):
+    """Log messages on stderr, colored and stripped like other output:
+    'Error: ...', 'Warning: ...', plain info, dimmed debug."""
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            text = record.getMessage()
+            if record.levelno >= logging.WARNING:
+                prefix, color = LOG_PREFIXES[min(record.levelno, logging.ERROR)]
+                text = f"{paint(prefix, color)} {text}"
+            elif record.levelno < logging.INFO:
+                text = paint(text, COLOR_DIM)
+            echo(text)
+        except Exception:
+            # Reported the way logging reports its own failures
+            self.handleError(record)
+
+
+def configure_logging(level: str) -> None:
+    """Send log messages of the given level (see LOG_LEVELS) and above to stderr."""
+    if not log.handlers:
+        log.addHandler(LogHandler())
+        log.propagate = False
+    log.setLevel(level.upper())
+
+
 def warn(text: str) -> None:
-    emit(f"{paint('Warning:', COLOR_YELLOW_BOLD)} {text}")
+    log.warning("%s", text)
 
 
 def report(text: str) -> None:
-    emit(f"{paint('Error:', COLOR_RED_BOLD)} {text}")
+    log.error("%s", text)
+
+
+def run_command(
+    command: Sequence[str], **kwargs: Any
+) -> subprocess.CompletedProcess[str]:
+    """subprocess.run with text I/O, logged at debug level."""
+    log.debug("Running: %s", shlex.join(command))
+    result = subprocess.run(command, text=True, check=False, **kwargs)
+    log.debug("Exit code %d: %s", result.returncode, command[0])
+    return result
 
 
 def done(verb: str, text: str, stream: TextIO | None = None) -> None:
     """A result line such as 'Removed: ...'."""
-    emit(f"{paint(verb, COLOR_GREEN_BOLD)} {text}", stream)
+    echo(f"{paint(verb, COLOR_GREEN_BOLD)} {text}", stream)
 
 
 def dim(text: str) -> None:
-    emit(paint(text, COLOR_DIM))
+    echo(paint(text, COLOR_DIM))
 
 
 def fzf_colors(spec: str = "") -> list[str]:
@@ -1276,15 +1372,13 @@ def run_fzf(
     ]
     if multi:
         command += ["--multi", "--bind=ctrl-t:toggle+down"]
-    result = subprocess.run(
+    result = run_command(
         command,
         input="\n".join(
             "\t".join([session_id, *(f"{cell} " for cell in cells)])
             for session_id, cells in rows
         ),
         stdout=subprocess.PIPE,
-        text=True,
-        check=False,
     )
     if result.returncode == FZF_CANCELLED:
         raise KeyboardInterrupt
@@ -1309,7 +1403,7 @@ def confirm(prompt: str, default: bool = False) -> bool:
         if default
         else ("y", paint("N", COLOR_RED_BOLD))
     )
-    emit(f"{prompt} ({yes}|{no}): ", end="")
+    echo(f"{prompt} ({yes}|{no}): ", end="")
     fd = sys.stdin.fileno()
     if os.isatty(fd):
         saved = termios.tcgetattr(fd)
@@ -1320,7 +1414,7 @@ def confirm(prompt: str, default: bool = False) -> bool:
             termios.tcsetattr(fd, termios.TCSADRAIN, saved)
     else:
         answer = sys.stdin.read(1)
-    emit()
+    echo()
     if answer in {"\r", "\n", ""}:
         return default
     return answer in {"y", "Y"}
@@ -1335,7 +1429,7 @@ def prompt_text(message: str, initial: str, header: str) -> str | None:
     fzf = shutil.which("fzf")
     if fzf is None:
         raise AppError("fzf not found")
-    result = subprocess.run(
+    result = run_command(
         [
             fzf,
             # Typed like the names in the picker
@@ -1352,8 +1446,6 @@ def prompt_text(message: str, initial: str, header: str) -> str | None:
         ],
         input="",
         stdout=subprocess.PIPE,
-        text=True,
-        check=False,
     )
     if result.returncode != 0:
         return None
@@ -1524,12 +1616,7 @@ def ancestors() -> set[int]:
     pid = os.getppid()
     while pid > 1 and pid not in pids:
         pids.add(pid)
-        result = subprocess.run(
-            ["ps", "-o", "ppid=", "-p", str(pid)],
-            capture_output=True,
-            text=True,
-            check=False,
-        )
+        result = run_command(["ps", "-o", "ppid=", "-p", str(pid)], capture_output=True)
         try:
             pid = int(result.stdout.strip())
         except ValueError:
@@ -1539,18 +1626,15 @@ def ancestors() -> set[int]:
 
 def is_claude(pid: int) -> bool:
     """Guard against a reused PID: the process must still be Claude Code."""
-    result = subprocess.run(
-        ["ps", "-o", "command=", "-p", str(pid)],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
+    result = run_command(["ps", "-o", "command=", "-p", str(pid)], capture_output=True)
+    log.debug("pid %d runs: %s", pid, result.stdout.strip() or "nothing")
     return "claude" in result.stdout
 
 
 def terminate(pid: int) -> bool:
     """SIGTERM, then SIGKILL after a grace period; True once it is gone."""
     for sig, grace in ((signal.SIGTERM, TERM_GRACE), (signal.SIGKILL, KILL_GRACE)):
+        log.info("Sending %s to pid %d", sig.name, pid)
         with contextlib.suppress(ProcessLookupError):
             os.kill(pid, sig)
         deadline = time.monotonic() + grace
@@ -1588,6 +1672,7 @@ def disk_usage(path: Path) -> int:
 
 
 def delete_path(path: Path) -> None:
+    log.info("Deleting %s", path)
     if path.is_dir() and not path.is_symlink():
         shutil.rmtree(path)
     else:
@@ -1601,6 +1686,7 @@ def forget(path: Path, session_id: str) -> None:
         known = registry.sessions.pop(session_id, None) is not None
         known = registry.hidden.pop(session_id, None) is not None or known
         if known:
+            log.info("Dropping %s from the registry", session_id)
             save_registry(path, registry)
 
 
@@ -1610,21 +1696,21 @@ def show_purge_plan(
     files: dict[str, list[Path]],
 ) -> None:
     warning = paint("Purge", COLOR_RED_BOLD)
-    emit(
+    echo(
         f"{warning} {plural(len(chosen), 'session')}: the data below is deleted "
         "and cannot be restored"
     )
     for session_id in chosen:
         entry = sessions[session_id]
-        emit(f"  {describe(session_id, entry)}")
+        echo(f"  {describe(session_id, entry)}")
         if entry.get("open_pid"):
             pane = tmux_pane(entry)
             where = f"pid {entry['open_pid']}" + (f", tmux pane {pane}" if pane else "")
             closing = f"OPEN ({where}): it will be closed first"
-            emit(f"    {paint(closing, COLOR_RED_BOLD)}")
+            echo(f"    {paint(closing, COLOR_RED_BOLD)}")
         for file in files[session_id]:
             size = format_count(disk_usage(file))
-            emit(f"    {display_path(str(file))} {paint(f'({size}B)', COLOR_DIM)}")
+            echo(f"    {display_path(str(file))} {paint(f'({size}B)', COLOR_DIM)}")
         if not files[session_id]:
             dim("    no files found; only the registry entry")
 
@@ -1941,7 +2027,7 @@ def print_details(session_id: str, entry: dict[str, str]) -> None:
     for label, value in rows:
         # Continuation lines line up with the first value line
         aligned = value.replace("\n", f"\n{indent}")
-        emit(f"{paint(f'{label:<{width}}', COLOR_BOLD)} : {aligned}", sys.stdout)
+        echo(f"{paint(f'{label:<{width}}', COLOR_BOLD)} : {aligned}", sys.stdout)
 
 
 def cmd_hook(args: argparse.Namespace) -> int:
@@ -1957,7 +2043,9 @@ def cmd_hook(args: argparse.Namespace) -> int:
     if not isinstance(session_id, str) or not isinstance(transcript, str):
         raise AppError("Hook input lacks session_id or transcript_path")
     transcript_path = Path(transcript).expanduser()
+    log.info("SessionEnd of %s (%s)", session_id, transcript_path)
     if not transcript_path.is_file():
+        log.info("No transcript at %s; nothing to register", transcript_path)
         return 0
     summary = read_transcript(transcript_path)
     cwd = summary.cwd or (
@@ -1971,7 +2059,7 @@ def cmd_hook(args: argparse.Namespace) -> int:
         if messages:
             save_registry(path, registry)
     for message in messages:
-        emit(message)
+        echo(message)
     return 0
 
 
@@ -1979,7 +2067,10 @@ def cmd_sync(args: argparse.Namespace) -> int:
     path = registry_path(args, settings(args))
     projects = CLAUDE_DIR / "projects"
     found: list[tuple[str, str, str | None, Path]] = []
-    for transcript in sorted(projects.glob("*/*.jsonl")):
+    transcripts = sorted(projects.glob("*/*.jsonl"))
+    log.info("Scanning %d transcripts in %s", len(transcripts), projects)
+    for transcript in transcripts:
+        log.debug("Reading %s", transcript)
         summary = read_transcript(transcript)
         if summary.title is not None:
             session_id = summary.session_id or transcript.stem
@@ -2011,7 +2102,7 @@ def cmd_sync(args: argparse.Namespace) -> int:
                 )
         prefix = f"{paint('[dry-run]', COLOR_CYAN)} " if args.dry_run else ""
         for message in messages:
-            emit(f"{prefix}{message}", sys.stdout)
+            echo(f"{prefix}{message}", sys.stdout)
         if messages and not args.dry_run:
             save_registry(path, registry)
     counts = (
@@ -2019,7 +2110,7 @@ def cmd_sync(args: argparse.Namespace) -> int:
         f"{paint(str(len(registry.hidden)), COLOR_BOLD)} hidden, "
         f"{paint(str(len(messages)), COLOR_BOLD)} change(s)"
     )
-    emit(f"{prefix}{counts}", sys.stdout)
+    echo(f"{prefix}{counts}", sys.stdout)
     return 0
 
 
@@ -2028,9 +2119,15 @@ def truthy(value: str) -> bool:
 
 
 def choice(
-    cli: str | None, env_name: str, config: dict[str, str], values: Sequence[str]
+    cli: str | None,
+    env_name: str,
+    config: dict[str, str],
+    values: Sequence[str],
+    default: str | None = None,
 ) -> str:
-    value = resolve(cli, env_name, config, values[0])
+    """A setting limited to `values`; the default is the first one unless
+    given."""
+    value = resolve(cli, env_name, config, default or values[0])
     if value not in values:
         raise AppError(f"{env_name} must be one of: {', '.join(values)}")
     return value
@@ -2067,9 +2164,9 @@ def cmd_list(args: argparse.Namespace) -> int:
     header, rows = session_rows(sessions, view_of(args, config), long=args.long)
     # The header is for people: in a terminal, or with --color=always
     if sys.stdout.isatty() or COLOR.mode == "always":
-        emit(paint(header, COLOR_BOLD), sys.stdout)
+        echo(paint(header, COLOR_BOLD), sys.stdout)
     for _, cells in rows:
-        emit("  ".join(cells).rstrip(), sys.stdout)
+        echo("  ".join(cells).rstrip(), sys.stdout)
     return 0
 
 
@@ -2087,7 +2184,8 @@ def switch_to(session_id: str, entry: dict[str, str]) -> bool:
     )
     if not confirm(question, default=True):
         return False
-    result = subprocess.run(["tmux", "switch-client", "-t", pane], check=False)
+    log.info("Switching the tmux client to pane %s", pane)
+    result = run_command(["tmux", "switch-client", "-t", pane])
     if result.returncode != 0:
         raise AppError(f"'tmux switch-client -t {pane}' failed")
     return True
@@ -2134,6 +2232,7 @@ def exec_claude(
     elif not Path(cwd).is_dir():
         raise AppError(f"Session directory no longer exists: {cwd} (use -H/--here)")
     command = [claude, "--resume", session_id, *args.claude_args]
+    log.info("Running in %s: %s", cwd, shlex.join(command))
     if args.dry_run:
         print(f"cd {shlex.quote(cwd)} && {shlex.join(command)}")
         return 0
@@ -2152,6 +2251,7 @@ def append_title(transcript: Path, session_id: str, title: str) -> None:
         ensure_ascii=False,
         separators=(",", ":"),  # compact, as Claude Code writes it
     )
+    log.info("Appending a custom-title record to %s", transcript)
     try:
         with transcript.open("ab+") as fh:
             fh.seek(0, os.SEEK_END)
@@ -2164,6 +2264,7 @@ def append_title(transcript: Path, session_id: str, title: str) -> None:
             )
         folder = transcript.with_suffix("")
         if folder.is_dir():
+            log.info("Writing %s", folder / "custom-title.json")
             (folder / "custom-title.json").write_text(
                 json.dumps({"customTitle": title}, ensure_ascii=False),
                 encoding="utf-8",
@@ -2302,6 +2403,8 @@ _claude-session() {
   local -a scope color
   color=(
     '(-C --color)'{-C+,--color=}'[when to color the output]:when:(auto always never)'
+    '(-L --log-level)'{-L+,--log-level=}'[log level]:level:(error warning info debug)'
+    '(-v --verbose)'{-v,--verbose}'[same as --log-level info]'
   )
   scope=(
     '(-a --all -u --unnamed)'{-a,--all}'[include unnamed and removed sessions]'
@@ -2412,13 +2515,31 @@ COMMANDS = {
 }
 
 
+def log_level(args: argparse.Namespace, config: dict[str, str]) -> str:
+    """--log-level, raised to info by -v/--verbose."""
+    level = choice(args.log_level, ENV_LOG_LEVEL, config, LOG_LEVELS, DEFAULT_LOG_LEVEL)
+    if args.verbose and LOG_LEVELS.index(level) < LOG_LEVELS.index("info"):
+        level = "info"
+    return level
+
+
+def log_settings(args: argparse.Namespace) -> None:
+    config = settings(args)
+    found = (
+        plural(len(config), "setting") if args.config_path.is_file() else "not found"
+    )
+    log.info("Config file: %s (%s)", args.config_path, found)
+    for key, value in sorted(config.items()):
+        log.debug("Config: %s=%s", key, value)
+
+
 def command_index(argv: Sequence[str]) -> int | None:
     """Where the command is, after the options that may come before it."""
     value = False
     for index, arg in enumerate(argv):
         if value:
             value = False
-        elif arg in ("-C", "--color"):
+        elif arg in ("-C", "--color", "-L", "--log-level"):
             value = True
         elif arg == "--":
             return None
@@ -2455,14 +2576,26 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     args.claude_args = claude_args
 
+    configure_logging(DEFAULT_LOG_LEVEL)
     try:
+        # From the command line and environment first, so that they also
+        # apply to messages about the config file
+        configure_logging(log_level(args, {}))
+        COLOR.mode = choice(args.color, ENV_COLOR, {}, COLOR_MODES)
+        configure_logging(log_level(args, settings(args)))
         COLOR.mode = choice(args.color, ENV_COLOR, settings(args), COLOR_MODES)
+        log_settings(args)
+        log.info(
+            "Color: %s, log level: %s",
+            COLOR.mode,
+            logging.getLevelName(log.level).lower(),
+        )
         return COMMANDS[args.command](args)
     except AppError as exc:
         report(str(exc))
         return 1
     except KeyboardInterrupt:
-        emit()
+        echo()
         return 130
     except BrokenPipeError:
         # Output piped into a command that exited early (e.g. `| head`)

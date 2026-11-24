@@ -855,6 +855,7 @@ command line wins over the environment, which wins over the file.
 | `CLAUDE_SESSION_DATE`         | `active`, `created` or `both`                 |
 | `CLAUDE_SESSION_AI_TITLE=1`   | Show the AI title column                      |
 | `CLAUDE_SESSION_COLOR`        | `auto`, `always` or `never`                   |
+| `CLAUDE_SESSION_LOG_LEVEL`    | `error`, `warning` (default), `info`, `debug` |
 | `CLAUDE_SESSION_KEY_<ACTION>` | Picker key of an action, see below            |
 | `CLAUDE_SESSION_CLAUDE_BIN`   | The claude executable                         |
 | `CLAUDE_SESSION_REGISTRY`     | The registry file                             |
@@ -866,6 +867,13 @@ Output is colored where it goes to a terminal and plain where it is piped or
 redirected (`auto`, the default; stdout and stderr are judged separately).
 `-C/--color always` keeps the colors in a pipe, and `never` turns them off
 everywhere, the picker included. In `auto` mode, `NO_COLOR` turns them off too.
+
+`-L/--log-level` sets what is logged on stderr: `error`, `warning` (the
+default: skipped items and fallbacks), `info` (the settings in use and each
+step, such as the files deleted or the claude command run) or `debug` (every
+file read and command run, fzf included). `-v/--verbose` is short for `info`.
+Results such as `Removed:` or `Renamed:` are always shown. Like `--color`, both
+options can come before or after the command.
 
 #### Where things are stored
 
