@@ -886,3 +886,115 @@ options can come before or after the command.
 
 `CLAUDE_CONFIG_DIR` moves everything under `~/.claude`, as it does for Claude
 Code itself.
+
+### [backup_snapshot.py](scripts/.local/bin/backup_snapshot.py)
+
+Differential snapshot backups with rsync and hard links. Every snapshot is a
+full, browsable copy of the source, but unchanged files are hard-linked to the
+previous snapshot, so a snapshot costs only the changed files in space.
+`backup_home.py` is a thin wrapper that backs up the home directory with the
+built-in `home` exclude list.
+
+Either side may be on a remote host reachable over ssh:
+
+| Source | Destination | rsync runs |
+| --- | --- | --- |
+| local | local | here |
+| local | `host:/path` | here |
+| `host:/path` | local | here |
+| `host:/path` | `host:/path` (the same host) | on that host, nothing crosses this machine |
+
+rsync cannot talk to two different remote hosts at once, so that case is
+rejected with an error.
+
+#### Requirements
+
+- Python 3.10 or newer, standard library only
+- `rsync` on the machine that runs it (on the remote host for the last mode
+  above), and `ssh` when a side is remote
+
+#### Install
+
+```sh
+# from the repository root: the commands are backup-snapshot and backup-home
+ln -s "$PWD/scripts/.local/bin/backup_snapshot.py" ~/.local/bin/backup-snapshot
+ln -s "$PWD/scripts/.local/bin/backup_home.py" ~/.local/bin/backup-home
+```
+
+`backup_home.py` finds `backup_snapshot.py` next to its real file, so it works
+through a symlink. Its source and destination are constants at the top of the
+file.
+
+#### Usage
+
+```sh
+backup-snapshot -s /home/user -d /media/user/bckp/home_backup
+backup-snapshot -s /home/user -d truenas:/mnt/tank/backups/laptop
+backup-snapshot -s truenas:/mnt/tank/photo -d truenas:/mnt/tank/backups/photo -k 12
+backup-snapshot -s andrei@192.168.50.185:/mnt/tank/photo -d /media/user/bckp/photo \
+    --port=2222 --ssh-command='ssh -i ~/.ssh/homenet'
+
+backup-home                          # home directory, with the home exclude list
+backup-home --exclude-preset=none    # the same, without any excludes
+backup-snapshot -n -s ... -d ...     # dry run: rsync --dry-run, nothing kept
+```
+
+By default a snapshot is created only when the last one is older than six
+hours (`-t MIN` changes it, `-f/--force` ignores it). `-k NUM` keeps the newest
+`NUM` snapshots and asks before deleting the rest (`-y/--yes` skips the
+question). `backup-snapshot --help` lists every option, the path syntax and the
+exit codes.
+
+#### Layout
+
+```
+DEST/2026-08-24_23-15-17/PARENT/...        copied data
+DEST/2026-08-24_23-15-17/rsync-log         rsync log for this snapshot
+DEST/2026-08-24_23-15-17/completed_successfully   marker and metadata
+```
+
+- A snapshot without its `completed_successfully` marker is incomplete and is
+  removed on the next run, as is one left behind by Ctrl-C or SIGTERM.
+- A lock directory in `DEST` prevents two runs from overlapping. If a run was
+  killed with SIGKILL, remove `DEST/.backup_snapshot.lock` by hand.
+- Remote relative and `~` paths are resolved to absolute paths before anything
+  is created or deleted. `~user`, IPv6 literals and rsync daemon syntax are
+  rejected.
+- `.zfs` directories are skipped unless `--include-zfs-snapdir` is given, since
+  `.zfs/snapshot` would multiply the backup by the number of ZFS snapshots.
+
+#### Configuration
+
+Resolved as command line, then environment, then config file, then default.
+The config file is `${XDG_CONFIG_HOME:-~/.config}/backup-snapshot/backup-snapshot.conf`
+(`-c/--config` or `BACKUP_SNAPSHOT_CONFIG` to change it), with `KEY=VALUE`
+lines named like the environment variables:
+
+| Variable | Option |
+| --- | --- |
+| `BACKUP_SNAPSHOT_SOURCE`, `_DEST`, `_PARENT_NAME` | `-s`, `-d`, `-p` |
+| `BACKUP_SNAPSHOT_TIMEOUT`, `_KEEP` | `-t`, `-k` |
+| `BACKUP_SNAPSHOT_EXCLUDE_PRESET` | `--exclude-preset` |
+| `BACKUP_SNAPSHOT_SSH_COMMAND`, `_SRC_SSH_COMMAND`, `_DST_SSH_COMMAND` | `--ssh-command` and its per-side forms |
+| `BACKUP_SNAPSHOT_PORT`, `_SRC_PORT`, `_DST_PORT` | `--port` and its per-side forms |
+| `BACKUP_SNAPSHOT_RSYNC_PATH` | `--rsync-path` |
+| `BACKUP_SNAPSHOT_LOG_LEVEL` | `-L/--log-level` |
+
+Exclude patterns, `--rsync-arg` and the flags are command line only. The tool
+takes no secrets: ssh authentication is left to ssh.
+
+#### Exit codes
+
+0 success (also when the last snapshot is too recent to take another), 1
+failure, 2 usage error, 130 interrupted with Ctrl-C, 143 terminated.
+
+#### Tests
+
+```sh
+python3 -m unittest discover -s tests -v   # from the repository root, ~90 s
+```
+
+The tests run the scripts against scratch directories with the real `rsync` and
+a fake `ssh` that runs the remote command locally, so they need no network and
+no remote host. They live in `tests/`, outside the stow packages, so stow never
+links them into `$HOME`.
